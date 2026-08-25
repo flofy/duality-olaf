@@ -66,6 +66,33 @@ The editor requires exactly one ball, exactly one cube, and between one and five
 
 An unused bonus slot is represented by `255, 255`.
 
+## Level 1 fixture
+
+The first 38 bytes of the original table can be reconstructed directly from the printed `DATA` lines:
+
+```text
+15 00 00 00 00 00 00 70
+0F D0 08 10 0F D0 02 D0
+02 10 02 F0 03 80 00 00
+00 00 05 04 06 04 0A 03
+07 08 07 06 FF FF
+```
+
+Decoded object positions are:
+
+```text
+ball   = (0, 0)
+cube   = (5, 4)
+bonus  = (6, 4)
+bonus  = (10, 3)
+bonus  = (7, 8)
+bonus  = (7, 6)
+```
+
+The fifth bonus slot is unused (`255,255`).
+
+This gives us a concrete regression fixture for the future parser.
+
 ## Example TypeScript representation
 
 ```ts
@@ -106,3 +133,7 @@ for i = 0..4:
 We now have a concrete historical level format rather than only the earlier `38 bytes/level` clue. This gives us a deterministic target for a `level-format` package and makes it possible to validate any level data recovered from an original CPC disk image or from future reverse engineering of Maouss DS.
 
 The format was reconstructed from the editor source printed on page 33 of *Amstrad Cent Pour Cent* no. 43. The same article explicitly documents the 38-byte record size and the 16×12 editor grid.
+
+## Maouss DS comparison
+
+The first 38-byte CPC level record was searched verbatim in both supplied Maouss DS builds and was not found. This strongly suggests that the DS adaptation repacked or transformed the CPC levels rather than embedding the original `TABLJEU.BIN` records unchanged.
