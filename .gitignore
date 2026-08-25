@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+.vite/
+.DS_Store
+*.log
+
+# Local historical binaries / extracted reference material
+reference/**/*.nds
+reference/**/*.bin
+data/extracted/
