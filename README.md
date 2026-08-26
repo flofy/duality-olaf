@@ -10,6 +10,16 @@ The project now has enough historical information to move forward **without maki
 
 The implementation target is therefore an independent game using our own level data and engine. Historical binaries stay outside the repository.
 
+## Current prototype
+
+- TypeScript + Phaser 3 + Vite.
+- Framework-independent `LevelRunner` for movement, collision, form switching, targets and completion.
+- First campaign world with **11 playable prototype levels**.
+- Level-selection screen with the planned 5 × 11 structure visible.
+- Keyboard and touch controls.
+- Restart, level completion and next-level flow.
+- Portable static build suitable for GitHub Pages or Cloudflare Pages.
+
 ## Goals
 
 - Build an independent modern game engine in TypeScript + Phaser.
@@ -41,7 +51,7 @@ The historical CPC format remains documented separately. We can use it as a refe
 
 ## Deployment
 
-The web app is designed as a static PWA and can be deployed to **GitHub Pages** or **Cloudflare Pages**. The implementation remains deployment-provider agnostic.
+The web app is designed as a static PWA and can be deployed to **GitHub Pages** or **Cloudflare Pages**. A GitHub Pages workflow is included in `.github/workflows/pages.yml`; the build itself stays provider-agnostic.
 
 ## Development roadmap
 
@@ -49,12 +59,14 @@ The web app is designed as a static PWA and can be deployed to **GitHub Pages** 
 2. [x] Introduce a framework-independent `LevelRunner`.
 3. [x] Connect the prototype to Phaser.
 4. [x] Add keyboard + initial touch controls.
-5. [ ] Stabilize movement/collision rules against the historical gameplay.
-6. [ ] Define and import the normalized 55-level catalogue.
-7. [ ] Build level selection / worlds / progression.
-8. [ ] Add PWA install/offline support.
-9. [ ] Deploy to GitHub Pages and/or Cloudflare Pages.
-10. [ ] Add a level editor and original visual identity.
+5. [x] Add first 11-level prototype campaign and level selection.
+6. [x] Add CI typecheck/build validation.
+7. [ ] Stabilize movement/collision rules against the historical gameplay.
+8. [ ] Define and import the normalized 55-level catalogue.
+9. [ ] Add progression/save state.
+10. [ ] Add PWA install/offline support.
+11. [ ] Deploy and verify on GitHub Pages / Cloudflare Pages.
+12. [ ] Add a level editor and original visual identity.
 
 ## Reference / rights
 
