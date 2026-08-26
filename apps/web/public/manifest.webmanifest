@@ -1,0 +1,9 @@
+{
+  "name": "Duality",
+  "short_name": "Duality",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020",
+  "description": "A retro grid puzzle inspired by Olaf / Maouss DS."
+}
