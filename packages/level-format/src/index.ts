@@ -46,3 +46,21 @@ export function isInside(level: Level, position: Position): boolean {
 export function isWall(level: Level, position: Position): boolean {
   return isInside(level, position) && level.tiles[position.y][position.x] === 'wall';
 }
+
+export function samePosition(a: Position, b: Position): boolean {
+  return a.x === b.x && a.y === b.y;
+}
+
+export function clonePosition(position: Position): Position {
+  return { ...position };
+}
+
+export function cloneLevel(level: Level): Level {
+  return {
+    ...level,
+    tiles: level.tiles.map((row) => [...row]),
+    ball: clonePosition(level.ball),
+    square: clonePosition(level.square),
+    stars: level.stars.map(clonePosition),
+  };
+}
