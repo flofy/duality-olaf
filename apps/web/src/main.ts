@@ -1,52 +1,22 @@
 import Phaser from 'phaser';
+import { LevelRunner } from '@duality/game';
+import type { Position } from '@duality/level-format';
+import { prototypeLevel } from './levels/prototype';
 import './style.css';
 
-type Form = 'ball' | 'square';
-type Position = { x: number; y: number };
-type Tile = 0 | 1;
-
-const WIDTH = 13;
-const HEIGHT = 10;
 const TILE = 48;
+const FOOTER = 72;
 
-const level = {
-  tiles: Array.from({ length: HEIGHT }, (_, y): Tile[] =>
-    Array.from({ length: WIDTH }, (_, x) =>
-      x === 0 || y === 0 || x === WIDTH - 1 || y === HEIGHT - 1 ? 1 : 0,
-    ),
-  ),
-  ball: { x: 1, y: 1 } as Position,
-  square: { x: 3, y: 1 } as Position,
-  stars: [
-    { x: 8, y: 1 },
-    { x: 10, y: 4 },
-    { x: 5, y: 7 },
-    { x: 9, y: 8 },
-  ] as Position[],
-};
-
-// A first hand-authored level. Historical level data stays isolated until the
-// DS format is decoded and validated.
-level.tiles[2][4] = 1;
-level.tiles[2][5] = 1;
-level.tiles[3][5] = 1;
-level.tiles[4][5] = 1;
-level.tiles[5][5] = 1;
-level.tiles[6][7] = 1;
-level.tiles[7][7] = 1;
-level.tiles[8][7] = 1;
+type State = ReturnType<LevelRunner['getState']>;
 
 class DualityScene extends Phaser.Scene {
-  private active: Form = 'ball';
-  private ball = { ...level.ball };
-  private square = { ...level.square };
-  private stars = level.stars.map((star) => ({ ...star }));
+  private readonly runner = new LevelRunner(prototypeLevel);
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private switchKey!: Phaser.Input.Keyboard.Key;
   private ballSprite!: Phaser.GameObjects.Arc;
   private squareSprite!: Phaser.GameObjects.Rectangle;
-  private starSprites: Phaser.GameObjects.Arc[] = [];
+  private starSprites: Phaser.GameObjects.GameObject[] = [];
   private status!: Phaser.GameObjects.Text;
+  private completion!: Phaser.GameObjects.Text;
 
   constructor() {
     super('duality');
@@ -54,25 +24,15 @@ class DualityScene extends Phaser.Scene {
 
   create() {
     this.cursors = this.input.keyboard!.createCursorKeys();
-    this.switchKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.input.keyboard!.on('keydown-SPACE', () => this.refresh(this.runner.switchForm()));
+    this.input.keyboard!.on('keydown-R', () => this.refresh(this.runner.reset()));
 
     this.cameras.main.setBackgroundColor('#0b1020');
     this.drawBoard();
-    this.drawEntities();
-
-    this.status = this.add.text(16, HEIGHT * TILE + 14, '', {
-      fontFamily: 'monospace',
-      fontSize: '18px',
-      color: '#ffffff',
-    });
-    this.updateStatus();
-
-    this.input.keyboard!.on('keydown-SPACE', () => {
-      this.active = this.active === 'ball' ? 'square' : 'ball';
-      this.updateStatus();
-    });
-
-    this.input.keyboard!.on('keydown-R', () => this.reset());
+    this.createEntities();
+    this.createHud();
+    this.createTouchControls();
+    this.refresh(this.runner.getState());
   }
 
   update() {
@@ -82,37 +42,22 @@ class DualityScene extends Phaser.Scene {
     else if (Phaser.Input.Keyboard.JustDown(this.cursors.down!)) this.move(0, 1);
   }
 
-  private move(dx: number, dy: number) {
-    const current = this.active === 'ball' ? this.ball : this.square;
-    const next = { x: current.x + dx, y: current.y + dy };
-
-    if (!this.isInside(next) || level.tiles[next.y][next.x] === 1) return;
-
-    if (this.active === 'square' && next.x === this.ball.x && next.y === this.ball.y) return;
-
-    current.x = next.x;
-    current.y = next.y;
-
-    if (this.active === 'ball') {
-      this.stars = this.stars.filter((star) => star.x !== current.x || star.y !== current.y);
-    }
-
-    this.redrawEntities();
-    this.updateStatus();
+  private move(x: -1 | 0 | 1, y: -1 | 0 | 1) {
+    this.refresh(this.runner.move({ x, y }));
   }
 
   private drawBoard() {
     const graphics = this.add.graphics();
     graphics.fillStyle(0x111a2d);
-    graphics.fillRect(0, 0, WIDTH * TILE, HEIGHT * TILE);
+    graphics.fillRect(0, 0, prototypeLevel.width * TILE, prototypeLevel.height * TILE);
 
-    for (let y = 0; y < HEIGHT; y += 1) {
-      for (let x = 0; x < WIDTH; x += 1) {
+    for (let y = 0; y < prototypeLevel.height; y += 1) {
+      for (let x = 0; x < prototypeLevel.width; x += 1) {
         const px = x * TILE;
         const py = y * TILE;
         graphics.lineStyle(1, 0x26324a, 1);
         graphics.strokeRect(px, py, TILE, TILE);
-        if (level.tiles[y][x] === 1) {
+        if (prototypeLevel.tiles[y][x] === 'wall') {
           graphics.fillStyle(0x7b879d);
           graphics.fillRect(px + 3, py + 3, TILE - 6, TILE - 6);
         }
@@ -120,47 +65,71 @@ class DualityScene extends Phaser.Scene {
     }
   }
 
-  private drawEntities() {
+  private createEntities() {
     this.ballSprite = this.add.circle(0, 0, TILE * 0.31, 0x4aa3ff);
     this.squareSprite = this.add.rectangle(0, 0, TILE * 0.62, TILE * 0.62, 0xffd447);
-    this.starSprites = [];
-    this.redrawEntities();
   }
 
-  private redrawEntities() {
-    this.ballSprite.setPosition(...this.toPixel(this.ball));
-    this.squareSprite.setPosition(...this.toPixel(this.square));
-    this.ballSprite.setAlpha(this.active === 'ball' ? 1 : 0.55);
-    this.squareSprite.setAlpha(this.active === 'square' ? 1 : 0.55);
-
-    for (const sprite of this.starSprites) sprite.destroy();
-    this.starSprites = this.stars.map((star) => {
-      const [x, y] = this.toPixel(star);
-      return this.add.star(x, y, 5, TILE * 0.12, TILE * 0.25, 0xfff2a1);
+  private createHud() {
+    const y = prototypeLevel.height * TILE + 8;
+    this.status = this.add.text(12, y, '', {
+      fontFamily: 'monospace',
+      fontSize: '15px',
+      color: '#ffffff',
+    });
+    this.completion = this.add.text(12, y + 27, '', {
+      fontFamily: 'monospace',
+      fontSize: '14px',
+      color: '#fff2a1',
     });
   }
 
-  private updateStatus() {
-    if (!this.status) return;
-    const collected = level.stars.length - this.stars.length;
-    this.status.setText(
-      `Forme: ${this.active === 'ball' ? '● BOULE' : '■ CARRÉ'}   ` +
-        `Étoiles: ${collected}/${level.stars.length}   ` +
-        `Espace: changer · R: recommencer`,
+  private createTouchControls() {
+    const baseY = prototypeLevel.height * TILE + FOOTER - 18;
+    const center = (prototypeLevel.width * TILE) / 2;
+
+    const makeButton = (label: string, x: number, callback: () => void) => {
+      const button = this.add.text(x, baseY, label, {
+        fontFamily: 'monospace',
+        fontSize: '18px',
+        backgroundColor: '#1b2942',
+        padding: { left: 9, right: 9, top: 5, bottom: 5 },
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      button.on('pointerdown', callback);
+    };
+
+    makeButton('◀', center - 120, () => this.move(-1, 0));
+    makeButton('▲', center - 60, () => this.move(0, -1));
+    makeButton('▼', center, () => this.move(0, 1));
+    makeButton('▶', center + 60, () => this.move(1, 0));
+    makeButton('●/■', center + 135, () => this.refresh(this.runner.switchForm()));
+  }
+
+  private refresh(state: State) {
+    this.setPosition(this.ballSprite, state.ball);
+    this.setPosition(this.squareSprite, state.square);
+    this.ballSprite.setAlpha(state.activeForm === 'ball' ? 1 : 0.5);
+    this.squareSprite.setAlpha(state.activeForm === 'square' ? 1 : 0.5);
+
+    for (const sprite of this.starSprites) sprite.destroy();
+    this.starSprites = state.stars.map((star) => {
+      const [x, y] = this.toPixel(star);
+      return this.add.star(x, y, 5, TILE * 0.12, TILE * 0.25, 0xfff2a1);
+    });
+
+    const form = state.activeForm === 'ball' ? '● BOULE' : '■ CARRÉ';
+    const collected = prototypeLevel.stars.length - state.stars.length;
+    this.status.setText(`${form}   ÉTOILES ${collected}/${prototypeLevel.stars.length}   COUPS ${state.moves}`);
+    this.completion.setText(
+      state.completed
+        ? '✓ NIVEAU TERMINÉ — R pour recommencer'
+        : 'ESPACE : changer de forme · Flèches / tactile : déplacer',
     );
   }
 
-  private reset() {
-    this.active = 'ball';
-    this.ball = { ...level.ball };
-    this.square = { ...level.square };
-    this.stars = level.stars.map((star) => ({ ...star }));
-    this.redrawEntities();
-    this.updateStatus();
-  }
-
-  private isInside(position: Position) {
-    return position.x >= 0 && position.x < WIDTH && position.y >= 0 && position.y < HEIGHT;
+  private setPosition(object: Phaser.GameObjects.Shape, position: Position) {
+    const [x, y] = this.toPixel(position);
+    object.setPosition(x, y);
   }
 
   private toPixel(position: Position): [number, number] {
@@ -170,14 +139,14 @@ class DualityScene extends Phaser.Scene {
 
 new Phaser.Game({
   type: Phaser.AUTO,
-  width: WIDTH * TILE,
-  height: HEIGHT * TILE + 56,
+  width: prototypeLevel.width * TILE,
+  height: prototypeLevel.height * TILE + FOOTER,
   parent: 'app',
   scene: DualityScene,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: WIDTH * TILE,
-    height: HEIGHT * TILE + 56,
+    width: prototypeLevel.width * TILE,
+    height: prototypeLevel.height * TILE + FOOTER,
   },
 });
