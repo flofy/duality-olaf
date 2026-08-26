@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <rect width="1200" height="760" fill="#0b1020"/>
+  <text x="600" y="42" fill="#ffffff" font-family="monospace" font-size="26" text-anchor="middle">DUALITY — 55 LEVELS / 5 WORLDS × 11 LEVELS</text>
+  <text x="600" y="70" fill="#9aa8c0" font-family="monospace" font-size="15" text-anchor="middle">Candidate DS map representation • 13 × 10 cells per level</text>
+  <g font-family="monospace" font-size="14">
+    <script type="application/ecmascript"><![CDATA[]]></script>
+  </g>
+  <g transform="translate(35,100)" fill="none" stroke="#26324a">
+    <rect width="1130" height="610" rx="14"/>
+  </g>
+  <g font-family="monospace" font-size="13">
+    <g transform="translate(60,125)">
+      <text x="0" y="0" fill="#fff2a1" font-size="18">WORLD 1</text>
+      <text x="0" y="23" fill="#9aa8c0">01 — 11</text>
+      <g transform="translate(0,38)" fill="#1b2942" stroke="#34425d">
+        <rect width="150" height="110" rx="6"/>
+        <rect x="180" width="150" height="110" rx="6"/>
+        <rect x="360" width="150" height="110" rx="6"/>
+        <rect x="540" width="150" height="110" rx="6"/>
+        <rect x="720" width="150" height="110" rx="6"/>
+        <rect x="900" width="150" height="110" rx="6"/>
+      </g>
+      <g transform="translate(0,38)" fill="#9aa8c0" font-size="11">
+        <text x="75" y="18" text-anchor="middle">01</text><text x="255" y="18" text-anchor="middle">02</text><text x="435" y="18" text-anchor="middle">03</text><text x="615" y="18" text-anchor="middle">04</text><text x="795" y="18" text-anchor="middle">05</text><text x="975" y="18" text-anchor="middle">06</text>
+        <text x="75" y="53" text-anchor="middle">● ■</text><text x="255" y="53" text-anchor="middle">● ■</text><text x="435" y="53" text-anchor="middle">● ■</text><text x="615" y="53" text-anchor="middle">● ■</text><text x="795" y="53" text-anchor="middle">● ■</text><text x="975" y="53" text-anchor="middle">● ■</text>
+        <text x="75" y="88" text-anchor="middle">★★★★★</text><text x="255" y="88" text-anchor="middle">★★★★★</text><text x="435" y="88" text-anchor="middle">★★★★★</text><text x="615" y="88" text-anchor="middle">★★★★★</text><text x="795" y="88" text-anchor="middle">★★★★★</text><text x="975" y="88" text-anchor="middle">★★★★★</text>
+      </g>
+    </g>
+    <g transform="translate(60,330)">
+      <text x="0" y="0" fill="#fff2a1" font-size="18">WORLDS 2 → 5</text>
+      <text x="0" y="24" fill="#9aa8c0">44 additional levels, represented by the same 13 × 10 grid model</text>
+      <g transform="translate(0,45)" fill="#1b2942" stroke="#34425d">
+        <rect width="250" height="130" rx="6"/><rect x="275" width="250" height="130" rx="6"/><rect x="550" width="250" height="130" rx="6"/><rect x="825" width="250" height="130" rx="6"/>
+      </g>
+      <g transform="translate(125,110)" fill="#4aa3ff" font-size="30" text-anchor="middle"><text>●</text><text x="275">●</text><text x="550">●</text><text x="825">●</text></g>
+      <g transform="translate(125,145)" fill="#ffd447" font-size="24" text-anchor="middle"><text>■</text><text x="275">■</text><text x="550">■</text><text x="825">■</text></g>
+      <g transform="translate(0,195)" fill="#9aa8c0" font-size="11"><text x="0">WORLD 2 — 11 levels</text><text x="275">WORLD 3 — 11 levels</text><text x="550">WORLD 4 — 11 levels</text><text x="825">WORLD 5 — 11 levels</text></g>
+    </g>
+  </g>
+  <g transform="translate(60,650)" font-family="monospace" font-size="13">
+    <text fill="#4aa3ff">●</text><text x="22" fill="#ffffff">ball / active mover</text>
+    <text x="230" fill="#ffd447">■</text><text x="252" fill="#ffffff">square / second form</text>
+    <text x="500" fill="#fff2a1">★</text><text x="522" fill="#ffffff">collectible targets</text>
+    <text x="770" fill="#9aa8c0">13 × 10</text><text x="850" fill="#ffffff">candidate map grid</text>
+  </g>
+</svg>
