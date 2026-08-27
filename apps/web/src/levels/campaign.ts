@@ -22,7 +22,8 @@ function makeLevel(id: string, ball: [number, number], square: [number, number],
 }
 
 export const campaign: Level[] = [
-  makeLevel('world-1-01', [1, 1], [3, 1], [[10, 1], [10, 8]]),
+  // Tutorial: the square starts in the ball's corridor, so switching is required.
+  makeLevel('world-1-01', [1, 1], [2, 1], [[5, 1], [5, 7]], [[3, 2], [4, 2], [5, 2], [7, 5], [8, 5], [9, 5]]),
   makeLevel('world-1-02', [1, 8], [2, 8], [[11, 1], [6, 4]], [[4, 2], [4, 3], [4, 4], [8, 5], [8, 6], [8, 7]]),
   makeLevel('world-1-03', [1, 1], [2, 2], [[11, 1], [11, 8], [1, 8]], [[3, 3], [4, 3], [5, 3], [7, 6], [8, 6], [9, 6]]),
   makeLevel('world-1-04', [11, 8], [9, 8], [[1, 1], [6, 2], [6, 7]], [[3, 2], [3, 3], [3, 4], [9, 5], [9, 6], [9, 7]]),
