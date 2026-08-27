@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { LevelRunner } from '@duality/game';
 import type { Level, Position } from '@duality/level-format';
 import { campaign, levelLabel, levelsPerWorld, totalLevelCount } from './levels/campaign';
+import { completeLevel, getCompletedCount, isLevelCompleted, resetProgress } from './progression';
 import './style.css';
 
 const TILE = 48;
@@ -15,6 +16,8 @@ class MenuScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#0b1020');
     const cx = this.scale.width / 2;
+    const completedCount = getCompletedCount();
+
     this.add.text(cx, 70, 'DUALITY', { fontFamily: 'monospace', fontSize: '52px', color: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5);
     this.add.text(cx, 122, 'OLAF', { fontFamily: 'monospace', fontSize: '20px', color: '#4aa3ff' }).setOrigin(0.5);
     this.add.text(cx, 170, 'BOULE ●   ×   CARRÉ ■', { fontFamily: 'monospace', fontSize: '16px', color: '#ffd447' }).setOrigin(0.5);
@@ -25,10 +28,12 @@ class MenuScene extends Phaser.Scene {
       const row = Math.floor(index / 6);
       const x = cx - 180 + column * 72;
       const y = 270 + row * 72;
-      const unlocked = index < campaign.length;
-      const button = this.add.text(x, y, unlocked ? String(index + 1).padStart(2, '0') : '·', {
+      const unlocked = index === 0 || isLevelCompleted(campaign[index - 1].id);
+      const completed = isLevelCompleted(campaign[index].id);
+      const label = completed ? '✓' : unlocked ? String(index + 1).padStart(2, '0') : '·';
+      const button = this.add.text(x, y, label, {
         fontFamily: 'monospace', fontSize: '22px', color: unlocked ? '#ffffff' : '#46516a',
-        backgroundColor: unlocked ? '#1b2942' : '#101728',
+        backgroundColor: completed ? '#25452f' : unlocked ? '#1b2942' : '#101728',
         padding: { left: 15, right: 15, top: 10, bottom: 10 },
       }).setOrigin(0.5);
       if (unlocked) {
@@ -37,11 +42,19 @@ class MenuScene extends Phaser.Scene {
       }
     }
 
-    this.add.text(cx, 420, `${campaign.length} niveaux jouables · ${totalLevelCount} prévus`, { fontFamily: 'monospace', fontSize: '13px', color: '#8995ad' }).setOrigin(0.5);
-    this.add.text(cx, 452, 'Clique un niveau · ou appuie sur 1–9', { fontFamily: 'monospace', fontSize: '13px', color: '#8995ad' }).setOrigin(0.5);
+    this.add.text(cx, 420, `${completedCount} terminé${completedCount > 1 ? 's' : ''} · ${campaign.length} jouables · ${totalLevelCount} prévus`, { fontFamily: 'monospace', fontSize: '13px', color: '#8995ad' }).setOrigin(0.5);
+    this.add.text(cx, 452, 'Clique un niveau · 1–9 · progression sauvegardée automatiquement', { fontFamily: 'monospace', fontSize: '13px', color: '#8995ad' }).setOrigin(0.5);
+
     this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
       const number = Number(event.key);
-      if (number >= 1 && number <= 9 && number <= campaign.length) this.scene.start('game', { levelIndex: number - 1 });
+      if (number >= 1 && number <= 9 && number <= campaign.length) {
+        const index = number - 1;
+        if (index === 0 || isLevelCompleted(campaign[index - 1].id)) this.scene.start('game', { levelIndex: index });
+      }
+      if (event.key.toLowerCase() === 'x') {
+        resetProgress();
+        this.scene.restart();
+      }
     });
   }
 }
@@ -147,7 +160,12 @@ class GameScene extends Phaser.Scene {
     const form = state.activeForm === 'ball' ? '● BOULE' : '■ CARRÉ';
     const collected = this.level.stars.length - state.stars.length;
     this.status.setText(`${levelLabel(this.levelIndex)}   ${form}   ÉTOILES ${collected}/${this.level.stars.length}   COUPS ${state.moves}`);
-    this.completion.setText(state.completed ? '✓ NIVEAU TERMINÉ · R recommencer · Échap menu' : 'ESPACE changer de forme · Flèches / tactile déplacer · Échap menu');
+    if (state.completed) {
+      completeLevel(this.level.id);
+      this.completion.setText('✓ NIVEAU TERMINÉ · R recommencer · Échap menu');
+    } else {
+      this.completion.setText('ESPACE changer de forme · Flèches / tactile déplacer · Échap menu');
+    }
     this.nextButton.setVisible(state.completed && this.levelIndex < campaign.length - 1);
   }
 
