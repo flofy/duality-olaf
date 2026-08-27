@@ -11,6 +11,7 @@
     "dev": "pnpm --dir apps/web dev",
     "build": "pnpm --dir apps/web build",
     "preview": "pnpm --dir apps/web preview",
+    "test": "pnpm --dir packages/game test",
     "typecheck": "pnpm --dir apps/web typecheck"
   },
   "devDependencies": {

@@ -13,14 +13,16 @@ export type GameState = {
   completed: boolean;
 };
 
-const DEFAULT_SPEED = 4.2;
-const ENTITY_RADIUS = 0.31;
-const COLLISION_EPSILON = 0.0001;
-
+/**
+ * Coordinate model: every position (ball, square, star) is the **cell index** it
+ * occupies and is always an integer. Entities stay aligned to their cell centre,
+ * so a position never holds a fractional value. A press slides the active form
+ * from cell to cell along a single row/column and stops at the centre of the
+ * last free cell before the first wall or the other form.
+ */
 export class LevelRunner {
   readonly initialLevel: Level;
   private state: GameState;
-  private distanceSinceMove = 0;
 
   constructor(level: Level) {
     this.initialLevel = cloneLevel(level);
@@ -41,34 +43,40 @@ export class LevelRunner {
     return this.getState();
   }
 
-  /** Move continuously for a frame. The level remains grid-based, but positions are continuous. */
-  update(direction: Direction, deltaSeconds: number, speed = DEFAULT_SPEED): GameState {
-    if (this.state.completed || deltaSeconds <= 0) return this.getState();
+  /**
+   * A single press slides the active form all the way along the dominant axis,
+   * one cell at a time, and stops at the centre of the first cell that is a wall
+   * / out of bounds / occupied by the other form. Returns the new state.
+   */
+  move(direction: Direction): GameState {
+    const axis = this.dominantAxis(direction);
+    if (axis === null) return this.getState();
 
-    const length = Math.hypot(direction.x, direction.y);
-    if (length === 0) return this.getState();
+    const sign = axis === 'x' ? Math.sign(direction.x) : Math.sign(direction.y);
+    const current = this.activeEntity();
+    const other = this.blockingEntity();
+    const swept: Position[] = [];
+    let moved = 0;
 
-    // Inputs are deliberately normalized so diagonal input cannot be faster.
-    const dx = (direction.x / length) * speed * deltaSeconds;
-    const dy = (direction.y / length) * speed * deltaSeconds;
-    const current = this.state.activeForm === 'ball' ? this.state.ball : this.state.square;
-    const other = this.state.activeForm === 'ball' ? this.state.square : this.state.ball;
+    // March one whole cell at a time so positions stay integer (cell centres).
+    for (;;) {
+      const next: Position = { ...current };
+      next[axis] += sign;
 
-    let moved = false;
-    moved = this.moveAxis(current, other, 'x', dx) || moved;
-    moved = this.moveAxis(current, other, 'y', dy) || moved;
+      if (!this.isFree(next, other)) break;
 
-    if (moved) {
-      this.distanceSinceMove += Math.hypot(dx, dy);
-      if (this.distanceSinceMove >= 1) {
-        this.state.moves += Math.floor(this.distanceSinceMove);
-        this.distanceSinceMove %= 1;
-      }
+      current.x = next.x;
+      current.y = next.y;
+      moved += 1;
+      swept.push({ x: current.x, y: current.y });
     }
 
+    if (moved > 0) this.state.moves += moved;
+
     if (this.state.activeForm === 'ball') {
+      // Collect every star swept while passing through each cell.
       this.state.stars = this.state.stars.filter(
-        (star) => Math.hypot(star.x - current.x, star.y - current.y) > ENTITY_RADIUS + 0.18,
+        (star) => !swept.some((cell) => cell.x === star.x && cell.y === star.y),
       );
       this.state.completed = this.state.stars.length === 0;
     }
@@ -76,62 +84,32 @@ export class LevelRunner {
     return this.getState();
   }
 
-  /** Compatibility helper for one-cell directional commands and tests. */
-  move(direction: Direction): GameState {
-    return this.update(direction, 1 / DEFAULT_SPEED, DEFAULT_SPEED);
-  }
-
   reset(): GameState {
     this.state = this.createState(this.initialLevel);
-    this.distanceSinceMove = 0;
     return this.getState();
   }
 
-  private moveAxis(
-    current: Position,
-    other: Position,
-    axis: 'x' | 'y',
-    amount: number,
-  ): boolean {
-    if (amount === 0) return false;
-
-    const next = { ...current };
-    next[axis] += amount;
-    next.x = Math.max(ENTITY_RADIUS, Math.min(this.state.level.width - ENTITY_RADIUS, next.x));
-    next.y = Math.max(ENTITY_RADIUS, Math.min(this.state.level.height - ENTITY_RADIUS, next.y));
-
-    if (this.collidesWithWalls(next) || this.collidesWithEntity(next, other)) {
-      return false;
-    }
-
-    current.x = next.x;
-    current.y = next.y;
-    return Math.abs(amount) > COLLISION_EPSILON;
+  /** Position is in bounds and not a wall and not occupied by the other form. */
+  private isFree(cell: Position, other: Position): boolean {
+    if (!isInside(this.state.level, cell)) return false;
+    if (isWall(this.state.level, cell)) return false;
+    if (cell.x === other.x && cell.y === other.y) return false;
+    return true;
   }
 
-  private collidesWithWalls(position: Position): boolean {
-    const minX = Math.floor(position.x - ENTITY_RADIUS);
-    const maxX = Math.floor(position.x + ENTITY_RADIUS);
-    const minY = Math.floor(position.y - ENTITY_RADIUS);
-    const maxY = Math.floor(position.y + ENTITY_RADIUS);
-
-    for (let y = minY; y <= maxY; y += 1) {
-      for (let x = minX; x <= maxX; x += 1) {
-        if (!isInside(this.state.level, { x, y })) return true;
-        if (!isWall(this.state.level, { x, y })) continue;
-
-        const closestX = Math.max(x, Math.min(position.x, x + 1));
-        const closestY = Math.max(y, Math.min(position.y, y + 1));
-        const distance = Math.hypot(position.x - closestX, position.y - closestY);
-        if (distance < ENTITY_RADIUS) return true;
-      }
-    }
-
-    return false;
+  private activeEntity(): Position {
+    return this.state.activeForm === 'ball' ? this.state.ball : this.state.square;
   }
 
-  private collidesWithEntity(a: Position, b: Position): boolean {
-    return Math.hypot(a.x - b.x, a.y - b.y) < ENTITY_RADIUS * 2;
+  private blockingEntity(): Position {
+    return this.state.activeForm === 'ball' ? this.state.square : this.state.ball;
+  }
+
+  private dominantAxis(direction: Direction): 'x' | 'y' | null {
+    const alongX = Math.abs(direction.x);
+    const alongY = Math.abs(direction.y);
+    if (alongX === 0 && alongY === 0) return null;
+    return alongX >= alongY ? 'x' : 'y';
   }
 
   private createState(level: Level): GameState {
@@ -146,3 +124,8 @@ export class LevelRunner {
     };
   }
 }
+
+type Cell = {
+  x: number;
+  y: number;
+};

@@ -16,8 +16,8 @@ The two forms have different movement properties. The active form can be switche
 
 The first prototype should explicitly model:
 
-- orthogonal movement;
-- grid-based positions;
+- orthogonal line/column sliding: a press moves the active form one cell at a time along a single row or column, always aligned to the cell centre; it stops on the last free cell before a wall or the other form;
+- grid-based field with continuous positions and a collision radius;
 - active-form switching;
 - collision with obstacles;
 - moving-form stopping behaviour;

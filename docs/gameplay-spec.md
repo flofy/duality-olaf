@@ -10,14 +10,15 @@ For the modern Duality implementation, we keep the **switch-with-SPACE** interac
 
 1. The board is a rectangular grid surrounded by blocking cells.
 2. Exactly one form is active at a time: `ball` or `square`.
-3. Arrow/touch input moves the active form one cell when the destination is valid.
-4. A wall blocks movement.
-5. The two forms cannot occupy the same cell in the current prototype.
-6. Stars are collectible only by the ball.
-7. A level is complete when every star has been collected.
-8. `SPACE` / the mobile form button switches the active form without moving it.
-9. `R` resets the current level.
-10. Progress is stored locally after a level is completed.
+3. A single arrow/touch press slides the active form **all the way along a line or column**, one cell at a time, and stops on the last free cell before the first wall or the other form. The form is always aligned to its cell centre (integer position).
+4. Movement is strictly orthogonal (only one axis at a time); no diagonal is allowed, so forms slide along a single row or column.
+5. A wall blocks movement; the form never slides sideways along a wall.
+6. The two forms cannot share the same cell (they stop one cell apart).
+7. Stars are collected by the ball when it sweeps over their cells along its path.
+8. A level is complete when every star has been collected.
+9. `SPACE` / the mobile form button switches the active form without moving it.
+10. `R` resets the current level.
+11. Progress is stored locally after a level is completed.
 
 ## Historical compatibility note
 

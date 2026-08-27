@@ -65,14 +65,12 @@ class GameScene extends Phaser.Scene {
   private runner!: LevelRunner;
   private level!: Level;
   private levelIndex = 0;
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private ballSprite!: Phaser.GameObjects.Arc;
   private squareSprite!: Phaser.GameObjects.Rectangle;
   private starSprites: Phaser.GameObjects.GameObject[] = [];
   private status!: Phaser.GameObjects.Text;
   private completion!: Phaser.GameObjects.Text;
   private nextButton!: Phaser.GameObjects.Text;
-  private heldDirection: { x: -1 | 0 | 1; y: -1 | 0 | 1 } = { x: 0, y: 0 };
 
   constructor() { super('game'); }
 
@@ -84,33 +82,19 @@ class GameScene extends Phaser.Scene {
 
   create() {
     this.cameras.main.setBackgroundColor('#0b1020');
-    this.cursors = this.input.keyboard!.createCursorKeys();
     this.input.keyboard!.on('keydown-SPACE', () => this.refresh(this.runner.switchForm()));
     this.input.keyboard!.on('keydown-R', () => this.refresh(this.runner.reset()));
     this.input.keyboard!.on('keydown-ESC', () => this.scene.start('menu'));
+    // One press = slide to the first collision along the chosen line/column.
+    this.input.keyboard!.on('keydown-LEFT', () => this.refresh(this.runner.move({ x: -1, y: 0 })));
+    this.input.keyboard!.on('keydown-RIGHT', () => this.refresh(this.runner.move({ x: 1, y: 0 })));
+    this.input.keyboard!.on('keydown-UP', () => this.refresh(this.runner.move({ x: 0, y: -1 })));
+    this.input.keyboard!.on('keydown-DOWN', () => this.refresh(this.runner.move({ x: 0, y: 1 })));
     this.drawBoard();
     this.createEntities();
     this.createHud();
     this.createTouchControls();
     this.refresh(this.runner.getState());
-  }
-
-  update(_time: number, delta: number) {
-    const direction = this.readDirection();
-    this.refresh(this.runner.update(direction, delta / 1000));
-  }
-
-  private readDirection(): { x: -1 | 0 | 1; y: -1 | 0 | 1 } {
-    if (this.cursors.left?.isDown) return { x: -1, y: 0 };
-    if (this.cursors.right?.isDown) return { x: 1, y: 0 };
-    if (this.cursors.up?.isDown) return { x: 0, y: -1 };
-    if (this.cursors.down?.isDown) return { x: 0, y: 1 };
-    return this.heldDirection;
-  }
-
-  private move(x: -1 | 0 | 1, y: -1 | 0 | 1) {
-    this.heldDirection = { x, y };
-    this.refresh(this.runner.update(this.heldDirection, 1 / 60));
   }
 
   private drawBoard() {
@@ -146,15 +130,17 @@ class GameScene extends Phaser.Scene {
   private createTouchControls() {
     const baseY = HEIGHT * TILE + FOOTER - 22;
     const center = (WIDTH * TILE) / 2;
-    const makeButton = (label: string, x: number, callback: () => void) => {
+    const makeMoveButton = (label: string, x: number, dir: { x: -1 | 0 | 1; y: -1 | 0 | 1 }) => {
       const button = this.add.text(x, baseY, label, { fontFamily: 'monospace', fontSize: '17px', backgroundColor: '#1b2942', padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-      button.on('pointerdown', callback);
+      // A tap slides the active form all the way along that line/column to the first collision.
+      button.on('pointerdown', () => this.refresh(this.runner.move(dir)));
     };
-    makeButton('◀', center - 120, () => this.move(-1, 0));
-    makeButton('▲', center - 60, () => this.move(0, -1));
-    makeButton('▼', center, () => this.move(0, 1));
-    makeButton('▶', center + 60, () => this.move(1, 0));
-    makeButton('●/■', center + 135, () => this.refresh(this.runner.switchForm()));
+    makeMoveButton('◀', center - 120, { x: -1, y: 0 });
+    makeMoveButton('▲', center - 60, { x: 0, y: -1 });
+    makeMoveButton('▼', center, { x: 0, y: 1 });
+    makeMoveButton('▶', center + 60, { x: 1, y: 0 });
+    const switchButton = this.add.text(center + 135, baseY, '●/■', { fontFamily: 'monospace', fontSize: '17px', backgroundColor: '#1b2942', padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    switchButton.on('pointerdown', () => this.refresh(this.runner.switchForm()));
   }
 
   private refresh(state: GameState) {
