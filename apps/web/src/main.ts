@@ -72,6 +72,7 @@ class GameScene extends Phaser.Scene {
   private status!: Phaser.GameObjects.Text;
   private completion!: Phaser.GameObjects.Text;
   private nextButton!: Phaser.GameObjects.Text;
+  private heldDirection: { x: -1 | 0 | 1; y: -1 | 0 | 1 } = { x: 0, y: 0 };
 
   constructor() { super('game'); }
 
@@ -94,14 +95,23 @@ class GameScene extends Phaser.Scene {
     this.refresh(this.runner.getState());
   }
 
-  update() {
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.left!)) this.move(-1, 0);
-    else if (Phaser.Input.Keyboard.JustDown(this.cursors.right!)) this.move(1, 0);
-    else if (Phaser.Input.Keyboard.JustDown(this.cursors.up!)) this.move(0, -1);
-    else if (Phaser.Input.Keyboard.JustDown(this.cursors.down!)) this.move(0, 1);
+  update(_time: number, delta: number) {
+    const direction = this.readDirection();
+    this.refresh(this.runner.update(direction, delta / 1000));
   }
 
-  private move(x: -1 | 0 | 1, y: -1 | 0 | 1) { this.refresh(this.runner.move({ x, y })); }
+  private readDirection(): { x: -1 | 0 | 1; y: -1 | 0 | 1 } {
+    if (this.cursors.left?.isDown) return { x: -1, y: 0 };
+    if (this.cursors.right?.isDown) return { x: 1, y: 0 };
+    if (this.cursors.up?.isDown) return { x: 0, y: -1 };
+    if (this.cursors.down?.isDown) return { x: 0, y: 1 };
+    return this.heldDirection;
+  }
+
+  private move(x: -1 | 0 | 1, y: -1 | 0 | 1) {
+    this.heldDirection = { x, y };
+    this.refresh(this.runner.update(this.heldDirection, 1 / 60));
+  }
 
   private drawBoard() {
     const graphics = this.add.graphics();
