@@ -4,6 +4,7 @@ import type { Level, Position } from '@duality/level-format';
 import { campaign, levelLabel, levelsPerWorld, totalLevelCount } from './levels/campaign';
 import { completeLevel, getCompletedCount, isLevelCompleted, resetProgress } from './progression';
 import { cycleTheme, getTheme, hexToCss, type Theme } from './theme';
+import { interpretGesture, type Direction } from './input/GestureInterpreter';
 import './style.css';
 
 const TILE = 48;
@@ -12,9 +13,19 @@ const WIDTH = 13;
 const HEIGHT = 10;
 const GAME_W = WIDTH * TILE;
 const GAME_H = HEIGHT * TILE + FOOTER;
+const BOARD_HEIGHT = HEIGHT * TILE;
 // Render the canvas at device resolution (Hi-DPI) so FIT-scaling stays crisp;
 // the camera zoom keeps world coordinates in logical 624×588 units.
 const DPR = Math.min(window.devicePixelRatio || 1, 3);
+
+type MoveDirection = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
+
+const GESTURE_DIRECTIONS: Record<Direction, MoveDirection> = {
+  left: { x: -1, y: 0 },
+  right: { x: 1, y: 0 },
+  up: { x: 0, y: -1 },
+  down: { x: 0, y: 1 },
+};
 
 class MenuScene extends Phaser.Scene {
   constructor() { super('menu'); }
@@ -73,7 +84,6 @@ class MenuScene extends Phaser.Scene {
     });
   }
 
-  /** Tap / click this button (or press T) to cycle to the next theme. */
   private createThemeButton(cx: number, theme: Theme) {
     const button = this.add.text(cx, 520, '🎨 THÈME', {
       fontFamily: 'monospace', fontSize: '15px', color: hexToCss(theme.buttonText),
@@ -100,6 +110,7 @@ class GameScene extends Phaser.Scene {
   private status!: Phaser.GameObjects.Text;
   private completion!: Phaser.GameObjects.Text;
   private nextButton!: Phaser.GameObjects.Text;
+  private gestureStart: { x: number; y: number } | null = null;
 
   constructor() { super('game'); }
 
@@ -117,7 +128,6 @@ class GameScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-SPACE', () => this.refresh(this.runner.switchForm()));
     this.input.keyboard!.on('keydown-R', () => this.refresh(this.runner.reset()));
     this.input.keyboard!.on('keydown-ESC', () => this.scene.start('menu'));
-    // One press = slide to the first collision along the chosen line/column.
     this.input.keyboard!.on('keydown-LEFT', () => this.refresh(this.runner.move({ x: -1, y: 0 })));
     this.input.keyboard!.on('keydown-RIGHT', () => this.refresh(this.runner.move({ x: 1, y: 0 })));
     this.input.keyboard!.on('keydown-UP', () => this.refresh(this.runner.move({ x: 0, y: -1 })));
@@ -126,6 +136,7 @@ class GameScene extends Phaser.Scene {
     this.createEntities();
     this.createHud();
     this.createTouchControls();
+    this.createSwipeControls();
     this.refresh(this.runner.getState());
   }
 
@@ -162,9 +173,8 @@ class GameScene extends Phaser.Scene {
   private createTouchControls() {
     const baseY = HEIGHT * TILE + FOOTER - 22;
     const center = (WIDTH * TILE) / 2;
-    const makeMoveButton = (label: string, x: number, dir: { x: -1 | 0 | 1; y: -1 | 0 | 1 }) => {
+    const makeMoveButton = (label: string, x: number, dir: MoveDirection) => {
       const button = this.add.text(x, baseY, label, { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-      // A tap slides the active form all the way along that line/column to the first collision.
       button.on('pointerdown', () => this.refresh(this.runner.move(dir)));
     };
     makeMoveButton('◀', center - 120, { x: -1, y: 0 });
@@ -173,6 +183,22 @@ class GameScene extends Phaser.Scene {
     makeMoveButton('▶', center + 60, { x: 1, y: 0 });
     const switchButton = this.add.text(center + 135, baseY, '●/■', { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     switchButton.on('pointerdown', () => this.refresh(this.runner.switchForm()));
+  }
+
+  private createSwipeControls() {
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      if (pointer.y < BOARD_HEIGHT) this.gestureStart = { x: pointer.x, y: pointer.y };
+    });
+    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      if (!this.gestureStart || pointer.y >= BOARD_HEIGHT) {
+        this.gestureStart = null;
+        return;
+      }
+      const result = interpretGesture(this.gestureStart, { x: pointer.x, y: pointer.y });
+      this.gestureStart = null;
+      if (result.type !== 'swipe' || !result.direction) return;
+      this.refresh(this.runner.move(GESTURE_DIRECTIONS[result.direction]));
+    });
   }
 
   private refresh(state: GameState) {
@@ -192,7 +218,7 @@ class GameScene extends Phaser.Scene {
       completeLevel(this.level.id);
       this.completion.setText('✓ NIVEAU TERMINÉ · R recommencer · Échap menu');
     } else {
-      this.completion.setText('ESPACE changer de forme · Flèches / tactile déplacer · Échap menu');
+      this.completion.setText('ESPACE changer de forme · Flèches / swipe / tactile · Échap menu');
     }
     this.nextButton.setVisible(state.completed && this.levelIndex < campaign.length - 1);
   }
@@ -209,10 +235,5 @@ new Phaser.Game({
   height: GAME_H * DPR,
   parent: 'app',
   scene: [MenuScene, GameScene],
-  scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: GAME_W * DPR,
-    height: GAME_H * DPR,
-  },
+  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: GAME_W * DPR, height: GAME_H * DPR },
 });
