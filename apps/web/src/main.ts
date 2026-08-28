@@ -3,25 +3,34 @@ import { LevelRunner } from '@duality/game';
 import type { Level, Position } from '@duality/level-format';
 import { campaign, levelLabel, levelsPerWorld, totalLevelCount } from './levels/campaign';
 import { completeLevel, getCompletedCount, isLevelCompleted, resetProgress } from './progression';
+import { cycleTheme, getTheme, hexToCss, type Theme } from './theme';
 import './style.css';
 
 const TILE = 48;
 const FOOTER = 108;
 const WIDTH = 13;
 const HEIGHT = 10;
+const GAME_W = WIDTH * TILE;
+const GAME_H = HEIGHT * TILE + FOOTER;
+// Render the canvas at device resolution (Hi-DPI) so FIT-scaling stays crisp;
+// the camera zoom keeps world coordinates in logical 624×588 units.
+const DPR = Math.min(window.devicePixelRatio || 1, 3);
 
 class MenuScene extends Phaser.Scene {
   constructor() { super('menu'); }
 
   create() {
-    this.cameras.main.setBackgroundColor('#0b1020');
-    const cx = this.scale.width / 2;
+    const theme = getTheme();
+    this.cameras.main.setBackgroundColor(hexToCss(theme.background));
+    this.cameras.main.setZoom(DPR);
+    this.cameras.main.centerOn(GAME_W / 2, GAME_H / 2);
+    const cx = GAME_W / 2;
     const completedCount = getCompletedCount();
 
-    this.add.text(cx, 70, 'DUALITY', { fontFamily: 'monospace', fontSize: '52px', color: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5);
-    this.add.text(cx, 122, 'OLAF', { fontFamily: 'monospace', fontSize: '20px', color: '#4aa3ff' }).setOrigin(0.5);
-    this.add.text(cx, 170, 'BOULE ●   ×   CARRÉ ■', { fontFamily: 'monospace', fontSize: '16px', color: '#ffd447' }).setOrigin(0.5);
-    this.add.text(cx, 220, 'PREMIER MONDE', { fontFamily: 'monospace', fontSize: '18px', color: '#ffffff' }).setOrigin(0.5);
+    this.add.text(cx, 70, 'DUALITY', { fontFamily: 'monospace', fontSize: '52px', color: hexToCss(theme.text), fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(cx, 122, 'OLAF', { fontFamily: 'monospace', fontSize: '20px', color: hexToCss(theme.accent) }).setOrigin(0.5);
+    this.add.text(cx, 170, 'BOULE ●   ×   CARRÉ ■', { fontFamily: 'monospace', fontSize: '16px', color: hexToCss(theme.square) }).setOrigin(0.5);
+    this.add.text(cx, 220, 'PREMIER MONDE', { fontFamily: 'monospace', fontSize: '18px', color: hexToCss(theme.text) }).setOrigin(0.5);
 
     for (let index = 0; index < levelsPerWorld; index += 1) {
       const column = index % 6;
@@ -32,8 +41,8 @@ class MenuScene extends Phaser.Scene {
       const completed = isLevelCompleted(campaign[index].id);
       const label = completed ? '✓' : unlocked ? String(index + 1).padStart(2, '0') : '·';
       const button = this.add.text(x, y, label, {
-        fontFamily: 'monospace', fontSize: '22px', color: unlocked ? '#ffffff' : '#46516a',
-        backgroundColor: completed ? '#25452f' : unlocked ? '#1b2942' : '#101728',
+        fontFamily: 'monospace', fontSize: '22px', color: hexToCss(unlocked ? theme.buttonText : theme.buttonTextLocked),
+        backgroundColor: hexToCss(completed ? theme.buttonCompletedBg : unlocked ? theme.buttonBg : theme.buttonLockedBg),
         padding: { left: 15, right: 15, top: 10, bottom: 10 },
       }).setOrigin(0.5);
       if (unlocked) {
@@ -42,8 +51,10 @@ class MenuScene extends Phaser.Scene {
       }
     }
 
-    this.add.text(cx, 420, `${completedCount} terminé${completedCount > 1 ? 's' : ''} · ${campaign.length} jouables · ${totalLevelCount} prévus`, { fontFamily: 'monospace', fontSize: '13px', color: '#8995ad' }).setOrigin(0.5);
-    this.add.text(cx, 452, 'Clique un niveau · 1–9 · progression sauvegardée automatiquement', { fontFamily: 'monospace', fontSize: '13px', color: '#8995ad' }).setOrigin(0.5);
+    this.add.text(cx, 420, `${completedCount} terminé${completedCount > 1 ? 's' : ''} · ${campaign.length} jouables · ${totalLevelCount} prévus`, { fontFamily: 'monospace', fontSize: '13px', color: hexToCss(theme.textMuted) }).setOrigin(0.5);
+    this.add.text(cx, 452, `Clique un niveau · 1–9 · progression sauvegardée automatiquement`, { fontFamily: 'monospace', fontSize: '13px', color: hexToCss(theme.textMuted) }).setOrigin(0.5);
+    this.add.text(cx, 486, `Thème « ${theme.name} » — touche T ou bouton pour changer`, { fontFamily: 'monospace', fontSize: '13px', color: hexToCss(theme.accent) }).setOrigin(0.5);
+    this.createThemeButton(cx, theme);
 
     this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
       const number = Number(event.key);
@@ -55,6 +66,23 @@ class MenuScene extends Phaser.Scene {
         resetProgress();
         this.scene.restart();
       }
+      if (event.key.toLowerCase() === 't') {
+        cycleTheme();
+        this.scene.restart();
+      }
+    });
+  }
+
+  /** Tap / click this button (or press T) to cycle to the next theme. */
+  private createThemeButton(cx: number, theme: Theme) {
+    const button = this.add.text(cx, 520, '🎨 THÈME', {
+      fontFamily: 'monospace', fontSize: '15px', color: hexToCss(theme.buttonText),
+      backgroundColor: hexToCss(theme.buttonBg),
+      padding: { left: 16, right: 16, top: 8, bottom: 8 },
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    button.on('pointerdown', () => {
+      cycleTheme();
+      this.scene.restart();
     });
   }
 }
@@ -65,6 +93,7 @@ class GameScene extends Phaser.Scene {
   private runner!: LevelRunner;
   private level!: Level;
   private levelIndex = 0;
+  private theme!: Theme;
   private ballSprite!: Phaser.GameObjects.Arc;
   private squareSprite!: Phaser.GameObjects.Rectangle;
   private starSprites: Phaser.GameObjects.GameObject[] = [];
@@ -81,7 +110,10 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.setBackgroundColor('#0b1020');
+    this.theme = getTheme();
+    this.cameras.main.setBackgroundColor(hexToCss(this.theme.background));
+    this.cameras.main.setZoom(DPR);
+    this.cameras.main.centerOn(GAME_W / 2, GAME_H / 2);
     this.input.keyboard!.on('keydown-SPACE', () => this.refresh(this.runner.switchForm()));
     this.input.keyboard!.on('keydown-R', () => this.refresh(this.runner.reset()));
     this.input.keyboard!.on('keydown-ESC', () => this.scene.start('menu'));
@@ -99,29 +131,29 @@ class GameScene extends Phaser.Scene {
 
   private drawBoard() {
     const graphics = this.add.graphics();
-    graphics.fillStyle(0x111a2d).fillRect(0, 0, WIDTH * TILE, HEIGHT * TILE);
+    graphics.fillStyle(this.theme.board).fillRect(0, 0, WIDTH * TILE, HEIGHT * TILE);
     for (let y = 0; y < this.level.height; y += 1) {
       for (let x = 0; x < this.level.width; x += 1) {
         const px = x * TILE; const py = y * TILE;
-        graphics.lineStyle(1, 0x26324a, 1).strokeRect(px, py, TILE, TILE);
+        graphics.lineStyle(1, this.theme.gridLine, 1).strokeRect(px, py, TILE, TILE);
         if (this.level.tiles[y][x] === 'wall') {
-          graphics.fillStyle(0x65718a).fillRect(px + 3, py + 3, TILE - 6, TILE - 6);
+          graphics.fillStyle(this.theme.wall).fillRect(px + 3, py + 3, TILE - 6, TILE - 6);
         }
       }
     }
   }
 
   private createEntities() {
-    this.ballSprite = this.add.circle(0, 0, TILE * 0.31, 0x4aa3ff);
-    this.squareSprite = this.add.rectangle(0, 0, TILE * 0.62, TILE * 0.62, 0xffd447);
+    this.ballSprite = this.add.circle(0, 0, TILE * 0.31, this.theme.ball);
+    this.squareSprite = this.add.rectangle(0, 0, TILE * 0.62, TILE * 0.62, this.theme.square);
   }
 
   private createHud() {
     const y = HEIGHT * TILE + 8;
-    this.status = this.add.text(12, y, '', { fontFamily: 'monospace', fontSize: '15px', color: '#ffffff' });
-    this.completion = this.add.text(12, y + 27, '', { fontFamily: 'monospace', fontSize: '13px', color: '#8995ad' });
+    this.status = this.add.text(12, y, '', { fontFamily: 'monospace', fontSize: '15px', color: hexToCss(this.theme.text) });
+    this.completion = this.add.text(12, y + 27, '', { fontFamily: 'monospace', fontSize: '13px', color: hexToCss(this.theme.textMuted) });
     this.nextButton = this.add.text(WIDTH * TILE - 12, y + 18, 'NIVEAU SUIVANT ▶', {
-      fontFamily: 'monospace', fontSize: '13px', color: '#fff2a1', backgroundColor: '#1b2942',
+      fontFamily: 'monospace', fontSize: '13px', color: hexToCss(this.theme.nextText), backgroundColor: hexToCss(this.theme.nextBg),
       padding: { left: 10, right: 10, top: 7, bottom: 7 },
     }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true }).setVisible(false);
     this.nextButton.on('pointerdown', () => this.nextLevel());
@@ -131,7 +163,7 @@ class GameScene extends Phaser.Scene {
     const baseY = HEIGHT * TILE + FOOTER - 22;
     const center = (WIDTH * TILE) / 2;
     const makeMoveButton = (label: string, x: number, dir: { x: -1 | 0 | 1; y: -1 | 0 | 1 }) => {
-      const button = this.add.text(x, baseY, label, { fontFamily: 'monospace', fontSize: '17px', backgroundColor: '#1b2942', padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      const button = this.add.text(x, baseY, label, { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true });
       // A tap slides the active form all the way along that line/column to the first collision.
       button.on('pointerdown', () => this.refresh(this.runner.move(dir)));
     };
@@ -139,7 +171,7 @@ class GameScene extends Phaser.Scene {
     makeMoveButton('▲', center - 60, { x: 0, y: -1 });
     makeMoveButton('▼', center, { x: 0, y: 1 });
     makeMoveButton('▶', center + 60, { x: 1, y: 0 });
-    const switchButton = this.add.text(center + 135, baseY, '●/■', { fontFamily: 'monospace', fontSize: '17px', backgroundColor: '#1b2942', padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    const switchButton = this.add.text(center + 135, baseY, '●/■', { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     switchButton.on('pointerdown', () => this.refresh(this.runner.switchForm()));
   }
 
@@ -151,7 +183,7 @@ class GameScene extends Phaser.Scene {
     for (const sprite of this.starSprites) sprite.destroy();
     this.starSprites = state.stars.map((star) => {
       const [x, y] = this.toPixel(star);
-      return this.add.star(x, y, 5, TILE * 0.12, TILE * 0.25, 0xfff2a1);
+      return this.add.star(x, y, 5, TILE * 0.12, TILE * 0.25, this.theme.star);
     });
     const form = state.activeForm === 'ball' ? '● BOULE' : '■ CARRÉ';
     const collected = this.level.stars.length - state.stars.length;
@@ -172,9 +204,15 @@ class GameScene extends Phaser.Scene {
 
 new Phaser.Game({
   type: Phaser.AUTO,
-  width: WIDTH * TILE,
-  height: HEIGHT * TILE + FOOTER,
+  antialias: true,
+  width: GAME_W * DPR,
+  height: GAME_H * DPR,
   parent: 'app',
   scene: [MenuScene, GameScene],
-  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: WIDTH * TILE, height: HEIGHT * TILE + FOOTER },
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: GAME_W * DPR,
+    height: GAME_H * DPR,
+  },
 });

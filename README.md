@@ -18,6 +18,7 @@ The implementation target is therefore an independent game using our own level d
 - Level-selection screen with the planned 5 × 11 structure visible.
 - Keyboard and touch controls.
 - Restart, level completion and next-level flow.
+- **Themable design**: the full palette (boards, forms, walls, UI) is centralised in a CSS-independent theme system with three presets (Rétro, Crépuscule, Océan), switchable with `T` from the level menu and persisted locally.
 - Portable static build suitable for GitHub Pages or Cloudflare Pages.
 
 ## Goals
