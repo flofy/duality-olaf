@@ -43,7 +43,7 @@ function changed(before: GameState, after: GameState): boolean {
 /**
  * Breadth-first solver for the current deterministic LevelRunner rules.
  * Commands are expanded uniformly, so the first solution found has the
- * minimum number of player commands.
+ * minimum number of player commands (moves and form switches).
  */
 export function solveLevel(level: Level): SolverResult {
   const initialRunner = new LevelRunner(level);
@@ -83,7 +83,7 @@ export function solveLevel(level: Level): SolverResult {
       if (after.completed) {
         return {
           solvable: true,
-          moves: commands.filter((item) => item.type === 'move').length,
+          moves: commands.length,
           commands,
           exploredStates,
         };
