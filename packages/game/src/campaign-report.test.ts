@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { campaign } from '@duality/level-format/campaign';
+import { campaign } from '../../level-format/src/campaign';
 import { formatCampaignReport, validateCampaign } from './LevelValidator';
 
 describe('World 1 campaign validation', () => {
   it('reports every current level', () => {
     const validation = validateCampaign(campaign);
     const report = formatCampaignReport(validation);
+
+    console.info(`\n${report}\n`);
 
     expect(validation.levels).toHaveLength(11);
     expect(report).toContain('CAMPAIGN VALIDATION');
