@@ -67,7 +67,7 @@ class GameScene extends Phaser.Scene {
   private ballSprite!: Phaser.GameObjects.Container; private squareSprite!: Phaser.GameObjects.Container;
   private starSprites: Phaser.GameObjects.GameObject[] = []; private status!: Phaser.GameObjects.Text; private completion!: Phaser.GameObjects.Text;
   private completionPanel?: Phaser.GameObjects.Container; private nextButton!: Phaser.GameObjects.Text;
-  private gestureStart: { x: number; y: number } | null = null; private isAnimating = false;
+  private gestureStart: { x: number; y: number } | null = null; private isAnimating = false; private activeTween?: Phaser.Tweens.Tween;
   private debugCommands: DebugCommand[] = []; private debugText?: Phaser.GameObjects.Text;
   constructor() { super('game'); }
   init(data: { levelIndex?: number }) { this.levelIndex = Math.max(0, Math.min(data.levelIndex ?? 0, campaign.length - 1)); this.level = campaign[this.levelIndex]; this.runner = new LevelRunner(this.level); }
@@ -123,20 +123,21 @@ class GameScene extends Phaser.Scene {
     const switchButton = this.add.text(center + 135, baseY, '●/■', { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true }); switchButton.on('pointerdown', () => this.switchForm());
   }
   private createSwipeControls() {
-    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => { if (!this.isAnimating && pointer.y < BOARD_HEIGHT) this.gestureStart = { x: pointer.x, y: pointer.y }; });
-    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => { if (!this.gestureStart || pointer.y >= BOARD_HEIGHT || this.isAnimating) { this.gestureStart = null; return; } const result = interpretGesture(this.gestureStart, { x: pointer.x, y: pointer.y }); this.gestureStart = null; if (result.type !== 'swipe' || !result.direction) return; this.tryMove(GESTURE_DIRECTIONS[result.direction]); });
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => { if (pointer.y < BOARD_HEIGHT) this.gestureStart = { x: pointer.x, y: pointer.y }; });
+    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => { if (!this.gestureStart || pointer.y >= BOARD_HEIGHT) { this.gestureStart = null; return; } const result = interpretGesture(this.gestureStart, { x: pointer.x, y: pointer.y }); this.gestureStart = null; if (result.type !== 'swipe' || !result.direction) return; this.tryMove(GESTURE_DIRECTIONS[result.direction]); });
   }
   private tryMove(direction: MoveDirection) {
-    if (this.isAnimating || this.runner.getState().completed) return;
+    if (this.runner.getState().completed) return;
     const before = this.runner.getState(); const after = this.runner.move(direction); const active = after.activeForm === 'ball' ? this.ballSprite : this.squareSprite;
     const from = after.activeForm === 'ball' ? before.ball : before.square; const to = after.activeForm === 'ball' ? after.ball : after.square; const moved = from.x !== to.x || from.y !== to.y;
     if (!moved) { this.refresh(after); return; }
     this.debugCommands.push({ type: 'move', direction }); this.refreshDebugPanel();
+    if (this.activeTween?.isPlaying()) this.activeTween.stop();
     this.isAnimating = true; this.refreshStars(after); this.refreshHud(after); const [x, y] = this.toPixel(to);
-    this.tweens.add({ targets: active, x, y, duration: MOVE_DURATION, ease: 'Quad.easeOut', onComplete: () => { this.isAnimating = false; this.refresh(after); } });
+    this.activeTween = this.tweens.add({ targets: active, x, y, duration: MOVE_DURATION, ease: 'Quad.easeOut', onComplete: () => { this.isAnimating = false; this.activeTween = undefined; this.refresh(after); } });
   }
-  private switchForm() { if (this.isAnimating || this.runner.getState().completed) return; this.debugCommands.push({ type: 'switch' }); this.refreshDebugPanel(); this.refresh(this.runner.switchForm()); }
-  private resetLevel() { if (this.isAnimating) return; this.debugCommands = []; this.refreshDebugPanel(); this.refresh(this.runner.reset()); }
+  private switchForm() { if (this.runner.getState().completed) return; if (this.activeTween?.isPlaying()) this.activeTween.stop(); this.isAnimating = false; this.debugCommands.push({ type: 'switch' }); this.refreshDebugPanel(); this.refresh(this.runner.switchForm()); }
+  private resetLevel() { if (this.activeTween?.isPlaying()) this.activeTween.stop(); this.isAnimating = false; this.debugCommands = []; this.refreshDebugPanel(); this.refresh(this.runner.reset()); }
   private refresh(state: GameState) {
     this.setPosition(this.ballSprite, state.ball); this.setPosition(this.squareSprite, state.square); this.ballSprite.setAlpha(state.activeForm === 'ball' ? 1 : 0.4); this.squareSprite.setAlpha(state.activeForm === 'square' ? 1 : 0.4); this.refreshStars(state); this.refreshHud(state);
   }
