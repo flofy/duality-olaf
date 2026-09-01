@@ -10,16 +10,18 @@ export type SolverResult =
   | { solvable: true; moves: number; commands: SolverCommand[]; exploredStates: number }
   | { solvable: false; moves: null; commands: []; exploredStates: number };
 
-const DIRECTIONS: Direction[] = [
+const DIRECTIONS: readonly Direction[] = [
   { x: 1, y: 0 },
   { x: -1, y: 0 },
   { x: 0, y: 1 },
   { x: 0, y: -1 },
 ];
 
-type Node = {
+type SearchNode = {
   state: GameState;
-  commands: SolverCommand[];
+  parent: number | null;
+  command: SolverCommand | null;
+  depth: number;
 };
 
 function stateKey(state: GameState): string {
@@ -40,47 +42,79 @@ function changed(before: GameState, after: GameState): boolean {
   return stateKey(before) !== stateKey(after);
 }
 
+function reconstruct(nodes: readonly SearchNode[], index: number): SolverCommand[] {
+  const commands: SolverCommand[] = [];
+  let cursor: number | null = index;
+
+  while (cursor !== null) {
+    const node = nodes[cursor];
+    if (node.command) commands.push(node.command);
+    cursor = node.parent;
+  }
+
+  return commands.reverse();
+}
+
 /**
- * Breadth-first solver for the current deterministic LevelRunner rules.
- * Commands are expanded uniformly, so the first solution found has the
- * minimum number of player commands (moves and form switches).
+ * Solver V2.
+ *
+ * Uses a compact BFS frontier with direct state transitions. Nodes keep only a
+ * parent pointer and the command that produced them; the solution is rebuilt
+ * once a completed state is found.
+ *
+ * Because every player command has cost 1, BFS guarantees the shortest command
+ * sequence while avoiding replaying an entire history for every candidate.
  */
 export function solveLevel(level: Level): SolverResult {
-  const initialRunner = new LevelRunner(level);
-  const initial = initialRunner.getState();
+  const initial = new LevelRunner(level).getState();
 
   if (initial.completed) {
     return { solvable: true, moves: 0, commands: [], exploredStates: 1 };
   }
 
-  const queue: Node[] = [{ state: initial, commands: [] }];
+  const nodes: SearchNode[] = [{
+    state: initial,
+    parent: null,
+    command: null,
+    depth: 0,
+  }];
   const visited = new Set<string>([stateKey(initial)]);
+  let cursor = 0;
   let exploredStates = 0;
 
-  while (queue.length > 0) {
-    const node = queue.shift()!;
+  const candidates: readonly SolverCommand[] = [
+    ...DIRECTIONS.map((direction) => ({ type: 'move' as const, direction })),
+    { type: 'switch' as const },
+  ];
+
+  while (cursor < nodes.length) {
+    const nodeIndex = cursor++;
+    const node = nodes[nodeIndex];
     exploredStates += 1;
 
-    const candidates: SolverCommand[] = [
-      ...DIRECTIONS.map((direction) => ({ type: 'move' as const, direction })),
-      { type: 'switch' },
-    ];
-
     for (const command of candidates) {
-      const runner = new LevelRunner(level);
-      replay(runner, node.commands);
-
+      const runner = LevelRunner.fromState(node.state);
       const before = runner.getState();
-      const after =
-        command.type === 'move'
-          ? runner.move(command.direction)
-          : runner.switchForm();
+      const after = command.type === 'move'
+        ? runner.move(command.direction)
+        : runner.switchForm();
 
       if (!changed(before, after)) continue;
 
-      const commands = [...node.commands, command];
+      const key = stateKey(after);
+      if (visited.has(key)) continue;
+
+      const childIndex = nodes.length;
+      nodes.push({
+        state: after,
+        parent: nodeIndex,
+        command,
+        depth: node.depth + 1,
+      });
+      visited.add(key);
 
       if (after.completed) {
+        const commands = reconstruct(nodes, childIndex);
         return {
           solvable: true,
           moves: commands.length,
@@ -88,26 +122,19 @@ export function solveLevel(level: Level): SolverResult {
           exploredStates,
         };
       }
-
-      const key = stateKey(after);
-      if (visited.has(key)) continue;
-
-      visited.add(key);
-      queue.push({ state: after, commands });
     }
   }
 
   return { solvable: false, moves: null, commands: [], exploredStates };
 }
 
-export function replay(runner: LevelRunner, commands: SolverCommand[]): GameState {
+export function replay(runner: LevelRunner, commands: readonly SolverCommand[]): GameState {
   let state = runner.getState();
 
   for (const command of commands) {
-    state =
-      command.type === 'move'
-        ? runner.move(command.direction)
-        : runner.switchForm();
+    state = command.type === 'move'
+      ? runner.move(command.direction)
+      : runner.switchForm();
   }
 
   return state;
