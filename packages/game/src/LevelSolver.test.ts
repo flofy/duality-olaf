@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createEmptyLevel } from '@duality/level-format';
+import { createEmptyLevel, world1 } from '@duality/level-format';
+import { LevelRunner } from './LevelRunner';
 import { solveLevel } from './LevelSolver';
 
 describe('solveLevel', () => {
@@ -14,6 +15,27 @@ describe('solveLevel', () => {
     expect(result.solvable).toBe(true);
     expect(result.moves).toBe(1);
     expect(result.commands).toHaveLength(1);
+  });
+
+  it('replays the human Level 6 solution and the solver finds it', () => {
+    const level6 = world1[5];
+    const commands = [
+      { type: 'move' as const, direction: { x: 0, y: -1 } },
+      { type: 'move' as const, direction: { x: 1, y: 0 } },
+      { type: 'move' as const, direction: { x: -1, y: 0 } },
+      { type: 'move' as const, direction: { x: 0, y: 1 } },
+      { type: 'move' as const, direction: { x: 1, y: 0 } },
+    ];
+
+    const runner = new LevelRunner(level6);
+    let state = runner.getState();
+    for (const command of commands) state = runner.move(command.direction);
+
+    expect(state.completed).toBe(true);
+
+    const result = solveLevel(level6);
+    expect(result.solvable).toBe(true);
+    expect(result.moves).toBe(5);
   });
 
   it('reports an already complete level', () => {
