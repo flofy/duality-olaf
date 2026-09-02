@@ -65,4 +65,5 @@ export function cloneLevel(level: Level): Level {
   };
 }
 
-export { campaign, world1, getLevel } from './campaign';
+export { campaign, world1, worlds, getWorld, getLevel } from './campaign';
+export type { WorldDefinition } from './campaign';

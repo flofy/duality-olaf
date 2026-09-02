@@ -49,10 +49,28 @@ export const world1: Level[] = [
   makeLevel(11, p(1, 8), p(11, 1), [p(1, 1), p(11, 8), p(6, 4), p(6, 7)], [p(3, 2), p(3, 3), p(3, 6), p(3, 7), p(9, 2), p(9, 3), p(9, 6), p(9, 7)]),
 ];
 
-export const campaign = world1;
+export type WorldDefinition = {
+  id: number;
+  name: string;
+  subtitle: string;
+  status: 'available' | 'coming-soon';
+  levels: readonly Level[];
+};
+
+export const worlds: readonly WorldDefinition[] = [
+  { id: 1, name: 'Découverte', subtitle: 'Les bases du mouvement', status: 'available', levels: world1 },
+  { id: 2, name: 'Positionnement', subtitle: 'Préparer le terrain', status: 'coming-soon', levels: [] },
+  { id: 3, name: 'Coordination', subtitle: 'Faire coopérer les formes', status: 'coming-soon', levels: [] },
+  { id: 4, name: 'Combinaisons', subtitle: 'Plusieurs étapes à prévoir', status: 'coming-soon', levels: [] },
+  { id: 5, name: 'Maîtrise', subtitle: 'Le défi final', status: 'coming-soon', levels: [] },
+];
+
+export const campaign = worlds.flatMap((world) => world.levels);
+
+export function getWorld(world: number): WorldDefinition | undefined {
+  return worlds.find((entry) => entry.id === world);
+}
 
 export function getLevel(world: number, number: number): Level | undefined {
-  return world === 1
-    ? campaign.find((level) => level.id === `world-1-level-${String(number).padStart(2, '0')}`)
-    : undefined;
+  return getWorld(world)?.levels[number - 1];
 }
