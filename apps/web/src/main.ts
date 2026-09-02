@@ -10,7 +10,7 @@ import { drawBallVisual, drawBoardVisuals, drawSquareVisual } from './visuals';
 import './style.css';
 
 const TILE = 48;
-const FOOTER = 108;
+const FOOTER = 148;
 const WIDTH = 13;
 const HEIGHT = 10;
 const GAME_W = WIDTH * TILE;
@@ -112,7 +112,7 @@ class GameScene extends Phaser.Scene {
   private ballSprite!: Phaser.GameObjects.Container; private squareSprite!: Phaser.GameObjects.Container;
   private starSprites: Phaser.GameObjects.GameObject[] = []; private status!: Phaser.GameObjects.Text; private completion!: Phaser.GameObjects.Text;
   private completionPanel?: Phaser.GameObjects.Container; private nextButton!: Phaser.GameObjects.Text;
-  private gestureStart: { x: number; y: number } | null = null; private isAnimating = false;
+  private gestureStart: { x: number; y: number } | null = null; private isAnimating = false; private gesturePointerId: number | null = null;
   private heldDirection: MoveDirection | null = null;
   constructor() { super('game'); }
   init(data: { levelIndex?: number }) { this.levelIndex = Math.max(0, Math.min(data.levelIndex ?? 0, campaign.length - 1)); this.level = campaign[this.levelIndex]; this.runner = new LevelRunner(this.level); }
@@ -140,14 +140,64 @@ class GameScene extends Phaser.Scene {
     this.nextButton.on('pointerdown', () => this.nextLevel());
   }
   private createTouchControls() {
-    const baseY = HEIGHT * TILE + FOOTER - 22; const center = (WIDTH * TILE) / 2;
-    const makeMoveButton = (label: string, x: number, dir: MoveDirection) => { const button = this.add.text(x, baseY, label, { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true }); button.on('pointerdown', () => { this.heldDirection = dir; this.tryMove(dir); }); button.on('pointerup', () => { if (this.heldDirection === dir) this.heldDirection = null; }); button.on('pointerout', () => { if (this.heldDirection === dir) this.heldDirection = null; }); };
-    makeMoveButton('◀', center - 120, { x: -1, y: 0 }); makeMoveButton('▲', center - 60, { x: 0, y: -1 }); makeMoveButton('▼', center, { x: 0, y: 1 }); makeMoveButton('▶', center + 60, { x: 1, y: 0 });
-    const switchButton = this.add.text(center + 135, baseY, '●/■', { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true }); switchButton.on('pointerdown', () => this.switchForm());
+    const baseY = BOARD_HEIGHT + 78;
+    const center = GAME_W / 2;
+    const size = 64;
+
+    const makeMoveButton = (label: string, x: number, y: number, dir: MoveDirection) => {
+      const hit = this.add.rectangle(x, y, size, size, this.theme.buttonBg, 0.96)
+        .setStrokeStyle(2, this.theme.accent, 0.35)
+        .setInteractive({ useHandCursor: true });
+      const text = this.add.text(x, y, label, {
+        fontFamily: 'monospace', fontSize: '30px', color: hexToCss(this.theme.buttonText),
+      }).setOrigin(0.5);
+      hit.on('pointerdown', () => this.tryMove(dir));
+      return [hit, text];
+    };
+
+    // Large D-pad: comfortable touch targets instead of tiny text buttons.
+    makeMoveButton('▲', center - 120, baseY - 34, { x: 0, y: -1 });
+    makeMoveButton('◀', center - 184, baseY + 30, { x: -1, y: 0 });
+    makeMoveButton('▼', center - 120, baseY + 30, { x: 0, y: 1 });
+    makeMoveButton('▶', center - 56, baseY + 30, { x: 1, y: 0 });
+
+    const switchHit = this.add.rectangle(center + 118, baseY + 2, 126, 76, this.theme.buttonBg, 0.96)
+      .setStrokeStyle(2, this.theme.accent, 0.45)
+      .setInteractive({ useHandCursor: true });
+    const switchText = this.add.text(center + 118, baseY - 8, '●  ⇄  ■', {
+      fontFamily: 'monospace', fontSize: '23px', color: hexToCss(this.theme.buttonText),
+    }).setOrigin(0.5);
+    const switchHint = this.add.text(center + 118, baseY + 22, 'CHANGER', {
+      fontFamily: 'monospace', fontSize: '11px', color: hexToCss(this.theme.textMuted),
+    }).setOrigin(0.5);
+    switchHit.on('pointerdown', () => this.switchForm());
+    void switchText; void switchHint;
   }
   private createSwipeControls() {
-    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => { if (!this.isAnimating && pointer.y < BOARD_HEIGHT) this.gestureStart = { x: pointer.x, y: pointer.y }; });
-    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => { if (!this.gestureStart || pointer.y >= BOARD_HEIGHT || this.isAnimating) { this.gestureStart = null; return; } const result = interpretGesture(this.gestureStart, { x: pointer.x, y: pointer.y }); this.gestureStart = null; if (result.type !== 'swipe' || !result.direction) return; this.tryMove(GESTURE_DIRECTIONS[result.direction]); });
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      if (pointer.y >= BOARD_HEIGHT || this.isAnimating) return;
+      this.gesturePointerId = pointer.id;
+      this.gestureStart = { x: pointer.x, y: pointer.y };
+    });
+
+    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      if (!this.gestureStart || this.gesturePointerId !== pointer.id) return;
+      const start = this.gestureStart;
+      this.gestureStart = null;
+      this.gesturePointerId = null;
+
+      // Evaluate the gesture even if the finger ends outside the board.
+      // This makes edge swipes much more forgiving on mobile.
+      const result = interpretGesture(start, { x: pointer.x, y: pointer.y });
+      if (result.type === 'swipe' && result.direction) {
+        this.tryMove(GESTURE_DIRECTIONS[result.direction]);
+      }
+    });
+
+    this.input.on('pointerupoutside', () => {
+      this.gestureStart = null;
+      this.gesturePointerId = null;
+    });
   }
   private tryMove(direction: MoveDirection) {
     if (this.isAnimating || this.runner.getState().completed) return;
