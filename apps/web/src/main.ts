@@ -113,12 +113,22 @@ class GameScene extends Phaser.Scene {
   private starSprites: Phaser.GameObjects.GameObject[] = []; private status!: Phaser.GameObjects.Text; private completion!: Phaser.GameObjects.Text;
   private completionPanel?: Phaser.GameObjects.Container; private nextButton!: Phaser.GameObjects.Text;
   private gestureStart: { x: number; y: number } | null = null; private isAnimating = false;
+  private heldDirection: MoveDirection | null = null;
   constructor() { super('game'); }
   init(data: { levelIndex?: number }) { this.levelIndex = Math.max(0, Math.min(data.levelIndex ?? 0, campaign.length - 1)); this.level = campaign[this.levelIndex]; this.runner = new LevelRunner(this.level); }
   create() {
     this.theme = getTheme(); this.cameras.main.setBackgroundColor(hexToCss(this.theme.background)); this.cameras.main.setZoom(DPR); this.cameras.main.centerOn(GAME_W / 2, GAME_H / 2);
     this.input.keyboard!.on('keydown-SPACE', () => this.switchForm()); this.input.keyboard!.on('keydown-R', () => this.resetLevel()); this.input.keyboard!.on('keydown-ESC', () => this.scene.start('menu'));
-    this.input.keyboard!.on('keydown-LEFT', () => this.tryMove({ x: -1, y: 0 })); this.input.keyboard!.on('keydown-RIGHT', () => this.tryMove({ x: 1, y: 0 })); this.input.keyboard!.on('keydown-UP', () => this.tryMove({ x: 0, y: -1 })); this.input.keyboard!.on('keydown-DOWN', () => this.tryMove({ x: 0, y: 1 }));
+    this.input.keyboard!.on('keydown-LEFT', () => { this.heldDirection = { x: -1, y: 0 }; this.tryMove(this.heldDirection); });
+    this.input.keyboard!.on('keydown-RIGHT', () => { this.heldDirection = { x: 1, y: 0 }; this.tryMove(this.heldDirection); });
+    this.input.keyboard!.on('keydown-UP', () => { this.heldDirection = { x: 0, y: -1 }; this.tryMove(this.heldDirection); });
+    this.input.keyboard!.on('keydown-DOWN', () => { this.heldDirection = { x: 0, y: 1 }; this.tryMove(this.heldDirection); });
+    this.input.keyboard!.on('keyup-LEFT', () => { if (this.heldDirection?.x === -1) this.heldDirection = null; });
+    this.input.keyboard!.on('keyup-RIGHT', () => { if (this.heldDirection?.x === 1) this.heldDirection = null; });
+    this.input.keyboard!.on('keyup-UP', () => { if (this.heldDirection?.y === -1) this.heldDirection = null; });
+    this.input.keyboard!.on('keyup-DOWN', () => { if (this.heldDirection?.y === 1) this.heldDirection = null; });
+    this.input.keyboard!.on('keyup', () => { this.heldDirection = null; });
+    this.events.once('shutdown', () => { this.heldDirection = null; });
     drawBoardVisuals(this, this.level, TILE, this.theme); this.createEntities(); this.createHud(); this.createTouchControls(); this.createSwipeControls(); this.refresh(this.runner.getState());
   }
   private createEntities() { this.ballSprite = drawBallVisual(this, 0, 0, TILE * 0.31, this.theme); this.squareSprite = drawSquareVisual(this, 0, 0, TILE * 0.62, this.theme); }
@@ -131,7 +141,7 @@ class GameScene extends Phaser.Scene {
   }
   private createTouchControls() {
     const baseY = HEIGHT * TILE + FOOTER - 22; const center = (WIDTH * TILE) / 2;
-    const makeMoveButton = (label: string, x: number, dir: MoveDirection) => { const button = this.add.text(x, baseY, label, { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true }); button.on('pointerdown', () => this.tryMove(dir)); };
+    const makeMoveButton = (label: string, x: number, dir: MoveDirection) => { const button = this.add.text(x, baseY, label, { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true }); button.on('pointerdown', () => { this.heldDirection = dir; this.tryMove(dir); }); button.on('pointerup', () => { if (this.heldDirection === dir) this.heldDirection = null; }); button.on('pointerout', () => { if (this.heldDirection === dir) this.heldDirection = null; }); };
     makeMoveButton('◀', center - 120, { x: -1, y: 0 }); makeMoveButton('▲', center - 60, { x: 0, y: -1 }); makeMoveButton('▼', center, { x: 0, y: 1 }); makeMoveButton('▶', center + 60, { x: 1, y: 0 });
     const switchButton = this.add.text(center + 135, baseY, '●/■', { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true }); switchButton.on('pointerdown', () => this.switchForm());
   }
@@ -145,7 +155,7 @@ class GameScene extends Phaser.Scene {
     const from = after.activeForm === 'ball' ? before.ball : before.square; const to = after.activeForm === 'ball' ? after.ball : after.square; const moved = from.x !== to.x || from.y !== to.y;
     if (!moved) { this.refresh(after); return; }
     this.isAnimating = true; this.refreshStars(after); this.refreshHud(after); const [x, y] = this.toPixel(to);
-    this.tweens.add({ targets: active, x, y, duration: MOVE_DURATION, ease: 'Quad.easeOut', onComplete: () => { this.isAnimating = false; this.refresh(after); } });
+    this.tweens.add({ targets: active, x, y, duration: MOVE_DURATION, ease: 'Quad.easeOut', onComplete: () => { this.isAnimating = false; this.refresh(after); if (this.heldDirection && !this.runner.getState().completed) this.tryMove(this.heldDirection); } });
   }
   private switchForm() { if (this.isAnimating || this.runner.getState().completed) return; this.refresh(this.runner.switchForm()); }
   private resetLevel() { if (this.isAnimating) return; this.refresh(this.runner.reset()); }

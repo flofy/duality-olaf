@@ -85,7 +85,7 @@ export class LevelRunner {
       swept.push({ x: current.x, y: current.y });
     }
 
-    if (moved > 0) this.state.moves += moved;
+    if (moved > 0) this.state.moves += 1;
 
     if (this.state.activeForm === 'ball') {
       // Collect every star swept while passing through each cell.
