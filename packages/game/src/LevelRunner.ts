@@ -29,6 +29,20 @@ export class LevelRunner {
     this.state = this.createState(this.initialLevel);
   }
 
+  static fromState(state: GameState): LevelRunner {
+    const runner = new LevelRunner(state.level);
+    runner.state = {
+      level: cloneLevel(state.level),
+      activeForm: state.activeForm,
+      ball: { ...state.ball },
+      square: { ...state.square },
+      stars: state.stars.map((star) => ({ ...star })),
+      moves: state.moves,
+      completed: state.completed,
+    };
+    return runner;
+  }
+
   getState(): GameState {
     return {
       ...this.state,

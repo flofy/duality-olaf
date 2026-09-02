@@ -64,3 +64,5 @@ export function cloneLevel(level: Level): Level {
     stars: level.stars.map(clonePosition),
   };
 }
+
+export { campaign, world1, getLevel } from './campaign';
