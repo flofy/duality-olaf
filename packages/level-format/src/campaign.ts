@@ -57,6 +57,31 @@ const world1Order = [3, 6, 1, 2, 9, 8, 7, 5, 10, 4, 11] as const;
  */
 export const world1: Level[] = world1Order.map((number) => world1Source[number - 1]);
 
+function makeWorld2Level(
+  number: number,
+  ball: Position,
+  square: Position,
+  stars: Position[],
+  walls: Position[] = [],
+): Level {
+  const level = makeLevel(number, ball, square, stars, walls);
+  return { ...level, id: `world-2-level-${String(number).padStart(2, '0')}` };
+}
+
+export const world2: Level[] = [
+  makeWorld2Level(1, p(1, 1), p(11, 8), [p(5, 1), p(8, 8)], [p(6, 2), p(6, 3), p(6, 4)]),
+  makeWorld2Level(2, p(1, 8), p(11, 1), [p(3, 4), p(9, 5)], [p(4, 2), p(4, 3), p(8, 6), p(8, 7)]),
+  makeWorld2Level(3, p(2, 1), p(10, 8), [p(6, 1), p(6, 8), p(3, 5)], [p(5, 3), p(6, 3), p(7, 3), p(5, 6), p(6, 6), p(7, 6)]),
+  makeWorld2Level(4, p(1, 4), p(11, 4), [p(3, 1), p(9, 8), p(6, 4)], [p(4, 2), p(4, 3), p(4, 6), p(4, 7), p(8, 2), p(8, 3), p(8, 6), p(8, 7)]),
+  makeWorld2Level(5, p(1, 1), p(11, 8), [p(11, 1), p(1, 8), p(6, 5)], [p(3, 3), p(4, 3), p(5, 3), p(7, 6), p(8, 6), p(9, 6)]),
+  makeWorld2Level(6, p(2, 8), p(10, 1), [p(2, 2), p(10, 7), p(6, 4), p(6, 6)], [p(4, 2), p(4, 3), p(4, 4), p(8, 5), p(8, 6), p(8, 7)]),
+  makeWorld2Level(7, p(1, 1), p(11, 8), [p(6, 1), p(6, 8), p(2, 5), p(10, 5)], [p(3, 2), p(3, 3), p(3, 4), p(9, 5), p(9, 6), p(9, 7)]),
+  makeWorld2Level(8, p(11, 1), p(1, 8), [p(1, 1), p(11, 8), p(6, 3), p(6, 6)], [p(4, 3), p(5, 3), p(7, 3), p(8, 3), p(4, 6), p(5, 6), p(7, 6), p(8, 6)]),
+  makeWorld2Level(9, p(1, 8), p(11, 1), [p(1, 1), p(11, 8), p(6, 4), p(6, 7)], [p(2, 2), p(2, 3), p(2, 6), p(2, 7), p(10, 2), p(10, 3), p(10, 6), p(10, 7)]),
+  makeWorld2Level(10, p(2, 1), p(10, 8), [p(5, 2), p(7, 2), p(5, 7), p(7, 7), p(6, 4), p(6, 5)], [p(4, 2), p(4, 3), p(4, 4), p(8, 5), p(8, 6), p(8, 7)]),
+  makeWorld2Level(11, p(1, 4), p(11, 5), [p(2, 1), p(10, 1), p(2, 8), p(10, 8), p(6, 3), p(6, 6)], [p(3, 2), p(3, 3), p(3, 6), p(3, 7), p(9, 2), p(9, 3), p(9, 6), p(9, 7)]),
+];
+
 export type WorldDefinition = {
   id: number;
   name: string;
@@ -67,7 +92,7 @@ export type WorldDefinition = {
 
 export const worlds: readonly WorldDefinition[] = [
   { id: 1, name: 'Découverte', subtitle: 'Les bases du mouvement', status: 'available', levels: world1 },
-  { id: 2, name: 'Positionnement', subtitle: 'Préparer le terrain', status: 'coming-soon', levels: [] },
+  { id: 2, name: 'Positionnement', subtitle: 'Préparer le terrain', status: 'available', levels: world2 },
   { id: 3, name: 'Coordination', subtitle: 'Faire coopérer les formes', status: 'coming-soon', levels: [] },
   { id: 4, name: 'Combinaisons', subtitle: 'Plusieurs étapes à prévoir', status: 'coming-soon', levels: [] },
   { id: 5, name: 'Maîtrise', subtitle: 'Le défi final', status: 'coming-soon', levels: [] },

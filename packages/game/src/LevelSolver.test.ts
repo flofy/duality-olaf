@@ -18,7 +18,8 @@ describe('solveLevel', () => {
   });
 
   it('replays the human Level 6 solution and the solver finds it', () => {
-    const level6 = world1[5];
+    const level6 = world1.find((level) => level.id === 'world-1-level-06');
+    expect(level6).toBeDefined();
     const commands = [
       { type: 'move' as const, direction: { x: 0, y: -1 } },
       { type: 'move' as const, direction: { x: 1, y: 0 } },
@@ -27,13 +28,13 @@ describe('solveLevel', () => {
       { type: 'move' as const, direction: { x: 1, y: 0 } },
     ];
 
-    const runner = new LevelRunner(level6);
+    const runner = new LevelRunner(level6!);
     let state = runner.getState();
     for (const command of commands) state = runner.move(command.direction);
 
     expect(state.completed).toBe(true);
 
-    const result = solveLevel(level6);
+    const result = solveLevel(level6!);
     expect(result.solvable).toBe(true);
     expect(result.moves).toBe(5);
   });
