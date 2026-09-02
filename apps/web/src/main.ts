@@ -6,6 +6,7 @@ import { completeLevel, getCompletedCount, isLevelCompleted, resetProgress } fro
 import { cycleTheme, getTheme, hexToCss, type Theme } from './theme';
 import { interpretGesture, type Direction } from './input/GestureInterpreter';
 import { drawBallVisual, drawBoardVisuals, drawSquareVisual } from './visuals';
+import { formatDebugCommands, type DebugCommand } from './debug/CommandRecorder';
 import './style.css';
 
 const TILE = 48;
@@ -66,14 +67,15 @@ class GameScene extends Phaser.Scene {
   private ballSprite!: Phaser.GameObjects.Container; private squareSprite!: Phaser.GameObjects.Container;
   private starSprites: Phaser.GameObjects.GameObject[] = []; private status!: Phaser.GameObjects.Text; private completion!: Phaser.GameObjects.Text;
   private completionPanel?: Phaser.GameObjects.Container; private nextButton!: Phaser.GameObjects.Text;
-  private gestureStart: { x: number; y: number } | null = null; private isAnimating = false;
+  private gestureStart: { x: number; y: number } | null = null; private isAnimating = false; private activeTween?: Phaser.Tweens.Tween;
+  private debugCommands: DebugCommand[] = []; private debugText?: Phaser.GameObjects.Text;
   constructor() { super('game'); }
   init(data: { levelIndex?: number }) { this.levelIndex = Math.max(0, Math.min(data.levelIndex ?? 0, campaign.length - 1)); this.level = campaign[this.levelIndex]; this.runner = new LevelRunner(this.level); }
   create() {
     this.theme = getTheme(); this.cameras.main.setBackgroundColor(hexToCss(this.theme.background)); this.cameras.main.setZoom(DPR); this.cameras.main.centerOn(GAME_W / 2, GAME_H / 2);
-    this.input.keyboard!.on('keydown-SPACE', () => this.switchForm()); this.input.keyboard!.on('keydown-R', () => this.resetLevel()); this.input.keyboard!.on('keydown-ESC', () => this.scene.start('menu'));
+    this.input.keyboard!.on('keydown-SPACE', () => this.switchForm()); this.input.keyboard!.on('keydown-D', () => this.copyDebugTrace()); this.input.keyboard!.on('keydown-C', () => this.clearDebugTrace()); this.input.keyboard!.on('keydown-R', () => this.resetLevel()); this.input.keyboard!.on('keydown-ESC', () => this.scene.start('menu'));
     this.input.keyboard!.on('keydown-LEFT', () => this.tryMove({ x: -1, y: 0 })); this.input.keyboard!.on('keydown-RIGHT', () => this.tryMove({ x: 1, y: 0 })); this.input.keyboard!.on('keydown-UP', () => this.tryMove({ x: 0, y: -1 })); this.input.keyboard!.on('keydown-DOWN', () => this.tryMove({ x: 0, y: 1 }));
-    drawBoardVisuals(this, this.level, TILE, this.theme); this.createEntities(); this.createHud(); this.createTouchControls(); this.createSwipeControls(); this.refresh(this.runner.getState());
+    drawBoardVisuals(this, this.level, TILE, this.theme); this.createEntities(); this.createHud(); this.createDebugPanel(); this.createTouchControls(); this.createSwipeControls(); this.refresh(this.runner.getState());
   }
   private createEntities() { this.ballSprite = drawBallVisual(this, 0, 0, TILE * 0.31, this.theme); this.squareSprite = drawSquareVisual(this, 0, 0, TILE * 0.62, this.theme); }
   private createHud() {
@@ -83,6 +85,37 @@ class GameScene extends Phaser.Scene {
     this.nextButton = this.add.text(WIDTH * TILE - 12, y + 18, 'NIVEAU SUIVANT ▶', { fontFamily: 'monospace', fontSize: '13px', color: hexToCss(this.theme.nextText), backgroundColor: hexToCss(this.theme.nextBg), padding: { left: 10, right: 10, top: 7, bottom: 7 } }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true }).setVisible(false);
     this.nextButton.on('pointerdown', () => this.nextLevel());
   }
+  private createDebugPanel() {
+    if (!import.meta.env.DEV) return;
+    this.debugText = this.add.text(GAME_W - 8, 8, '', {
+      fontFamily: 'monospace', fontSize: '11px', color: hexToCss(this.theme.text),
+      backgroundColor: 'rgba(0,0,0,0.55)', padding: { left: 8, right: 8, top: 6, bottom: 6 },
+    }).setOrigin(1, 0).setDepth(30);
+    this.refreshDebugPanel();
+  }
+  private refreshDebugPanel() {
+    if (!this.debugText) return;
+    const state = this.runner.getState();
+    const trace = this.debugCommands.slice(-8).map((command) =>
+      command.type === 'switch' ? '↔' : command.direction.x === 1 ? '→' : command.direction.x === -1 ? '←' : command.direction.y === 1 ? '↓' : '↑',
+    ).join(' ');
+    this.debugText.setText([
+      '🐛 DEBUG',
+      this.level.id,
+      `● ${state.ball.x},${state.ball.y}  ■ ${state.square.x},${state.square.y}`,
+      `active: ${state.activeForm}  stars: ${state.stars.length}`,
+      `trace (${this.debugCommands.length}): ${trace || '—'}`,
+      'D copy · C clear',
+    ]);
+  }
+  private async copyDebugTrace() {
+    if (!import.meta.env.DEV || this.debugCommands.length === 0) return;
+    const text = formatDebugCommands(this.debugCommands);
+    await navigator.clipboard?.writeText(text);
+    this.debugText?.setText(`${this.debugText.text}\n✓ copied`);
+  }
+  private clearDebugTrace() { if (!import.meta.env.DEV) return; this.debugCommands = []; this.refreshDebugPanel(); }
+
   private createTouchControls() {
     const baseY = HEIGHT * TILE + FOOTER - 22; const center = (WIDTH * TILE) / 2;
     const makeMoveButton = (label: string, x: number, dir: MoveDirection) => { const button = this.add.text(x, baseY, label, { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true }); button.on('pointerdown', () => this.tryMove(dir)); };
@@ -90,19 +123,21 @@ class GameScene extends Phaser.Scene {
     const switchButton = this.add.text(center + 135, baseY, '●/■', { fontFamily: 'monospace', fontSize: '17px', color: hexToCss(this.theme.buttonText), backgroundColor: hexToCss(this.theme.buttonBg), padding: { left: 9, right: 9, top: 5, bottom: 5 } }).setOrigin(0.5).setInteractive({ useHandCursor: true }); switchButton.on('pointerdown', () => this.switchForm());
   }
   private createSwipeControls() {
-    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => { if (!this.isAnimating && pointer.y < BOARD_HEIGHT) this.gestureStart = { x: pointer.x, y: pointer.y }; });
-    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => { if (!this.gestureStart || pointer.y >= BOARD_HEIGHT || this.isAnimating) { this.gestureStart = null; return; } const result = interpretGesture(this.gestureStart, { x: pointer.x, y: pointer.y }); this.gestureStart = null; if (result.type !== 'swipe' || !result.direction) return; this.tryMove(GESTURE_DIRECTIONS[result.direction]); });
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => { if (pointer.y < BOARD_HEIGHT) this.gestureStart = { x: pointer.x, y: pointer.y }; });
+    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => { if (!this.gestureStart || pointer.y >= BOARD_HEIGHT) { this.gestureStart = null; return; } const result = interpretGesture(this.gestureStart, { x: pointer.x, y: pointer.y }); this.gestureStart = null; if (result.type !== 'swipe' || !result.direction) return; this.tryMove(GESTURE_DIRECTIONS[result.direction]); });
   }
   private tryMove(direction: MoveDirection) {
-    if (this.isAnimating || this.runner.getState().completed) return;
+    if (this.runner.getState().completed) return;
     const before = this.runner.getState(); const after = this.runner.move(direction); const active = after.activeForm === 'ball' ? this.ballSprite : this.squareSprite;
     const from = after.activeForm === 'ball' ? before.ball : before.square; const to = after.activeForm === 'ball' ? after.ball : after.square; const moved = from.x !== to.x || from.y !== to.y;
     if (!moved) { this.refresh(after); return; }
+    this.debugCommands.push({ type: 'move', direction }); this.refreshDebugPanel();
+    if (this.activeTween?.isPlaying()) this.activeTween.stop();
     this.isAnimating = true; this.refreshStars(after); this.refreshHud(after); const [x, y] = this.toPixel(to);
-    this.tweens.add({ targets: active, x, y, duration: MOVE_DURATION, ease: 'Quad.easeOut', onComplete: () => { this.isAnimating = false; this.refresh(after); } });
+    this.activeTween = this.tweens.add({ targets: active, x, y, duration: MOVE_DURATION, ease: 'Quad.easeOut', onComplete: () => { this.isAnimating = false; this.activeTween = undefined; this.refresh(after); } });
   }
-  private switchForm() { if (this.isAnimating || this.runner.getState().completed) return; this.refresh(this.runner.switchForm()); }
-  private resetLevel() { if (this.isAnimating) return; this.refresh(this.runner.reset()); }
+  private switchForm() { if (this.runner.getState().completed) return; if (this.activeTween?.isPlaying()) this.activeTween.stop(); this.isAnimating = false; this.debugCommands.push({ type: 'switch' }); this.refreshDebugPanel(); this.refresh(this.runner.switchForm()); }
+  private resetLevel() { if (this.activeTween?.isPlaying()) this.activeTween.stop(); this.isAnimating = false; this.debugCommands = []; this.refreshDebugPanel(); this.refresh(this.runner.reset()); }
   private refresh(state: GameState) {
     this.setPosition(this.ballSprite, state.ball); this.setPosition(this.squareSprite, state.square); this.ballSprite.setAlpha(state.activeForm === 'ball' ? 1 : 0.4); this.squareSprite.setAlpha(state.activeForm === 'square' ? 1 : 0.4); this.refreshStars(state); this.refreshHud(state);
   }
