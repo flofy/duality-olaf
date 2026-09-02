@@ -42,6 +42,14 @@ function press(runner: LevelRunner, dir: { x: -1 | 0 | 1; y: -1 | 0 | 1 }): void
 }
 
 describe('LevelRunner: cell-centred line/column sliding', () => {
+  it('counts one move per press, not one per cell swept', () => {
+    // The ball slides from x=2 to x=11 (last free cell before the border wall) in a single press: still 1 move.
+    const runner = new LevelRunner(makeLevel({ ball: { x: 2, y: 2 }, square: { x: 2, y: 6 }, stars: [{ x: 11, y: 8 }] }));
+    press(runner, RIGHT);
+    expect(runner.getState().ball.x).toBe(11);
+    expect(runner.getState().moves).toBe(1);
+  });
+
   it('does not move on empty input', () => {
     const runner = new LevelRunner(makeLevel({ ball: { x: 2, y: 2 } }));
     const before = runner.getState().ball;
