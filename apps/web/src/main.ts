@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { registerSW } from 'virtual:pwa-register';
 import { LevelRunner } from '@duality/game';
 import type { Level, Position } from '@duality/level-format';
 import { campaign, levelLabel, levelsPerWorld, totalLevelCount } from './levels/campaign';
@@ -17,6 +18,51 @@ const GAME_H = HEIGHT * TILE + FOOTER;
 const BOARD_HEIGHT = HEIGHT * TILE;
 const DPR = Math.min(window.devicePixelRatio || 1, 3);
 const MOVE_DURATION = 145;
+
+const updateSW = registerSW({
+  immediate: true,
+  onNeedRefresh() {
+    window.dispatchEvent(new Event('duality-pwa-update'));
+  },
+});
+
+function createPwaUi() {
+  const root = document.body;
+  let deferredPrompt: BeforeInstallPromptEvent | null = null;
+
+  const install = document.createElement('button');
+  install.textContent = '⬇ INSTALLER';
+  install.className = 'pwa-action';
+  install.hidden = true;
+  install.onclick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    install.hidden = true;
+  };
+
+  const update = document.createElement('button');
+  update.textContent = '↻ MISE À JOUR DISPONIBLE';
+  update.className = 'pwa-action pwa-update';
+  update.hidden = true;
+  update.onclick = () => updateSW(true);
+
+  root.append(install, update);
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPrompt = event as BeforeInstallPromptEvent;
+    install.hidden = false;
+  });
+  window.addEventListener('appinstalled', () => { install.hidden = true; });
+  window.addEventListener('duality-pwa-update', () => { update.hidden = false; });
+}
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+}
+createPwaUi();
 
 type MoveDirection = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
 const GESTURE_DIRECTIONS: Record<Direction, MoveDirection> = {
