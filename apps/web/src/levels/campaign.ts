@@ -1,9 +1,10 @@
-import { campaign as canonicalCampaign } from '@duality/level-format';
-import type { Level } from '@duality/level-format';
+import { campaign as canonicalCampaign, worlds as canonicalWorlds } from '@duality/level-format';
+import type { Level, WorldDefinition } from '@duality/level-format';
 
 export const campaign: Level[] = canonicalCampaign;
+export const worlds: readonly WorldDefinition[] = canonicalWorlds;
 
-export const worldCount = 5;
+export const worldCount = worlds.length;
 export const levelsPerWorld = 11;
 export const totalLevelCount = worldCount * levelsPerWorld;
 
