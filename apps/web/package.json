@@ -13,7 +13,8 @@
     "@duality/game": "workspace:*",
     "@duality/level-format": "workspace:*",
     "phaser": "^3.90.0",
-    "vite": "^7.1.2"
+    "vite": "^7.1.2",
+    "workbox-window": "^7.3.0"
   },
   "devDependencies": {
     "typescript": "^5.9.2",
