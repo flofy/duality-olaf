@@ -35,7 +35,7 @@ function makeLevel(
  * Keep gameplay, solver and reporting on this shared definition so a level
  * played in the web app is exactly the level validated by the solver.
  */
-export const world1: Level[] = [
+const world1Source: Level[] = [
   makeLevel(1, p(1, 1), p(2, 1), [p(5, 1), p(5, 7)], [p(3, 2), p(4, 2), p(5, 2), p(7, 5), p(8, 5), p(9, 5)]),
   makeLevel(2, p(1, 8), p(2, 8), [p(11, 1), p(6, 4)], [p(4, 2), p(4, 3), p(4, 4), p(8, 5), p(8, 6), p(8, 7)]),
   makeLevel(3, p(1, 1), p(2, 2), [p(11, 1), p(11, 8), p(1, 8)], [p(3, 3), p(4, 3), p(5, 3), p(7, 6), p(8, 6), p(9, 6)]),
@@ -48,6 +48,14 @@ export const world1: Level[] = [
   makeLevel(10, p(1, 1), p(3, 8), [p(11, 1), p(11, 8), p(6, 3), p(6, 6)], [p(4, 3), p(5, 3), p(7, 3), p(8, 3), p(4, 6), p(5, 6), p(7, 6), p(8, 6)]),
   makeLevel(11, p(1, 8), p(11, 1), [p(1, 1), p(11, 8), p(6, 4), p(6, 7)], [p(3, 2), p(3, 3), p(3, 6), p(3, 7), p(9, 2), p(9, 3), p(9, 6), p(9, 7)]),
 ];
+
+const world1Order = [3, 6, 1, 2, 9, 8, 7, 5, 10, 4, 11] as const;
+
+/**
+ * World 1 is ordered by the validated shortest-path difficulty metrics,
+ * with the opening levels kept especially approachable.
+ */
+export const world1: Level[] = world1Order.map((number) => world1Source[number - 1]);
 
 export type WorldDefinition = {
   id: number;
