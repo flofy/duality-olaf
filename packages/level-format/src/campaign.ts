@@ -83,6 +83,37 @@ export const world2: Level[] = [
 ];
 
 
+function makeWorld3Level(
+  number: number,
+  ball: Position,
+  square: Position,
+  stars: Position[],
+  walls: Position[] = [],
+): Level {
+  const level = makeLevel(number, ball, square, stars, walls);
+  return { ...level, id: `world-3-level-${String(number).padStart(2, '0')}` };
+}
+
+/**
+ * World 3 — Coordination.
+ *
+ * These opening puzzles deliberately introduce the two pieces as mutual
+ * stopping points: positioning one form changes where the other can stop.
+ */
+export const world3: Level[] = [
+  // 01 — Premier blocage: an open lane where the square creates the stop.
+  makeWorld3Level(1, p(1, 4), p(6, 4), [p(5, 4)]),
+  // 02 — La boule comme mur.
+  makeWorld3Level(2, p(6, 4), p(1, 4), [p(2, 4)]),
+  // 03 — Changer puis utiliser le nouvel obstacle.
+  makeWorld3Level(3, p(1, 2), p(6, 7), [p(6, 2), p(5, 7)], [p(3, 4), p(4, 4), p(5, 4), p(7, 5), p(8, 5), p(9, 5)]),
+  // 04 — Double interaction autour d'un couloir central.
+  makeWorld3Level(4, p(1, 4), p(11, 4), [p(5, 4), p(7, 4), p(6, 1)], [p(4, 2), p(4, 3), p(4, 6), p(4, 7), p(8, 2), p(8, 3), p(8, 6), p(8, 7)]),
+  // 05 — Première coordination multi-étapes.
+  makeWorld3Level(5, p(2, 1), p(10, 8), [p(6, 1), p(6, 8), p(6, 5)], [p(5, 3), p(6, 3), p(7, 3), p(5, 6), p(6, 6), p(7, 6)]),
+];
+
+
 export type PuzzleMechanic =
   | 'movement'
   | 'positioning'
@@ -127,7 +158,7 @@ export type WorldDefinition = {
 export const worlds: readonly WorldDefinition[] = [
   { id: 1, name: 'Découverte', subtitle: 'Les bases du mouvement', status: 'available', levels: world1 },
   { id: 2, name: 'Positionnement', subtitle: 'Préparer le terrain', status: 'available', levels: world2 },
-  { id: 3, name: 'Coordination', subtitle: 'Faire coopérer les formes', status: 'coming-soon', levels: [] },
+  { id: 3, name: 'Coordination', subtitle: 'Faire coopérer les formes', status: 'available', levels: world3 },
   { id: 4, name: 'Combinaisons', subtitle: 'Plusieurs étapes à prévoir', status: 'coming-soon', levels: [] },
   { id: 5, name: 'Maîtrise', subtitle: 'Le défi final', status: 'coming-soon', levels: [] },
 ];
