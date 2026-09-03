@@ -192,27 +192,14 @@ class MenuScene extends Phaser.Scene {
     back.setInteractive({ useHandCursor: true });
     back.on("pointerdown", goBack);
     backHit.on("pointerdown", goBack);
-    this.add
-      .text(cx, 70, `MONDE ${world.id}`, {
-        fontFamily: "monospace",
-        fontSize: "24px",
-        color: hexToCss(theme.text),
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5);
-    // Sub-title offset to the right and down from the world name.
-    this.add
-      .text(cx + 40, 148, world.subtitle.toUpperCase(), {
-        fontFamily: "monospace",
-        fontSize: "16px",
-        color: hexToCss(theme.textMuted),
-      })
-      .setOrigin(0.5);
+    this.add.text(cx, 66, `MONDE ${world.id}`, { fontFamily: "monospace", fontSize: "22px", color: hexToCss(theme.text), fontStyle: "bold" }).setOrigin(0.5);
+    this.add.text(cx, 100, world.name.toUpperCase(), { fontFamily: "monospace", fontSize: "19px", color: hexToCss(theme.accent) }).setOrigin(0.5);
+    this.add.text(cx, 132, world.subtitle, { fontFamily: "monospace", fontSize: "13px", color: hexToCss(theme.textMuted) }).setOrigin(0.5);
     world.levels.forEach((level, index) => {
       const column = index % 6;
       const row = Math.floor(index / 6);
       const x = cx - 180 + column * 72;
-      const y = 190 + row * 76;
+      const y = 205 + row * 76;
       const previous = index === 0 ? undefined : world.levels[index - 1];
       const unlocked =
         index === 0 || (!!previous && isLevelCompleted(previous.id));
@@ -364,7 +351,7 @@ class GameScene extends Phaser.Scene {
   }
   private createHud() {
     // Level data is pushed below the on-screen controls so nothing overlaps the board.
-    const y = BOARD_HEIGHT + 236;
+    const y = BOARD_HEIGHT + 18;
     this.status = this.add.text(12, y, "", {
       fontFamily: "monospace",
       fontSize: "15px",
@@ -392,7 +379,7 @@ class GameScene extends Phaser.Scene {
     const center = GAME_W / 2;
     // Controls sit directly under the board, spaced out so hit areas never overlap,
     // leaving the level data room below them.
-    const dpadY = BOARD_HEIGHT + 96;
+    const dpadY = BOARD_HEIGHT + 132;
     const size = 62;
     const gap = 16;
 
@@ -544,12 +531,12 @@ class GameScene extends Phaser.Scene {
     const form = state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ";
     const collected = this.level.stars.length - state.stars.length;
     this.status.setText(
-      `MONDE ${this.worldId} · ${levelLabel(this.worldLevelIndex)}   ${form}   ÉTOILES ${collected}/${this.level.stars.length}   COUPS ${state.moves}`,
+      `MONDE ${this.worldId} · ${levelLabel(this.worldLevelIndex)}   ${form}`,
     );
     this.completion.setText(
       state.completed
-        ? "✓ NIVEAU TERMINÉ"
-        : "ESPACE changer de forme · Flèches / swipe / tactile · Échap menu",
+        ? `✓ NIVEAU TERMINÉ · ★ ${collected}/${this.level.stars.length} · ${state.moves} COUPS`
+        : `★ ${collected}/${this.level.stars.length} · ${state.moves} COUPS · ESPACE changer · swipe / tactile`,
     );
     this.nextButton.setVisible(
       state.completed && this.levelIndex < campaign.length - 1,
