@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { registerSW } from 'virtual:pwa-register';
 import { LevelRunner } from '@duality/game';
 import type { Level, Position } from '@duality/level-format';
-import { campaign, levelLabel, levelsPerWorld, totalLevelCount } from './levels/campaign';
+import { campaign, getCampaignLevelIndex, levelLabel, totalLevelCount, worlds } from './levels/campaign';
 import { completeLevel, getCompletedCount, isLevelCompleted, resetProgress } from './progression';
 import { cycleTheme, getTheme, hexToCss, type Theme } from './theme';
 import { interpretGesture, type Direction } from './input/GestureInterpreter';
@@ -72,43 +72,43 @@ const GESTURE_DIRECTIONS: Record<Direction, MoveDirection> = {
 class MenuScene extends Phaser.Scene {
   constructor() { super('menu'); }
   create() {
-    const theme = getTheme();
-    this.cameras.main.setBackgroundColor(hexToCss(theme.background));
-    this.cameras.main.setZoom(DPR);
-    this.cameras.main.centerOn(GAME_W / 2, GAME_H / 2);
-    const cx = GAME_W / 2;
-    const completedCount = getCompletedCount();
-    this.add.text(cx, 70, 'DUALITY', { fontFamily: 'monospace', fontSize: '52px', color: hexToCss(theme.text), fontStyle: 'bold' }).setOrigin(0.5);
-    this.add.text(cx, 122, 'OLAF', { fontFamily: 'monospace', fontSize: '20px', color: hexToCss(theme.accent) }).setOrigin(0.5);
-    this.add.text(cx, 170, 'BOULE ●   ×   CARRÉ ■', { fontFamily: 'monospace', fontSize: '16px', color: hexToCss(theme.square) }).setOrigin(0.5);
-    this.add.text(cx, 220, 'PREMIER MONDE', { fontFamily: 'monospace', fontSize: '18px', color: hexToCss(theme.text) }).setOrigin(0.5);
-    for (let index = 0; index < levelsPerWorld; index += 1) {
-      const column = index % 6; const row = Math.floor(index / 6); const x = cx - 180 + column * 72; const y = 270 + row * 72;
-      const unlocked = index === 0 || isLevelCompleted(campaign[index - 1].id); const completed = isLevelCompleted(campaign[index].id);
-      const label = completed ? '✓' : unlocked ? String(index + 1).padStart(2, '0') : '·';
-      const button = this.add.text(x, y, label, { fontFamily: 'monospace', fontSize: '22px', color: hexToCss(unlocked ? theme.buttonText : theme.buttonTextLocked), backgroundColor: hexToCss(completed ? theme.buttonCompletedBg : unlocked ? theme.buttonBg : theme.buttonLockedBg), padding: { left: 15, right: 15, top: 10, bottom: 10 } }).setOrigin(0.5);
-      if (unlocked) { button.setInteractive({ useHandCursor: true }); button.on('pointerdown', () => this.scene.start('game', { levelIndex: index })); }
-    }
-    this.add.text(cx, 420, `${completedCount} terminé${completedCount > 1 ? 's' : ''} · ${campaign.length} jouables · ${totalLevelCount} prévus`, { fontFamily: 'monospace', fontSize: '13px', color: hexToCss(theme.textMuted) }).setOrigin(0.5);
-    this.add.text(cx, 452, `Clique un niveau · 1–9 · progression sauvegardée automatiquement`, { fontFamily: 'monospace', fontSize: '13px', color: hexToCss(theme.textMuted) }).setOrigin(0.5);
-    this.add.text(cx, 486, `Thème « ${theme.name} » — touche T ou bouton pour changer`, { fontFamily: 'monospace', fontSize: '13px', color: hexToCss(theme.accent) }).setOrigin(0.5);
-    this.createThemeButton(cx, theme);
-    this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
-      const number = Number(event.key);
-      if (number >= 1 && number <= 9 && number <= campaign.length) { const index = number - 1; if (index === 0 || isLevelCompleted(campaign[index - 1].id)) this.scene.start('game', { levelIndex: index }); }
-      if (event.key.toLowerCase() === 'x') { resetProgress(); this.scene.restart(); }
-      if (event.key.toLowerCase() === 't') { cycleTheme(); this.scene.restart(); }
+    const theme = getTheme(); this.cameras.main.setBackgroundColor(hexToCss(theme.background)); this.cameras.main.setZoom(DPR); this.cameras.main.centerOn(GAME_W / 2, GAME_H / 2); this.showWorldSelector(theme);
+  }
+  private showWorldSelector(theme: Theme) {
+    const cx = GAME_W / 2; const completedCount = getCompletedCount();
+    this.add.text(cx, 62, 'DUALITY', { fontFamily: 'monospace', fontSize: '48px', color: hexToCss(theme.text), fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(cx, 108, 'CHOISIS TON MONDE', { fontFamily: 'monospace', fontSize: '16px', color: hexToCss(theme.accent) }).setOrigin(0.5);
+    worlds.forEach((world, index) => {
+      const y = 165 + index * 62; const available = world.status === 'available'; const done = world.levels.filter((level) => isLevelCompleted(level.id)).length;
+      const button = this.add.text(36, y, \`🌍 MONDE \${world.id} — \${world.name.toUpperCase()}\`, { fontFamily: 'monospace', fontSize: '16px', color: hexToCss(available ? theme.buttonText : theme.buttonTextLocked), backgroundColor: hexToCss(available ? theme.buttonBg : theme.buttonLockedBg), padding: { left: 14, right: 14, top: 8, bottom: 8 } });
+      this.add.text(52, y + 32, available ? \`\${world.subtitle} · \${done}/\${world.levels.length}\` : \`\${world.subtitle} · BIENTÔT\`, { fontFamily: 'monospace', fontSize: '12px', color: hexToCss(available ? theme.textMuted : theme.buttonTextLocked) });
+      if (available) { button.setInteractive({ useHandCursor: true }); button.on('pointerdown', () => this.showLevelSelector(world.id, theme)); }
+    });
+    this.add.text(cx, 475, \`\${completedCount} terminé\${completedCount > 1 ? 's' : ''} · \${campaign.length} jouables · \${totalLevelCount} prévus\`, { fontFamily: 'monospace', fontSize: '12px', color: hexToCss(theme.textMuted) }).setOrigin(0.5);
+    this.createThemeButton(cx, theme, 515);
+  }
+  private showLevelSelector(worldId: number, theme: Theme) {
+    this.children.removeAll(true); const world = worlds.find((entry) => entry.id === worldId); if (!world) return; const cx = GAME_W / 2;
+    const back = this.add.text(24, 30, '← MONDES', { fontFamily: 'monospace', fontSize: '14px', color: hexToCss(theme.accent) }).setInteractive({ useHandCursor: true });
+    back.on('pointerdown', () => { this.children.removeAll(true); this.showWorldSelector(theme); });
+    this.add.text(cx, 70, \`MONDE \${world.id}\`, { fontFamily: 'monospace', fontSize: '24px', color: hexToCss(theme.text), fontStyle: 'bold' }).setOrigin(0.5);
+    this.add.text(cx, 106, world.name.toUpperCase(), { fontFamily: 'monospace', fontSize: '18px', color: hexToCss(theme.accent) }).setOrigin(0.5);
+    world.levels.forEach((level, index) => {
+      const column = index % 6; const row = Math.floor(index / 6); const x = cx - 180 + column * 72; const y = 190 + row * 76;
+      const previous = index === 0 ? undefined : world.levels[index - 1]; const unlocked = index === 0 || !!previous && isLevelCompleted(previous.id); const completed = isLevelCompleted(level.id); const label = completed ? '✓' : unlocked ? String(index + 1).padStart(2, '0') : '🔒';
+      const button = this.add.text(x, y, label, { fontFamily: 'monospace', fontSize: unlocked ? '22px' : '15px', color: hexToCss(unlocked ? theme.buttonText : theme.buttonTextLocked), backgroundColor: hexToCss(completed ? theme.buttonCompletedBg : unlocked ? theme.buttonBg : theme.buttonLockedBg), padding: { left: 14, right: 14, top: 10, bottom: 10 } }).setOrigin(0.5);
+      if (unlocked) { button.setInteractive({ useHandCursor: true }); button.on('pointerdown', () => this.scene.start('game', { levelIndex: getCampaignLevelIndex(world.id, index), worldId: world.id, worldLevelIndex: index })); }
     });
   }
-  private createThemeButton(cx: number, theme: Theme) {
-    const button = this.add.text(cx, 520, '🎨 THÈME', { fontFamily: 'monospace', fontSize: '15px', color: hexToCss(theme.buttonText), backgroundColor: hexToCss(theme.buttonBg), padding: { left: 16, right: 16, top: 8, bottom: 8 } }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+  private createThemeButton(cx: number, theme: Theme, y: number) {
+    const button = this.add.text(cx, y, '🎨 THÈME', { fontFamily: 'monospace', fontSize: '15px', color: hexToCss(theme.buttonText), backgroundColor: hexToCss(theme.buttonBg), padding: { left: 16, right: 16, top: 8, bottom: 8 } }).setOrigin(0.5).setInteractive({ useHandCursor: true });
     button.on('pointerdown', () => { cycleTheme(); this.scene.restart(); });
   }
 }
 
 type GameState = ReturnType<LevelRunner['getState']>;
 class GameScene extends Phaser.Scene {
-  private runner!: LevelRunner; private level!: Level; private levelIndex = 0; private theme!: Theme;
+  private runner!: LevelRunner; private level!: Level; private levelIndex = 0; private worldId = 1; private worldLevelIndex = 0; private theme!: Theme;
   private ballSprite!: Phaser.GameObjects.Container; private squareSprite!: Phaser.GameObjects.Container;
   private starSprites: Phaser.GameObjects.GameObject[] = []; private status!: Phaser.GameObjects.Text; private completion!: Phaser.GameObjects.Text;
   private completionPanel?: Phaser.GameObjects.Container; private nextButton!: Phaser.GameObjects.Text;
@@ -116,7 +116,7 @@ class GameScene extends Phaser.Scene {
   private heldDirection: MoveDirection | null = null;
   private pendingDirection: MoveDirection | null = null;
   constructor() { super('game'); }
-  init(data: { levelIndex?: number }) { this.levelIndex = Math.max(0, Math.min(data.levelIndex ?? 0, campaign.length - 1)); this.level = campaign[this.levelIndex]; this.runner = new LevelRunner(this.level); }
+  init(data: { levelIndex?: number; worldId?: number; worldLevelIndex?: number }) { this.levelIndex = Math.max(0, Math.min(data.levelIndex ?? 0, campaign.length - 1)); this.worldId = data.worldId ?? 1; this.worldLevelIndex = data.worldLevelIndex ?? 0; this.level = campaign[this.levelIndex]; this.runner = new LevelRunner(this.level); }
   create() {
     this.theme = getTheme(); this.cameras.main.setBackgroundColor(hexToCss(this.theme.background)); this.cameras.main.setZoom(DPR); this.cameras.main.centerOn(GAME_W / 2, GAME_H / 2);
     this.input.keyboard!.on('keydown-SPACE', () => this.switchForm()); this.input.keyboard!.on('keydown-R', () => this.resetLevel()); this.input.keyboard!.on('keydown-ESC', () => this.scene.start('menu'));
@@ -233,7 +233,7 @@ class GameScene extends Phaser.Scene {
   private refreshStars(state: GameState) { for (const sprite of this.starSprites) sprite.destroy(); this.starSprites = state.stars.map((star) => { const [x, y] = this.toPixel(star); return this.add.star(x, y, 5, TILE * 0.12, TILE * 0.25, this.theme.star); }); }
   private refreshHud(state: GameState) {
     const form = state.activeForm === 'ball' ? '● BOULE' : '■ CARRÉ'; const collected = this.level.stars.length - state.stars.length;
-    this.status.setText(`${levelLabel(this.levelIndex)}   ${form}   ÉTOILES ${collected}/${this.level.stars.length}   COUPS ${state.moves}`); this.completion.setText(state.completed ? '✓ NIVEAU TERMINÉ' : 'ESPACE changer de forme · Flèches / swipe / tactile · Échap menu'); this.nextButton.setVisible(state.completed && this.levelIndex < campaign.length - 1);
+    this.status.setText(`MONDE ${this.worldId} · ${levelLabel(this.worldLevelIndex)}   ${form}   ÉTOILES ${collected}/${this.level.stars.length}   COUPS ${state.moves}`); this.completion.setText(state.completed ? '✓ NIVEAU TERMINÉ' : 'ESPACE changer de forme · Flèches / swipe / tactile · Échap menu'); this.nextButton.setVisible(state.completed && this.levelIndex < campaign.length - 1);
     if (state.completed) { completeLevel(this.level.id); this.showCompletionPanel(); } else this.hideCompletionPanel();
   }
   private showCompletionPanel() {
@@ -247,7 +247,7 @@ class GameScene extends Phaser.Scene {
     panel.add([backdrop, title, moves, replay, next]); this.completionPanel = panel; panel.setScale(0.94).setAlpha(0); this.tweens.add({ targets: panel, alpha: 1, scale: 1, duration: 180, ease: 'Back.easeOut' });
   }
   private hideCompletionPanel() { if (this.completionPanel) { this.completionPanel.destroy(); this.completionPanel = undefined; } }
-  private nextLevel() { if (this.levelIndex < campaign.length - 1) this.scene.restart({ levelIndex: this.levelIndex + 1 }); else this.scene.start('menu'); }
+  private nextLevel() { const world = worlds.find((entry) => entry.id === this.worldId); if (world && this.worldLevelIndex < world.levels.length - 1) this.scene.restart({ levelIndex: getCampaignLevelIndex(this.worldId, this.worldLevelIndex + 1), worldId: this.worldId, worldLevelIndex: this.worldLevelIndex + 1 }); else this.scene.start('menu'); }
   private setPosition(object: Phaser.GameObjects.Container, position: Position) { const [x, y] = this.toPixel(position); object.setPosition(x, y); }
   private toPixel(position: Position): [number, number] { return [position.x * TILE + TILE / 2, position.y * TILE + TILE / 2]; }
 }
