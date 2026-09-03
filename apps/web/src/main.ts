@@ -167,7 +167,8 @@ class MenuScene extends Phaser.Scene {
         },
       )
       .setOrigin(0.5);
-    this.createThemeButton(cx, theme, 515);
+    this.createHelpButton(cx, theme, 475);
+    this.createThemeButton(cx, theme, 525);
   }
   private showLevelSelector(worldId: number, theme: Theme) {
     this.children.removeAll(true);
@@ -236,6 +237,19 @@ class MenuScene extends Phaser.Scene {
       }
     });
   }
+  private createHelpButton(cx: number, theme: Theme, y: number) {
+    const button = this.add
+      .text(cx, y, "? AIDE & RÈGLES", {
+        fontFamily: "monospace",
+        fontSize: "14px",
+        color: hexToCss(theme.buttonText),
+        backgroundColor: hexToCss(theme.buttonBg),
+        padding: { left: 14, right: 14, top: 7, bottom: 7 },
+      })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+    button.on("pointerdown", () => this.scene.start("help"));
+  }
   private createThemeButton(cx: number, theme: Theme, y: number) {
     const button = this.add
       .text(cx, y, "🎨 THÈME", {
@@ -251,6 +265,45 @@ class MenuScene extends Phaser.Scene {
       cycleTheme();
       this.scene.restart();
     });
+  }
+}
+
+
+class HelpScene extends Phaser.Scene {
+  constructor() { super("help"); }
+
+  create() {
+    const theme = getTheme();
+    const cx = GAME_W / 2;
+    this.cameras.main.setBackgroundColor(hexToCss(theme.background));
+    this.cameras.main.setZoom(DPR);
+    this.cameras.main.centerOn(GAME_W / 2, GAME_H / 2);
+
+    this.add.text(cx, 42, "COMMENT JOUER ?", {
+      fontFamily: "monospace", fontSize: "28px", color: hexToCss(theme.text), fontStyle: "bold",
+    }).setOrigin(0.5);
+
+    const sections = [
+      ["1. SE DÉPLACER", "La forme active glisse en ligne droite jusqu'à rencontrer un mur ou l'autre forme.", "▲  ◀ ▼ ▶   ou swipe"],
+      ["2. CHANGER DE FORME", "Utilise ESPACE ou le bouton ● ⇄ ■ pour choisir quelle forme déplacer.", "● BOULE  ⇄  ■ CARRÉ"],
+      ["3. BLOQUER", "La boule et le carré peuvent se servir mutuellement de mur. Place l'une pour arrêter l'autre.", "● ───► ■"],
+      ["4. OBJECTIF", "Ramasse toutes les étoiles ★ pour terminer le niveau. Réfléchis avant de déplacer !", "★ ★ ★"],
+      ["5. RACCOURCIS", "R = recommencer · ÉCHAP = menu · ENTRÉE = niveau suivant après victoire.", "R   ESC   ENTER"],
+    ] as const;
+
+    sections.forEach(([title, body, hint], index) => {
+      const y = 90 + index * 95;
+      this.add.text(36, y, title, { fontFamily: "monospace", fontSize: "16px", color: hexToCss(theme.accent), fontStyle: "bold" });
+      this.add.text(36, y + 25, body, { fontFamily: "monospace", fontSize: "12px", color: hexToCss(theme.text), wordWrap: { width: GAME_W - 72 } });
+      this.add.text(cx, y + 58, hint, { fontFamily: "monospace", fontSize: "14px", color: hexToCss(theme.textMuted) }).setOrigin(0.5);
+    });
+
+    const back = this.add.text(cx, GAME_H - 45, "← RETOUR AUX MONDES", {
+      fontFamily: "monospace", fontSize: "15px", color: hexToCss(theme.buttonText),
+      backgroundColor: hexToCss(theme.buttonBg), padding: { left: 16, right: 16, top: 9, bottom: 9 },
+    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+    back.on("pointerdown", () => this.scene.start("menu"));
+    this.input.keyboard?.on("keydown-ESC", () => this.scene.start("menu"));
   }
 }
 
@@ -647,7 +700,7 @@ new Phaser.Game({
   width: GAME_W * DPR,
   height: GAME_H * DPR,
   parent: "app",
-  scene: [MenuScene, GameScene],
+  scene: [MenuScene, HelpScene, GameScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
