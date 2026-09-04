@@ -2,6 +2,7 @@ import type { Form, Level, Position } from '@duality/level-format';
 import { cloneLevel, isInside, isWall } from '@duality/level-format';
 
 export type Direction = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
+export type DoorState = Record<string, boolean>;
 
 export type GameState = {
   level: Level;
@@ -9,17 +10,11 @@ export type GameState = {
   ball: Position;
   square: Position;
   stars: Position[];
+  doors: DoorState;
   moves: number;
   completed: boolean;
 };
 
-/**
- * Coordinate model: every position (ball, square, star) is the **cell index** it
- * occupies and is always an integer. Entities stay aligned to their cell centre,
- * so a position never holds a fractional value. A press slides the active form
- * from cell to cell along a single row/column and stops at the centre of the
- * last free cell before the first wall or the other form.
- */
 export class LevelRunner {
   readonly initialLevel: Level;
   private state: GameState;
@@ -37,6 +32,7 @@ export class LevelRunner {
       ball: { ...state.ball },
       square: { ...state.square },
       stars: state.stars.map((star) => ({ ...star })),
+      doors: { ...state.doors },
       moves: state.moves,
       completed: state.completed,
     };
@@ -49,6 +45,7 @@ export class LevelRunner {
       ball: { ...this.state.ball },
       square: { ...this.state.square },
       stars: this.state.stars.map((star) => ({ ...star })),
+      doors: { ...this.state.doors },
     };
   }
 
@@ -57,11 +54,6 @@ export class LevelRunner {
     return this.getState();
   }
 
-  /**
-   * A single press slides the active form all the way along the dominant axis,
-   * one cell at a time, and stops at the centre of the first cell that is a wall
-   * / out of bounds / occupied by the other form. Returns the new state.
-   */
   move(direction: Direction): GameState {
     const axis = this.dominantAxis(direction);
     if (axis === null) return this.getState();
@@ -72,23 +64,21 @@ export class LevelRunner {
     const swept: Position[] = [];
     let moved = 0;
 
-    // March one whole cell at a time so positions stay integer (cell centres).
     for (;;) {
       const next: Position = { ...current };
       next[axis] += sign;
-
       if (!this.isFree(next, other)) break;
-
       current.x = next.x;
       current.y = next.y;
       moved += 1;
       swept.push({ x: current.x, y: current.y });
     }
 
-    if (moved > 0) this.state.moves += 1;
+    if (moved === 0) return this.getState();
+    this.state.moves += 1;
+    this.applySwitches(swept);
 
     if (this.state.activeForm === 'ball') {
-      // Collect every star swept while passing through each cell.
       this.state.stars = this.state.stars.filter(
         (star) => !swept.some((cell) => cell.x === star.x && cell.y === star.y),
       );
@@ -103,12 +93,23 @@ export class LevelRunner {
     return this.getState();
   }
 
-  /** Position is in bounds and not a wall and not occupied by the other form. */
   private isFree(cell: Position, other: Position): boolean {
     if (!isInside(this.state.level, cell)) return false;
     if (isWall(this.state.level, cell)) return false;
     if (cell.x === other.x && cell.y === other.y) return false;
+    const door = this.state.level.doors?.find((item) => item.position.x === cell.x && item.position.y === cell.y);
+    if (door && !this.state.doors[door.id]) return false;
     return true;
+  }
+
+  private applySwitches(cells: readonly Position[]): void {
+    for (const item of this.state.level.switches ?? []) {
+      if (!cells.some((cell) => cell.x === item.position.x && cell.y === item.position.y)) continue;
+      if (item.form !== 'either' && item.form !== this.state.activeForm) continue;
+      for (const doorId of item.toggles) {
+        if (doorId in this.state.doors) this.state.doors[doorId] = !this.state.doors[doorId];
+      }
+    }
   }
 
   private activeEntity(): Position {
@@ -133,13 +134,9 @@ export class LevelRunner {
       ball: { ...level.ball },
       square: { ...level.square },
       stars: level.stars.map((star) => ({ ...star })),
+      doors: Object.fromEntries((level.doors ?? []).map((door) => [door.id, door.initiallyOpen === true])),
       moves: 0,
       completed: level.stars.length === 0,
     };
   }
 }
-
-type Cell = {
-  x: number;
-  y: number;
-};
