@@ -23,7 +23,7 @@ export const doorSwitchTutorials: readonly Level[] = [
   ),
   tutorial(
     'tutorial-door-switch-02',
-    p(2, 7), p(10, 2), [p(2, 7)],
+    p(2, 7), p(10, 2), [p(10, 7)],
     [{ id: 'door-a', position: p(6, 7) }],
     [{ id: 'switch-a', position: p(10, 5), form: 'square', toggles: ['door-a'] }],
   ),
