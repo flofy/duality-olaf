@@ -36,11 +36,7 @@ function App() {
   const open = (id: number, index: number) => {
     const targetWorld = worlds.find((item) => item.id === id);
     if (!targetWorld) return;
-
-    // The next level can only be opened after the previous level was persisted
-    // as completed. This protects progression even if a caller bypasses the UI.
     if (index > 0 && !isLevelCompleted(targetWorld.levels[index - 1].id)) return;
-
     setWorld(id);
     setLevelIndex(getCampaignLevelIndex(id, index));
     setView('game');
@@ -56,9 +52,7 @@ function App() {
             theme={() => { cycleTheme(); setTick(tick + 1); }}
           />
         )}
-        {view === 'levels' && (
-          <Levels id={world} back={() => setView('menu')} open={open} />
-        )}
+        {view === 'levels' && <Levels id={world} back={() => setView('menu')} open={open} />}
         {view === 'help' && <Help back={() => setView('menu')} />}
         {view === 'game' && (
           <Game
@@ -160,8 +154,6 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
   const world = worlds.find((x) => x.id === p.w)!;
   const worldIndex = world.levels.findIndex((x) => x.id === level.id);
   const next = () => {
-    // Do not allow progression from a merely displayed/completed-looking modal.
-    // The persisted progression is the authoritative guard.
     if (!s.completed || !isLevelCompleted(level.id)) return;
     if (worldIndex < world.levels.length - 1) p.next(p.w, worldIndex + 1);
     else p.back();
@@ -199,7 +191,8 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
   }, [s.completed, level.id]);
 
   const pos = (x: number, y: number): CSSProperties => ({
-    transform: `translate(${x * 100}%, ${y * 100}%)`,
+    left: `calc(${x} * var(--tile))`,
+    top: `calc(${y} * var(--tile))`,
     width: 'var(--tile)',
     height: 'var(--tile)',
   });
