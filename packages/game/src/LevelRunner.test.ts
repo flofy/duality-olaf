@@ -43,7 +43,6 @@ function press(runner: LevelRunner, dir: { x: -1 | 0 | 1; y: -1 | 0 | 1 }): void
 
 describe('LevelRunner: cell-centred line/column sliding', () => {
   it('counts one move per press, not one per cell swept', () => {
-    // The ball slides from x=2 to x=11 (last free cell before the border wall) in a single press: still 1 move.
     const runner = new LevelRunner(makeLevel({ ball: { x: 2, y: 2 }, square: { x: 2, y: 6 }, stars: [{ x: 11, y: 8 }] }));
     press(runner, RIGHT);
     expect(runner.getState().ball.x).toBe(11);
@@ -61,11 +60,10 @@ describe('LevelRunner: cell-centred line/column sliding', () => {
   });
 
   it('is NOT born stuck against the border wall (can slide right)', () => {
-    // The ball is not born already colliding: a single press slides it right.
     const runner = new LevelRunner(makeLevel({ ball: { x: 2, y: 2 } }));
     press(runner, RIGHT);
     const state = runner.getState();
-    expect(state.ball.x).toBeGreaterThan(2); // moved rightwards
+    expect(state.ball.x).toBeGreaterThan(2);
     expect(state.ball.y).toBe(2);
   });
 
@@ -83,7 +81,6 @@ describe('LevelRunner: cell-centred line/column sliding', () => {
     const runner = new LevelRunner(makeLevel({ ball: { x: 2, y: 2 } }));
     press(runner, RIGHT);
     const ball = runner.getState().ball;
-    // Right border wall column is 12, so the ball settles on cell 11.
     expect(ball.x).toBe(11);
     expect(ball.y).toBe(2);
   });
@@ -94,8 +91,7 @@ describe('LevelRunner: cell-centred line/column sliding', () => {
     );
     press(runner, RIGHT);
     const ball = runner.getState().ball;
-    expect(ball.x).toBe(5); // wall at 6 stops the slide
-    expect(ball.y).toBe(2);
+    expect(ball.x).toBe(5);
   });
 
   it('does not move again (nor count moves) when already pressed against a wall', () => {
@@ -103,19 +99,18 @@ describe('LevelRunner: cell-centred line/column sliding', () => {
     press(runner, RIGHT);
     const settled = runner.getState();
     const movesBefore = settled.moves;
-    press(runner, RIGHT); // same direction, already against the wall
+    press(runner, RIGHT);
     const after = runner.getState();
     expect(after.ball.x).toBe(settled.ball.x);
     expect(after.moves).toBe(movesBefore);
   });
 
-  it('slides the ball back left after a flush (movement not lost, stays on cells)', () => {
+  it('slides the ball back left after a flush', () => {
     const runner = new LevelRunner(makeLevel({ ball: { x: 2, y: 2 } }));
     press(runner, RIGHT);
     const flushRight = runner.getState().ball.x;
     press(runner, LEFT);
     const ball = runner.getState().ball;
-    // Left border wall column is 0, so the ball settles on cell 1.
     expect(flushRight).toBe(11);
     expect(ball.x).toBe(1);
     expect(ball.y).toBe(2);
@@ -123,10 +118,9 @@ describe('LevelRunner: cell-centred line/column sliding', () => {
 
   it('slides the square along its own column, staying on cells', () => {
     const runner = new LevelRunner(makeLevel({ square: { x: 4, y: 6 } }));
-    runner.switchForm(); // activate the square
+    runner.switchForm();
     press(runner, UP);
     const square = runner.getState().square;
-    // Top border wall row is 0, so the square settles on row 1.
     expect(square.y).toBe(1);
     expect(square.x).toBe(4);
   });
@@ -137,8 +131,47 @@ describe('LevelRunner: cell-centred line/column sliding', () => {
     );
     press(runner, RIGHT);
     const state = runner.getState();
-    expect(state.ball.x).toBe(5); // square occupies 6, ball stops at 5
+    expect(state.ball.x).toBe(5);
     expect(state.ball.x).toBeLessThan(state.square.x);
+  });
+
+  it('treats the other form as a deliberate blocking obstacle', () => {
+    const runner = new LevelRunner(
+      makeLevel({ ball: { x: 2, y: 4 }, square: { x: 5, y: 4 }, stars: [{ x: 10, y: 4 }] }),
+    );
+    press(runner, RIGHT);
+    const state = runner.getState();
+    expect(state.ball).toEqual({ x: 4, y: 4 });
+    expect(state.stars).toHaveLength(1);
+    expect(state.moves).toBe(1);
+  });
+
+  it('allows a temporary block to be cleared by switching forms', () => {
+    const runner = new LevelRunner(
+      makeLevel({ ball: { x: 2, y: 4 }, square: { x: 5, y: 4 }, stars: [{ x: 10, y: 4 }] }),
+    );
+    press(runner, RIGHT);
+    runner.switchForm();
+    press(runner, RIGHT);
+    const state = runner.getState();
+    expect(state.square.x).toBe(11);
+    expect(state.ball.x).toBe(4);
+  });
+
+  it('can detect a permanently blocked level through the solver', async () => {
+    const { solveLevel } = await import('./LevelSolver');
+    const level = makeLevel({
+      ball: { x: 2, y: 4 },
+      square: { x: 3, y: 4 },
+      stars: [{ x: 4, y: 4 }],
+      innerWalls: [
+        { x: 1, y: 3 }, { x: 2, y: 3 }, { x: 3, y: 3 }, { x: 4, y: 3 }, { x: 5, y: 3 },
+        { x: 1, y: 5 }, { x: 2, y: 5 }, { x: 3, y: 5 }, { x: 4, y: 5 }, { x: 5, y: 5 },
+      ],
+    });
+    const result = solveLevel(level);
+    expect(result.solvable).toBe(false);
+    expect(result.moves).toBeNull();
   });
 
   it('marks the level completed once the ball has collected every star', () => {
@@ -155,7 +188,7 @@ describe('LevelRunner: cell-centred line/column sliding', () => {
     const runner = new LevelRunner(
       makeLevel({ ball: { x: 2, y: 2 }, stars: [{ x: 3, y: 2 }, { x: 5, y: 2 }] }),
     );
-    press(runner, RIGHT); // slides through cells 3..11
+    press(runner, RIGHT);
     const state = runner.getState();
     expect(state.stars).toHaveLength(0);
     expect(state.completed).toBe(true);
