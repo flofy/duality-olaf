@@ -111,14 +111,18 @@ export const world3: Level[] = [
   makeWorld3Level(4, p(1, 4), p(11, 4), [p(5, 4), p(7, 4), p(6, 1)], [p(4, 2), p(4, 3), p(4, 6), p(4, 7), p(8, 2), p(8, 3), p(8, 6), p(8, 7)]),
   // 05 — Première coordination multi-étapes.
   makeWorld3Level(5, p(2, 1), p(10, 8), [p(6, 1), p(6, 8), p(6, 5)], [p(5, 3), p(6, 3), p(7, 3), p(5, 6), p(6, 6), p(7, 6)]),
-  // 06–11 — Coordination avancée : les positions intermédiaires deviennent
-  // indispensables pour créer des points d'arrêt utiles.
-  makeWorld3Level(6, p(1, 4), p(11, 4), [p(3, 1), p(6, 8), p(10, 1)], [p(2, 3), p(3, 3), p(4, 3), p(8, 6), p(9, 6), p(10, 6)]),
-  makeWorld3Level(7, p(2, 8), p(2, 1), [p(10, 8), p(10, 1), p(6, 5)], [p(4, 2), p(5, 2), p(6, 2), p(6, 7), p(7, 7), p(8, 7)]),
-  makeWorld3Level(8, p(1, 1), p(1, 8), [p(11, 1), p(11, 8), p(6, 4), p(6, 6)], [p(3, 4), p(4, 4), p(5, 4), p(7, 5), p(8, 5), p(9, 5)]),
-  makeWorld3Level(9, p(11, 8), p(11, 1), [p(1, 8), p(1, 1), p(6, 2), p(6, 7)], [p(2, 2), p(2, 3), p(2, 4), p(10, 5), p(10, 6), p(10, 7)]),
-  makeWorld3Level(10, p(1, 1), p(3, 8), [p(11, 1), p(11, 8), p(6, 3), p(6, 6)], [p(4, 3), p(5, 3), p(7, 3), p(8, 3), p(4, 6), p(5, 6), p(7, 6), p(8, 6)]),
-  makeWorld3Level(11, p(1, 8), p(11, 1), [p(1, 1), p(11, 8), p(6, 4), p(6, 7)], [p(3, 2), p(3, 3), p(3, 6), p(3, 7), p(9, 2), p(9, 3), p(9, 6), p(9, 7)]),
+  // 06 — Un premier relais : placer une forme pour créer un arrêt précis.
+  makeWorld3Level(6, p(1, 2), p(8, 2), [p(7, 2), p(8, 7)], [p(4, 4), p(4, 5), p(9, 4), p(9, 5)]),
+  // 07 — Croisement : les deux formes doivent utiliser le même couloir.
+  makeWorld3Level(7, p(1, 1), p(11, 8), [p(6, 1), p(6, 8), p(6, 4)], [p(5, 3), p(5, 4), p(7, 5), p(7, 6)]),
+  // 08 — Faux raccourci : une bonne trajectoire pour une forme peut gêner l'autre.
+  makeWorld3Level(8, p(2, 8), p(10, 1), [p(2, 3), p(10, 6), p(6, 4)], [p(4, 2), p(4, 3), p(8, 6), p(8, 7)]),
+  // 09 — Double relais autour de deux chambres asymétriques.
+  makeWorld3Level(9, p(1, 4), p(11, 5), [p(3, 1), p(9, 8), p(6, 4)], [p(3, 3), p(4, 3), p(8, 6), p(9, 6), p(6, 2), p(6, 7)]),
+  // 10 — Préparer, changer, puis revenir : première vraie boucle de coordination.
+  makeWorld3Level(10, p(1, 8), p(11, 1), [p(1, 3), p(11, 6), p(6, 5), p(6, 2)], [p(3, 2), p(4, 2), p(8, 7), p(9, 7), p(5, 4), p(7, 6)]),
+  // 11 — Finale du monde : quatre objectifs et plusieurs positions critiques.
+  makeWorld3Level(11, p(1, 1), p(11, 8), [p(3, 8), p(9, 1), p(6, 3), p(6, 6)], [p(3, 3), p(4, 3), p(8, 3), p(9, 3), p(3, 6), p(4, 6), p(8, 6), p(9, 6)]),
 ];
 
 function makeWorld4Level(number: number, ball: Position, square: Position, stars: Position[], walls: Position[] = []): Level {
