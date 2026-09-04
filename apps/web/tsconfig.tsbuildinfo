@@ -1,1 +1,1 @@
-{"root":["./src/main.ts","./src/progression.ts","./src/theme.ts","./src/levels/campaign.ts","./src/levels/prototype.ts"],"version":"5.9.3"}
+{"root":["./src/main.tsx","./src/progression.ts","./src/theme.ts","./src/input/gestureinterpreter.ts","./src/levels/campaign.ts","./src/levels/prototype.ts","./vite.config.ts"],"version":"5.9.3"}
