@@ -29,6 +29,7 @@ const GAME_H = HEIGHT * TILE + FOOTER;
 const BOARD_HEIGHT = HEIGHT * TILE;
 const DPR = Math.min(window.devicePixelRatio || 1, 3);
 const MOVE_DURATION = 145;
+const HAS_COARSE_POINTER = window.matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0;
 
 const updateSW = registerSW({
   immediate: true,
@@ -158,7 +159,7 @@ class MenuScene extends Phaser.Scene {
     this.add
       .text(
         cx,
-        475,
+        500,
         `${completedCount} terminé${completedCount > 1 ? "s" : ""} · ${campaign.length} jouables · ${totalLevelCount} prévus`,
         {
           fontFamily: "monospace",
@@ -167,8 +168,8 @@ class MenuScene extends Phaser.Scene {
         },
       )
       .setOrigin(0.5);
-    this.createHelpButton(cx, theme, 475);
-    this.createThemeButton(cx, theme, 525);
+    this.createHelpButton(cx, theme, 550);
+    this.createThemeButton(cx, theme, 605);
   }
   private showLevelSelector(worldId: number, theme: Theme) {
     this.children.removeAll(true);
@@ -394,8 +395,10 @@ class GameScene extends Phaser.Scene {
     drawBoardVisuals(this, this.level, TILE, this.theme);
     this.createEntities();
     this.createHud();
-    this.createTouchControls();
-    this.createSwipeControls();
+    if (HAS_COARSE_POINTER) {
+      this.createTouchControls();
+      this.createSwipeControls();
+    }
     this.refresh(this.runner.getState());
   }
   private createEntities() {
@@ -486,8 +489,10 @@ class GameScene extends Phaser.Scene {
     switchHit.on("pointerdown", () => this.switchForm());
   }
   private createSwipeControls() {
+    // A swipe belongs to the whole game surface, not to a specific form or board
+    // area. The LevelRunner already knows which form is active; the gesture only
+    // provides an intent (up/down/left/right).
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-      if (pointer.y >= BOARD_HEIGHT) return;
       this.gesturePointerId = pointer.id;
       this.gestureStart = { x: pointer.x, y: pointer.y };
     });
@@ -501,8 +506,9 @@ class GameScene extends Phaser.Scene {
       const result = interpretGesture(
         start,
         { x: pointer.x, y: pointer.y },
-        18,
+        24,
       );
+
       if (result.type === "swipe" && result.direction) {
         this.requestMove(GESTURE_DIRECTIONS[result.direction]);
       }
@@ -589,7 +595,9 @@ class GameScene extends Phaser.Scene {
     this.completion.setText(
       state.completed
         ? `✓ NIVEAU TERMINÉ · ★ ${collected}/${this.level.stars.length} · ${state.moves} COUPS`
-        : `★ ${collected}/${this.level.stars.length} · ${state.moves} COUPS · ESPACE changer · swipe / tactile`,
+        : HAS_COARSE_POINTER
+          ? `★ ${collected}/${this.level.stars.length} · ${state.moves} COUPS · ESPACE changer · swipe / tactile`
+          : `★ ${collected}/${this.level.stars.length} · ${state.moves} COUPS · FLÈCHES déplacer · ESPACE changer`,
     );
     this.nextButton.setVisible(
       state.completed && this.levelIndex < campaign.length - 1,
