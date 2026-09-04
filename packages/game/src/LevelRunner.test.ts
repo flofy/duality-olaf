@@ -1,11 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { LevelRunner } from './LevelRunner';
+import { solveLevel } from './LevelSolver';
 import type { Level, Position } from '@duality/level-format';
 
-/**
- * Builds a level that mirrors the real campaign geometry (13x10 with a solid
- * border wall) so the tests cover the situation that broke in practice.
- */
 function makeLevel(options: {
   ball?: Position;
   square?: Position;
@@ -34,9 +31,7 @@ function makeLevel(options: {
 const RIGHT = { x: 1 as const, y: 0 as const };
 const LEFT = { x: -1 as const, y: 0 as const };
 const UP = { x: 0 as const, y: -1 as const };
-const DOWN = { x: 0 as const, y: 1 as const };
 
-/** A single directional "press": slides to the first collision along the axis. */
 function press(runner: LevelRunner, dir: { x: -1 | 0 | 1; y: -1 | 0 | 1 }): void {
   runner.move(dir);
 }
@@ -158,8 +153,7 @@ describe('LevelRunner: cell-centred line/column sliding', () => {
     expect(state.ball.x).toBe(4);
   });
 
-  it('can detect a permanently blocked level through the solver', async () => {
-    const { solveLevel } = await import('./LevelSolver');
+  it('detects a permanently blocked level through the solver', () => {
     const level = makeLevel({
       ball: { x: 2, y: 4 },
       square: { x: 3, y: 4 },
