@@ -489,8 +489,10 @@ class GameScene extends Phaser.Scene {
     switchHit.on("pointerdown", () => this.switchForm());
   }
   private createSwipeControls() {
+    // A swipe belongs to the whole game surface, not to a specific form or board
+    // area. The LevelRunner already knows which form is active; the gesture only
+    // provides an intent (up/down/left/right).
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-      if (pointer.y >= BOARD_HEIGHT) return;
       this.gesturePointerId = pointer.id;
       this.gestureStart = { x: pointer.x, y: pointer.y };
     });
@@ -504,8 +506,9 @@ class GameScene extends Phaser.Scene {
       const result = interpretGesture(
         start,
         { x: pointer.x, y: pointer.y },
-        18,
+        24,
       );
+
       if (result.type === "swipe" && result.direction) {
         this.requestMove(GESTURE_DIRECTIONS[result.direction]);
       }
