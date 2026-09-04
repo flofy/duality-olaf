@@ -246,7 +246,7 @@ function Game(p: {
           {s.stars.map((star) => (
             <div
               className="star"
-              style={{ gridColumn: star.x + 1, gridRow: star.y + 1 }}
+              style={pos(star.x, star.y)}
               key={`${star.x}-${star.y}`}
             >
               ★
