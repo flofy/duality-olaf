@@ -27,16 +27,22 @@ function vars(): CSSProperties {
   ) as CSSProperties;
 }
 
-// ───────────── App ─────────────
 function App() {
   const [view, setView] = useState<'menu' | 'levels' | 'help' | 'game'>('menu');
   const [world, setWorld] = useState(1);
   const [levelIndex, setLevelIndex] = useState(0);
   const [tick, setTick] = useState(0);
 
-  const open = (id: number, i: number) => {
+  const open = (id: number, index: number) => {
+    const targetWorld = worlds.find((item) => item.id === id);
+    if (!targetWorld) return;
+
+    // The next level can only be opened after the previous level was persisted
+    // as completed. This protects progression even if a caller bypasses the UI.
+    if (index > 0 && !isLevelCompleted(targetWorld.levels[index - 1].id)) return;
+
     setWorld(id);
-    setLevelIndex(getCampaignLevelIndex(id, i));
+    setLevelIndex(getCampaignLevelIndex(id, index));
     setView('game');
   };
 
@@ -55,43 +61,38 @@ function App() {
         )}
         {view === 'help' && <Help back={() => setView('menu')} />}
         {view === 'game' && (
-          <Game li={levelIndex} w={world} back={() => setView('levels')} next={open} />
+          <Game
+            key={`${world}:${levelIndex}`}
+            li={levelIndex}
+            w={world}
+            back={() => setView('levels')}
+            next={open}
+          />
         )}
       </div>
     </main>
   );
 }
 
-// ───────────── Menu ─────────────
 function Menu(p: { world: (x: number) => void; help: () => void; theme: () => void }) {
   return (
     <section className="menu">
       <h1 className="title">DUALITY</h1>
       <div className="subtitle">CHOISIS TON MONDE</div>
-
       <div className="world-list">
         {worlds.map((w) => {
           const done = w.levels.filter((l) => isLevelCompleted(l.id)).length;
           return (
-            <button
-              className="world-button"
-              disabled={w.status !== 'available'}
-              onClick={() => p.world(w.id)}
-              key={w.id}
-            >
+            <button className="world-button" disabled={w.status !== 'available'} onClick={() => p.world(w.id)} key={w.id}>
               🌍 MONDE {w.id} — {w.name.toUpperCase()}
               <span className="world-meta">
-                {w.status === 'available'
-                  ? `${w.subtitle} · ${done}/${w.levels.length}`
-                  : `${w.subtitle} · BIENTÔT`}
+                {w.status === 'available' ? `${w.subtitle} · ${done}/${w.levels.length}` : `${w.subtitle} · BIENTÔT`}
               </span>
             </button>
           );
         })}
       </div>
-
       <p className="muted">{getCompletedCount()} terminé(s) · {campaign.length} jouables</p>
-
       <div className="modal-actions">
         <button className="action" onClick={p.help}>? AIDE</button>
         <button className="action" onClick={p.theme}>🎨 THÈME</button>
@@ -99,7 +100,7 @@ function Menu(p: { world: (x: number) => void; help: () => void; theme: () => vo
     </section>
   );
 }
-// ───────────── Levels ─────────────
+
 function Levels(p: { id: number; back: () => void; open: (w: number, i: number) => void }) {
   const world = worlds.find((x) => x.id === p.id)!;
   return (
@@ -109,18 +110,12 @@ function Levels(p: { id: number; back: () => void; open: (w: number, i: number) 
         <b>MONDE {world.id}</b>
       </div>
       <h2 className="subtitle">{world.name.toUpperCase()}</h2>
-
       <div className="levels">
         {world.levels.map((l, i) => {
           const unlocked = i === 0 || isLevelCompleted(world.levels[i - 1].id);
           const done = isLevelCompleted(l.id);
           return (
-            <button
-              className="level-button"
-              disabled={!unlocked}
-              onClick={() => p.open(world.id, i)}
-              key={l.id}
-            >
+            <button className="level-button" disabled={!unlocked} onClick={() => p.open(world.id, i)} key={l.id}>
               {done ? '✓' : unlocked ? String(i + 1).padStart(2, '0') : '🔒'}
             </button>
           );
@@ -130,7 +125,6 @@ function Levels(p: { id: number; back: () => void; open: (w: number, i: number) 
   );
 }
 
-// ───────────── Help ─────────────
 function Help(p: { back: () => void }) {
   const rules: [string, string][] = [
     ['SE DÉPLACER', "La forme active glisse jusqu'à rencontrer un mur ou l'autre forme."],
@@ -139,7 +133,6 @@ function Help(p: { back: () => void }) {
     ['OBJECTIF', 'Ramasse toutes les étoiles ★ pour terminer.'],
     ['RACCOURCIS', 'R recommence · ÉCHAP menu · ENTRÉE suivant.'],
   ];
-
   return (
     <section className="help">
       <button className="action" onClick={p.back}>← RETOUR</button>
@@ -153,15 +146,10 @@ function Help(p: { back: () => void }) {
     </section>
   );
 }
-// ───────────── Game ─────────────
-function Game(p: {
-  li: number;
-  w: number;
-  back: () => void;
-  next: (w: number, i: number) => void;
-}) {
+
+function Game(p: { li: number; w: number; back: () => void; next: (w: number, i: number) => void }) {
   const level = campaign[p.li] as Level;
-  const runner = useMemo(() => new LevelRunner(level), [p.li]);
+  const runner = useMemo(() => new LevelRunner(level), [level]);
   const [s, setS] = useState(() => runner.getState());
   const [start, setStart] = useState<{ x: number; y: number } | null>(null);
 
@@ -171,12 +159,14 @@ function Game(p: {
 
   const world = worlds.find((x) => x.id === p.w)!;
   const worldIndex = world.levels.findIndex((x) => x.id === level.id);
-  const next = () =>
-    worldIndex < world.levels.length - 1
-      ? p.next(p.w, worldIndex + 1)
-      : p.back();
+  const next = () => {
+    // Do not allow progression from a merely displayed/completed-looking modal.
+    // The persisted progression is the authoritative guard.
+    if (!s.completed || !isLevelCompleted(level.id)) return;
+    if (worldIndex < world.levels.length - 1) p.next(p.w, worldIndex + 1);
+    else p.back();
+  };
 
-  // Clavier
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const map: Record<string, Dir> = {
@@ -204,7 +194,6 @@ function Game(p: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.completed, p.li]);
 
-  // Complétion de niveau
   useEffect(() => {
     if (s.completed) completeLevel(level.id);
   }, [s.completed, level.id]);
@@ -222,7 +211,6 @@ function Game(p: {
         <b>{levelLabel(worldIndex)} · MONDE {p.w}</b>
         <button className="action" onClick={reset}>↻</button>
       </div>
-
       <div className="board-wrap">
         <div
           className="board"
@@ -235,43 +223,20 @@ function Game(p: {
             if (result.type === 'swipe' && result.direction) move(dirs[result.direction]);
           }}
         >
-          {level.tiles.flatMap((row, y) =>
-            row.map((tile, x) => (
-              <div
-                className={'cell ' + (tile === 'wall' ? 'wall' : '')}
-                key={`${x}-${y}`}
-              />
-            )),
-          )}
+          {level.tiles.flatMap((row, y) => row.map((tile, x) => (
+            <div className={'cell ' + (tile === 'wall' ? 'wall' : '')} key={`${x}-${y}`} />
+          )))}
           {s.stars.map((star) => (
-            <div
-              className="star"
-              style={pos(star.x, star.y)}
-              key={`${star.x}-${star.y}`}
-            >
-              ★
-            </div>
+            <div className="star" style={pos(star.x, star.y)} key={`${star.x}-${star.y}`}>★</div>
           ))}
-          <div
-            className={`piece ball ${s.activeForm === 'ball' ? '' : 'inactive'}`}
-            style={pos(s.ball.x, s.ball.y)}
-          />
-          <div
-            className={`piece square ${s.activeForm === 'square' ? '' : 'inactive'}`}
-            style={pos(s.square.x, s.square.y)}
-          />
+          <div className={`piece ball ${s.activeForm === 'ball' ? '' : 'inactive'}`} style={pos(s.ball.x, s.ball.y)} />
+          <div className={`piece square ${s.activeForm === 'square' ? '' : 'inactive'}`} style={pos(s.square.x, s.square.y)} />
         </div>
       </div>
-
       <div className="hud">
-        <b>{s.activeForm === 'ball' ? '● BOULE' : '■ CARRÉ'}</b>
-        <br />
-        <span className="muted">
-          ★ {level.stars.length - s.stars.length}/{level.stars.length} ·{' '}
-          {s.moves} COUPS · swipe ou flèches
-        </span>
+        <b>{s.activeForm === 'ball' ? '● BOULE' : '■ CARRÉ'}</b><br />
+        <span className="muted">★ {level.stars.length - s.stars.length}/{level.stars.length} · {s.moves} COUPS · swipe ou flèches</span>
       </div>
-
       <div className="controls">
         <div className="dpad">
           <button className="up" onClick={() => move(dirs.up)}>▲</button>
@@ -279,20 +244,17 @@ function Game(p: {
           <button onClick={() => move(dirs.down)}>▼</button>
           <button onClick={() => move(dirs.right)}>▶</button>
         </div>
-        <button className="action switch" onClick={switchForm}>
-          ● ⇄ ■<br />CHANGER
-        </button>
+        <button className="action switch" onClick={switchForm}>● ⇄ ■<br />CHANGER</button>
       </div>
-
       {s.completed && (
         <div className="overlay">
-          <div className="modal">
-            <h2>★ NIVEAU TERMINÉ ★</h2>
+          <div className="modal" role="dialog" aria-modal="true" aria-labelledby="completion-title">
+            <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
             <p>{s.moves} coups</p>
             <div className="modal-actions">
               <button className="action" onClick={reset}>REJOUER</button>
-              <button className="action" onClick={next}>
-                {worldIndex < world.levels.length - 1 ? 'SUIVANT ▶' : 'MENU'}
+              <button className="action" onClick={next} disabled={!isLevelCompleted(level.id)}>
+                {worldIndex < world.levels.length - 1 ? 'SUIVANT ▶' : 'NIVEAUX'}
               </button>
             </div>
           </div>
