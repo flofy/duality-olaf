@@ -11,31 +11,15 @@ export type SolverResult =
   | { solvable: false; moves: null; commands: []; exploredStates: number };
 
 const DIRECTIONS: readonly Direction[] = [
-  { x: 1, y: 0 },
-  { x: -1, y: 0 },
-  { x: 0, y: 1 },
-  { x: 0, y: -1 },
+  { x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 },
 ];
 
-type SearchNode = {
-  state: GameState;
-  parent: number | null;
-  command: SolverCommand | null;
-  depth: number;
-};
+type SearchNode = { state: GameState; parent: number | null; command: SolverCommand | null; depth: number };
 
 function stateKey(state: GameState): string {
-  const stars = state.stars
-    .map((star) => `${star.x},${star.y}`)
-    .sort()
-    .join(';');
-
-  return [
-    state.activeForm,
-    `${state.ball.x},${state.ball.y}`,
-    `${state.square.x},${state.square.y}`,
-    stars,
-  ].join('|');
+  const stars = state.stars.map((star) => `${star.x},${star.y}`).sort().join(';');
+  const doors = Object.entries(state.doors).sort(([a], [b]) => a.localeCompare(b)).map(([id, open]) => `${id}:${open ? 1 : 0}`).join(';');
+  return [state.activeForm, `${state.ball.x},${state.ball.y}`, `${state.square.x},${state.square.y}`, stars, doors].join('|');
 }
 
 function changed(before: GameState, after: GameState): boolean {
@@ -45,43 +29,22 @@ function changed(before: GameState, after: GameState): boolean {
 function reconstruct(nodes: readonly SearchNode[], index: number): SolverCommand[] {
   const commands: SolverCommand[] = [];
   let cursor: number | null = index;
-
   while (cursor !== null) {
-    const node: SearchNode = nodes[cursor]!;
+    const node = nodes[cursor]!;
     if (node.command) commands.push(node.command);
     cursor = node.parent;
   }
-
   return commands.reverse();
 }
 
-/**
- * Solver V2.
- *
- * Uses a compact BFS frontier with direct state transitions. Nodes keep only a
- * parent pointer and the command that produced them; the solution is rebuilt
- * once a completed state is found.
- *
- * Because every player command has cost 1, BFS guarantees the shortest command
- * sequence while avoiding replaying an entire history for every candidate.
- */
 export function solveLevel(level: Level): SolverResult {
   const initial = new LevelRunner(level).getState();
+  if (initial.completed) return { solvable: true, moves: 0, commands: [], exploredStates: 1 };
 
-  if (initial.completed) {
-    return { solvable: true, moves: 0, commands: [], exploredStates: 1 };
-  }
-
-  const nodes: SearchNode[] = [{
-    state: initial,
-    parent: null,
-    command: null,
-    depth: 0,
-  }];
+  const nodes: SearchNode[] = [{ state: initial, parent: null, command: null, depth: 0 }];
   const visited = new Set<string>([stateKey(initial)]);
   let cursor = 0;
   let exploredStates = 0;
-
   const candidates: readonly SolverCommand[] = [
     ...DIRECTIONS.map((direction) => ({ type: 'move' as const, direction })),
     { type: 'switch' as const },
@@ -89,38 +52,21 @@ export function solveLevel(level: Level): SolverResult {
 
   while (cursor < nodes.length) {
     const nodeIndex = cursor++;
-    const node: SearchNode = nodes[nodeIndex]!;
+    const node = nodes[nodeIndex]!;
     exploredStates += 1;
-
     for (const command of candidates) {
       const runner = LevelRunner.fromState(node.state);
       const before = runner.getState();
-      const after = command.type === 'move'
-        ? runner.move(command.direction)
-        : runner.switchForm();
-
+      const after = command.type === 'move' ? runner.move(command.direction) : runner.switchForm();
       if (!changed(before, after)) continue;
-
       const key = stateKey(after);
       if (visited.has(key)) continue;
-
       const childIndex = nodes.length;
-      nodes.push({
-        state: after,
-        parent: nodeIndex,
-        command,
-        depth: node.depth + 1,
-      });
+      nodes.push({ state: after, parent: nodeIndex, command, depth: node.depth + 1 });
       visited.add(key);
-
       if (after.completed) {
         const commands = reconstruct(nodes, childIndex);
-        return {
-          solvable: true,
-          moves: commands.length,
-          commands,
-          exploredStates,
-        };
+        return { solvable: true, moves: commands.length, commands, exploredStates };
       }
     }
   }
@@ -130,12 +76,6 @@ export function solveLevel(level: Level): SolverResult {
 
 export function replay(runner: LevelRunner, commands: readonly SolverCommand[]): GameState {
   let state = runner.getState();
-
-  for (const command of commands) {
-    state = command.type === 'move'
-      ? runner.move(command.direction)
-      : runner.switchForm();
-  }
-
+  for (const command of commands) state = command.type === 'move' ? runner.move(command.direction) : runner.switchForm();
   return state;
 }
