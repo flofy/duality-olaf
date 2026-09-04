@@ -21,7 +21,7 @@ import { drawBallVisual, drawBoardVisuals, drawSquareVisual } from "./visuals";
 import "./style.css";
 
 const TILE = 48;
-const FOOTER = 210;
+const FOOTER = 250;
 const WIDTH = 13;
 const HEIGHT = 10;
 const GAME_W = WIDTH * TILE;
@@ -406,8 +406,9 @@ class GameScene extends Phaser.Scene {
     this.squareSprite = drawSquareVisual(this, 0, 0, TILE * 0.62, this.theme);
   }
   private createHud() {
-    // Level data is pushed below the on-screen controls so nothing overlaps the board.
-    const y = BOARD_HEIGHT + 18;
+    // The HUD gets its own strip directly below the board. Touch controls start
+    // lower down, so text and hit areas never occupy the same space.
+    const y = BOARD_HEIGHT + 16;
     this.status = this.add.text(12, y, "", {
       fontFamily: "monospace",
       fontSize: "15px",
@@ -433,9 +434,9 @@ class GameScene extends Phaser.Scene {
   }
   private createTouchControls() {
     const center = GAME_W / 2;
-    // Controls sit directly under the board, spaced out so hit areas never overlap,
-    // leaving the level data room below them.
-    const dpadY = BOARD_HEIGHT + 132;
+    // Dedicated mobile control zone below the HUD.
+    // The top ▲ button starts after both HUD lines.
+    const dpadY = BOARD_HEIGHT + 190;
     const size = 62;
     const gap = 16;
 
@@ -596,7 +597,7 @@ class GameScene extends Phaser.Scene {
       state.completed
         ? `✓ NIVEAU TERMINÉ · ★ ${collected}/${this.level.stars.length} · ${state.moves} COUPS`
         : HAS_COARSE_POINTER
-          ? `★ ${collected}/${this.level.stars.length} · ${state.moves} COUPS · ESPACE changer · swipe / tactile`
+          ? `★ ${collected}/${this.level.stars.length} · ${state.moves} COUPS · SWIPE POUR DÉPLACER`
           : `★ ${collected}/${this.level.stars.length} · ${state.moves} COUPS · FLÈCHES déplacer · ESPACE changer`,
     );
     this.nextButton.setVisible(
