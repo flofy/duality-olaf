@@ -4,7 +4,6 @@ export const GRID_HEIGHT = 10;
 export type Tile = 'empty' | 'wall' | 'special';
 export type Position = { x: number; y: number };
 export type Form = 'ball' | 'square';
-
 export type Door = { id: string; position: Position; initiallyOpen?: boolean };
 export type Switch = { id: string; position: Position; form: Form | 'either'; toggles: string[] };
 
@@ -40,10 +39,7 @@ export function isWall(level: Level, position: Position): boolean {
   return isInside(level, position) && level.tiles[position.y][position.x] === 'wall';
 }
 
-export function samePosition(a: Position, b: Position): boolean {
-  return a.x === b.x && a.y === b.y;
-}
-
+export function samePosition(a: Position, b: Position): boolean { return a.x === b.x && a.y === b.y; }
 export function clonePosition(position: Position): Position { return { ...position }; }
 
 export function cloneLevel(level: Level): Level {
