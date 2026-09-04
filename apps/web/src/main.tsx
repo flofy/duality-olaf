@@ -211,8 +211,8 @@ function Game(p: {
 
   const pos = (x: number, y: number): CSSProperties => ({
     transform: `translate(${x * 100}%, ${y * 100}%)`,
-    width: `calc(100% / ${level.width})`,
-    height: `calc(100% / ${level.height})`,
+    width: 'var(--tile)',
+    height: 'var(--tile)',
   });
 
   return (
