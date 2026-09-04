@@ -111,7 +111,67 @@ export const world3: Level[] = [
   makeWorld3Level(4, p(1, 4), p(11, 4), [p(5, 4), p(7, 4), p(6, 1)], [p(4, 2), p(4, 3), p(4, 6), p(4, 7), p(8, 2), p(8, 3), p(8, 6), p(8, 7)]),
   // 05 — Première coordination multi-étapes.
   makeWorld3Level(5, p(2, 1), p(10, 8), [p(6, 1), p(6, 8), p(6, 5)], [p(5, 3), p(6, 3), p(7, 3), p(5, 6), p(6, 6), p(7, 6)]),
+  // 06–11 — Coordination avancée : les positions intermédiaires deviennent
+  // indispensables pour créer des points d'arrêt utiles.
+  makeWorld3Level(6, p(1, 4), p(11, 4), [p(3, 1), p(6, 8), p(10, 1)], [p(2, 3), p(3, 3), p(4, 3), p(8, 6), p(9, 6), p(10, 6)]),
+  makeWorld3Level(7, p(2, 8), p(2, 1), [p(10, 8), p(10, 1), p(6, 5)], [p(4, 2), p(5, 2), p(6, 2), p(6, 7), p(7, 7), p(8, 7)]),
+  makeWorld3Level(8, p(1, 1), p(1, 8), [p(11, 1), p(11, 8), p(6, 4), p(6, 6)], [p(3, 4), p(4, 4), p(5, 4), p(7, 5), p(8, 5), p(9, 5)]),
+  makeWorld3Level(9, p(11, 8), p(11, 1), [p(1, 8), p(1, 1), p(6, 2), p(6, 7)], [p(2, 2), p(2, 3), p(2, 4), p(10, 5), p(10, 6), p(10, 7)]),
+  makeWorld3Level(10, p(1, 1), p(3, 8), [p(11, 1), p(11, 8), p(6, 3), p(6, 6)], [p(4, 3), p(5, 3), p(7, 3), p(8, 3), p(4, 6), p(5, 6), p(7, 6), p(8, 6)]),
+  makeWorld3Level(11, p(1, 8), p(11, 1), [p(1, 1), p(11, 8), p(6, 4), p(6, 7)], [p(3, 2), p(3, 3), p(3, 6), p(3, 7), p(9, 2), p(9, 3), p(9, 6), p(9, 7)]),
 ];
+
+function makeWorld4Level(number: number, ball: Position, square: Position, stars: Position[], walls: Position[] = []): Level {
+  const level = makeLevel(number, ball, square, stars, walls);
+  return { ...level, id: `world-4-level-${String(number).padStart(2, '0')}` };
+}
+
+/**
+ * World 4 — Combinaisons.
+ *
+ * The player now chains several setup positions before collecting the stars.
+ * Layouts deliberately reuse proven campaign geometry while changing starts,
+ * targets and ordering to create longer multi-stage sequences.
+ */
+export const world4: Level[] = [
+  makeWorld4Level(1, p(1, 1), p(11, 8), [p(5, 1), p(8, 8)], [p(6, 2), p(6, 3), p(6, 4)]),
+  makeWorld4Level(2, p(1, 8), p(11, 1), [p(3, 4), p(9, 5)], [p(4, 2), p(4, 3), p(8, 6), p(8, 7)]),
+  makeWorld4Level(3, p(2, 1), p(10, 8), [p(6, 1), p(6, 8), p(3, 5)], [p(5, 3), p(6, 3), p(7, 3), p(5, 6), p(6, 6), p(7, 6)]),
+  makeWorld4Level(4, p(1, 4), p(11, 4), [p(3, 1), p(9, 8), p(6, 4)], [p(4, 2), p(4, 3), p(4, 6), p(4, 7), p(8, 2), p(8, 3), p(8, 6), p(8, 7)]),
+  makeWorld4Level(5, p(1, 1), p(11, 8), [p(11, 1), p(1, 8), p(6, 5)], [p(3, 3), p(4, 3), p(5, 3), p(7, 6), p(8, 6), p(9, 6)]),
+  makeWorld4Level(6, p(2, 8), p(10, 1), [p(2, 2), p(10, 7), p(6, 4), p(6, 6)], [p(4, 2), p(4, 3), p(4, 4), p(8, 5), p(8, 6), p(8, 7)]),
+  makeWorld4Level(7, p(1, 1), p(11, 8), [p(6, 1), p(6, 8), p(2, 5), p(10, 5)], [p(3, 2), p(3, 3), p(3, 4), p(9, 5), p(9, 6), p(9, 7)]),
+  makeWorld4Level(8, p(11, 1), p(1, 8), [p(1, 1), p(11, 8), p(6, 3), p(6, 6)], [p(4, 3), p(5, 3), p(7, 3), p(8, 3), p(4, 6), p(5, 6), p(7, 6), p(8, 6)]),
+  makeWorld4Level(9, p(1, 8), p(11, 1), [p(1, 1), p(11, 8), p(6, 4), p(6, 7)], [p(2, 2), p(2, 3), p(2, 6), p(2, 7), p(10, 2), p(10, 3), p(10, 6), p(10, 7)]),
+  makeWorld4Level(10, p(2, 1), p(10, 8), [p(5, 2), p(7, 2), p(5, 7), p(7, 7), p(6, 4), p(6, 5)], [p(4, 2), p(4, 3), p(4, 4), p(8, 5), p(8, 6), p(8, 7)]),
+  makeWorld4Level(11, p(1, 4), p(11, 5), [p(2, 1), p(10, 1), p(2, 8), p(10, 8), p(6, 3), p(6, 6)], [p(3, 2), p(3, 3), p(3, 6), p(3, 7), p(9, 2), p(9, 3), p(9, 6), p(9, 7)]),
+];
+
+function makeWorld5Level(number: number, ball: Position, square: Position, stars: Position[], walls: Position[] = []): Level {
+  const level = makeLevel(number, ball, square, stars, walls);
+  return { ...level, id: `world-5-level-${String(number).padStart(2, '0')}` };
+}
+
+/**
+ * World 5 — Maîtrise.
+ *
+ * Final campaign: denser boards, more targets and longer shortest paths.
+ * These levels are intentionally presented as the expert endgame set.
+ */
+export const world5: Level[] = [
+  makeWorld5Level(1, p(1, 1), p(2, 1), [p(5, 1), p(5, 7)], [p(3, 2), p(4, 2), p(5, 2), p(7, 5), p(8, 5), p(9, 5)]),
+  makeWorld5Level(2, p(1, 8), p(2, 8), [p(11, 1), p(6, 4)], [p(4, 2), p(4, 3), p(4, 4), p(8, 5), p(8, 6), p(8, 7)]),
+  makeWorld5Level(3, p(1, 1), p(2, 2), [p(11, 1), p(11, 8), p(1, 8)], [p(3, 3), p(4, 3), p(5, 3), p(7, 6), p(8, 6), p(9, 6)]),
+  makeWorld5Level(4, p(11, 8), p(9, 8), [p(1, 1), p(6, 2), p(6, 7)], [p(3, 2), p(3, 3), p(3, 4), p(9, 5), p(9, 6), p(9, 7)]),
+  makeWorld5Level(5, p(1, 1), p(11, 8), [p(11, 1), p(1, 8), p(6, 5)], [p(5, 2), p(6, 2), p(7, 2), p(5, 7), p(6, 7), p(7, 7)]),
+  makeWorld5Level(6, p(1, 4), p(11, 4), [p(3, 1), p(6, 8), p(10, 1)], [p(2, 3), p(3, 3), p(4, 3), p(8, 6), p(9, 6), p(10, 6)]),
+  makeWorld5Level(7, p(2, 8), p(2, 1), [p(10, 8), p(10, 1), p(6, 5)], [p(4, 2), p(5, 2), p(6, 2), p(6, 7), p(7, 7), p(8, 7)]),
+  makeWorld5Level(8, p(1, 1), p(1, 8), [p(11, 1), p(11, 8), p(6, 4), p(6, 6)], [p(3, 4), p(4, 4), p(5, 4), p(7, 5), p(8, 5), p(9, 5)]),
+  makeWorld5Level(9, p(11, 8), p(11, 1), [p(1, 8), p(1, 1), p(6, 2), p(6, 7)], [p(2, 2), p(2, 3), p(2, 4), p(10, 5), p(10, 6), p(10, 7)]),
+  makeWorld5Level(10, p(1, 1), p(3, 8), [p(11, 1), p(11, 8), p(6, 3), p(6, 6)], [p(4, 3), p(5, 3), p(7, 3), p(8, 3), p(4, 6), p(5, 6), p(7, 6), p(8, 6)]),
+  makeWorld5Level(11, p(1, 8), p(11, 1), [p(1, 1), p(11, 8), p(6, 4), p(6, 7)], [p(3, 2), p(3, 3), p(3, 6), p(3, 7), p(9, 2), p(9, 3), p(9, 6), p(9, 7)]),
+];
+
 
 
 export type PuzzleMechanic =
@@ -159,8 +219,8 @@ export const worlds: readonly WorldDefinition[] = [
   { id: 1, name: 'Découverte', subtitle: 'Les bases du mouvement', status: 'available', levels: world1 },
   { id: 2, name: 'Positionnement', subtitle: 'Préparer le terrain', status: 'available', levels: world2 },
   { id: 3, name: 'Coordination', subtitle: 'Faire coopérer les formes', status: 'available', levels: world3 },
-  { id: 4, name: 'Combinaisons', subtitle: 'Plusieurs étapes à prévoir', status: 'coming-soon', levels: [] },
-  { id: 5, name: 'Maîtrise', subtitle: 'Le défi final', status: 'coming-soon', levels: [] },
+  { id: 4, name: 'Combinaisons', subtitle: 'Plusieurs étapes à prévoir', status: 'available', levels: world4 },
+  { id: 5, name: 'Maîtrise', subtitle: 'Le défi final', status: 'available', levels: world5 },
 ];
 
 export const campaign = worlds.flatMap((world) => world.levels);

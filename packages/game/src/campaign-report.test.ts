@@ -10,6 +10,7 @@ describe('World 1 campaign validation', () => {
     console.info(`\n${report}\n`);
 
     expect(validation.levels).toHaveLength(campaign.length);
+    expect(campaign).toHaveLength(55);
     expect(report).toContain('CAMPAIGN VALIDATION');
     expect(report).toContain('Solvable:');
 
