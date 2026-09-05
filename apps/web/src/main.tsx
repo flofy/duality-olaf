@@ -220,7 +220,7 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
             <div className={'cell ' + (tile === 'wall' ? 'wall' : '')} key={`${x}-${y}`} />
           )))}
           {s.stars.map((star) => (
-            <div className="star" style={pos(star.x, star.y)} key={`${star.x}-${star.y}`}>★</div>
+            <div className="star" style={{ gridColumn: star.x + 1, gridRow: star.y + 1 }} key={`${star.x}-${star.y}`}>★</div>
           ))}
           <div className={`piece ball ${s.activeForm === 'ball' ? '' : 'inactive'}`} style={pos(s.ball.x, s.ball.y)} />
           <div className={`piece square ${s.activeForm === 'square' ? '' : 'inactive'}`} style={pos(s.square.x, s.square.y)} />
