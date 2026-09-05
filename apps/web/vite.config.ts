@@ -26,6 +26,9 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: 'index.html',
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: false,
         globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2}'],
       },
     }),
