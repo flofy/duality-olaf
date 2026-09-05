@@ -85,7 +85,8 @@ function App() {
 
   return (
     <main className="app" style={vars()}>
-      <div className="shell">\n        <PwaControls updateSW={updateSW} />
+      <div className="shell">
+        <PwaControls updateSW={updateSW} />
         {view === 'menu' && (
           <Menu
             world={(w) => { setWorld(w); setView('levels'); }}
@@ -298,5 +299,8 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
   );
 }
 
-const updateSW = registerSW({\n  immediate: true,\n  onNeedRefresh() { window.dispatchEvent(new Event('duality:pwa-update')); },\n});
+const updateSW = registerSW({
+  immediate: true,
+  onNeedRefresh() { window.dispatchEvent(new Event('duality:pwa-update')); },
+});
 createRoot(document.getElementById('app')!).render(<App />);
