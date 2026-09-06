@@ -45,7 +45,8 @@ function PwaControls({ updateSW }: { updateSW: (reloadPage?: boolean) => Promise
   }, []);
 
   useEffect(() => {
-    const onUpdate = () => setUpdateAvailable(true);
+    const onUpdate = () => se
+tUpdateAvailable(true);
     window.addEventListener('duality:pwa-update', onUpdate);
     return () => window.removeEventListener('duality:pwa-update', onUpdate);
   }, []);
@@ -99,7 +100,8 @@ function App() {
         {view === 'game' && (
           <Game
             key={`${world}:${levelIndex}`}
-            li={levelIndex}
+            
+li={levelIndex}
             w={world}
             back={() => setView('levels')}
             next={open}
@@ -152,6 +154,7 @@ function Levels(p: { id: number; back: () => void; open: (w: number, i: number) 
           const done = isLevelCompleted(l.id);
           return (
             <button className="level-button" disabled={!unlocked} onClick={() => p.open(world.id, i)} key={l.id}>
+
               {done ? '✓' : unlocked ? String(i + 1).padStart(2, '0') : '🔒'}
             </button>
           );
@@ -197,6 +200,7 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
   const worldIndex = world.levels.findIndex((x) => x.id === level.id);
   const next = () => {
     if (!s.completed) return;
+    completeLevel(level.id);
     if (worldIndex < world.levels.length - 1) p.next(p.w, worldIndex + 1);
     else p.back();
   };
@@ -209,7 +213,8 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
         ArrowUp: dirs.up,
         ArrowDown: dirs.down,
       };
-      if (e.key === ' ') {
+      if (e.ke
+y === ' ') {
         e.preventDefault();
         switchForm();
       } else if (e.key === 'r' || e.key === 'R') {
@@ -267,7 +272,8 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
           )}
           {s.stars.map((star) => (
             <div className="star" style={{ gridColumn: star.x + 1, gridRow: star.y + 1 }} key={`${star.x}-${star.y}`}>
-              ★
+             
+ ★
             </div>
           ))}
           <div className={`piece ball ${s.activeForm === 'ball' ? '' : 'inactive'}`} style={{ gridColumn: s.ball.x + 1, gridRow: s.ball.y + 1 }} />
@@ -320,4 +326,5 @@ const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() { window.dispatchEvent(new Event('duality:pwa-update')); },
 });
-createRoot(document.getElementById('app')!).render(<App />);
+createRoot(document.getElementById('app')
+!).render(<App />);
