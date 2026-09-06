@@ -27,6 +27,47 @@ function vars(): CSSProperties {
   ) as CSSProperties;
 }
 
+type BeforeInstallPromptEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }> };
+
+function PwaControls({ updateSW }: { updateSW: (reloadPage?: boolean) => Promise<void> }) {
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+
+  useEffect(() => {
+    const onBeforeInstall = (event: Event) => { event.preventDefault(); setInstallPrompt(event as BeforeInstallPromptEvent); };
+    const onInstalled = () => setInstallPrompt(null);
+    window.addEventListener('beforeinstallprompt', onBeforeInstall);
+    window.addEventListener('appinstalled', onInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBeforeInstall);
+      window.removeEventListener('appinstalled', onInstalled);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onUpdate = () => setUpdateAvailable(true);
+    window.addEventListener('duality:pwa-update', onUpdate);
+    return () => window.removeEventListener('duality:pwa-update', onUpdate);
+  }, []);
+
+  if (!updateAvailable && !installPrompt) return null;
+
+  return (
+    <div className="pwa-controls" role="status" aria-live="polite">
+      {updateAvailable ? (
+        <><span>✨ Nouvelle version disponible</span><button className="pwa-action" onClick={() => updateSW(true)}>METTRE À JOUR</button></>
+      ) : (
+        <><span>📱 Installe Duality pour jouer en plein écran</span><button className="pwa-action" onClick={async () => {
+          if (!installPrompt) return;
+          await installPrompt.prompt();
+          await installPrompt.userChoice;
+          setInstallPrompt(null);
+        }}>INSTALLER</button></>
+      )}
+    </div>
+  );
+}
+
 function App() {
   const [view, setView] = useState<'menu' | 'levels' | 'help' | 'game'>('menu');
   const [world, setWorld] = useState(1);
@@ -45,6 +86,7 @@ function App() {
   return (
     <main className="app" style={vars()}>
       <div className="shell">
+        <PwaControls updateSW={updateSW} />
         {view === 'menu' && (
           <Menu
             world={(w) => { setWorld(w); setView('levels'); }}
@@ -257,5 +299,8 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
   );
 }
 
-registerSW({ immediate: true });
+const updateSW = registerSW({
+  immediate: true,
+  onNeedRefresh() { window.dispatchEvent(new Event('duality:pwa-update')); },
+});
 createRoot(document.getElementById('app')!).render(<App />);
