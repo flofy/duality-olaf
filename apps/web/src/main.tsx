@@ -254,16 +254,18 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
             if (result.type === 'swipe' && result.direction) move(dirs[result.direction]);
           }}
         >
-          {/* ✅ NOUVEAU : murs comme éléments de grille explicites */}
-          {level.tiles.flatMap((row, y) => row.map((tile, x) => (
-            tile === 'wall' && (
-              <div
-                className="wall"
-                style={{ gridColumn: x + 1, gridRow: y + 1 }}
-                key={`wall-${x}-${y}`}
-              />
+          {/* ✅ CORRECTION : murs comme éléments de grille explicites, SANS false dans le tableau */}
+          {level.tiles.flatMap((row, y) =>
+            row.map((tile, x) =>
+              tile === 'wall' ? (
+                <div
+                  className="wall"
+                  style={{ gridColumn: x + 1, gridRow: y + 1 }}
+                  key={`wall-${x}-${y}`}
+                />
+              ) : null
             )
-          ))}
+          )}
           {s.stars.map((star) => (
             <div className="star" style={{ gridColumn: star.x + 1, gridRow: star.y + 1 }} key={`${star.x}-${star.y}`}>
               ★
