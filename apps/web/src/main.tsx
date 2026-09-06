@@ -196,7 +196,7 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
   const world = worlds.find((x) => x.id === p.w)!;
   const worldIndex = world.levels.findIndex((x) => x.id === level.id);
   const next = () => {
-    if (!s.completed || !isLevelCompleted(level.id)) return;
+    if (!s.completed) return;
     if (worldIndex < world.levels.length - 1) p.next(p.w, worldIndex + 1);
     else p.back();
   };
@@ -254,7 +254,6 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
             if (result.type === 'swipe' && result.direction) move(dirs[result.direction]);
           }}
         >
-          {/* ✅ CORRECTION : murs comme éléments de grille explicites, SANS false dans le tableau */}
           {level.tiles.flatMap((row, y) =>
             row.map((tile, x) =>
               tile === 'wall' ? (
@@ -306,7 +305,7 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
               <button className="action" onClick={reset}>
                 REJOUER
               </button>
-              <button className="action" onClick={next} disabled={!isLevelCompleted(level.id)}>
+              <button className="action" onClick={next} disabled={!s.completed}>
                 {worldIndex < world.levels.length - 1 ? 'SUIVANT ▶' : 'NIVEAUX'}
               </button>
             </div>
