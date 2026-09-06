@@ -242,7 +242,10 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
       <div className="board-wrap">
         <div
           className="board"
-          style={{ '--cols': level.width, '--rows': level.height } as CSSProperties}
+          style={{
+            '--cols': level.width,
+            '--rows': level.height
+          } as CSSProperties}
           onPointerDown={(e) => setStart({ x: e.clientX, y: e.clientY })}
           onPointerUp={(e) => {
             if (!start) return;
@@ -251,28 +254,46 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
             if (result.type === 'swipe' && result.direction) move(dirs[result.direction]);
           }}
         >
+          {/* ✅ NOUVEAU : murs comme éléments de grille explicites */}
           {level.tiles.flatMap((row, y) => row.map((tile, x) => (
-            <div className={'cell ' + (tile === 'wall' ? 'wall' : '')} key={`${x}-${y}`} />
-          )))}
+            tile === 'wall' && (
+              <div
+                className="wall"
+                style={{ gridColumn: x + 1, gridRow: y + 1 }}
+                key={`wall-${x}-${y}`}
+              />
+            )
+          ))}
           {s.stars.map((star) => (
-            <div className="star" style={{ gridColumn: star.x + 1, gridRow: star.y + 1 }} key={`${star.x}-${star.y}`}>★</div>
+            <div className="star" style={{ gridColumn: star.x + 1, gridRow: star.y + 1 }} key={`${star.x}-${star.y}`}>
+              ★
+            </div>
           ))}
           <div className={`piece ball ${s.activeForm === 'ball' ? '' : 'inactive'}`} style={{ gridColumn: s.ball.x + 1, gridRow: s.ball.y + 1 }} />
           <div className={`piece square ${s.activeForm === 'square' ? '' : 'inactive'}`} style={{ gridColumn: s.square.x + 1, gridRow: s.square.y + 1 }} />
         </div>
       </div>
       <div className="hud">
-        <b>{s.activeForm === 'ball' ? '● BOULE' : '■ CARRÉ'}</b><br />
-        <span className="muted">★ {level.stars.length - s.stars.length}/{level.stars.length} · {s.moves} COUPS · swipe ou flèches</span>
+        <b>{s.activeForm === 'ball' ? '● BOULE' : '■ CARRÉ'}</b>
+        <br />
+        <span className="muted">
+          ★ {level.stars.length - s.stars.length}/{level.stars.length} · {s.moves} COUPS · swipe ou flèches
+        </span>
       </div>
       <div className="controls">
         <div className="dpad">
-          <button className="up" onClick={() => move(dirs.up)}>▲</button>
+          <button className="up" onClick={() => move(dirs.up)}>
+            ▲
+          </button>
           <button onClick={() => move(dirs.left)}>◀</button>
           <button onClick={() => move(dirs.down)}>▼</button>
           <button onClick={() => move(dirs.right)}>▶</button>
         </div>
-        <button className="action switch" onClick={switchForm}>● ⇄ ■<br />CHANGER</button>
+        <button className="action switch" onClick={switchForm}>
+          ● ⇄ ■
+          <br />
+          CHANGER
+        </button>
       </div>
       {s.completed && (
         <div className="overlay">
@@ -280,7 +301,9 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
             <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
             <p>{s.moves} coups</p>
             <div className="modal-actions">
-              <button className="action" onClick={reset}>REJOUER</button>
+              <button className="action" onClick={reset}>
+                REJOUER
+              </button>
               <button className="action" onClick={next} disabled={!isLevelCompleted(level.id)}>
                 {worldIndex < world.levels.length - 1 ? 'SUIVANT ▶' : 'NIVEAUX'}
               </button>
