@@ -27,47 +27,6 @@ function vars(): CSSProperties {
   ) as CSSProperties;
 }
 
-type BeforeInstallPromptEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }> };
-
-function PwaControls({ updateSW }: { updateSW: (reloadPage?: boolean) => Promise<void> }) {
-  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
-
-  useEffect(() => {
-    const onBeforeInstall = (event: Event) => { event.preventDefault(); setInstallPrompt(event as BeforeInstallPromptEvent); };
-    const onInstalled = () => setInstallPrompt(null);
-    window.addEventListener('beforeinstallprompt', onBeforeInstall);
-    window.addEventListener('appinstalled', onInstalled);
-    return () => {
-      window.removeEventListener('beforeinstallprompt', onBeforeInstall);
-      window.removeEventListener('appinstalled', onInstalled);
-    };
-  }, []);
-
-  useEffect(() => {
-    const onUpdate = () => setUpdateAvailable(true);
-    window.addEventListener('duality:pwa-update', onUpdate);
-    return () => window.removeEventListener('duality:pwa-update', onUpdate);
-  }, []);
-
-  if (!updateAvailable && !installPrompt) return null;
-
-  return (
-    <div className="pwa-controls" role="status" aria-live="polite">
-      {updateAvailable ? (
-        <><span>✨ Nouvelle version disponible</span><button className="pwa-action" onClick={() => updateSW(true)}>METTRE À JOUR</button></>
-      ) : (
-        <><span>📱 Installe Duality pour jouer en plein écran</span><button className="pwa-action" onClick={async () => {
-          if (!installPrompt) return;
-          await installPrompt.prompt();
-          await installPrompt.userChoice;
-          setInstallPrompt(null);
-        }}>INSTALLER</button></>
-      )}
-    </div>
-  );
-}
-
 function App() {
   const [view, setView] = useState<'menu' | 'levels' | 'help' | 'game'>('menu');
   const [world, setWorld] = useState(1);
@@ -86,7 +45,6 @@ function App() {
   return (
     <main className="app" style={vars()}>
       <div className="shell">
-        <PwaControls updateSW={updateSW} />
         {view === 'menu' && (
           <Menu
             world={(w) => { setWorld(w); setView('levels'); }}
@@ -94,7 +52,8 @@ function App() {
             theme={() => { cycleTheme(); setTick(tick + 1); }}
           />
         )}
-        {view === 'levels' && <Levels id={world} back={() => setView('menu')} open={open} />}
+        {view === 'levels' && <Levels id={world} back={() => setVi
+ew('menu')} open={open} />}
         {view === 'help' && <Help back={() => setView('menu')} />}
         {view === 'game' && (
           <Game
@@ -148,7 +107,8 @@ function Levels(p: { id: number; back: () => void; open: (w: number, i: number) 
       <h2 className="subtitle">{world.name.toUpperCase()}</h2>
       <div className="levels">
         {world.levels.map((l, i) => {
-          const unlocked = i === 0 || isLevelCompleted(world.levels[i - 1].id);
+          const unlocked = i === 0 || isLevelCompleted(world.le
+vels[i - 1].id);
           const done = isLevelCompleted(l.id);
           return (
             <button className="level-button" disabled={!unlocked} onClick={() => p.open(world.id, i)} key={l.id}>
@@ -196,12 +156,14 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
   const world = worlds.find((x) => x.id === p.w)!;
   const worldIndex = world.levels.findIndex((x) => x.id === level.id);
   const next = () => {
-    if (!s.completed || !isLevelCompleted(level.id)) return;
+    if (!s.completed) return;
+    completeLevel(level.id);
     if (worldIndex < world.levels.length - 1) p.next(p.w, worldIndex + 1);
     else p.back();
   };
 
   useEffect(() => {
+
     const handler = (e: KeyboardEvent) => {
       const map: Record<string, Dir> = {
         ArrowLeft: dirs.left,
@@ -232,11 +194,6 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
     if (s.completed) completeLevel(level.id);
   }, [s.completed, level.id]);
 
-  const pos = (x: number, y: number): CSSProperties => ({
-    left: `calc(${x} * var(--tile))`,
-    top: `calc(${y} * var(--tile))`,
-    width: 'var(--tile)',
-    height: 'var(--tile)',
   });
 
   return (
@@ -249,7 +206,9 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
       <div className="board-wrap">
         <div
           className="board"
-          style={{ '--cols': level.width, '--rows': level.height } as CSSProperties}
+            '--cols': level.width,
+            '--rows': level.height
+          } as CSSProperties
           onPointerDown={(e) => setStart({ x: e.clientX, y: e.clientY })}
           onPointerUp={(e) => {
             if (!start) return;
@@ -259,13 +218,14 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
           }}
         >
           {level.tiles.flatMap((row, y) => row.map((tile, x) => (
-            <div className={'cell ' + (tile === 'wall' ? 'wall' : '')} key={`${x}-${y}`} />
-          )))}
+              tile === 'wall' ? (<div className="wall" style={{ gridColumn: x + 1, gridRow: y + 1 }} key={`wall-${x}-${y}`} />) : null
+            )
+          )}
           {s.stars.map((star) => (
             <div className="star" style={{ gridColumn: star.x + 1, gridRow: star.y + 1 }} key={`${star.x}-${star.y}`}>★</div>
           ))}
-          <div className={`piece ball ${s.activeForm === 'ball' ? '' : 'inactive'}`} style={pos(s.ball.x, s.ball.y)} />
-          <div className={`piece square ${s.activeForm === 'square' ? '' : 'inactive'}`} style={pos(s.square.x, s.square.y)} />
+          <div className={`piece ball ${s.activeForm === 'ball' ? '' : 'inactive'}`} style={{ gridColumn: s.ball.x + 1, gridRow: s.ball.y + 1 }} />
+          <div className={`piece square ${s.activeForm === 'square' ? '' : 'inactive'}`} style={{ gridColumn: s.square.x + 1, gridRow: s.square.y + 1 }} />
         </div>
       </div>
       <div className="hud">
@@ -288,7 +248,7 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
             <p>{s.moves} coups</p>
             <div className="modal-actions">
               <button className="action" onClick={reset}>REJOUER</button>
-              <button className="action" onClick={next} disabled={!isLevelCompleted(level.id)}>
+              <button className="action" onClick={next} disabled={!s.completed}>
                 {worldIndex < world.levels.length - 1 ? 'SUIVANT ▶' : 'NIVEAUX'}
               </button>
             </div>
@@ -299,8 +259,5 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
   );
 }
 
-const updateSW = registerSW({
-  immediate: true,
-  onNeedRefresh() { window.dispatchEvent(new Event('duality:pwa-update')); },
-});
+registerSW({ immediate: true });
 createRoot(document.getElementById('app')!).render(<App />);
