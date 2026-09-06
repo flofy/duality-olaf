@@ -232,13 +232,6 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
     if (s.completed) completeLevel(level.id);
   }, [s.completed, level.id]);
 
-  const pos = (x: number, y: number): CSSProperties => ({
-    left: `calc(${x} * var(--tile))`,
-    top: `calc(${y} * var(--tile))`,
-    width: 'var(--tile)',
-    height: 'var(--tile)',
-  });
-
   return (
     <section className="game">
       <div className="topbar">
@@ -264,8 +257,8 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
           {s.stars.map((star) => (
             <div className="star" style={{ gridColumn: star.x + 1, gridRow: star.y + 1 }} key={`${star.x}-${star.y}`}>★</div>
           ))}
-          <div className={`piece ball ${s.activeForm === 'ball' ? '' : 'inactive'}`} style={pos(s.ball.x, s.ball.y)} />
-          <div className={`piece square ${s.activeForm === 'square' ? '' : 'inactive'}`} style={pos(s.square.x, s.square.y)} />
+          <div className={`piece ball ${s.activeForm === 'ball' ? '' : 'inactive'}`} style={{ gridColumn: s.ball.x + 1, gridRow: s.ball.y + 1 }} />
+          <div className={`piece square ${s.activeForm === 'square' ? '' : 'inactive'}`} style={{ gridColumn: s.square.x + 1, gridRow: s.square.y + 1 }} />
         </div>
       </div>
       <div className="hud">
