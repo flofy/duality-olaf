@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { christmas, halloween, isSeasonalEventAvailable } from '@duality/level-format';
-import { solveLevel } from './LevelSolver';
+import { estimateDifficulty, validateLevel } from './LevelValidator';
 
 const seasonalEvents = [halloween, christmas];
 const seasonalLevels = seasonalEvents.flatMap((event) => event.levels);
@@ -14,7 +14,19 @@ describe('seasonal worlds', () => {
   });
 
   it.each(seasonalLevels)('$id is solver-valid', (level) => {
-    expect(solveLevel(level).solvable).toBe(true);
+    const validation = validateLevel(level);
+    const difficulty = estimateDifficulty(validation.result);
+
+    if (validation.result.solvable && difficulty) {
+      console.info(
+        `✓ ${level.id.padEnd(26)} solvable  ${String(difficulty.moves).padStart(3)} moves  explored: ${difficulty.exploredStates}  score: ${difficulty.score}`,
+      );
+    } else {
+      console.info(`✗ ${level.id.padEnd(26)} UNSOLVABLE  explored: ${validation.result.exploredStates}`);
+    }
+
+    expect(validation.result.solvable).toBe(true);
+    expect(difficulty).not.toBeNull();
   });
 
   it('supports recurring cross-year Christmas availability', () => {
