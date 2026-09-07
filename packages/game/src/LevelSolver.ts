@@ -30,7 +30,7 @@ function reconstruct(nodes: readonly SearchNode[], index: number): SolverCommand
   const commands: SolverCommand[] = [];
   let cursor: number | null = index;
   while (cursor !== null) {
-    const node = nodes[cursor]!;
+    const node: SearchNode = nodes[cursor]!;
     if (node.command) commands.push(node.command);
     cursor = node.parent;
   }
@@ -52,7 +52,7 @@ export function solveLevel(level: Level): SolverResult {
 
   while (cursor < nodes.length) {
     const nodeIndex = cursor++;
-    const node = nodes[nodeIndex]!;
+    const node: SearchNode = nodes[nodeIndex]!;
     exploredStates += 1;
     for (const command of candidates) {
       const runner = LevelRunner.fromState(node.state);
