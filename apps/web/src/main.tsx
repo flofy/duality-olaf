@@ -32,9 +32,10 @@ type BeforeInstallPromptEvent = Event & { prompt: () => Promise<void>; userChoic
 function PwaControls({ updateSW }: { updateSW: (reloadPage?: boolean) => Promise<void> }) {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    const onBeforeInstall = (event: Event) => { event.preventDefault(); setInstallPrompt(event as BeforeInstallPromptEvent); };
+    const onBeforeInstall = (event: Event) => { event.preventDefault(); setInstallPrompt(event as BeforeInstallPromptEvent); setDismissed(false); };
     const onInstalled = () => setInstallPrompt(null);
     window.addEventListener('beforeinstallprompt', onBeforeInstall);
     window.addEventListener('appinstalled', onInstalled);
@@ -45,12 +46,12 @@ function PwaControls({ updateSW }: { updateSW: (reloadPage?: boolean) => Promise
   }, []);
 
   useEffect(() => {
-    const onUpdate = () => setUpdateAvailable(true);
+    const onUpdate = () => { setUpdateAvailable(true); setDismissed(false); };
     window.addEventListener('duality:pwa-update', onUpdate);
     return () => window.removeEventListener('duality:pwa-update', onUpdate);
   }, []);
 
-  if (!updateAvailable && !installPrompt) return null;
+  if (dismissed || (!updateAvailable && !installPrompt)) return null;
 
   return (
     <div className="pwa-controls" role="status" aria-live="polite">
@@ -64,6 +65,7 @@ function PwaControls({ updateSW }: { updateSW: (reloadPage?: boolean) => Promise
           setInstallPrompt(null);
         }}>INSTALLER</button></>
       )}
+      <button className="pwa-dismiss" type="button" aria-label="Fermer" onClick={() => setDismissed(true)}>×</button>
     </div>
   );
 }
@@ -283,9 +285,7 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
       </div>
       <div className="controls">
         <div className="dpad">
-          <button className="up" onClick={() => move(dirs.up)}>
-            ▲
-          </button>
+          <button className="up" onClick={() => move(dirs.up)}>▲</button>
           <button onClick={() => move(dirs.left)}>◀</button>
           <button onClick={() => move(dirs.down)}>▼</button>
           <button onClick={() => move(dirs.right)}>▶</button>
@@ -302,9 +302,7 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
             <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
             <p>{s.moves} coups</p>
             <div className="modal-actions">
-              <button className="action" onClick={reset}>
-                REJOUER
-              </button>
+              <button className="action" onClick={reset}>REJOUER</button>
               <button className="action" onClick={next} disabled={!s.completed}>
                 {worldIndex < world.levels.length - 1 ? 'SUIVANT ▶' : 'NIVEAUX'}
               </button>
