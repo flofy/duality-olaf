@@ -57,7 +57,8 @@
 }
 
 .door,
-.switch-tile {
+.switch-tile,
+.teleporter {
   width: var(--tile);
   height: var(--tile);
   display: grid;
@@ -77,6 +78,17 @@
 
 .door.open {
   opacity: .18;
+}
+
+.teleporter {
+  z-index: 2;
+  width: var(--tile);
+  height: var(--tile);
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  font-size: calc(var(--tile) * .7);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
 .switch-tile {
