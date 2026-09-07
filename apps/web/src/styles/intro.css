@@ -1,0 +1,155 @@
+.intro-app {
+  padding: 0;
+}
+
+.intro {
+  position: relative;
+  width: 100%;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: clamp(12px, 2.5vh, 22px);
+  overflow: hidden;
+  cursor: pointer;
+  text-align: center;
+  background: radial-gradient(circle at 50% 42%, #26345f 0, #11182f 34%, #080b18 75%);
+}
+
+.intro-grid {
+  position: absolute;
+  inset: -20%;
+  background-image:
+    linear-gradient(#fff0000a 1px, transparent 1px),
+    linear-gradient(90deg, #fff0000a 1px, transparent 1px);
+  background-size: 40px 40px;
+  transform: perspective(500px) rotateX(55deg) translateY(20%);
+  transform-origin: center bottom;
+  animation: grid-drift 7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes grid-drift {
+  to {
+    background-position: 0 40px, 40px 0;
+  }
+}
+
+.intro-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 3vw, 22px);
+  font: 900 clamp(44px, 12vw, 88px)/1 monospace;
+  letter-spacing: .08em;
+  text-shadow: 0 8px 40px #000;
+}
+
+.intro-ball {
+  color: var(--ball);
+  animation: intro-float 1.8s ease-in-out infinite;
+}
+
+.intro-square {
+  color: var(--square);
+  animation: intro-float 1.8s ease-in-out -.9s infinite;
+}
+
+@keyframes intro-float {
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.intro-tagline {
+  margin: 0;
+  color: var(--muted);
+  font: 700 clamp(11px, 2.5vw, 14px) monospace;
+  letter-spacing: .12em;
+}
+
+.intro-demo {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  margin: clamp(8px, 2vh, 18px) 0;
+}
+
+.intro-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(70vw, 360px);
+  height: 56px;
+  padding: 0 18px;
+  border: 1px solid #fff2;
+  border-radius: 8px;
+  background: #0003;
+}
+
+.intro-demo-ball,
+.intro-demo-square {
+  font-size: 32px;
+}
+
+.intro-demo-ball {
+  color: var(--ball);
+  animation: intro-slide 2.4s ease-in-out infinite;
+}
+
+.intro-demo-square {
+  color: var(--square);
+  animation: intro-slide 2.4s ease-in-out -.8s infinite;
+}
+
+@keyframes intro-slide {
+  0%,
+  100% {
+    transform: translateX(-8px);
+  }
+
+  50% {
+    transform: translateX(8px);
+  }
+}
+
+.intro-star {
+  color: var(--star);
+  font-size: 26px;
+  animation: intro-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes intro-pulse {
+  50% {
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+}
+
+.intro-switch {
+  color: var(--accent);
+  font: 700 13px monospace;
+}
+
+.intro-start {
+  font-weight: 800;
+  text-align: center;
+  padding: 14px 28px;
+}
+
+.intro-hint {
+  color: var(--muted);
+  font: 11px monospace;
+  letter-spacing: .08em;
+}
+
+.intro-leaving {
+  animation: intro-out 420ms ease both;
+}
+
+@keyframes intro-out {
+  to {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+}
