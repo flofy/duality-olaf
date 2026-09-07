@@ -1,0 +1,4 @@
+import { describe, expect, it } from 'vitest';
+import { generateChallenge } from './ChallengeGenerator';
+import { solveLevel } from './LevelSolver';
+describe('generateChallenge',()=>{it('is deterministic for the same seed and mechanics',()=>expect(generateChallenge(20260904,{mechanics:['walls','doors']})).toEqual(generateChallenge(20260904,{mechanics:['walls','doors']})));it('returns solver-validated challenges',()=>expect(solveLevel(generateChallenge(42).level).solvable).toBe(true));it('can generate doors and switches',()=>{const c=generateChallenge(77,{mechanics:['walls','doors']});expect(c.level.doors).toHaveLength(1);expect(c.level.switches).toHaveLength(1)});it('can generate paired teleporters',()=>expect(generateChallenge(88,{mechanics:['walls','teleporters']}).level.teleporters).toHaveLength(2))});
