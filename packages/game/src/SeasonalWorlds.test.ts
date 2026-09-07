@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { christmas, halloween, isSeasonalEventAvailable } from '@duality/level-format';
 import { solveLevel } from './LevelSolver';
 
+const seasonalEvents = [halloween, christmas];
+const seasonalLevels = seasonalEvents.flatMap((event) => event.levels);
+
 describe('seasonal worlds', () => {
   it('exposes stable event and level identifiers', () => {
     expect(halloween.id).toBe('seasonal-halloween');
@@ -10,10 +13,8 @@ describe('seasonal worlds', () => {
     expect(new Set(christmas.levels.map((level) => level.id)).size).toBe(christmas.levels.length);
   });
 
-  it('keeps every seasonal tutorial level solver-valid', () => {
-    for (const event of [halloween, christmas]) {
-      for (const level of event.levels) expect(solveLevel(level).solvable).toBe(true);
-    }
+  it.each(seasonalLevels)('$id is solver-valid', (level) => {
+    expect(solveLevel(level).solvable).toBe(true);
   });
 
   it('supports recurring cross-year Christmas availability', () => {
