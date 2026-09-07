@@ -8,138 +8,125 @@
   text-transform: uppercase;
 }
 
-.level-lab {
-  width: min(1180px, 100%);
+/* ── Catalogue (/dev/levels) ──────────────────────────────────── */
+
+.dev-catalogue {
+  width: min(640px, 100%);
+  margin: 0 auto;
 }
 
-.level-lab-layout {
-  display: grid;
-  grid-template-columns: minmax(210px, 280px) minmax(0, 1fr);
-  gap: 16px;
-  align-items: start;
+.dev-catalogue-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.level-lab-list,
-.level-lab-preview {
-  min-width: 0;
-  border: 1px solid #ffffff18;
-  border-radius: 14px;
-  background: #080b1877;
-  box-shadow: 0 12px 40px #0005;
-}
-
-.level-lab-list {
-  max-height: min(72dvh, 760px);
-  overflow: auto;
-  padding: 10px;
-}
-
-.level-lab-list section + section {
-  margin-top: 14px;
-}
-
-.level-lab-group {
-  display: block;
-  padding: 7px 8px;
+.dev-catalogue-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
   color: var(--accent);
   font: 700 11px monospace;
   letter-spacing: .08em;
   text-transform: uppercase;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 120ms, background 120ms;
 }
 
-.level-lab-item {
+.dev-catalogue-group:hover {
+  border-color: #ffffff22;
+  background: #ffffff0d;
+}
+
+.dev-catalogue-toggle-icon {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.dev-catalogue-entry {
   width: 100%;
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 8px;
+  padding: 8px 10px;
   border: 1px solid transparent;
   border-radius: 8px;
   background: transparent;
   color: #fff;
   text-align: left;
   cursor: pointer;
+  font: 600 11px monospace;
+  transition: border-color 120ms, background 120ms;
 }
 
-.level-lab-item:hover,
-.level-lab-item.selected {
+.dev-catalogue-entry:hover {
   border-color: #ffffff22;
   background: #ffffff0d;
 }
 
-.level-lab-item span {
-  overflow: hidden;
-  font: 600 11px monospace;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* ── Playground (/dev/levels/:id) ─────────────────────────────── */
+
+.dev-playground {
+  width: min(1180px, 100%);
 }
 
-.level-lab-item small {
-  flex: 0 0 auto;
-  color: var(--muted);
-  font: 10px monospace;
+.dev-playground-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
-.level-lab-preview {
-  padding: 14px;
-}
-
-.level-lab-header {
+.dev-playground-header {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
   align-items: center;
-  margin-bottom: 12px;
+  width: 100%;
   font: 700 12px monospace;
 }
 
-.level-lab-header span {
-  display: block;
-  margin-top: 4px;
+.dev-playground-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.dev-playground-title span {
   color: var(--muted);
   font-weight: 400;
 }
 
-.level-lab-metrics {
+.dev-playground-metrics {
   color: var(--accent);
   text-align: right;
   font-size: 11px;
 }
 
-.level-lab-board {
+.dev-unsolvable {
+  color: #ff6b6b;
+}
+
+.dev-board {
   width: min(100%, 720px);
   margin: 0 auto;
 }
 
-.level-lab-controls {
+.dev-controls {
   margin-top: 12px;
 }
 
-.dev-complete {
-  margin-top: 10px;
-  padding: 8px;
-  border: 1px solid #ffffff22;
-  border-radius: 8px;
-  color: var(--accent);
-  text-align: center;
-  font: 700 12px monospace;
-}
-
 @media (max-width: 760px) {
-  .level-lab-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .level-lab-list {
-    max-height: 260px;
-  }
-
-  .level-lab-header {
+  .dev-playground-header {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .level-lab-metrics {
+  .dev-playground-metrics {
     text-align: left;
   }
 }
