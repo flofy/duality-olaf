@@ -85,7 +85,7 @@ function App() {
 
   return (
     <main className="app" style={vars()}>
-      <div className="shell">
+      <div className="shell app-enter">
         <PwaControls updateSW={updateSW} />
         {view === 'menu' && (
           <Menu
