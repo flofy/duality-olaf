@@ -1,0 +1,117 @@
+@media (max-width: 600px) {
+  .app {
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 0;
+    overflow: hidden;
+    place-items: stretch;
+  }
+
+  .shell {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .utility-bar {
+    margin: 0;
+    padding:
+      max(8px, env(safe-area-inset-top))
+      max(8px, env(safe-area-inset-right))
+      8px
+      max(8px, env(safe-area-inset-left));
+  }
+
+  .utility-bar .pwa-controls {
+    width: 100%;
+  }
+
+  .fullscreen-toggle {
+    display: none;
+  }
+
+  .menu,
+  .help,
+  .game {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding:
+      16px
+      max(16px, env(safe-area-inset-right))
+      max(16px, env(safe-area-inset-bottom))
+      max(16px, env(safe-area-inset-left));
+    backdrop-filter: none;
+    overflow: auto;
+  }
+
+  .controls {
+    align-items: center;
+  }
+
+  .levels {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .fullscreen-toggle {
+    display: none;
+  }
+}
+
+@media (max-height: 700px) {
+  .title {
+    margin: 4px 0 10px;
+  }
+
+  .subtitle {
+    margin-bottom: 14px;
+  }
+
+  .world-list {
+    gap: 8px;
+  }
+
+  .world-button {
+    padding: 10px;
+  }
+
+  .controls {
+    margin-top: 8px;
+  }
+
+  .hud {
+    margin-top: 8px;
+  }
+
+  .intro {
+    gap: 10px;
+  }
+
+  .intro-demo {
+    margin: 4px 0;
+  }
+
+  .intro-track {
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}

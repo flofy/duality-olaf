@@ -1,0 +1,39 @@
+.shell {
+  width: min(100%, 760px);
+  min-height: 0;
+}
+
+.utility-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-height: 0;
+  margin-bottom: 10px;
+}
+
+.utility-bar .pwa-controls {
+  flex: 1;
+  margin: 0;
+  max-width: none;
+}
+
+.fullscreen-toggle {
+  white-space: nowrap;
+}
+
+.menu,
+.help,
+.game {
+  width: 100%;
+  min-height: 0;
+  max-height: calc(100dvh - 20px);
+  overflow: auto;
+  padding: clamp(16px, 3vw, 28px);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-radius: clamp(14px, 3vw, 22px);
+  background: color-mix(in srgb, var(--background) 92%, transparent);
+  color: var(--text);
+  box-shadow: 0 24px 80px #0008;
+  backdrop-filter: blur(10px);
+}
