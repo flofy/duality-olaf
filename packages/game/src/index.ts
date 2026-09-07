@@ -5,3 +5,6 @@ export { solveLevel, replay } from './LevelSolver';
 export type { SolverCommand, SolverResult } from './LevelSolver';
 export { validateLevel, validateCampaign, formatCampaignReport } from './LevelValidator';
 export type { LevelValidation, CampaignValidation } from './LevelValidator';
+
+export { generateChallenge } from './ChallengeGenerator';
+export type { Challenge, ChallengeGeneratorOptions, ChallengeMechanic } from './ChallengeGenerator';
