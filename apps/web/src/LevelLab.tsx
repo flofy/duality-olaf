@@ -157,10 +157,12 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
   }
 
   const [validation, setValidation] = useState<ReturnType<typeof validateLevel> | null>(null);
+  const [completion, setCompletion] = useState<{ moves: number } | null>(null);
   const difficulty = validation?.difficulty;
 
   useEffect(() => {
     setValidation(null);
+    setCompletion(null);
   }, [levelId]);
 
   const runValidation = () => {
@@ -180,22 +182,26 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
             <b>{level.id}</b>
             <span>{level.width} × {level.height}</span>
           </div>
-          <div className={`dev-playground-metrics ${validation ? (difficulty ? 'dev-solvable' : 'dev-unsolvable') : ''}`}>
+          <div className={`dev-playground-metrics ${validation ? (difficulty ? 'dev-solvable' : 'dev-unsolvable') : ''}>`
+            {completion && <span className="dev-complete-inline">✓ NIVEAU TERMINÉ · {completion.moves} COUPS</span>}
             {!validation && <button className="action dev-solver-action" onClick={runValidation}>▶ ANALYSER</button>}
             {validation && (difficulty
               ? <>✓ SOLVABLE · {difficulty.moves} coups · {difficulty.exploredStates.toLocaleString('fr-FR')} états · score {difficulty.score}</>
               : '✗ UNSOLVABLE')}
           </div>
         </header>
-        <LabGame level={level} />
+        <LabGame level={level} onCompletionChange={setCompletion} />
       </div>
     </section>
   );
 }
 
-function LabGame({ level }: { level: Level }) {
+function LabGame({ level, onCompletionChange }: { level: Level; onCompletionChange: (completion: { moves: number } | null) => void }) {
   const runner = useMemo(() => new LevelRunner(level), [level]);
   const [state, setState] = useState(() => runner.getState());
+  useEffect(() => {
+    onCompletionChange(state.completed ? { moves: state.moves } : null);
+  }, [onCompletionChange, state.completed, state.moves]);
   const move = useCallback((x: -1 | 0 | 1, y: -1 | 0 | 1) => {
     setState((current) => current.completed ? current : runner.move({ x, y }));
   }, [runner]);
@@ -236,6 +242,5 @@ function LabGame({ level }: { level: Level }) {
         <button className="action" onClick={reset}>↻ RESET</button>
       </div>
     </div>
-    {state.completed && <div className="dev-complete">✓ NIVEAU TERMINÉ · {state.moves} COUPS</div>}
   </>;
 }
