@@ -134,7 +134,7 @@ export function LevelCatalogue() {
 
 /**
  * `/dev/levels/:levelId` — single-level playground.
- * Loads one level, runs the solver once, and provides a playable preview.
+ * Loads one level and provides a playable preview. Solver validation is opt-in.
  * Back button returns to `#/dev/levels`, not to the main menu.
  */
 export function LevelPlayground({ levelId }: { levelId: string }) {
@@ -156,9 +156,16 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
     );
   }
 
-  // Solver runs exactly once per level change.
-  const validation = useMemo(() => validateLevel(level), [level]);
-  const difficulty = validation.difficulty;
+  const [validation, setValidation] = useState<ReturnType<typeof validateLevel> | null>(null);
+  const difficulty = validation?.difficulty;
+
+  useEffect(() => {
+    setValidation(null);
+  }, [levelId]);
+
+  const runValidation = () => {
+    setValidation(validateLevel(level));
+  };
 
   return (
     <section className="dev-playground">
@@ -173,10 +180,11 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
             <b>{level.id}</b>
             <span>{level.width} × {level.height}</span>
           </div>
-          <div className={`dev-playground-metrics ${difficulty ? 'dev-solvable' : 'dev-unsolvable'}`}>
-            {difficulty
+          <div className={`dev-playground-metrics ${validation ? (difficulty ? 'dev-solvable' : 'dev-unsolvable') : ''}`}>
+            {!validation && <button className="action dev-solver-action" onClick={runValidation}>▶ ANALYSER</button>}
+            {validation && (difficulty
               ? <>✓ SOLVABLE · {difficulty.moves} coups · {difficulty.exploredStates.toLocaleString('fr-FR')} états · score {difficulty.score}</>
-              : '✗ UNSOLVABLE'}
+              : '✗ UNSOLVABLE')}
           </div>
         </header>
         <LabGame level={level} />
@@ -200,7 +208,7 @@ function LabGame({ level }: { level: Level }) {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [state.completed]);
+  }, [state.completed, runner]);
   return <>
     <div className="dev-board board" style={{ '--cols': level.width, '--rows': level.height } as CSSProperties}>
       {level.tiles.flatMap((row, y) => row.map((tile, x) => tile === 'wall' ? <div className="wall" style={{ gridColumn: x + 1, gridRow: y + 1 }} key={`w-${x}-${y}`} /> : null))}
