@@ -61,3 +61,5 @@ export { campaign, world1, world2, worlds, getWorld, getLevel } from './campaign
 export type { WorldDefinition } from './campaign';
 export { doorSwitchTutorials } from './mechanics';
 export { teleporterTutorials } from './teleporters';
+
+export { world3Refined } from './world3-refined';
