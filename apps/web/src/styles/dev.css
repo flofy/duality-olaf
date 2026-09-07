@@ -130,3 +130,8 @@
     text-align: left;
   }
 }
+
+.dev-solver-action {
+  font-size: 10px;
+  padding: 7px 10px;
+}
