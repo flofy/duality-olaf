@@ -182,7 +182,7 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
             <b>{level.id}</b>
             <span>{level.width} × {level.height}</span>
           </div>
-          <div className={`dev-playground-metrics ${validation ? (difficulty ? 'dev-solvable' : 'dev-unsolvable') : ''}>`
+          <div className={`dev-playground-metrics ${validation ? (difficulty ? 'dev-solvable' : 'dev-unsolvable') : ''}`}>
             {completion && <span className="dev-complete-inline">✓ NIVEAU TERMINÉ · {completion.moves} COUPS</span>}
             {!validation && <button className="action dev-solver-action" onClick={runValidation}>▶ ANALYSER</button>}
             {validation && (difficulty
