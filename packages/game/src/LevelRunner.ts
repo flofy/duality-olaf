@@ -77,10 +77,12 @@ export class LevelRunner {
     if (moved === 0) return this.getState();
     this.state.moves += 1;
     this.applySwitches(swept);
+    this.applyTeleport(current);
 
     if (this.state.activeForm === 'ball') {
       this.state.stars = this.state.stars.filter(
-        (star) => !swept.some((cell) => cell.x === star.x && cell.y === star.y),
+        (star) => !swept.some((cell) => cell.x === star.x && cell.y === star.y)
+          && !(star.x === current.x && star.y === current.y),
       );
       this.state.completed = this.state.stars.length === 0;
     }
@@ -110,6 +112,17 @@ export class LevelRunner {
         if (doorId in this.state.doors) this.state.doors[doorId] = !this.state.doors[doorId];
       }
     }
+  }
+
+  private applyTeleport(current: Position): void {
+    const entry = this.state.level.teleporters?.find((item) => item.position.x === current.x && item.position.y === current.y);
+    if (!entry) return;
+    const target = this.state.level.teleporters?.find((item) => item.id === entry.targetId);
+    if (!target) return;
+    const other = this.blockingEntity();
+    if (target.position.x === other.x && target.position.y === other.y) return;
+    current.x = target.position.x;
+    current.y = target.position.y;
   }
 
   private activeEntity(): Position {
