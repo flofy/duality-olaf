@@ -195,9 +195,14 @@ function Game(p: { li: number; w: number; back: () => void; next: (w: number, i:
 
   const world = worlds.find((x) => x.id === p.w)!;
   const worldIndex = world.levels.findIndex((x) => x.id === level.id);
+  const campaignIndex = getCampaignLevelIndex(p.w, worldIndex);
   const next = () => {
     if (!s.completed || !isLevelCompleted(level.id)) return;
-    if (worldIndex < world.levels.length - 1) p.next(p.w, worldIndex + 1);
+    if (worldIndex < world.levels.length - 1) {
+      // Game navigation uses campaign indices, while the button callback expects
+      // the level index inside the current world.
+      p.next(p.w, worldIndex + 1);
+    }
     else p.back();
   };
 
