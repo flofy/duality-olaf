@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { LevelRunner, validateLevel } from '@duality/game';
 import type { Level } from '@duality/level-format';
 import { campaign, worlds } from './levels/campaign';
@@ -196,9 +196,13 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
 function LabGame({ level }: { level: Level }) {
   const runner = useMemo(() => new LevelRunner(level), [level]);
   const [state, setState] = useState(() => runner.getState());
-  const move = (x: -1 | 0 | 1, y: -1 | 0 | 1) => !state.completed && setState(runner.move({ x, y }));
-  const reset = () => setState(runner.reset());
-  const switchForm = () => !state.completed && setState(runner.switchForm());
+  const move = useCallback((x: -1 | 0 | 1, y: -1 | 0 | 1) => {
+    setState((current) => current.completed ? current : runner.move({ x, y }));
+  }, [runner]);
+  const reset = useCallback(() => setState(runner.reset()), [runner]);
+  const switchForm = useCallback(() => {
+    setState((current) => current.completed ? current : runner.switchForm());
+  }, [runner]);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === ' ') { e.preventDefault(); switchForm(); }
@@ -208,7 +212,7 @@ function LabGame({ level }: { level: Level }) {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [state.completed, runner]);
+  }, [move, reset, switchForm]);
   return <>
     <div className="dev-board board" style={{ '--cols': level.width, '--rows': level.height } as CSSProperties}>
       {level.tiles.flatMap((row, y) => row.map((tile, x) => tile === 'wall' ? <div className="wall" style={{ gridColumn: x + 1, gridRow: y + 1 }} key={`w-${x}-${y}`} /> : null))}
