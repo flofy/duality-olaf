@@ -1,0 +1,137 @@
+.dev-banner {
+  margin: -8px 0 16px;
+  padding: 8px 10px;
+  border: 1px dashed #ffffff44;
+  color: var(--muted);
+  font: 600 11px monospace;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* ── Catalogue (/dev/levels) ──────────────────────────────────── */
+
+.dev-catalogue {
+  width: min(640px, 100%);
+  margin: 0 auto;
+}
+
+.dev-catalogue-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dev-catalogue-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--accent);
+  font: 700 11px monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 120ms, background 120ms;
+}
+
+.dev-catalogue-group:hover {
+  border-color: #ffffff22;
+  background: #ffffff0d;
+}
+
+.dev-catalogue-toggle-icon {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.dev-catalogue-entry {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  font: 600 11px monospace;
+  transition: border-color 120ms, background 120ms;
+}
+
+.dev-catalogue-entry:hover {
+  border-color: #ffffff22;
+  background: #ffffff0d;
+}
+
+/* ── Playground (/dev/levels/:id) ─────────────────────────────── */
+
+.dev-playground {
+  width: min(1180px, 100%);
+}
+
+.dev-playground-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.dev-playground-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font: 700 12px monospace;
+}
+
+.dev-playground-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.dev-playground-title span {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.dev-playground-metrics {
+  color: var(--accent);
+  text-align: right;
+  font-size: 11px;
+}
+
+.dev-unsolvable {
+  color: #ff6b6b;
+}
+
+.dev-board {
+  width: min(100%, 720px);
+  margin: 0 auto;
+}
+
+.dev-controls {
+  margin-top: 12px;
+}
+
+@media (max-width: 760px) {
+  .dev-playground-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dev-playground-metrics {
+    text-align: left;
+  }
+}
+
+.dev-solver-action {
+  font-size: 10px;
+  padding: 7px 10px;
+}
