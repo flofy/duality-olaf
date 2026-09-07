@@ -6,6 +6,7 @@ export type Position = { x: number; y: number };
 export type Form = 'ball' | 'square';
 export type Door = { id: string; position: Position; initiallyOpen?: boolean };
 export type Switch = { id: string; position: Position; form: Form | 'either'; toggles: string[] };
+export type Teleporter = { id: string; position: Position; targetId: string };
 
 export type Level = {
   id: string;
@@ -17,6 +18,7 @@ export type Level = {
   stars: Position[];
   doors?: Door[];
   switches?: Switch[];
+  teleporters?: Teleporter[];
 };
 
 export function createEmptyLevel(id = 'prototype-1'): Level {
@@ -51,9 +53,11 @@ export function cloneLevel(level: Level): Level {
     stars: level.stars.map(clonePosition),
     doors: level.doors?.map((door) => ({ ...door, position: clonePosition(door.position) })),
     switches: level.switches?.map((item) => ({ ...item, position: clonePosition(item.position), toggles: [...item.toggles] })),
+    teleporters: level.teleporters?.map((item) => ({ ...item, position: clonePosition(item.position) })),
   };
 }
 
 export { campaign, world1, world2, worlds, getWorld, getLevel } from './campaign';
 export type { WorldDefinition } from './campaign';
 export { doorSwitchTutorials } from './mechanics';
+export { teleporterTutorials } from './teleporters';
