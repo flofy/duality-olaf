@@ -1,0 +1,43 @@
+import { describe, expect, it } from 'vitest';
+import { christmas, halloween, isSeasonalEventAvailable } from '@duality/level-format';
+import { estimateDifficulty, validateLevel } from './LevelValidator';
+
+const seasonalEvents = [halloween, christmas];
+const seasonalLevels = seasonalEvents.flatMap((event) => event.levels);
+
+describe('seasonal worlds', () => {
+  it('exposes stable event and level identifiers', () => {
+    expect(halloween.id).toBe('seasonal-halloween');
+    expect(christmas.id).toBe('seasonal-christmas');
+    expect(new Set(halloween.levels.map((level) => level.id)).size).toBe(halloween.levels.length);
+    expect(new Set(christmas.levels.map((level) => level.id)).size).toBe(christmas.levels.length);
+  });
+
+  it.each(seasonalLevels)('$id is solver-valid', (level) => {
+    const validation = validateLevel(level);
+    const difficulty = estimateDifficulty(validation.result);
+
+    if (validation.result.solvable && difficulty) {
+      console.info(
+        `✓ ${level.id.padEnd(26)} solvable  ${String(difficulty.moves).padStart(3)} moves  explored: ${difficulty.exploredStates}  score: ${difficulty.score}`,
+      );
+    } else {
+      console.info(`✗ ${level.id.padEnd(26)} UNSOLVABLE  explored: ${validation.result.exploredStates}`);
+    }
+
+    expect(validation.result.solvable).toBe(true);
+    expect(difficulty).not.toBeNull();
+  });
+
+  it('supports recurring cross-year Christmas availability', () => {
+    expect(isSeasonalEventAvailable(christmas, new Date('2026-12-24T12:00:00Z'))).toBe(true);
+    expect(isSeasonalEventAvailable(christmas, new Date('2027-01-05T12:00:00Z'))).toBe(true);
+    expect(isSeasonalEventAvailable(christmas, new Date('2027-02-01T12:00:00Z'))).toBe(false);
+  });
+
+  it('keeps Halloween outside its event window', () => {
+    expect(isSeasonalEventAvailable(halloween, new Date('2026-10-19T12:00:00Z'))).toBe(false);
+    expect(isSeasonalEventAvailable(halloween, new Date('2026-10-31T12:00:00Z'))).toBe(true);
+    expect(isSeasonalEventAvailable(halloween, new Date('2026-11-04T12:00:00Z'))).toBe(false);
+  });
+});
