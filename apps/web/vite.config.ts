@@ -2,8 +2,13 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const devtoolsEnabled = process.env.VITE_ENABLE_DEVTOOLS === 'true' || process.env.VITE_ENABLE_LEVEL_LAB === 'true';
+
 export default defineConfig({
   base: './',
+  define: {
+    'import.meta.env.VITE_ENABLE_DEVTOOLS': JSON.stringify(devtoolsEnabled),
+  },
   plugins: [
     react(),
     VitePWA({
