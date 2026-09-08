@@ -8,6 +8,7 @@
  * No React Router is used — a single pure function interprets the hash.
  */
 export type DevRoute =
+  | { type: 'generator' }
   | { type: 'catalogue' }
   | { type: 'playground'; levelId: string };
 
@@ -18,8 +19,8 @@ export type DevRoute =
 export function getDevRoute(hash: string): DevRoute | null {
   const raw = hash.startsWith('#') ? hash.slice(1) : hash;
   const parts = raw.split('/').filter(Boolean);
+  if (parts[0] === 'dev' && parts[1] === 'generator' && parts.length === 2) return { type: 'generator' };
   if (parts[0] !== 'dev' || parts[1] !== 'levels') {
-    if (parts[0] === 'dev' && parts[1] === 'generator' && parts.length === 2) return { type: 'catalogue' };
     return null;
   }
   if (parts.length === 2) return { type: 'catalogue' };
