@@ -1,4 +1,4 @@
-import { seasonalEvents, type SeasonalTheme } from '@duality/level-format';
+import { isSeasonalEventAvailable, seasonalEvents, type SeasonalTheme } from '@duality/level-format';
 
 export type LevelSkin = 'default' | SeasonalTheme;
 export type SkinPreference = 'auto' | LevelSkin;
@@ -11,12 +11,33 @@ function isSkinPreference(value: unknown): value is SkinPreference {
 }
 
 export function getSkinPreference(): SkinPreference {
-  try { const value = localStorage.getItem(STORAGE_KEY); return isSkinPreference(value) ? value : 'auto'; }
-  catch { return 'auto'; }
+  try {
+    const value = localStorage.getItem(STORAGE_KEY);
+    return isSkinPreference(value) ? value : 'auto';
+  } catch {
+    return 'auto';
+  }
 }
 
 export function setSkinPreference(preference: SkinPreference): void {
   try { localStorage.setItem(STORAGE_KEY, preference); } catch { /* best effort */ }
+}
+
+/** Seasonal overrides are only selectable while their event is active. */
+export function isSkinAvailable(skin: LevelSkin, date = new Date()): boolean {
+  if (skin === 'default') return true;
+  const event = seasonalEvents.find((item) => item.theme === skin);
+  return event ? isSeasonalEventAvailable(event, date) : false;
+}
+
+/** Preferences exposed to end users at this moment. */
+export function getAvailableSkinPreferences(date = new Date()): readonly SkinPreference[] {
+  return skinOrder.filter((preference) => preference === 'auto' || isSkinAvailable(preference, date));
+}
+
+/** A persisted seasonal override must not survive outside its active window. */
+export function normalizeSkinPreference(preference: SkinPreference, date = new Date()): SkinPreference {
+  return preference === 'auto' || isSkinAvailable(preference, date) ? preference : 'auto';
 }
 
 export function getExplicitLevelSkin(levelId: string): LevelSkin | null {
@@ -25,26 +46,20 @@ export function getExplicitLevelSkin(levelId: string): LevelSkin | null {
 }
 
 export function getSeasonalSkin(date = new Date()): LevelSkin {
-  const event = seasonalEvents.find((item) => {
-    const year = date.getFullYear();
-    const start = new Date(year, item.start.month - 1, item.start.day);
-    const end = new Date(year + (item.end.month < item.start.month ? 1 : 0), item.end.month - 1, item.end.day, 23, 59, 59, 999);
-    if (end.getFullYear() !== year && date < start) {
-      return date <= new Date(year, item.end.month - 1, item.end.day, 23, 59, 59, 999);
-    }
-    return date >= start && date <= end;
-  });
+  const event = seasonalEvents.find((item) => isSeasonalEventAvailable(item, date));
   return event?.theme ?? 'default';
 }
 
 /**
  * Explicit seasonal levels always keep their contextual skin.
- * For every other level, a user preference can override automatic seasonality.
+ * For every other level, AUTO follows the seasonal calendar and an explicit
+ * user preference can override it while that seasonal skin is available.
  */
 export function resolveLevelSkin(levelId: string, preference = getSkinPreference(), date = new Date()): LevelSkin {
   const explicit = getExplicitLevelSkin(levelId);
   if (explicit) return explicit;
-  if (preference !== 'auto') return preference;
+  const normalized = normalizeSkinPreference(preference, date);
+  if (normalized !== 'auto') return normalized;
   return getSeasonalSkin(date);
 }
 
