@@ -3,6 +3,9 @@ import { LevelRunner, validateLevel } from '@duality/game';
 import type { Level } from '@duality/level-format';
 import { campaign, worlds } from './levels/campaign';
 import { doorSwitchTutorials, seasonalEvents, teleporterTutorials } from '@duality/level-format';
+import { getActiveThemeName, setTheme, themeOrder, themes, type ThemeName } from './theme';
+import { resolveLevelSkin, skinLabels, skinOrder, type SkinPreference } from './skins';
+import { hexToCss } from './theme';
 
 type Dir = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
 const dirs: Record<string, Dir> = {
@@ -158,6 +161,9 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
 
   const [validation, setValidation] = useState<ReturnType<typeof validateLevel> | null>(null);
   const [completion, setCompletion] = useState<{ moves: number } | null>(null);
+  const [themeName, setThemeName] = useState<ThemeName>(() => getActiveThemeName());
+  const [skinPreference, setSkinPreferenceState] = useState<SkinPreference>('auto');
+  const activeSkin = resolveLevelSkin(level.id, skinPreference);
   const difficulty = validation?.difficulty;
 
   useEffect(() => {
@@ -190,13 +196,18 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
               : '✗ UNSOLVABLE')}
           </div>
         </header>
-        <LabGame level={level} onCompletionChange={setCompletion} />
+        <div className="dev-skin-controls">
+          <label>THÈME <select value={themeName} onChange={(e) => { const next = e.target.value as ThemeName; setThemeName(next); setTheme(next); }}>{themeOrder.map((name) => <option value={name} key={name}>{themes[name].name}</option>)}</select></label>
+          <label>SKIN <select value={skinPreference} onChange={(e) => setSkinPreferenceState(e.target.value as SkinPreference)}>{skinOrder.map((name) => <option value={name} key={name}>{skinLabels[name]}</option>)}</select></label>
+          <span className="dev-skin-active">ACTIF · {skinLabels[activeSkin]}</span>
+        </div>
+        <LabGame level={level} skin={activeSkin} themeName={themeName} onCompletionChange={setCompletion} />
       </div>
     </section>
   );
 }
 
-function LabGame({ level, onCompletionChange }: { level: Level; onCompletionChange: (completion: { moves: number } | null) => void }) {
+function LabGame({ level, skin, themeName, onCompletionChange }: { level: Level; skin: string; themeName: ThemeName; onCompletionChange: (completion: { moves: number } | null) => void }) {
   const runner = useMemo(() => new LevelRunner(level), [level]);
   const [state, setState] = useState(() => runner.getState());
   useEffect(() => {
@@ -220,7 +231,7 @@ function LabGame({ level, onCompletionChange }: { level: Level; onCompletionChan
     return () => window.removeEventListener('keydown', handler);
   }, [move, reset, switchForm]);
   return <>
-    <div className="dev-board board" style={{ '--cols': level.width, '--rows': level.height } as CSSProperties}>
+    <div className={`dev-board board ${skin !== 'default' ? `seasonal theme-${skin}` : ''}`} style={{ ...Object.fromEntries(Object.entries(themes[themeName]).filter(([, v]) => typeof v === 'number').map(([k, v]) => ['--' + k, hexToCss(v as number)])), '--cols': level.width, '--rows': level.height } as CSSProperties}>
       {level.tiles.flatMap((row, y) => row.map((tile, x) => tile === 'wall' ? <div className="wall" style={{ gridColumn: x + 1, gridRow: y + 1 }} key={`w-${x}-${y}`} /> : null))}
       {level.doors?.map((door) => <div className={`door ${state.doors[door.id] ? 'open' : ''}`} style={{ gridColumn: door.position.x + 1, gridRow: door.position.y + 1 }} key={door.id}>{state.doors[door.id] ? '·' : '▢'}</div>)}
       {level.switches?.map((item) => <div className={`switch-tile form-${item.form}`} style={{ gridColumn: item.position.x + 1, gridRow: item.position.y + 1 }} key={item.id}>⌁</div>)}
