@@ -6,26 +6,18 @@ import { doorSwitchTutorials, seasonalEvents, teleporterTutorials } from '@duali
 import { getActiveThemeName, setTheme, themeOrder, themes, type ThemeName } from './theme';
 import { resolveLevelSkin, skinLabels, skinOrder, type SkinPreference } from './skins';
 import { hexToCss } from './theme';
+import { LevelGenerator } from './LevelGenerator';
 
 type Dir = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
-const dirs: Record<string, Dir> = {
-  ArrowLeft: { x: -1, y: 0 },
-  ArrowRight: { x: 1, y: 0 },
-  ArrowUp: { x: 0, y: -1 },
-  ArrowDown: { x: 0, y: 1 },
-};
+const dirs: Record<string, Dir> = { ArrowLeft: { x: -1, y: 0 }, ArrowRight: { x: 1, y: 0 }, ArrowUp: { x: 0, y: -1 }, ArrowDown: { x: 0, y: 1 } };
 
 export type CatalogueEntry = { id: string; label: string; level: Level };
 export type CatalogueGroup = { label: string; entries: CatalogueEntry[] };
-
 export const allDevLevels: readonly Level[] = [...campaign, ...doorSwitchTutorials, ...teleporterTutorials, ...seasonalEvents.flatMap((event) => event.levels)];
 export const devLevelById: ReadonlyMap<string, Level> = new Map(allDevLevels.map((level) => [level.id, level]));
 
 export function levelDisplayLabel(level: Level): string {
-  for (const world of worlds) {
-    const index = world.levels.findIndex((l) => l.id === level.id);
-    if (index >= 0) return `WORLD ${world.id} · LEVEL ${String(index + 1).padStart(2, '0')}`;
-  }
+  for (const world of worlds) { const index = world.levels.findIndex((l) => l.id === level.id); if (index >= 0) return `WORLD ${world.id} · LEVEL ${String(index + 1).padStart(2, '0')}`; }
   return level.id;
 }
 
@@ -43,7 +35,8 @@ export function LevelCatalogue() {
   const [open, setOpen] = useState<Set<string>>(() => new Set());
   const goMenu = () => { window.location.hash = ''; };
   const toggle = (label: string) => setOpen((prev) => { const next = new Set(prev); if (next.has(label)) next.delete(label); else next.add(label); return next; });
-  return <section className="dev-catalogue"><div className="topbar"><button className="action" onClick={goMenu}>← MENU</button><b>CATALOGUE DES NIVEAUX</b></div><p className="dev-banner">DEV ONLY · accès direct au contenu · aucune progression requise</p><div className="dev-catalogue-groups">{groups.map((group) => { const isOpen = open.has(group.label); return <section key={group.label}><button className="dev-catalogue-group dev-catalogue-toggle" onClick={() => toggle(group.label)} aria-expanded={isOpen}><span>{group.label}</span><span className="dev-catalogue-toggle-icon">{isOpen ? '▼' : '▶'}</span></button>{isOpen && group.entries.map((entry) => <button className="dev-catalogue-entry" key={entry.id} onClick={() => { window.location.hash = `#/dev/levels/${entry.id}`; }}>{entry.label}</button>)}</section>; })}</div></section>;
+  if (window.location.hash === '#/dev/generator') return <LevelGenerator />;
+  return <section className="dev-catalogue"><div className="topbar"><button className="action" onClick={goMenu}>← MENU</button><b>CATALOGUE DES NIVEAUX</b></div><p className="dev-banner">DEV ONLY · accès direct au contenu · aucune progression requise</p><div className="dev-generator-entry"><button className="action" onClick={() => { window.location.hash = '#/dev/generator'; }}>⚡ GÉNÉRATEUR DE NIVEAUX</button></div><div className="dev-catalogue-groups">{groups.map((group) => { const isOpen = open.has(group.label); return <section key={group.label}><button className="dev-catalogue-group dev-catalogue-toggle" onClick={() => toggle(group.label)} aria-expanded={isOpen}><span>{group.label}</span><span className="dev-catalogue-toggle-icon">{isOpen ? '▼' : '▶'}</span></button>{isOpen && group.entries.map((entry) => <button className="dev-catalogue-entry" key={entry.id} onClick={() => { window.location.hash = `#/dev/levels/${entry.id}`; }}>{entry.label}</button>)}</section>; })}</div></section>;
 }
 
 export function LevelPlayground({ levelId }: { levelId: string }) {
