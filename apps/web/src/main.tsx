@@ -11,6 +11,9 @@ import { interpretGesture, type Direction as GestureDirection } from './input/Ge
 import { LevelCatalogue, LevelPlayground } from './LevelLab';
 import { getDevRoute, type DevRoute } from './devRouting';
 import { InstallButton } from './InstallButton';
+import { LevelGenerator } from './LevelGenerator';
+
+const isLevelLabEnabled = import.meta.env.VITE_ENABLE_LEVEL_LAB === 'true';
 import './style.css';
 
 type Dir = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
