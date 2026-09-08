@@ -18,6 +18,26 @@ if (typeof window !== 'undefined') {
   });
 }
 
+const CONTROLS_STYLE_ID = 'duality-controls-preference-style';
+
+function installControlsStyles() {
+  if (document.getElementById(CONTROLS_STYLE_ID)) return;
+  const style = document.createElement('style');
+  style.id = CONTROLS_STYLE_ID;
+  style.textContent = `
+    html[data-controls-mode="hidden"] .game .controls { display: none; }
+    html[data-controls-mode="visible"] .game .controls { display: flex; }
+    @media (min-width: 601px) {
+      html:not([data-controls-mode="visible"]) .game .controls { display: none; }
+    }
+    @media (max-width: 600px) {
+      html[data-controls-mode="auto"] .game .controls { display: flex; justify-content: flex-end; }
+      html[data-controls-mode="auto"] .game .dpad { display: none; }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 function syncControlsMode(mode: ControlsMode) {
   document.documentElement.dataset.controlsMode = mode;
 }
@@ -32,6 +52,7 @@ export function InstallButton() {
   const [controlsMode, setControlsMode] = useState<ControlsMode>(() => getControlsMode());
 
   useEffect(() => {
+    installControlsStyles();
     syncControlsMode(controlsMode);
   }, [controlsMode]);
 
