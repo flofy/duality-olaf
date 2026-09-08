@@ -182,3 +182,13 @@
   min-width: clamp(110px, 24vw, 130px);
   text-align: center;
 }
+
+
+/* Seasonal skins are presentation-only: gameplay stays in LevelRunner. */
+.board.seasonal { position: relative; border: 4px solid color-mix(in srgb, var(--accent) 55%, #000 45%); box-shadow: 0 0 0 4px #0006, 0 18px 45px #000a; }
+.board.theme-halloween { background: radial-gradient(circle at 15% 15%, #ff8a2a22 0 2px, transparent 3px), radial-gradient(circle at 85% 80%, #8b4dff22 0 2px, transparent 3px), linear-gradient(135deg, #1b1027, #0d0714 70%); border-color: #9b4d18; }
+.board.theme-halloween::before, .board.theme-halloween::after { content: ''; position: absolute; width: calc(var(--tile) * 1.35); height: calc(var(--tile) * 1.35); z-index: 4; pointer-events: none; }
+.board.theme-halloween::before { left: calc(var(--tile) * -.2); top: calc(var(--tile) * -.2); background: radial-gradient(circle at 50% 45%, #ffd36b 0 8%, transparent 9%), radial-gradient(circle at 30% 58%, #ffd36b 0 7%, transparent 8%), radial-gradient(circle at 70% 58%, #ffd36b 0 7%, transparent 8%), radial-gradient(ellipse at 50% 55%, #e85d14 0 48%, transparent 49%); filter: drop-shadow(0 0 8px #ff7a1888); }
+.board.theme-halloween::after { right: calc(var(--tile) * -.15); bottom: calc(var(--tile) * -.15); background: linear-gradient(45deg, transparent 44%, #bda7d6aa 45% 48%, transparent 49%), linear-gradient(-45deg, transparent 44%, #bda7d6aa 45% 48%, transparent 49%); opacity: .7; }
+.board.theme-halloween .wall { background-color: #542c3c; border-color: #9b5b48; }
+.board.theme-halloween .star { color: #ffd36b; text-shadow: 0 0 10px #ff9d2788; }

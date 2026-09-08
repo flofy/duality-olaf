@@ -1,4 +1,5 @@
 import type { Level, Position } from './index';
+import { BAT_MASK, TREE_MASK, shapeToStars } from './shapes';
 
 export type SeasonalTheme = 'halloween' | 'christmas';
 
@@ -30,7 +31,7 @@ export const halloween: SeasonalEvent = {
   id: 'seasonal-halloween', theme: 'halloween', label: 'Halloween',
   start: { month: 10, day: 20 }, end: { month: 11, day: 3 },
   levels: [
-    makeLevel('seasonal-halloween-01', p(1, 1), p(11, 8), [p(5, 1), p(9, 2), p(7, 4), p(5, 7), p(9, 8)], [p(6, 3), p(6, 4), p(6, 5)]),
+    makeLevel('seasonal-halloween-01', p(1, 1), p(11, 8), shapeToStars(BAT_MASK, 2, 1)),
     makeLevel('seasonal-halloween-02', p(1, 8), p(11, 1), [p(2, 2), p(5, 5), p(8, 2), p(10, 7)], [p(4, 3), p(5, 3), p(8, 6), p(9, 6)]),
     makeLevel('seasonal-halloween-03', p(2, 4), p(10, 5), [p(3, 1), p(6, 2), p(9, 1), p(9, 8), p(6, 7), p(3, 8)], [p(4, 4), p(5, 4), p(7, 5), p(8, 5)]),
   ],
@@ -40,7 +41,7 @@ export const christmas: SeasonalEvent = {
   id: 'seasonal-christmas', theme: 'christmas', label: 'Christmas',
   start: { month: 12, day: 1 }, end: { month: 1, day: 7 },
   levels: [
-    makeLevel('seasonal-christmas-01', p(1, 8), p(11, 8), [p(6, 1), p(5, 2), p(6, 3), p(5, 4), p(6, 5), p(5, 6), p(6, 7)]),
+    makeLevel('seasonal-christmas-01', p(1, 8), p(11, 8), shapeToStars(TREE_MASK, 2, 1)),
     makeLevel('seasonal-christmas-02', p(1, 1), p(11, 8), [p(3, 2), p(5, 3), p(7, 4), p(9, 5), p(7, 6), p(5, 7)], [p(6, 2), p(6, 3), p(6, 6), p(6, 7)]),
     makeLevel('seasonal-christmas-03', p(2, 8), p(10, 1), [p(3, 1), p(5, 2), p(7, 3), p(9, 4), p(7, 5), p(5, 6), p(3, 7)], [p(4, 4), p(5, 4), p(8, 5), p(9, 5)]),
   ],

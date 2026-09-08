@@ -41,3 +41,6 @@ export { teleporterTutorials } from './teleporters';
 export { world3Refined } from './world3-refined';
 export { christmas, halloween, seasonalEvents, isSeasonalEventAvailable } from './seasonal';
 export type { SeasonalEvent, SeasonalTheme } from './seasonal';
+
+export { BAT_MASK, TREE_MASK, shapeToStars } from './shapes';
+export type { ShapeMask } from './shapes';
