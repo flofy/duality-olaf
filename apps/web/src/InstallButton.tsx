@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { cycleControlsMode, controlsModeLabels, getControlsMode, type ControlsMode } from './controls';
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -17,6 +18,10 @@ if (typeof window !== 'undefined') {
   });
 }
 
+function syncControlsMode(mode: ControlsMode) {
+  document.documentElement.dataset.controlsMode = mode;
+}
+
 export function InstallButton() {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(deferredInstallPrompt);
   const [isStandalone, setIsStandalone] = useState(() => {
@@ -24,6 +29,11 @@ export function InstallButton() {
            window.matchMedia('(display-mode: fullscreen)').matches ||
            (navigator as Navigator & { standalone?: boolean }).standalone === true;
   });
+  const [controlsMode, setControlsMode] = useState<ControlsMode>(() => getControlsMode());
+
+  useEffect(() => {
+    syncControlsMode(controlsMode);
+  }, [controlsMode]);
 
   useEffect(() => {
     const onBeforeInstallPrompt = (event: Event) => {
@@ -58,9 +68,11 @@ export function InstallButton() {
     };
   }, []);
 
-  if (isStandalone || !installPrompt) {
-    return null;
-  }
+  const handleControlsMode = () => {
+    const next = cycleControlsMode();
+    setControlsMode(next);
+    syncControlsMode(next);
+  };
 
   const handleInstall = async () => {
     if (!installPrompt) return;
@@ -73,13 +85,25 @@ export function InstallButton() {
   };
 
   return (
-    <button
-      className="action"
-      type="button"
-      onClick={handleInstall}
-      aria-label="Installer l'application"
-    >
-      📱 INSTALLER
-    </button>
+    <>
+      <button
+        className="action"
+        type="button"
+        onClick={handleControlsMode}
+        aria-label={`Commandes : ${controlsModeLabels[controlsMode]}. Changer le mode d'affichage`}
+      >
+        🎮 COMMANDES · {controlsModeLabels[controlsMode].toUpperCase()}
+      </button>
+      {!isStandalone && installPrompt && (
+        <button
+          className="action"
+          type="button"
+          onClick={handleInstall}
+          aria-label="Installer l'application"
+        >
+          📱 INSTALLER
+        </button>
+      )}
+    </>
   );
 }
