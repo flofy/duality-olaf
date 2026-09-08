@@ -6,9 +6,6 @@ type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 };
 
-// Capture the browser install event as soon as this module is loaded. The menu
-// component is rendered after the intro screen, so registering the listener
-// inside the component could miss the one-shot beforeinstallprompt event.
 let deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
 
 if (typeof window !== 'undefined') {
@@ -33,8 +30,10 @@ function installControlsStyles() {
       html:not([data-controls-mode="visible"]) .game .controls { display: none; }
     }
     @media (max-width: 600px) {
-      html[data-controls-mode="auto"] .game .controls { display: flex; justify-content: flex-end; }
-      html[data-controls-mode="auto"] .game .dpad { display: none; }
+      .game .controls { display: flex; justify-content: flex-end; }
+      .game .controls .switch { display: block; }
+      .game .controls .dpad { display: none; }
+      html[data-controls-mode="visible"] .game .dpad { display: grid; }
     }
   `;
   document.head.appendChild(style);
@@ -48,8 +47,8 @@ export function InstallButton() {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(deferredInstallPrompt);
   const [isStandalone, setIsStandalone] = useState(() => {
     return window.matchMedia('(display-mode: standalone)').matches ||
-           window.matchMedia('(display-mode: fullscreen)').matches ||
-           (navigator as Navigator & { standalone?: boolean }).standalone === true;
+      window.matchMedia('(display-mode: fullscreen)').matches ||
+      (navigator as Navigator & { standalone?: boolean }).standalone === true;
   });
   const [controlsMode, setControlsMode] = useState<ControlsMode>(() => getControlsMode());
 
@@ -65,13 +64,11 @@ export function InstallButton() {
       deferredInstallPrompt = prompt;
       setInstallPrompt(prompt);
     };
-
     const onAppInstalled = () => {
       deferredInstallPrompt = null;
       setInstallPrompt(null);
       setIsStandalone(true);
     };
-
     const onDisplayModeChange = () => {
       setIsStandalone(
         window.matchMedia('(display-mode: standalone)').matches ||
@@ -79,11 +76,9 @@ export function InstallButton() {
         (navigator as Navigator & { standalone?: boolean }).standalone === true
       );
     };
-
     window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
     window.addEventListener('appinstalled', onAppInstalled);
     window.matchMedia('(display-mode: standalone)').addEventListener('change', onDisplayModeChange);
-
     return () => {
       window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
       window.removeEventListener('appinstalled', onAppInstalled);
@@ -109,21 +104,12 @@ export function InstallButton() {
 
   return (
     <>
-      <button
-        className="action"
-        type="button"
-        onClick={handleControlsMode}
-        aria-label={`Commandes : ${controlsModeLabels[controlsMode]}. Changer le mode d'affichage`}
-      >
+      <button className="action" type="button" onClick={handleControlsMode}
+        aria-label={`Commandes : ${controlsModeLabels[controlsMode]}. Changer le mode d'affichage`}>
         🎮 COMMANDES · {controlsModeLabels[controlsMode].toUpperCase()}
       </button>
       {!isStandalone && installPrompt && (
-        <button
-          className="action"
-          type="button"
-          onClick={handleInstall}
-          aria-label="Installer l'application"
-        >
+        <button className="action" type="button" onClick={handleInstall} aria-label="Installer l'application">
           📱 INSTALLER
         </button>
       )}
