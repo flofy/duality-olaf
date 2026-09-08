@@ -5,8 +5,20 @@ type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 };
 
+// Capture the browser install event as soon as this module is loaded. The menu
+// component is rendered after the intro screen, so registering the listener
+// inside the component could miss the one-shot beforeinstallprompt event.
+let deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event as BeforeInstallPromptEvent;
+  });
+}
+
 export function InstallButton() {
-  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(deferredInstallPrompt);
   const [isStandalone, setIsStandalone] = useState(() => {
     return window.matchMedia('(display-mode: standalone)').matches ||
            window.matchMedia('(display-mode: fullscreen)').matches ||
@@ -16,10 +28,13 @@ export function InstallButton() {
   useEffect(() => {
     const onBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
-      setInstallPrompt(event as BeforeInstallPromptEvent);
+      const prompt = event as BeforeInstallPromptEvent;
+      deferredInstallPrompt = prompt;
+      setInstallPrompt(prompt);
     };
 
     const onAppInstalled = () => {
+      deferredInstallPrompt = null;
       setInstallPrompt(null);
       setIsStandalone(true);
     };
@@ -52,6 +67,7 @@ export function InstallButton() {
     await installPrompt.prompt();
     const choice = await installPrompt.userChoice;
     if (choice.outcome === 'accepted') {
+      deferredInstallPrompt = null;
       setInstallPrompt(null);
     }
   };
