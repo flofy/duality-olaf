@@ -1,6 +1,6 @@
 # Duality Olaf
 
-Modern TypeScript/Phaser reimplementation inspired by the classic **Olaf / Le Touti Rikiki, Maousse Costo** puzzle mechanics and the later **Maouss DS** adaptation.
+Modern TypeScript/React reimplementation inspired by the classic **Olaf / Le Touti Rikiki, Maousse Costo** puzzle mechanics and the later **Maouss DS** adaptation.
 
 > **Status:** gameplay implementation / prototype
 
@@ -12,7 +12,7 @@ The implementation target is therefore an independent game using our own level d
 
 ## Current prototype
 
-- TypeScript + Phaser 3 + Vite.
+- TypeScript + React + CSS Grid + Vite (the current renderer does not use Phaser).
 - Framework-independent `LevelRunner` for movement, collision, form switching, targets and completion.
 - First campaign world with **11 playable prototype levels**.
 - Level-selection screen with the planned 5 × 11 structure visible.
@@ -23,7 +23,7 @@ The implementation target is therefore an independent game using our own level d
 
 ## Goals
 
-- Build an independent modern game engine in TypeScript + Phaser.
+- Build an independent modern game in TypeScript with a framework-independent rules engine.
 - Recreate the two-form puzzle loop: ball / square switching, grid movement and collectible targets.
 - Ship the game as a responsive PWA, installable on mobile.
 - Keep the domain/game engine independent from the UI framework.
@@ -34,7 +34,7 @@ The implementation target is therefore an independent game using our own level d
 
 ```text
 duality-olaf/
-├── apps/web/               # Vite + Phaser PWA shell
+├── apps/web/               # Vite + React/CSS PWA shell
 ├── packages/game/          # framework-independent game state + rules
 ├── packages/level-format/  # level domain model
 ├── tools/nds-research/     # optional historical research tooling
@@ -42,13 +42,19 @@ duality-olaf/
 └── docs/                   # mechanics, research and level documentation
 ```
 
-The Phaser layer renders state from `packages/game`. The core rules do not depend on Phaser, React or Svelte.
+The React/CSS layer renders state from `packages/game`. The core rules remain independent from the UI.
 
 ## Level research
 
 The current working hypothesis is **55 levels, arranged as 5 worlds × 11 levels**, with a candidate DS map representation of **13 × 10 cells** per level. This is documented visually in `docs/assets/levels-overview.svg`.
 
 The historical CPC format remains documented separately. We can use it as a reference/conversion source without making the original binaries part of the runtime.
+
+## Play online
+
+The production build is intended for GitHub Pages. When Pages is enabled for this repository, the game is available from the repository Pages deployment.
+
+Repository: https://github.com/flofy/duality-olaf
 
 ## Deployment
 
@@ -58,7 +64,7 @@ The web app is designed as a static PWA and can be deployed to **GitHub Pages** 
 
 1. [x] Establish the independent TypeScript domain model.
 2. [x] Introduce a framework-independent `LevelRunner`.
-3. [x] Connect the prototype to Phaser.
+3. [x] Connect the prototype to a responsive React/CSS renderer.
 4. [x] Add keyboard + initial touch controls.
 5. [x] Add first 11-level prototype campaign and level selection.
 6. [x] Add CI typecheck/build validation.
