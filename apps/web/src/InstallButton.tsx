@@ -25,6 +25,8 @@ function installControlsStyles() {
   const style = document.createElement('style');
   style.id = CONTROLS_STYLE_ID;
   style.textContent = `
+    .game { touch-action: none; }
+    .game button { touch-action: manipulation; }
     html[data-controls-mode="hidden"] .game .controls { display: none; }
     html[data-controls-mode="visible"] .game .controls { display: flex; }
     @media (min-width: 601px) {
