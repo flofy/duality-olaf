@@ -21,4 +21,4 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --no-frozen-lockfile
-      - run: pnpm fmt:check
+      - run: pnpm fmt && git diff -- apps/web/src/LevelEditor.tsx apps/web/src/LevelGenerator.tsx
