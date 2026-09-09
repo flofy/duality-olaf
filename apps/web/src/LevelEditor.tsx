@@ -69,9 +69,9 @@ export function LevelEditor() {
   const [tool, setTool] = useState<Tool>("wall");
   const [message, setMessage] = useState("Prêt à créer un niveau");
   const [playing, setPlaying] = useState(false);
-  const [validation, setValidation] = useState<
-    ReturnType<typeof validateLevel> | null
-  >(null);
+  const [validation, setValidation] = useState<ReturnType<
+    typeof validateLevel
+  > | null>(null);
   const themeName = getActiveThemeName();
   const skin = resolveLevelSkin(level.id);
   const json = useMemo(() => JSON.stringify(level, null, 2), [level]);
@@ -220,9 +220,7 @@ export function LevelEditor() {
             ID DU NIVEAU
             <input
               value={level.id}
-              onChange={(e) =>
-                setLevel((l) => ({ ...l, id: e.target.value }))
-              }
+              onChange={(e) => setLevel((l) => ({ ...l, id: e.target.value }))}
             />
           </label>
           <div className="editor-size">
@@ -233,9 +231,7 @@ export function LevelEditor() {
                 min="3"
                 max="20"
                 value={level.width}
-                onChange={(e) =>
-                  resize(Number(e.target.value), level.height)
-                }
+                onChange={(e) => resize(Number(e.target.value), level.height)}
               />
             </label>
             <label>
