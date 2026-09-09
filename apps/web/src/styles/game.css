@@ -19,7 +19,11 @@
 }
 
 .board {
-  --tile: min(48px, calc((min(100vw, 760px) - 48px) / 13), calc((100dvh - 250px) / 13));
+  --tile: min(
+    48px,
+    calc((min(100vw, 760px) - 48px) / 13),
+    calc((100dvh - 250px) / 13)
+  );
   display: grid;
   grid-template-columns: repeat(var(--cols), var(--tile));
   grid-template-rows: repeat(var(--rows), var(--tile));
@@ -38,8 +42,17 @@
   height: var(--tile);
   background: var(--wall);
   border: 2px solid color-mix(in srgb, var(--wall) 70%, #fff 30%);
-  background-image: linear-gradient(135deg, #fff2 0 8%, transparent 8% 50%, #0002 50% 58%, transparent 58% 100%);
-  box-shadow: inset 0 2px #fff3, inset 0 -3px #0005, 0 1px 0 #0004;
+  background-image: linear-gradient(
+    135deg,
+    #fff2 0 8%,
+    transparent 8% 50%,
+    #0002 50% 58%,
+    transparent 58% 100%
+  );
+  box-shadow:
+    inset 0 2px #fff3,
+    inset 0 -3px #0005,
+    0 1px 0 #0004;
   z-index: 1;
 }
 
@@ -50,7 +63,7 @@
   width: var(--tile);
   height: var(--tile);
   color: var(--star);
-  font-size: calc(var(--tile) * .55);
+  font-size: calc(var(--tile) * 0.55);
   line-height: 1;
   z-index: 2;
   pointer-events: none;
@@ -64,7 +77,7 @@
   display: grid;
   place-items: center;
   pointer-events: none;
-  font: 700 calc(var(--tile) * .5)/1 monospace;
+  font: 700 calc(var(--tile) * 0.5)/1 monospace;
 }
 
 .door {
@@ -77,7 +90,7 @@
 }
 
 .door.open {
-  opacity: .18;
+  opacity: 0.18;
 }
 
 .teleporter {
@@ -87,14 +100,14 @@
   display: grid;
   place-items: center;
   color: var(--accent);
-  font-size: calc(var(--tile) * .7);
+  font-size: calc(var(--tile) * 0.7);
   text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
 .switch-tile {
   z-index: 2;
   color: var(--accent);
-  font-size: calc(var(--tile) * .62);
+  font-size: calc(var(--tile) * 0.62);
   text-shadow: 0 1px 2px #0006;
 }
 
@@ -121,16 +134,20 @@
 .ball::before {
   border-radius: 50%;
   background: var(--ball);
-  box-shadow: inset 8px 8px #fff5, 2px 5px 8px #0004;
+  box-shadow:
+    inset 8px 8px #fff5,
+    2px 5px 8px #0004;
 }
 
 .square::before {
   background: var(--square);
-  box-shadow: inset 7px 7px #fff5, 2px 5px 8px #0004;
+  box-shadow:
+    inset 7px 7px #fff5,
+    2px 5px 8px #0004;
 }
 
 .piece.inactive {
-  opacity: .38;
+  opacity: 0.38;
 }
 
 .hud {
@@ -183,12 +200,53 @@
   text-align: center;
 }
 
-
 /* Seasonal skins are presentation-only: gameplay stays in LevelRunner. */
-.board.seasonal { position: relative; border: 4px solid color-mix(in srgb, var(--accent) 55%, #000 45%); box-shadow: 0 0 0 4px #0006, 0 18px 45px #000a; }
-.board.theme-halloween { background: radial-gradient(circle at 15% 15%, #ff8a2a22 0 2px, transparent 3px), radial-gradient(circle at 85% 80%, #8b4dff22 0 2px, transparent 3px), linear-gradient(135deg, #1b1027, #0d0714 70%); border-color: #9b4d18; }
-.board.theme-halloween::before, .board.theme-halloween::after { content: ''; position: absolute; width: calc(var(--tile) * 1.35); height: calc(var(--tile) * 1.35); z-index: 4; pointer-events: none; }
-.board.theme-halloween::before { left: calc(var(--tile) * -.2); top: calc(var(--tile) * -.2); background: radial-gradient(circle at 50% 45%, #ffd36b 0 8%, transparent 9%), radial-gradient(circle at 30% 58%, #ffd36b 0 7%, transparent 8%), radial-gradient(circle at 70% 58%, #ffd36b 0 7%, transparent 8%), radial-gradient(ellipse at 50% 55%, #e85d14 0 48%, transparent 49%); filter: drop-shadow(0 0 8px #ff7a1888); }
-.board.theme-halloween::after { right: calc(var(--tile) * -.15); bottom: calc(var(--tile) * -.15); background: linear-gradient(45deg, transparent 44%, #bda7d6aa 45% 48%, transparent 49%), linear-gradient(-45deg, transparent 44%, #bda7d6aa 45% 48%, transparent 49%); opacity: .7; }
-.board.theme-halloween .wall { background-color: #542c3c; border-color: #9b5b48; }
-.board.theme-halloween .star { color: #ffd36b; text-shadow: 0 0 10px #ff9d2788; }
+.board.seasonal {
+  position: relative;
+  border: 4px solid color-mix(in srgb, var(--accent) 55%, #000 45%);
+  box-shadow:
+    0 0 0 4px #0006,
+    0 18px 45px #000a;
+}
+.board.theme-halloween {
+  background:
+    radial-gradient(circle at 15% 15%, #ff8a2a22 0 2px, transparent 3px),
+    radial-gradient(circle at 85% 80%, #8b4dff22 0 2px, transparent 3px),
+    linear-gradient(135deg, #1b1027, #0d0714 70%);
+  border-color: #9b4d18;
+}
+.board.theme-halloween::before,
+.board.theme-halloween::after {
+  content: "";
+  position: absolute;
+  width: calc(var(--tile) * 1.35);
+  height: calc(var(--tile) * 1.35);
+  z-index: 4;
+  pointer-events: none;
+}
+.board.theme-halloween::before {
+  left: calc(var(--tile) * -0.2);
+  top: calc(var(--tile) * -0.2);
+  background:
+    radial-gradient(circle at 50% 45%, #ffd36b 0 8%, transparent 9%),
+    radial-gradient(circle at 30% 58%, #ffd36b 0 7%, transparent 8%),
+    radial-gradient(circle at 70% 58%, #ffd36b 0 7%, transparent 8%),
+    radial-gradient(ellipse at 50% 55%, #e85d14 0 48%, transparent 49%);
+  filter: drop-shadow(0 0 8px #ff7a1888);
+}
+.board.theme-halloween::after {
+  right: calc(var(--tile) * -0.15);
+  bottom: calc(var(--tile) * -0.15);
+  background:
+    linear-gradient(45deg, transparent 44%, #bda7d6aa 45% 48%, transparent 49%),
+    linear-gradient(-45deg, transparent 44%, #bda7d6aa 45% 48%, transparent 49%);
+  opacity: 0.7;
+}
+.board.theme-halloween .wall {
+  background-color: #542c3c;
+  border-color: #9b5b48;
+}
+.board.theme-halloween .star {
+  color: #ffd36b;
+  text-shadow: 0 0 10px #ff9d2788;
+}

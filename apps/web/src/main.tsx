@@ -34,8 +34,13 @@ import { InstallButton } from "./InstallButton";
 import { LevelGenerator } from "./LevelGenerator";
 
 import "./style.css";
-const isLevelLabEnabled = import.meta.env.VITE_ENABLE_LEVEL_LAB === 'true';
-console.log('[DEBUG] VITE_ENABLE_LEVEL_LAB =', import.meta.env.VITE_ENABLE_LEVEL_LAB, 'isLevelLabEnabled =', isLevelLabEnabled);
+const isLevelLabEnabled = import.meta.env.VITE_ENABLE_LEVEL_LAB === "true";
+console.log(
+  "[DEBUG] VITE_ENABLE_LEVEL_LAB =",
+  import.meta.env.VITE_ENABLE_LEVEL_LAB,
+  "isLevelLabEnabled =",
+  isLevelLabEnabled,
+);
 
 type Dir = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
 const dirs: Record<GestureDirection, Dir> = {
@@ -243,7 +248,7 @@ function App() {
             <PwaControls updateSW={updateSW} />
             <FullscreenButton />
           </div>
-                              {devRoute.type === "catalogue" && <LevelCatalogue />}
+          {devRoute.type === "catalogue" && <LevelCatalogue />}
           {devRoute.type === "generator" && <LevelGenerator />}
           {devRoute.type === "playground" && (
             <LevelPlayground levelId={devRoute.levelId} />

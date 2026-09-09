@@ -20,10 +20,10 @@ The absence of player/star coordinates means this should **not** yet be treated 
 
 ## Cross-build validation
 
-| Build | Candidate offset | Candidate size |
-|---|---:|---:|
-| GBATEMP | `0x17D9E5` | 7150 bytes |
-| NeoFlash | `0x17A7CD` | 7150 bytes |
+| Build    | Candidate offset | Candidate size |
+| -------- | ---------------: | -------------: |
+| GBATEMP  |       `0x17D9E5` |     7150 bytes |
+| NeoFlash |       `0x17A7CD` |     7150 bytes |
 
 The two byte ranges are identical.
 

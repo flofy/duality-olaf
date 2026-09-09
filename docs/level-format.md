@@ -12,12 +12,7 @@ export type Position = {
   y: number;
 };
 
-export type Tile =
-  | 'empty'
-  | 'wall'
-  | 'target'
-  | 'hazard'
-  | 'stop';
+export type Tile = "empty" | "wall" | "target" | "hazard" | "stop";
 
 export type Level = {
   id: string;

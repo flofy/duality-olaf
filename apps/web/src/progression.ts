@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'duality.progress.v1';
+const STORAGE_KEY = "duality.progress.v1";
 
 type Progress = {
   completed: string[];
@@ -9,7 +9,11 @@ function readProgress(): Progress {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { completed: [] };
     const parsed = JSON.parse(raw) as Partial<Progress>;
-    return { completed: Array.isArray(parsed.completed) ? parsed.completed.filter((id): id is string => typeof id === 'string') : [] };
+    return {
+      completed: Array.isArray(parsed.completed)
+        ? parsed.completed.filter((id): id is string => typeof id === "string")
+        : [],
+    };
   } catch {
     return { completed: [] };
   }

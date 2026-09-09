@@ -1,21 +1,32 @@
-import { useMemo, useState, type CSSProperties } from 'react';
-import { validateLevel, type LevelValidation } from '@duality/game';
-import type { Level } from '@duality/level-format';
-import { generateCandidates, type GeneratedLevel, type GeneratorOptions } from './levelGen';
-import { LabGame, GameOverOverlay } from './LevelLab';
+import { useMemo, useState, type CSSProperties } from "react";
+import { validateLevel, type LevelValidation } from "@duality/game";
+import type { Level } from "@duality/level-format";
+import {
+  generateCandidates,
+  type GeneratedLevel,
+  type GeneratorOptions,
+} from "./levelGen";
+import { LabGame, GameOverOverlay } from "./LevelLab";
 
 type Candidate = { level: GeneratedLevel; validation: LevelValidation };
-const DEFAULTS: GeneratorOptions = { seed: 847291, width: 13, height: 10, wallDensity: 0.12, stars: 2, openBorders: false };
+const DEFAULTS: GeneratorOptions = {
+  seed: 847291,
+  width: 13,
+  height: 10,
+  wallDensity: 0.12,
+  stars: 2,
+  openBorders: false,
+};
 
 function BoardPreview({ level }: { level: Level }) {
   return (
     <div
       className="generator-board board"
-      style={{ '--cols': level.width, '--rows': level.height } as CSSProperties}
+      style={{ "--cols": level.width, "--rows": level.height } as CSSProperties}
     >
       {level.tiles.flatMap((row, y) =>
         row.map((tile, x) =>
-          tile === 'wall' ? (
+          tile === "wall" ? (
             <div
               className="wall"
               style={{ gridColumn: x + 1, gridRow: y + 1 }}
@@ -56,12 +67,14 @@ export function LevelGenerator() {
     return generated
       .map((level) => ({ level, validation: validateLevel(level) }))
       .filter((item) => item.validation.result.solvable)
-      .sort((a, b) => a.validation.difficulty!.score - b.validation.difficulty!.score)
+      .sort(
+        (a, b) =>
+          a.validation.difficulty!.score - b.validation.difficulty!.score,
+      )
       .slice(0, 8);
   }, [options, generation]);
 
-  const selected =
-    candidates.find((item) => item.level.seed === selectedSeed);
+  const selected = candidates.find((item) => item.level.seed === selectedSeed);
   if (selected)
     return (
       <section className="generator-player">
@@ -72,7 +85,8 @@ export function LevelGenerator() {
           <b>APERÇU · SEED {selected.level.seed}</b>
         </div>
         <p className="dev-banner">
-          DEV ONLY · collecte les ★ pour terminer le niveau · SEED {selected.level.seed}
+          DEV ONLY · collecte les ★ pour terminer le niveau · SEED{" "}
+          {selected.level.seed}
         </p>
         <LabGame
           level={selected.level}
@@ -96,7 +110,7 @@ export function LevelGenerator() {
         <button
           className="action"
           onClick={() => {
-            window.location.hash = '#/dev/levels';
+            window.location.hash = "#/dev/levels";
           }}
         >
           ← LAB
@@ -126,7 +140,10 @@ export function LevelGenerator() {
             max="20"
             value={options.width}
             onChange={(e) =>
-              setOptions({ ...options, width: Math.max(5, Math.min(20, Number(e.target.value) || 5)) })
+              setOptions({
+                ...options,
+                width: Math.max(5, Math.min(20, Number(e.target.value) || 5)),
+              })
             }
           />
         </label>
@@ -138,7 +155,10 @@ export function LevelGenerator() {
             max="15"
             value={options.height}
             onChange={(e) =>
-              setOptions({ ...options, height: Math.max(5, Math.min(15, Number(e.target.value) || 5)) })
+              setOptions({
+                ...options,
+                height: Math.max(5, Math.min(15, Number(e.target.value) || 5)),
+              })
             }
           />
         </label>
@@ -173,28 +193,33 @@ export function LevelGenerator() {
           </select>
         </label>
         <button
-          className={`action generator-toggle ${options.openBorders ? 'active' : ''}`}
-          onClick={() => setOptions({ ...options, openBorders: !options.openBorders })}
+          className={`action generator-toggle ${options.openBorders ? "active" : ""}`}
+          onClick={() =>
+            setOptions({ ...options, openBorders: !options.openBorders })
+          }
           type="button"
         >
-          {options.openBorders ? '🔓 BORDURES OUVERTES' : '🔒 BORDURES FERMÉES'}
+          {options.openBorders ? "🔓 BORDURES OUVERTES" : "🔒 BORDURES FERMÉES"}
         </button>
         <button className="action generator-generate" onClick={generate}>
           ⚡ GÉNÉRER
         </button>
       </div>
       <div className="generator-meta">
-        {candidates.length} candidat(s) solvable(s) · {options.width} × {options.height} · {options.openBorders ? '🔓 bords ouverts' : '🔒 bords fermés'} · clique sur un niveau pour jouer
+        {candidates.length} candidat(s) solvable(s) · {options.width} ×{" "}
+        {options.height} ·{" "}
+        {options.openBorders ? "🔓 bords ouverts" : "🔒 bords fermés"} · clique
+        sur un niveau pour jouer
       </div>
       <div className="generator-grid">
         {candidates.map(({ level, validation }) => {
           const difficulty = validation.difficulty!;
           const scoreClass =
             difficulty.score <= 120
-              ? 'easy'
+              ? "easy"
               : difficulty.score <= 200
-                ? 'medium'
-                : 'hard';
+                ? "medium"
+                : "hard";
           return (
             <button
               className={`generator-card card-${scoreClass}`}

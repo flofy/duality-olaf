@@ -4,7 +4,7 @@
  * matter of registering a Theme below and switching the active one.
  */
 
-export type ThemeName = 'retro' | 'sunset' | 'ocean';
+export type ThemeName = "retro" | "sunset" | "ocean";
 
 /** Semantic colors in Phaser numerical hex (0xRRGGBB). */
 export interface Theme {
@@ -31,7 +31,7 @@ export interface Theme {
 export const themes: Record<ThemeName, Theme> = {
   // Default: the original dark-blue/amber retro look.
   retro: {
-    name: 'Rétro',
+    name: "Rétro",
     background: 0x0b1020,
     board: 0x111a2d,
     gridLine: 0x26324a,
@@ -52,7 +52,7 @@ export const themes: Record<ThemeName, Theme> = {
   },
   // Warm amber/rose mood.
   sunset: {
-    name: 'Crépuscule',
+    name: "Crépuscule",
     background: 0x180f21,
     board: 0x241a2b,
     gridLine: 0x3b2e40,
@@ -73,7 +73,7 @@ export const themes: Record<ThemeName, Theme> = {
   },
   // Deep teal/cyan mood.
   ocean: {
-    name: 'Océan',
+    name: "Océan",
     background: 0x051320,
     board: 0x0d2130,
     gridLine: 0x1b3c52,
@@ -94,14 +94,14 @@ export const themes: Record<ThemeName, Theme> = {
   },
 };
 
-export const themeOrder: ThemeName[] = ['retro', 'sunset', 'ocean'];
+export const themeOrder: ThemeName[] = ["retro", "sunset", "ocean"];
 
-const STORAGE_KEY = 'duality.theme.v1';
+const STORAGE_KEY = "duality.theme.v1";
 
-export const DEFAULT_THEME: ThemeName = 'retro';
+export const DEFAULT_THEME: ThemeName = "retro";
 
 function isValidThemeName(value: unknown): value is ThemeName {
-  return typeof value === 'string' && (themeOrder as string[]).includes(value);
+  return typeof value === "string" && (themeOrder as string[]).includes(value);
 }
 
 function readStoredTheme(): ThemeName {
@@ -141,5 +141,5 @@ export function cycleTheme(): ThemeName {
 
 /** Convert a 0xRRGGBB number to a '#rrggbb' CSS string for Phaser Text styles. */
 export function hexToCss(color: number): string {
-  return `#${color.toString(16).padStart(6, '0')}`;
+  return `#${color.toString(16).padStart(6, "0")}`;
 }

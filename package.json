@@ -1,20 +1,23 @@
 {
   "name": "duality-olaf",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
   "description": "A modern TypeScript/Phaser reimplementation inspired by Olaf / Maouss DS.",
-  "packageManager": "pnpm@10.15.0",
-  "engines": {
-    "node": ">=24 <25"
-  },
   "scripts": {
     "dev": "pnpm --dir apps/web dev",
     "build": "pnpm --dir apps/web build",
     "preview": "pnpm --dir apps/web preview",
     "test": "pnpm --dir packages/game test",
-    "typecheck": "pnpm --dir apps/web typecheck"
+    "typecheck": "pnpm --dir apps/web typecheck",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
   "devDependencies": {
+    "oxfmt": "^0.66.0",
     "typescript": "^5.9.2"
-  }
+  },
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "packageManager": "pnpm@10.15.0"
 }

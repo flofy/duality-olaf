@@ -1,6 +1,6 @@
 # CPC `TABLJEU.BIN` level format
 
-This format was reconstructed from the **Le Touti Rikiki, Maousse Costo / Olaf** editor printed in *Amstrad Cent Pour Cent* no. 43, supplied as magazine scans for this project.
+This format was reconstructed from the **Le Touti Rikiki, Maousse Costo / Olaf** editor printed in _Amstrad Cent Pour Cent_ no. 43, supplied as magazine scans for this project.
 
 ## Record size
 
@@ -16,12 +16,12 @@ The original `TABLJEU.BIN` was reported as 1 KiB and contained 21 levels. The ed
 
 ## Layout
 
-| Offset | Size | Meaning |
-|---:|---:|---|
-| `0..23` | 24 | 16×12 wall bitmap, 2 bytes per row |
-| `24..25` | 2 | Ball position: X, Y |
-| `26..27` | 2 | Cube position: X, Y |
-| `28..37` | 10 | Up to five bonus positions, 2 bytes each |
+|   Offset | Size | Meaning                                  |
+| -------: | ---: | ---------------------------------------- |
+|  `0..23` |   24 | 16×12 wall bitmap, 2 bytes per row       |
+| `24..25` |    2 | Ball position: X, Y                      |
+| `26..27` |    2 | Cube position: X, Y                      |
+| `28..37` |   10 | Up to five bonus positions, 2 bytes each |
 
 Coordinates are stored as zero-based grid coordinates: X `0..15`, Y `0..11`.
 
@@ -132,7 +132,7 @@ for i = 0..4:
 
 We now have a concrete historical level format rather than only the earlier `38 bytes/level` clue. This gives us a deterministic target for a `level-format` package and makes it possible to validate any level data recovered from an original CPC disk image or from future reverse engineering of Maouss DS.
 
-The format was reconstructed from the editor source printed on page 33 of *Amstrad Cent Pour Cent* no. 43. The same article explicitly documents the 38-byte record size and the 16×12 editor grid.
+The format was reconstructed from the editor source printed on page 33 of _Amstrad Cent Pour Cent_ no. 43. The same article explicitly documents the 38-byte record size and the 16×12 editor grid.
 
 ## Maouss DS comparison
 
