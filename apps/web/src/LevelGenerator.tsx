@@ -79,7 +79,7 @@ export function LevelGenerator() {
   }, [options, generation]);
 
   const selected = candidates.find((item) => item.level.seed === selectedSeed);
-  if (selected) {
+  if (selected)
     return (
       <section className="generator-player">
         <div className="topbar">
@@ -102,7 +102,6 @@ export function LevelGenerator() {
         />
       </section>
     );
-  }
 
   const generate = () => {
     setSelectedSeed(null);
@@ -209,9 +208,7 @@ export function LevelGenerator() {
           }
           type="button"
         >
-          {options.openBorders
-            ? "🔓 BORDURES OUVERTES"
-            : "🔒 BORDURES FERMÉES"}
+          {options.openBorders ? "🔓 BORDURES OUVERTES" : "🔒 BORDURES FERMÉES"}
         </button>
         <button className="action generator-generate" onClick={generate}>
           ⚡ GÉNÉRER
@@ -219,8 +216,9 @@ export function LevelGenerator() {
       </div>
       <div className="generator-meta">
         {candidates.length} candidat(s) solvable(s) · {options.width} ×{" "}
-        {options.height} · {options.openBorders ? "🔓 bords ouverts" : "🔒 bords fermés"} ·
-        clique sur un niveau pour jouer
+        {options.height} ·{" "}
+        {options.openBorders ? "🔓 bords ouverts" : "🔒 bords fermés"} · clique
+        sur un niveau pour jouer
       </div>
       <div className="generator-grid">
         {candidates.map(({ level, validation }) => {
