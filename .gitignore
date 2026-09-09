@@ -6,6 +6,11 @@ coverage/
 .vite/
 .DS_Store
 *.log
+*.tsbuildinfo
+
+# Local environment overrides (keep .env committed; ignore local overrides)
+.env.local
+.env.*.local
 
 # Local historical binaries / extracted reference material
 reference/**/*.nds

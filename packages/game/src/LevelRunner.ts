@@ -13,6 +13,7 @@ export type GameState = {
   doors: DoorState;
   moves: number;
   completed: boolean;
+  gameOver: boolean;
 };
 
 export class LevelRunner {
@@ -35,6 +36,7 @@ export class LevelRunner {
       doors: { ...state.doors },
       moves: state.moves,
       completed: state.completed,
+      gameOver: state.gameOver,
     };
     return runner;
   }
@@ -67,6 +69,11 @@ export class LevelRunner {
     for (;;) {
       const next: Position = { ...current };
       next[axis] += sign;
+      // Game over if entity slides off the level
+      if (!isInside(this.state.level, next)) {
+        this.state.gameOver = true;
+        return this.getState();
+      }
       if (!this.isFree(next, other)) break;
       current.x = next.x;
       current.y = next.y;
@@ -79,6 +86,7 @@ export class LevelRunner {
     this.applySwitches(swept);
     this.applyTeleport(current);
 
+    // Collect stars only with the ball
     if (this.state.activeForm === 'ball') {
       this.state.stars = this.state.stars.filter(
         (star) => !swept.some((cell) => cell.x === star.x && cell.y === star.y)
@@ -150,6 +158,7 @@ export class LevelRunner {
       doors: Object.fromEntries((level.doors ?? []).map((door) => [door.id, door.initiallyOpen === true])),
       moves: 0,
       completed: level.stars.length === 0,
+      gameOver: false,
     };
   }
 }

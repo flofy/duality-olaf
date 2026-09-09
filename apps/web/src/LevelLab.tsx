@@ -6,6 +6,7 @@ import { doorSwitchTutorials, seasonalEvents, teleporterTutorials } from '@duali
 import { getActiveThemeName, setTheme, themeOrder, themes, type ThemeName } from './theme';
 import { resolveLevelSkin, skinLabels, skinOrder, type SkinPreference } from './skins';
 import { hexToCss } from './theme';
+import { LevelGenerator } from './LevelGenerator';
 
 type Dir = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
 const dirs: Record<string, Dir> = {
@@ -14,6 +15,43 @@ const dirs: Record<string, Dir> = {
   ArrowUp: { x: 0, y: -1 },
   ArrowDown: { x: 0, y: 1 },
 };
+
+// ── Game Over Overlay ────────────────────────────────────────────
+
+export type GameOverOverlayProps = {
+  type: 'completed' | 'gameOver';
+  moves?: number;
+  optimalMoves?: number;
+  onReset: () => void;
+  onBackToGenerator?: () => void;
+};
+
+export function GameOverOverlay({ type, moves, optimalMoves, onReset, onBackToGenerator }: GameOverOverlayProps) {
+  const isCompleted = type === 'completed';
+  const ratio = optimalMoves && moves ? Math.round((optimalMoves / moves) * 100) : null;
+  return (
+    <div className={`game-overlay ${isCompleted ? 'overlay-completed' : 'overlay-gameover'}`}>
+      <div className="overlay-content">
+        {isCompleted ? (
+          <>✓ NIVEAU RÉSOLU EN {moves} COUPS</>
+        ) : (
+          <>✗ GAME OVER</>
+        )}
+        {isCompleted && ratio !== null && (
+          <div className="overlay-score">
+            OPTIMAL: {optimalMoves} COUPS · SCORE: {ratio}%
+          </div>
+        )}
+        <div className="overlay-buttons">
+          <button className="action" onClick={onReset}>↻ RESET</button>
+          {onBackToGenerator && (
+            <button className="action" onClick={onBackToGenerator}>← GÉNÉRER</button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── Catalogue data ──────────────────────────────────────────────
 
@@ -98,23 +136,40 @@ export function LevelCatalogue() {
   const groups = useMemo(() => buildCatalogueGroups(), []);
   const [open, setOpen] = useState<Set<string>>(() => new Set());
   const goMenu = () => { window.location.hash = ''; };
-  const toggle = (label: string) => { setOpen((prev) => { const next = new Set(prev); if (next.has(label)) next.delete(label); else next.add(label); return next; }); };
+  const toggle = (label: string) => {
+    setOpen((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  };
 
   return (
     <section className="dev-catalogue">
       <div className="topbar">
         <button className="action" onClick={goMenu}>← MENU</button>
-        <b>CATALOGUE DES NIVEAUX</b>
+        <b>LEVEL LAB</b>
       </div>
-      <p className="dev-banner">DEV ONLY · accès direct au contenu · aucune progression requise</p>
+      <p className="dev-banner">
+        DEV ONLY · clique sur un niveau pour l'ouvrir dans le playground
+      </p>
+      <div className="dev-generator-entry">
+        <button
+          className="action"
+          onClick={() => { window.location.hash = '#/dev/generator'; }}
+        >
+          ⚡ GÉNÉRATEUR
+        </button>
+      </div>
       <div className="dev-catalogue-groups">
         {groups.map((group) => {
           const isOpen = open.has(group.label);
           return (
-            <section key={group.label}>
-              <button className="dev-catalogue-group dev-catalogue-toggle" onClick={() => toggle(group.label)} aria-expanded={isOpen}>
-                <span>{group.label}</span>
-                <span className="dev-catalogue-toggle-icon">{isOpen ? '▼' : '▶'}</span>
+            <div key={group.label}>
+              <button className="dev-catalogue-group" onClick={() => toggle(group.label)}>
+                {group.label}
+                <span className="dev-catalogue-toggle-icon">{isOpen ? '▾' : '▸'}</span>
               </button>
               {isOpen && group.entries.map((entry) => (
                 <button
@@ -125,7 +180,7 @@ export function LevelCatalogue() {
                   {entry.label}
                 </button>
               ))}
-            </section>
+            </div>
           );
         })}
       </div>
@@ -136,25 +191,21 @@ export function LevelCatalogue() {
 // ── Playground ──────────────────────────────────────────────────
 
 /**
- * `/dev/levels/:levelId` — single-level playground.
- * Loads one level and provides a playable preview. Solver validation is opt-in.
- * Back button returns to `#/dev/levels`, not to the main menu.
+ * `/dev/levels/:levelId` — single-level playground with solver + preview.
+ * Read-only validation + solving; no progression, no persistence.
  */
 export function LevelPlayground({ levelId }: { levelId: string }) {
   const level = devLevelById.get(levelId);
-  const goCatalogue = () => { window.location.hash = '#/dev/levels'; };
-
   if (!level) {
     return (
       <section className="dev-playground">
         <div className="topbar">
-          <button className="action" onClick={goCatalogue}>← TOUS LES NIVEAUX</button>
-          <b>NIVEAU INTRUVABLE</b>
+          <button className="action" onClick={() => { window.location.hash = '#/dev/levels'; }}>
+            ← CATALOGUE
+          </button>
+          <b>PLAYGROUND</b>
         </div>
-        <p className="dev-banner">DEV ONLY</p>
-        <div className="dev-playground-body">
-          <p>Le niveau « {levelId} » est introuvable.</p>
-        </div>
+        <p className="dev-banner">DEV ONLY · niveau introuvable · {levelId}</p>
       </section>
     );
   }
@@ -162,63 +213,101 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
   const [validation, setValidation] = useState<ReturnType<typeof validateLevel> | null>(null);
   const [completion, setCompletion] = useState<{ moves: number } | null>(null);
   const [themeName, setThemeName] = useState<ThemeName>(() => getActiveThemeName());
-  const [skinPreference, setSkinPreferenceState] = useState<SkinPreference>('auto');
-  const activeSkin = resolveLevelSkin(level.id, skinPreference);
-  const difficulty = validation?.difficulty;
-
-  useEffect(() => {
-    setValidation(null);
-    setCompletion(null);
-  }, [levelId]);
+  const [skin, setSkin] = useState<SkinPreference>(() => resolveLevelSkin(level.id));
 
   const runValidation = () => {
     setValidation(validateLevel(level));
   };
 
+  const cycleLocalTheme = () => {
+    const idx = themeOrder.indexOf(themeName);
+    const next = themeOrder[(idx + 1) % themeOrder.length];
+    setThemeName(next);
+    setTheme(next);
+  };
+
+  const cycleLocalSkin = () => {
+    const idx = skinOrder.indexOf(skin);
+    const next = skinOrder[(idx + 1) % skinOrder.length];
+    setSkin(next);
+  };
+
   return (
     <section className="dev-playground">
       <div className="topbar">
-        <button className="action" onClick={goCatalogue}>← TOUS LES NIVEAUX</button>
-        <b>{levelDisplayLabel(level)}</b>
+        <button className="action" onClick={() => { window.location.hash = '#/dev/levels'; }}>
+          ← CATALOGUE
+        </button>
+        <b>PLAYGROUND</b>
       </div>
-      <p className="dev-banner">DEV ONLY · accès direct au contenu · aucune progression requise</p>
-      <div className="dev-playground-body">
-        <header className="dev-playground-header">
-          <div className="dev-playground-title">
-            <b>{level.id}</b>
-            <span>{level.width} × {level.height}</span>
-          </div>
-          <div className={`dev-playground-metrics ${validation ? (difficulty ? 'dev-solvable' : 'dev-unsolvable') : ''}`}>
-            {completion && <span className="dev-complete-inline">✓ NIVEAU TERMINÉ · {completion.moves} COUPS</span>}
-            {!validation && <button className="action dev-solver-action" onClick={runValidation}>▶ ANALYSER</button>}
-            {validation && (difficulty
-              ? <>✓ SOLVABLE · {difficulty.moves} coups · {difficulty.exploredStates.toLocaleString('fr-FR')} états · score {difficulty.score}</>
-              : '✗ UNSOLVABLE')}
-          </div>
-        </header>
-        <div className="dev-skin-controls">
-          <label>THÈME <select value={themeName} onChange={(e) => { const next = e.target.value as ThemeName; setThemeName(next); setTheme(next); }}>{themeOrder.map((name) => <option value={name} key={name}>{themes[name].name}</option>)}</select></label>
-          <label>SKIN <select value={skinPreference} onChange={(e) => setSkinPreferenceState(e.target.value as SkinPreference)}>{skinOrder.map((name) => <option value={name} key={name}>{skinLabels[name]}</option>)}</select></label>
-          <span className="dev-skin-active">ACTIF · {skinLabels[activeSkin]}</span>
+      <p className="dev-banner">
+        DEV ONLY · validation + solving · {levelDisplayLabel(level)}
+      </p>
+      <div className="dev-playground-header">
+        <div className="dev-playground-title">
+          <b>{levelDisplayLabel(level)}</b>
+          <span>{level.width}×{level.height} · {level.stars.length} ★</span>
         </div>
-        <LabGame level={level} skin={activeSkin} themeName={themeName} onCompletionChange={setCompletion} />
+        <div className="dev-playground-metrics">
+          {completion && <span>✓ {completion.moves} coups · </span>}
+          {validation && (
+            validation.result.solvable
+              ? <span>solvable en {validation.difficulty!.moves} coups</span>
+              : <span className="dev-unsolvable">UNSOLVABLE</span>
+          )}
+        </div>
       </div>
+      <div className="dev-skin-controls">
+        <label>
+          THÈME
+          <select value={themeName} onChange={(e) => { setThemeName(e.target.value as ThemeName); setTheme(e.target.value as ThemeName); }}>
+            {themeOrder.map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </label>
+        <label>
+          SKIN
+          <select value={skin} onChange={(e) => setSkin(e.target.value as SkinPreference)}>
+            {skinOrder.map((s) => <option key={s} value={s}>{skinLabels[s]}</option>)}
+          </select>
+        </label>
+        <span className="dev-skin-active">actif : {skinLabels[skin]}</span>
+      </div>
+      <LabGame
+        level={level}
+        skin={skin}
+        themeName={themeName}
+        onCompletionChange={setCompletion}
+      />
+      <div className="dev-controls">
+        <button className="action dev-solver-action" onClick={runValidation}>
+          ⚡ VALIDER / RÉSOUDRE
+        </button>
+      </div>
+      {validation && (
+        <pre className="dev-solver-output">
+          {validation.result.solvable
+            ? `✓ solvable en ${validation.difficulty!.moves} coups\n  explored ${validation.result.exploredStates} states\n  score ${validation.difficulty!.score}`
+            : `✗ unsolvable\n  explored ${validation.result.exploredStates} states`}
+        </pre>
+      )}
     </section>
   );
 }
 
-function LabGame({ level, skin, themeName, onCompletionChange }: { level: Level; skin: string; themeName: ThemeName; onCompletionChange: (completion: { moves: number } | null) => void }) {
+// ── Lab Game (reusable player) ──────────────────────────────────
+
+export function LabGame({ level, skin, themeName, onCompletionChange, optimalMoves, onBackToGenerator }: { level: Level; skin: string; themeName: ThemeName; onCompletionChange: (completion: { moves: number } | null) => void; optimalMoves?: number; onBackToGenerator?: () => void }) {
   const runner = useMemo(() => new LevelRunner(level), [level]);
   const [state, setState] = useState(() => runner.getState());
   useEffect(() => {
     onCompletionChange(state.completed ? { moves: state.moves } : null);
   }, [onCompletionChange, state.completed, state.moves]);
   const move = useCallback((x: -1 | 0 | 1, y: -1 | 0 | 1) => {
-    setState((current) => current.completed ? current : runner.move({ x, y }));
+    setState((current) => current.completed || current.gameOver ? current : runner.move({ x, y }));
   }, [runner]);
   const reset = useCallback(() => setState(runner.reset()), [runner]);
   const switchForm = useCallback(() => {
-    setState((current) => current.completed ? current : runner.switchForm());
+    setState((current) => current.completed || current.gameOver ? current : runner.switchForm());
   }, [runner]);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -253,5 +342,11 @@ function LabGame({ level, skin, themeName, onCompletionChange }: { level: Level;
         <button className="action" onClick={reset}>↻ RESET</button>
       </div>
     </div>
+    {state.completed && (
+      <GameOverOverlay type="completed" moves={state.moves} optimalMoves={optimalMoves} onReset={reset} onBackToGenerator={onBackToGenerator} />
+    )}
+    {state.gameOver && (
+      <GameOverOverlay type="gameOver" onReset={reset} onBackToGenerator={onBackToGenerator} />
+    )}
   </>;
 }

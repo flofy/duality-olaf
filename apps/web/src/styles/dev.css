@@ -68,6 +68,12 @@
   background: #ffffff0d;
 }
 
+.dev-generator-entry {
+  display: flex;
+  justify-content: flex-end;
+  margin: -4px 0 16px;
+}
+
 /* ── Playground (/dev/levels/:id) ─────────────────────────────── */
 
 .dev-playground {
@@ -136,7 +142,6 @@
   padding: 7px 10px;
 }
 
-
 .dev-skin-controls {
   display: flex;
   flex-wrap: wrap;
@@ -161,4 +166,169 @@
 .dev-skin-active {
   color: var(--textMuted);
   font-size: .75rem;
+}
+
+/* ── Generator (/dev/generator) ───────────────────────────────── */
+
+.dev-generator,
+.generator-player {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.generator-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #ffffff18;
+  border-radius: 10px;
+  background: #ffffff08;
+}
+
+.generator-options label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--muted);
+  font: 700 10px monospace;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.generator-options input[type='number'],
+.generator-options select {
+  min-width: 90px;
+  padding: 7px 8px;
+  border: 1px solid var(--gridLine);
+  border-radius: 6px;
+  background: var(--buttonBg);
+  color: var(--text);
+  font: 600 12px monospace;
+}
+
+.generator-options input[type='range'] { width: 130px; }
+.generator-options label span { font-size: 10px; }
+.generator-toggle {
+  margin-left: auto;
+}
+.generator-toggle.active {
+  background: #ff6b6b33;
+  border-color: #ff6b6b66;
+  color: #ff6b6b;
+}
+.generator-meta { margin: 8px 0 12px; color: var(--muted); font: 600 11px monospace; text-align: center; }
+
+.generator-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.generator-card {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #ffffff18;
+  border-radius: 10px;
+  background: #ffffff08;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 120ms, border-color 120ms, background 120ms;
+}
+
+.generator-card:hover {
+  transform: translateY(-2px);
+  border-color: #ffffff44;
+  background: #ffffff10;
+}
+
+.generator-board {
+  width: 100%;
+  aspect-ratio: 13 / 10;
+  pointer-events: none;
+}
+
+.generator-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 7px;
+  font: 600 9px monospace;
+}
+
+.generator-card-meta span { color: var(--muted); }
+.generator-empty { padding: 24px; border: 1px dashed #ffffff22; color: var(--muted); font: 600 11px monospace; text-align: center; }
+
+.generator-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.generator-player .topbar { width: 100%; }
+.generator-player .generator-board {
+  width: min(720px, 100%);
+  border: 2px solid #ffffff33;
+  box-shadow: 0 12px 35px #0008;
+}
+.generator-player .dev-banner { margin: -4px 0 0; }
+.generator-controls {
+  margin-top: 0;
+  gap: 12px;
+}
+/* ── Game Over / Completed Overlay (shared) ───────────────────── */
+
+.game-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 100;
+}
+.overlay-completed {
+  background: #0008;
+}
+.overlay-gameover {
+  background: #000a;
+}
+.overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border: 1px solid #ffffff22;
+  border-radius: 8px;
+  background: #1a1a1a;
+  font: 700 14px monospace;
+}
+.overlay-completed .overlay-content {
+  border-color: #ffffff22;
+  color: var(--accent);
+}
+.overlay-gameover .overlay-content {
+  border-color: #ff6b6b55;
+  color: #ff6b6b;
+}
+.overlay-score {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+}
+.overlay-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* Difficulty tint on card borders */
+.generator-card.card-easy { border-color: #39d97855; }
+.generator-card.card-medium { border-color: #ffa50088; }
+.generator-card.card-hard { border-color: #ff6b6b99; }
+
+@media (max-width: 760px) {
+  .generator-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .generator-generate { width: 100%; margin-left: 0; }
 }
