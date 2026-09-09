@@ -32,15 +32,11 @@ import { LevelCatalogue, LevelPlayground } from "./LevelLab";
 import { getDevRoute, type DevRoute } from "./devRouting";
 import { InstallButton } from "./InstallButton";
 import { LevelGenerator } from "./LevelGenerator";
+import { formatDebugCommands, type DebugCommand, type DebugDirection } from "./debug/CommandRecorder";
 
 import "./style.css";
 const isLevelLabEnabled = import.meta.env.VITE_ENABLE_LEVEL_LAB === "true";
-console.log(
-  "[DEBUG] VITE_ENABLE_LEVEL_LAB =",
-  import.meta.env.VITE_ENABLE_LEVEL_LAB,
-  "isLevelLabEnabled =",
-  isLevelLabEnabled,
-);
+const isDevtoolsEnabled = import.meta.env.VITE_ENABLE_DEVTOOLS === "true";
 
 type Dir = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
 const dirs: Record<GestureDirection, Dir> = {
@@ -221,7 +217,6 @@ function App() {
   const [world, setWorld] = useState(1);
   const [levelIndex, setLevelIndex] = useState(0);
   const [tick, setTick] = useState(0);
-  const devtools = import.meta.env.VITE_ENABLE_DEVTOOLS === "true";
   const [devRoute, setDevRoute] = useState<DevRoute | null>(
     isLevelLabEnabled ? getDevRoute(window.location.hash) : null,
   );
@@ -230,7 +225,7 @@ function App() {
     const sync = () => setDevRoute(getDevRoute(window.location.hash));
     window.addEventListener("hashchange", sync);
     return () => window.removeEventListener("hashchange", sync);
-  }, [isLevelLabEnabled]);
+  }, []);
   const open = (id: number, index: number) => {
     const targetWorld = worlds.find((item) => item.id === id);
     if (!targetWorld) return;
@@ -454,14 +449,38 @@ function Game(p: {
   const level = campaign[p.li] as Level;
   const runner = useMemo(() => new LevelRunner(level), [level]);
   const [s, setS] = useState(() => runner.getState());
+  const [commands, setCommands] = useState<DebugCommand[]>([]);
   const [start, setStart] = useState<{
     x: number;
     y: number;
     interactive: boolean;
   } | null>(null);
-  const move = (d: Dir) => !s.completed && setS(runner.move(d));
-  const switchForm = () => !s.completed && setS(runner.switchForm());
-  const reset = () => setS(runner.reset());
+  const move = (d: Dir) => {
+    if (s.completed) return;
+    const before = runner.getState();
+    const after = runner.move(d);
+    const activeBefore = before.activeForm === "ball" ? before.ball : before.square;
+    const activeAfter = after.activeForm === "ball" ? after.ball : after.square;
+    const moved =
+      activeBefore.x !== activeAfter.x || activeBefore.y !== activeAfter.y;
+    if (moved && isDevtoolsEnabled) {
+      const direction: DebugDirection =
+        d.x === 1 ? "RIGHT" : d.x === -1 ? "LEFT" : d.y === 1 ? "DOWN" : "UP";
+      setCommands((current) => [...current, { type: "move", direction }]);
+    }
+    setS(after);
+  };
+  const switchForm = () => {
+    if (s.completed) return;
+    const after = runner.switchForm();
+    if (isDevtoolsEnabled)
+      setCommands((current) => [...current, { type: "switch" }]);
+    setS(after);
+  };
+  const reset = () => {
+    setS(runner.reset());
+    if (isDevtoolsEnabled) setCommands([]);
+  };
   const world = worlds.find((x) => x.id === p.w)!;
   const seasonalTheme = resolveLevelSkin(level.id);
   const worldIndex = world.levels.findIndex((x) => x.id === level.id);
@@ -484,14 +503,21 @@ function Game(p: {
       } else if (e.key === "r" || e.key === "R") reset();
       else if (e.key === "Escape") p.back();
       else if (e.key === "Enter" && s.completed) next();
-      else if (map[e.key]) {
+      else if (e.key === "d" || e.key === "D") {
+        if (!isDevtoolsEnabled || commands.length === 0) return;
+        e.preventDefault();
+        void navigator.clipboard?.writeText(formatDebugCommands(commands));
+      } else if (e.key === "c" || e.key === "C") {
+        if (!isDevtoolsEnabled) return;
+        setCommands([]);
+      } else if (map[e.key]) {
         e.preventDefault();
         move(map[e.key]);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [s.completed, p.li]);
+  }, [s.completed, p.li, commands]);
   useEffect(() => {
     if (s.completed) completeLevel(level.id);
   }, [s.completed, level.id]);
@@ -624,6 +650,44 @@ function Game(p: {
           CHANGER
         </button>
       </div>
+      {isDevtoolsEnabled && (
+        <aside className="dev-entry" aria-label="Outils de développement">
+          <strong>🐛 DEBUG</strong>
+          <span>{level.id}</span>
+          <span>
+            ● {s.ball.x},{s.ball.y} · ■ {s.square.x},{s.square.y}
+          </span>
+          <span>
+            {s.activeForm} · ★ {s.stars.length} · {commands.length} commandes
+          </span>
+          <span className="muted">
+            {commands.slice(-8).map((command, index) =>
+              command.type === "switch"
+                ? "↔"
+                : command.direction === "RIGHT"
+                  ? "→"
+                  : command.direction === "LEFT"
+                    ? "←"
+                    : command.direction === "DOWN"
+                      ? "↓"
+                      : "↑",
+            ).join(" ") || "—"}
+          </span>
+          <div className="modal-actions">
+            <button
+              className="action"
+              type="button"
+              disabled={commands.length === 0}
+              onClick={() => void navigator.clipboard?.writeText(formatDebugCommands(commands))}
+            >
+              COPIER
+            </button>
+            <button className="action" type="button" onClick={() => setCommands([])}>
+              EFFACER
+            </button>
+          </div>
+        </aside>
+      )}
       {s.completed && (
         <div className="overlay">
           <div
