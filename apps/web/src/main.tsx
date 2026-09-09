@@ -32,7 +32,11 @@ import { LevelCatalogue, LevelPlayground } from "./LevelLab";
 import { getDevRoute, type DevRoute } from "./devRouting";
 import { InstallButton } from "./InstallButton";
 import { LevelGenerator } from "./LevelGenerator";
-import { formatDebugCommands, type DebugCommand, type DebugDirection } from "./debug/CommandRecorder";
+import {
+  formatDebugCommands,
+  type DebugCommand,
+  type DebugDirection,
+} from "./debug/CommandRecorder";
 
 import "./style.css";
 const isLevelLabEnabled = import.meta.env.VITE_ENABLE_LEVEL_LAB === "true";
@@ -459,7 +463,8 @@ function Game(p: {
     if (s.completed) return;
     const before = runner.getState();
     const after = runner.move(d);
-    const activeBefore = before.activeForm === "ball" ? before.ball : before.square;
+    const activeBefore =
+      before.activeForm === "ball" ? before.ball : before.square;
     const activeAfter = after.activeForm === "ball" ? after.ball : after.square;
     const moved =
       activeBefore.x !== activeAfter.x || activeBefore.y !== activeAfter.y;
@@ -661,28 +666,39 @@ function Game(p: {
             {s.activeForm} · ★ {s.stars.length} · {commands.length} commandes
           </span>
           <span className="muted">
-            {commands.slice(-8).map((command, index) =>
-              command.type === "switch"
-                ? "↔"
-                : command.direction === "RIGHT"
-                  ? "→"
-                  : command.direction === "LEFT"
-                    ? "←"
-                    : command.direction === "DOWN"
-                      ? "↓"
-                      : "↑",
-            ).join(" ") || "—"}
+            {commands
+              .slice(-8)
+              .map((command, index) =>
+                command.type === "switch"
+                  ? "↔"
+                  : command.direction === "RIGHT"
+                    ? "→"
+                    : command.direction === "LEFT"
+                      ? "←"
+                      : command.direction === "DOWN"
+                        ? "↓"
+                        : "↑",
+              )
+              .join(" ") || "—"}
           </span>
           <div className="modal-actions">
             <button
               className="action"
               type="button"
               disabled={commands.length === 0}
-              onClick={() => void navigator.clipboard?.writeText(formatDebugCommands(commands))}
+              onClick={() =>
+                void navigator.clipboard?.writeText(
+                  formatDebugCommands(commands),
+                )
+              }
             >
               COPIER
             </button>
-            <button className="action" type="button" onClick={() => setCommands([])}>
+            <button
+              className="action"
+              type="button"
+              onClick={() => setCommands([])}
+            >
               EFFACER
             </button>
           </div>
