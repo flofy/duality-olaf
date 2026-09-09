@@ -281,7 +281,7 @@ function App() {
               setSkinPreferenceState(next);
             }}
             lab={
-              devtools
+              isLevelLabEnabled
                 ? () => {
                     window.location.hash = "#/dev/levels";
                   }

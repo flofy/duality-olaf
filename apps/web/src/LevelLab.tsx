@@ -213,7 +213,7 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
   const [validation, setValidation] = useState<ReturnType<typeof validateLevel> | null>(null);
   const [completion, setCompletion] = useState<{ moves: number } | null>(null);
   const [themeName, setThemeName] = useState<ThemeName>(() => getActiveThemeName());
-  const [skin, setSkin] = useState<SkinPreference>(() => resolveLevelSkin(level));
+  const [skin, setSkin] = useState<SkinPreference>(() => resolveLevelSkin(level.id));
 
   const runValidation = () => {
     setValidation(validateLevel(level));
