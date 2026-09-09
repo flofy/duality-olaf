@@ -79,7 +79,7 @@ export function LevelGenerator() {
   }, [options, generation]);
 
   const selected = candidates.find((item) => item.level.seed === selectedSeed);
-  if (selected)
+  if (selected) {
     return (
       <section className="generator-player">
         <div className="topbar">
@@ -102,6 +102,7 @@ export function LevelGenerator() {
         />
       </section>
     );
+  }
 
   const generate = () => {
     setSelectedSeed(null);
