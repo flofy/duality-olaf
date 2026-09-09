@@ -6,6 +6,7 @@ export type GeneratorOptions = {
   height: number;
   wallDensity: number;
   stars: number;
+  openBorders: boolean;
 };
 
 export type GeneratedLevel = Level & {
@@ -54,12 +55,28 @@ export function generateLevel(options: GeneratorOptions): GeneratedLevel {
   const rng = new Rng(options.seed);
   const tiles = emptyTiles(options.width, options.height);
   const occupied: Position[] = [];
+
+  // Create solid border walls so entities can't slide off the board.
+  if (!options.openBorders) {
+    for (let x = 0; x < options.width; x += 1) {
+      tiles[0][x] = 'wall';
+      tiles[options.height - 1][x] = 'wall';
+      occupied.push({ x, y: 0 }, { x, y: options.height - 1 });
+    }
+    for (let y = 0; y < options.height; y += 1) {
+      tiles[y][0] = 'wall';
+      tiles[y][options.width - 1] = 'wall';
+      occupied.push({ x: 0, y }, { x: options.width - 1, y });
+    }
+  }
+
   const ball = randomFreePosition(rng, options.width, options.height, occupied);
   occupied.push(ball);
   const square = randomFreePosition(rng, options.width, options.height, occupied);
   occupied.push(square);
 
-  const wallCount = Math.round(options.width * options.height * options.wallDensity);
+  const interiorCells = (options.width - 2) * (options.height - 2);
+  const wallCount = Math.round(interiorCells * options.wallDensity);
   for (let i = 0; i < wallCount; i += 1) {
     const position = randomFreePosition(rng, options.width, options.height, [...occupied]);
     if (same(position, ball) || same(position, square)) continue;
