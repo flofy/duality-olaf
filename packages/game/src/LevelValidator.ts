@@ -1,5 +1,5 @@
-import type { Level } from '@duality/level-format';
-import { solveLevel, type SolverResult } from './LevelSolver';
+import type { Level } from "@duality/level-format";
+import { solveLevel, type SolverResult } from "./LevelSolver";
 
 export type DifficultyMetrics = {
   moves: number;
@@ -19,7 +19,9 @@ export type CampaignValidation = {
   unsolvable: number;
 };
 
-export function estimateDifficulty(result: SolverResult): DifficultyMetrics | null {
+export function estimateDifficulty(
+  result: SolverResult,
+): DifficultyMetrics | null {
   if (!result.solvable) return null;
 
   // The shortest solution is the strongest signal. Search effort adds a smaller
@@ -52,9 +54,12 @@ export function validateCampaign(levels: readonly Level[]): CampaignValidation {
   };
 }
 
-export function rankCampaign(validation: CampaignValidation): LevelValidation[] {
+export function rankCampaign(
+  validation: CampaignValidation,
+): LevelValidation[] {
   return [...validation.levels].sort((a, b) => {
-    if (a.difficulty === null && b.difficulty === null) return a.id.localeCompare(b.id);
+    if (a.difficulty === null && b.difficulty === null)
+      return a.id.localeCompare(b.id);
     if (a.difficulty === null) return 1;
     if (b.difficulty === null) return -1;
     return a.difficulty.score - b.difficulty.score || a.id.localeCompare(b.id);
@@ -72,17 +77,22 @@ export function formatCampaignReport(validation: CampaignValidation): string {
 
   const ranking = rankCampaign(validation)
     .filter((entry) => entry.difficulty)
-    .map((entry, index) => `${String(index + 1).padStart(2, '0')}. ${entry.id}  score: ${entry.difficulty!.score}`);
+    .map(
+      (entry, index) =>
+        `${String(index + 1).padStart(2, "0")}. ${entry.id}  score: ${entry.difficulty!.score}`,
+    );
 
   return [
-    'CAMPAIGN VALIDATION',
-    '',
+    "CAMPAIGN VALIDATION",
+    "",
     ...rows,
-    '',
-    'DIFFICULTY RANKING',
+    "",
+    "DIFFICULTY RANKING",
     ...ranking,
-    '',
+    "",
     `Solvable: ${validation.solvable}/${validation.levels.length}`,
-    validation.unsolvable > 0 ? `Unsolvable: ${validation.unsolvable}` : 'Unsolvable: 0',
-  ].join('\n');
+    validation.unsolvable > 0
+      ? `Unsolvable: ${validation.unsolvable}`
+      : "Unsolvable: 0",
+  ].join("\n");
 }

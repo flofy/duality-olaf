@@ -13,7 +13,12 @@
   overflow: hidden;
   cursor: pointer;
   text-align: center;
-  background: radial-gradient(circle at 50% 42%, #26345f 0, #11182f 34%, #080b18 75%);
+  background: radial-gradient(
+    circle at 50% 42%,
+    #26345f 0,
+    #11182f 34%,
+    #080b18 75%
+  );
 }
 
 .intro-grid {
@@ -31,7 +36,9 @@
 
 @keyframes grid-drift {
   to {
-    background-position: 0 40px, 40px 0;
+    background-position:
+      0 40px,
+      40px 0;
   }
 }
 
@@ -41,7 +48,7 @@
   align-items: center;
   gap: clamp(10px, 3vw, 22px);
   font: 900 clamp(44px, 12vw, 88px)/1 monospace;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-shadow: 0 8px 40px #000;
 }
 
@@ -52,7 +59,7 @@
 
 .intro-square {
   color: var(--square);
-  animation: intro-float 1.8s ease-in-out -.9s infinite;
+  animation: intro-float 1.8s ease-in-out -0.9s infinite;
 }
 
 @keyframes intro-float {
@@ -65,7 +72,7 @@
   margin: 0;
   color: var(--muted);
   font: 700 clamp(11px, 2.5vw, 14px) monospace;
-  letter-spacing: .12em;
+  letter-spacing: 0.12em;
 }
 
 .intro-demo {
@@ -99,7 +106,7 @@
 
 .intro-demo-square {
   color: var(--square);
-  animation: intro-slide 2.4s ease-in-out -.8s infinite;
+  animation: intro-slide 2.4s ease-in-out -0.8s infinite;
 }
 
 @keyframes intro-slide {
@@ -140,7 +147,7 @@
 .intro-hint {
   color: var(--muted);
   font: 11px monospace;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
 }
 
 .intro-leaving {

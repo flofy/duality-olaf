@@ -1,5 +1,5 @@
-import type { Form, Level, Position } from '@duality/level-format';
-import { cloneLevel, isInside, isWall } from '@duality/level-format';
+import type { Form, Level, Position } from "@duality/level-format";
+import { cloneLevel, isInside, isWall } from "@duality/level-format";
 
 export type Direction = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
 export type DoorState = Record<string, boolean>;
@@ -52,7 +52,8 @@ export class LevelRunner {
   }
 
   switchForm(): GameState {
-    this.state.activeForm = this.state.activeForm === 'ball' ? 'square' : 'ball';
+    this.state.activeForm =
+      this.state.activeForm === "ball" ? "square" : "ball";
     return this.getState();
   }
 
@@ -60,7 +61,7 @@ export class LevelRunner {
     const axis = this.dominantAxis(direction);
     if (axis === null) return this.getState();
 
-    const sign = axis === 'x' ? Math.sign(direction.x) : Math.sign(direction.y);
+    const sign = axis === "x" ? Math.sign(direction.x) : Math.sign(direction.y);
     const current = this.activeEntity();
     const other = this.blockingEntity();
     const swept: Position[] = [];
@@ -87,10 +88,11 @@ export class LevelRunner {
     this.applyTeleport(current);
 
     // Collect stars only with the ball
-    if (this.state.activeForm === 'ball') {
+    if (this.state.activeForm === "ball") {
       this.state.stars = this.state.stars.filter(
-        (star) => !swept.some((cell) => cell.x === star.x && cell.y === star.y)
-          && !(star.x === current.x && star.y === current.y),
+        (star) =>
+          !swept.some((cell) => cell.x === star.x && cell.y === star.y) &&
+          !(star.x === current.x && star.y === current.y),
       );
       this.state.completed = this.state.stars.length === 0;
     }
@@ -107,25 +109,38 @@ export class LevelRunner {
     if (!isInside(this.state.level, cell)) return false;
     if (isWall(this.state.level, cell)) return false;
     if (cell.x === other.x && cell.y === other.y) return false;
-    const door = this.state.level.doors?.find((item) => item.position.x === cell.x && item.position.y === cell.y);
+    const door = this.state.level.doors?.find(
+      (item) => item.position.x === cell.x && item.position.y === cell.y,
+    );
     if (door && !this.state.doors[door.id]) return false;
     return true;
   }
 
   private applySwitches(cells: readonly Position[]): void {
     for (const item of this.state.level.switches ?? []) {
-      if (!cells.some((cell) => cell.x === item.position.x && cell.y === item.position.y)) continue;
-      if (item.form !== 'either' && item.form !== this.state.activeForm) continue;
+      if (
+        !cells.some(
+          (cell) => cell.x === item.position.x && cell.y === item.position.y,
+        )
+      )
+        continue;
+      if (item.form !== "either" && item.form !== this.state.activeForm)
+        continue;
       for (const doorId of item.toggles) {
-        if (doorId in this.state.doors) this.state.doors[doorId] = !this.state.doors[doorId];
+        if (doorId in this.state.doors)
+          this.state.doors[doorId] = !this.state.doors[doorId];
       }
     }
   }
 
   private applyTeleport(current: Position): void {
-    const entry = this.state.level.teleporters?.find((item) => item.position.x === current.x && item.position.y === current.y);
+    const entry = this.state.level.teleporters?.find(
+      (item) => item.position.x === current.x && item.position.y === current.y,
+    );
     if (!entry) return;
-    const target = this.state.level.teleporters?.find((item) => item.id === entry.targetId);
+    const target = this.state.level.teleporters?.find(
+      (item) => item.id === entry.targetId,
+    );
     if (!target) return;
     const other = this.blockingEntity();
     if (target.position.x === other.x && target.position.y === other.y) return;
@@ -134,28 +149,37 @@ export class LevelRunner {
   }
 
   private activeEntity(): Position {
-    return this.state.activeForm === 'ball' ? this.state.ball : this.state.square;
+    return this.state.activeForm === "ball"
+      ? this.state.ball
+      : this.state.square;
   }
 
   private blockingEntity(): Position {
-    return this.state.activeForm === 'ball' ? this.state.square : this.state.ball;
+    return this.state.activeForm === "ball"
+      ? this.state.square
+      : this.state.ball;
   }
 
-  private dominantAxis(direction: Direction): 'x' | 'y' | null {
+  private dominantAxis(direction: Direction): "x" | "y" | null {
     const alongX = Math.abs(direction.x);
     const alongY = Math.abs(direction.y);
     if (alongX === 0 && alongY === 0) return null;
-    return alongX >= alongY ? 'x' : 'y';
+    return alongX >= alongY ? "x" : "y";
   }
 
   private createState(level: Level): GameState {
     return {
       level: cloneLevel(level),
-      activeForm: 'ball',
+      activeForm: "ball",
       ball: { ...level.ball },
       square: { ...level.square },
       stars: level.stars.map((star) => ({ ...star })),
-      doors: Object.fromEntries((level.doors ?? []).map((door) => [door.id, door.initiallyOpen === true])),
+      doors: Object.fromEntries(
+        (level.doors ?? []).map((door) => [
+          door.id,
+          door.initiallyOpen === true,
+        ]),
+      ),
       moves: 0,
       completed: level.stars.length === 0,
       gameOver: false,

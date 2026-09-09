@@ -1,4 +1,4 @@
-import type { Level, Position } from '@duality/level-format';
+import type { Level, Position } from "@duality/level-format";
 
 export type GeneratorOptions = {
   seed: number;
@@ -17,7 +17,7 @@ class Rng {
   private state: number;
 
   constructor(seed: number) {
-    this.state = (seed | 0) || 1;
+    this.state = seed | 0 || 1;
   }
 
   next(): number {
@@ -34,20 +34,27 @@ class Rng {
   }
 }
 
-function emptyTiles(width: number, height: number): Level['tiles'] {
-  return Array.from({ length: height }, () => Array.from({ length: width }, () => 'empty' as const));
+function emptyTiles(width: number, height: number): Level["tiles"] {
+  return Array.from({ length: height }, () =>
+    Array.from({ length: width }, () => "empty" as const),
+  );
 }
 
 function same(a: Position, b: Position): boolean {
   return a.x === b.x && a.y === b.y;
 }
 
-function randomFreePosition(rng: Rng, width: number, height: number, occupied: Position[]): Position {
+function randomFreePosition(
+  rng: Rng,
+  width: number,
+  height: number,
+  occupied: Position[],
+): Position {
   for (let attempt = 0; attempt < width * height * 2; attempt += 1) {
     const position = { x: rng.int(width), y: rng.int(height) };
     if (!occupied.some((item) => same(item, position))) return position;
   }
-  throw new Error('Unable to place generated object');
+  throw new Error("Unable to place generated object");
 }
 
 /** Generate one deterministic candidate. Validation/solvability is intentionally done by the caller. */
@@ -59,34 +66,44 @@ export function generateLevel(options: GeneratorOptions): GeneratedLevel {
   // Create solid border walls so entities can't slide off the board.
   if (!options.openBorders) {
     for (let x = 0; x < options.width; x += 1) {
-      tiles[0][x] = 'wall';
-      tiles[options.height - 1][x] = 'wall';
+      tiles[0][x] = "wall";
+      tiles[options.height - 1][x] = "wall";
       occupied.push({ x, y: 0 }, { x, y: options.height - 1 });
     }
     for (let y = 0; y < options.height; y += 1) {
-      tiles[y][0] = 'wall';
-      tiles[y][options.width - 1] = 'wall';
+      tiles[y][0] = "wall";
+      tiles[y][options.width - 1] = "wall";
       occupied.push({ x: 0, y }, { x: options.width - 1, y });
     }
   }
 
   const ball = randomFreePosition(rng, options.width, options.height, occupied);
   occupied.push(ball);
-  const square = randomFreePosition(rng, options.width, options.height, occupied);
+  const square = randomFreePosition(
+    rng,
+    options.width,
+    options.height,
+    occupied,
+  );
   occupied.push(square);
 
   const interiorCells = (options.width - 2) * (options.height - 2);
   const wallCount = Math.round(interiorCells * options.wallDensity);
   for (let i = 0; i < wallCount; i += 1) {
-    const position = randomFreePosition(rng, options.width, options.height, [...occupied]);
+    const position = randomFreePosition(rng, options.width, options.height, [
+      ...occupied,
+    ]);
     if (same(position, ball) || same(position, square)) continue;
-    tiles[position.y][position.x] = 'wall';
+    tiles[position.y][position.x] = "wall";
     occupied.push(position);
   }
 
   const stars: Position[] = [];
   for (let i = 0; i < options.stars; i += 1) {
-    const position = randomFreePosition(rng, options.width, options.height, [...occupied, ...stars]);
+    const position = randomFreePosition(rng, options.width, options.height, [
+      ...occupied,
+      ...stars,
+    ]);
     stars.push(position);
   }
 
@@ -102,7 +119,10 @@ export function generateLevel(options: GeneratorOptions): GeneratedLevel {
   };
 }
 
-export function generateCandidates(options: GeneratorOptions, count = 8): GeneratedLevel[] {
+export function generateCandidates(
+  options: GeneratorOptions,
+  count = 8,
+): GeneratedLevel[] {
   const candidates: GeneratedLevel[] = [];
   const seen = new Set<string>();
   let seed = options.seed | 0;
@@ -110,7 +130,12 @@ export function generateCandidates(options: GeneratorOptions, count = 8): Genera
 
   while (candidates.length < count && attempts < count * 80) {
     const level = generateLevel({ ...options, seed });
-    const signature = JSON.stringify([level.tiles, level.ball, level.square, level.stars]);
+    const signature = JSON.stringify([
+      level.tiles,
+      level.ball,
+      level.square,
+      level.stars,
+    ]);
     if (!seen.has(signature)) {
       seen.add(signature);
       candidates.push(level);
