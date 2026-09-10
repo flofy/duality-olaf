@@ -29,14 +29,6 @@ import {
 import { hexToCss } from "./theme";
 import { LevelGenerator } from "./LevelGenerator";
 
-type Dir = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
-const dirs: Record<string, Dir> = {
-  ArrowLeft: { x: -1, y: 0 },
-  ArrowRight: { x: 1, y: 0 },
-  ArrowUp: { x: 0, y: -1 },
-  ArrowDown: { x: 0, y: 1 },
-};
-
 // ── Game Over Overlay ────────────────────────────────────────────
 
 export type GameOverOverlayProps = {
@@ -197,20 +189,28 @@ export function LevelCatalogue() {
           ← MENU
         </button>
         <b>LEVEL LAB</b>
+        <div className="dev-catalogue-actions">
+          <button
+            className="action"
+            onClick={() => {
+              window.location.hash = "#/dev/generator";
+            }}
+          >
+            ⚡ GÉNÉRATEUR
+          </button>
+          <button
+            className="action"
+            onClick={() => {
+              window.location.hash = "#/dev/editor";
+            }}
+          >
+            ✎ ÉDITEUR
+          </button>
+        </div>
       </div>
       <p className="dev-banner">
         DEV ONLY · clique sur un niveau pour l'ouvrir dans le playground
       </p>
-      <div className="dev-generator-entry">
-        <button
-          className="action"
-          onClick={() => {
-            window.location.hash = "#/dev/generator";
-          }}
-        >
-          ⚡ GÉNÉRATEUR
-        </button>
-      </div>
       <div className="dev-catalogue-groups">
         {groups.map((group) => {
           const isOpen = open.has(group.label);
@@ -480,7 +480,7 @@ export function LabGame({
         ))}
         {level.switches?.map((item) => (
           <div
-            className={`switch-tile form-${item.form}`}
+            className={`switch switch-${item.form}`}
             style={{
               gridColumn: item.position.x + 1,
               gridRow: item.position.y + 1,
@@ -490,82 +490,52 @@ export function LabGame({
             ⌁
           </div>
         ))}
-        {level.teleporters?.map((item) => (
+        {level.teleporters?.map((teleporter) => (
           <div
             className="teleporter"
             style={{
-              gridColumn: item.position.x + 1,
-              gridRow: item.position.y + 1,
+              gridColumn: teleporter.position.x + 1,
+              gridRow: teleporter.position.y + 1,
             }}
-            key={item.id}
+            key={teleporter.id}
           >
-            ◉
+            ◎
           </div>
         ))}
-        {state.stars.map((star) => (
+        {level.stars.map((star, index) => (
           <div
             className="star"
-            style={{ gridColumn: star.x + 1, gridRow: star.y + 1 }}
-            key={`${star.x}-${star.y}`}
+            style={{
+              gridColumn: star.x + 1,
+              gridRow: star.y + 1,
+            }}
+            key={`s-${index}`}
           >
             ★
           </div>
         ))}
         <div
-          className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
-          style={{ gridColumn: state.ball.x + 1, gridRow: state.ball.y + 1 }}
+          className="ball"
+          style={{
+            gridColumn: state.ball.x + 1,
+            gridRow: state.ball.y + 1,
+          }}
         />
         <div
-          className={`piece square ${state.activeForm === "square" ? "" : "inactive"}`}
+          className="square"
           style={{
             gridColumn: state.square.x + 1,
             gridRow: state.square.y + 1,
           }}
         />
-      </div>
-      <div className="dev-controls">
-        <div className="hud">
-          <b>{state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
-          <br />
-          <span className="muted">
-            ★ {level.stars.length - state.stars.length}/{level.stars.length} ·{" "}
-            {state.moves} COUPS
-          </span>
-        </div>
-        <div className="controls">
-          <div className="dpad">
-            <button className="up" onClick={() => move(0, -1)}>
-              ▲
-            </button>
-            <button onClick={() => move(-1, 0)}>◀</button>
-            <button onClick={() => move(0, 1)}>▼</button>
-            <button onClick={() => move(1, 0)}>▶</button>
-          </div>
-          <button className="action switch" onClick={switchForm}>
-            ● ⇄ ■<br />
-            CHANGER
-          </button>
-          <button className="action" onClick={reset}>
-            ↻ RESET
-          </button>
-        </div>
-      </div>
-      {state.completed && (
         <GameOverOverlay
-          type="completed"
+          type={state.completed ? "completed" : "gameOver"}
           moves={state.moves}
           optimalMoves={optimalMoves}
           onReset={reset}
           onBackToGenerator={onBackToGenerator}
         />
-      )}
-      {state.gameOver && (
-        <GameOverOverlay
-          type="gameOver"
-          onReset={reset}
-          onBackToGenerator={onBackToGenerator}
-        />
-      )}
+      </div>
     </>
   );
 }

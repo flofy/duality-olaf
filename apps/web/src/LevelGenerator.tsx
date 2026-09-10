@@ -6,9 +6,12 @@ import {
   type GeneratedLevel,
   type GeneratorOptions,
 } from "./levelGen";
-import { LabGame, GameOverOverlay } from "./LevelLab";
+import { LabGame } from "./LevelLab";
+import { LevelEditor } from "./LevelEditor";
+import "./level-editor.css";
 
 type Candidate = { level: GeneratedLevel; validation: LevelValidation };
+
 const DEFAULTS: GeneratorOptions = {
   seed: 847291,
   width: 13,
@@ -57,14 +60,15 @@ function BoardPreview({ level }: { level: Level }) {
 }
 
 export function LevelGenerator() {
+  if (window.location.hash === "#/dev/editor") return <LevelEditor />;
+
   const [options, setOptions] = useState<GeneratorOptions>(DEFAULTS);
   const [generation, setGeneration] = useState(0);
   const [selectedSeed, setSelectedSeed] = useState<number | null>(null);
 
   const candidates = useMemo<Candidate[]>(() => {
     void generation;
-    const generated = generateCandidates(options);
-    return generated
+    return generateCandidates(options)
       .map((level) => ({ level, validation: validateLevel(level) }))
       .filter((item) => item.validation.result.solvable)
       .sort(
@@ -80,7 +84,7 @@ export function LevelGenerator() {
       <section className="generator-player">
         <div className="topbar">
           <button className="action" onClick={() => setSelectedSeed(null)}>
-            ← GÉNÉRER
+            ← RETOUR
           </button>
           <b>APERÇU · SEED {selected.level.seed}</b>
         </div>
@@ -116,6 +120,14 @@ export function LevelGenerator() {
           ← LAB
         </button>
         <b>GÉNÉRATEUR DE NIVEAUX</b>
+        <button
+          className="action"
+          onClick={() => {
+            window.location.hash = "#/dev/editor";
+          }}
+        >
+          ✎ ÉDITEUR
+        </button>
       </div>
       <p className="dev-banner">
         DEV ONLY · génération déterministe · seuls les niveaux solvables sont
@@ -171,10 +183,7 @@ export function LevelGenerator() {
             step="0.01"
             value={options.wallDensity}
             onChange={(e) =>
-              setOptions({
-                ...options,
-                wallDensity: Number(e.target.value),
-              })
+              setOptions({ ...options, wallDensity: Number(e.target.value) })
             }
           />
           <span>{Math.round(options.wallDensity * 100)}%</span>
