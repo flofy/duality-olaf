@@ -1,4 +1,10 @@
-import { useMemo, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { createEmptyLevel, type Level, type Tile } from "@duality/level-format";
 import { validateLevel } from "@duality/game";
 import { LabGame } from "./LevelLab";
@@ -72,9 +78,24 @@ export function LevelEditor() {
   const [validation, setValidation] = useState<ReturnType<
     typeof validateLevel
   > | null>(null);
+  const paintingRef = useRef(false);
+  const lastPaintedRef = useRef<string | null>(null);
   const themeName = getActiveThemeName();
   const skin = resolveLevelSkin(level.id);
   const json = useMemo(() => JSON.stringify(level, null, 2), [level]);
+
+  useEffect(() => {
+    const stopPainting = () => {
+      paintingRef.current = false;
+      lastPaintedRef.current = null;
+    };
+    window.addEventListener("pointerup", stopPainting);
+    window.addEventListener("pointercancel", stopPainting);
+    return () => {
+      window.removeEventListener("pointerup", stopPainting);
+      window.removeEventListener("pointercancel", stopPainting);
+    };
+  }, []);
 
   const update = (mutate: (next: Level) => void) => {
     setLevel((current) => {
@@ -335,7 +356,21 @@ export function LevelEditor() {
                       key={`${x}-${y}`}
                       className={`editor-cell ${tile === "wall" ? "wall" : ""}`}
                       style={{ gridColumn: x + 1, gridRow: y + 1 }}
-                      onClick={() => paint(x, y)}
+                      onPointerDown={(e) => {
+                        if (e.button !== 0 && e.pointerType === "mouse") return;
+                        if (tool === "wall" || tool === "empty") {
+                          paintingRef.current = true;
+                          lastPaintedRef.current = `${x}-${y}`;
+                        }
+                        paint(x, y);
+                      }}
+                      onPointerEnter={() => {
+                        if (!paintingRef.current) return;
+                        const key = `${x}-${y}`;
+                        if (lastPaintedRef.current === key) return;
+                        lastPaintedRef.current = key;
+                        paint(x, y);
+                      }}
                       aria-label={`Case ${x + 1}, ${y + 1}`}
                     >
                       {ball && <span className="editor-entity ball">●</span>}
@@ -355,8 +390,9 @@ export function LevelEditor() {
             </div>
           </div>
           <p className="editor-hint">
-            Clique une case pour appliquer l'outil sélectionné. Les éléments
-            mécaniques sont créés avec des identifiants automatiques.
+            Clique (ou clique-glisse pour les murs/cases vides) pour appliquer
+            l'outil sélectionné. Les éléments mécaniques sont créés avec des
+            identifiants automatiques.
           </p>
           <details className="editor-json">
             <summary>JSON du niveau</summary>

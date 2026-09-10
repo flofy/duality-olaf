@@ -1,6 +1,13 @@
 .shell {
-  width: min(100%, 760px);
+  width: min(100%, 1200px);
   min-height: 0;
+}
+
+:fullscreen .shell,
+:-webkit-full-screen .shell {
+  width: 100%;
+  max-width: none;
+  padding: 0 clamp(8px, 1.5vw, 24px);
 }
 
 .utility-bar {
@@ -27,8 +34,6 @@
 .game {
   width: 100%;
   min-height: 0;
-  max-height: calc(100dvh - 20px);
-  overflow: auto;
   padding: clamp(16px, 3vw, 28px);
   border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
   border-radius: clamp(14px, 3vw, 22px);
@@ -36,4 +41,9 @@
   color: var(--text);
   box-shadow: 0 24px 80px #0008;
   backdrop-filter: blur(10px);
+}
+
+.game {
+  max-height: calc(100dvh - 20px);
+  overflow: auto;
 }
