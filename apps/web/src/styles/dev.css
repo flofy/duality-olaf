@@ -11,8 +11,18 @@
 /* ── Catalogue (/dev/levels) ──────────────────────────────────── */
 
 .dev-catalogue {
-  width: min(640px, 100%);
+  width: min(900px, 100%);
   margin: 0 auto;
+}
+
+.dev-catalogue .topbar {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.dev-catalogue-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .dev-catalogue-groups {
@@ -131,6 +141,15 @@
 }
 
 @media (max-width: 760px) {
+  .dev-catalogue .topbar {
+    grid-template-columns: 1fr;
+  }
+
+  .dev-catalogue-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
   .dev-playground-header {
     align-items: flex-start;
     flex-direction: column;
