@@ -308,15 +308,16 @@ export function LevelEditor() {
             <div
               className="editor-board board"
               style={
-                { "--cols": level.width, "--rows": level.height } as CSSProperties
+                {
+                  "--cols": level.width,
+                  "--rows": level.height,
+                } as CSSProperties
               }
               aria-label="Grille d'édition"
             >
               {level.tiles.flatMap((row, y) =>
                 row.map((tile, x) => {
-                  const star = level.stars.some(
-                    (p) => p.x === x && p.y === y,
-                  );
+                  const star = level.stars.some((p) => p.x === x && p.y === y);
                   const ball = same(level.ball, { x, y });
                   const square = same(level.square, { x, y });
                   const door = level.doors?.find((d) =>
@@ -338,7 +339,9 @@ export function LevelEditor() {
                       aria-label={`Case ${x + 1}, ${y + 1}`}
                     >
                       {ball && <span className="editor-entity ball">●</span>}
-                      {square && <span className="editor-entity square">■</span>}
+                      {square && (
+                        <span className="editor-entity square">■</span>
+                      )}
                       {star && <span className="editor-entity star">★</span>}
                       {door && <span className="editor-entity door">▣</span>}
                       {sw && <span className="editor-entity switch">⌁</span>}
