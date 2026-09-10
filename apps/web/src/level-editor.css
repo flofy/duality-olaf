@@ -8,6 +8,7 @@
   grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
   gap: 1.25rem;
   width: min(1600px, 100%);
+  min-height: calc(100dvh - 180px);
   margin: 0 auto;
   align-items: stretch;
 }
@@ -50,15 +51,32 @@
 .editor-workspace {
   display: flex;
   min-width: 0;
-  min-height: 100%;
+  min-height: 0;
+  flex: 1;
   flex-direction: column;
   align-items: stretch;
-  justify-content: flex-start;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.editor-board-shell {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  place-items: center;
+  width: 100%;
+  overflow: auto;
 }
 
 .editor-board {
-  width: min(100%, 1100px);
-  max-width: 100%;
+  --tile: min(
+    64px,
+    calc((100vw - 420px) / var(--cols)),
+    calc((100dvh - 240px) / var(--rows))
+  );
+  width: max-content;
+  max-width: none;
   margin: 0 auto;
 }
 
@@ -93,6 +111,7 @@
 @media (max-width: 900px) {
   .editor-layout {
     grid-template-columns: 1fr;
+    min-height: 0;
   }
 
   .editor-sidebar {
@@ -101,5 +120,18 @@
 
   .editor-workspace {
     order: 0;
+  }
+
+  .editor-board-shell {
+    flex: none;
+    min-height: 0;
+  }
+
+  .editor-board {
+    --tile: min(
+      64px,
+      calc((100vw - 32px) / var(--cols)),
+      calc((100dvh - 360px) / var(--rows))
+    );
   }
 }
