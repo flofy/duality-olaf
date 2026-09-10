@@ -304,46 +304,52 @@ export function LevelEditor() {
           )}
         </aside>
         <div className="editor-workspace">
-          <div
-            className="editor-board board"
-            style={
-              { "--cols": level.width, "--rows": level.height } as CSSProperties
-            }
-            aria-label="Grille d'édition"
-          >
-            {level.tiles.flatMap((row, y) =>
-              row.map((tile, x) => {
-                const star = level.stars.some((p) => p.x === x && p.y === y);
-                const ball = same(level.ball, { x, y });
-                const square = same(level.square, { x, y });
-                const door = level.doors?.find((d) =>
-                  same(d.position, { x, y }),
-                );
-                const sw = level.switches?.find((s) =>
-                  same(s.position, { x, y }),
-                );
-                const tp = level.teleporters?.find((t) =>
-                  same(t.position, { x, y }),
-                );
-                return (
-                  <button
-                    type="button"
-                    key={`${x}-${y}`}
-                    className={`editor-cell ${tile === "wall" ? "wall" : ""}`}
-                    style={{ gridColumn: x + 1, gridRow: y + 1 }}
-                    onClick={() => paint(x, y)}
-                    aria-label={`Case ${x + 1}, ${y + 1}`}
-                  >
-                    {ball && <span className="editor-entity ball">●</span>}
-                    {square && <span className="editor-entity square">■</span>}
-                    {star && <span className="editor-entity star">★</span>}
-                    {door && <span className="editor-entity door">▣</span>}
-                    {sw && <span className="editor-entity switch">⌁</span>}
-                    {tp && <span className="editor-entity teleporter">◎</span>}
-                  </button>
-                );
-              }),
-            )}
+          <div className="editor-board-shell">
+            <div
+              className="editor-board board"
+              style={
+                { "--cols": level.width, "--rows": level.height } as CSSProperties
+              }
+              aria-label="Grille d'édition"
+            >
+              {level.tiles.flatMap((row, y) =>
+                row.map((tile, x) => {
+                  const star = level.stars.some(
+                    (p) => p.x === x && p.y === y,
+                  );
+                  const ball = same(level.ball, { x, y });
+                  const square = same(level.square, { x, y });
+                  const door = level.doors?.find((d) =>
+                    same(d.position, { x, y }),
+                  );
+                  const sw = level.switches?.find((s) =>
+                    same(s.position, { x, y }),
+                  );
+                  const tp = level.teleporters?.find((t) =>
+                    same(t.position, { x, y }),
+                  );
+                  return (
+                    <button
+                      type="button"
+                      key={`${x}-${y}`}
+                      className={`editor-cell ${tile === "wall" ? "wall" : ""}`}
+                      style={{ gridColumn: x + 1, gridRow: y + 1 }}
+                      onClick={() => paint(x, y)}
+                      aria-label={`Case ${x + 1}, ${y + 1}`}
+                    >
+                      {ball && <span className="editor-entity ball">●</span>}
+                      {square && <span className="editor-entity square">■</span>}
+                      {star && <span className="editor-entity star">★</span>}
+                      {door && <span className="editor-entity door">▣</span>}
+                      {sw && <span className="editor-entity switch">⌁</span>}
+                      {tp && (
+                        <span className="editor-entity teleporter">◎</span>
+                      )}
+                    </button>
+                  );
+                }),
+              )}
+            </div>
           </div>
           <p className="editor-hint">
             Clique une case pour appliquer l'outil sélectionné. Les éléments
