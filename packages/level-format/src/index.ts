@@ -99,7 +99,11 @@ export {
   puzzleMechanics,
   worldDesign,
 } from "./campaign-json";
-export type { WorldDefinition, PuzzleMechanic, PuzzleDifficulty } from "./campaign";
+export type {
+  WorldDefinition,
+  PuzzleMechanic,
+  PuzzleDifficulty,
+} from "./campaign";
 export { validateLevel } from "./validator";
 export { doorSwitchTutorials } from "./mechanics";
 export { teleporterTutorials } from "./teleporters";
