@@ -161,6 +161,48 @@ function buildCatalogueGroups(): CatalogueGroup[] {
   return groups;
 }
 
+// ── Level thumbnail ─────────────────────────────────────────────
+
+/**
+ * Miniature d'un niveau : une cellule par tuile (13 × 10), avec
+ * marqueurs vaisseau / carré / étoiles superposés.
+ */
+export function LevelThumb({ level }: { level: Level }) {
+  const w = level.width;
+  const h = level.height;
+  const key = (x: number, y: number) => `${x}:${y}`;
+
+  const markers = new Map<string, string>();
+  markers.set(key(level.ball.x, level.ball.y), "ball");
+  markers.set(key(level.square.x, level.square.y), "square");
+  for (const star of level.stars) markers.set(key(star.x, star.y), "star");
+
+  return (
+    <div
+      className="dev-thumb"
+      style={{
+        gridTemplateColumns: `repeat(${w}, 1fr)`,
+        gridTemplateRows: `repeat(${h}, 1fr)`,
+        aspectRatio: `${w} / ${h}`,
+      }}
+      aria-hidden="true"
+    >
+      {Array.from({ length: h }, (_, y) =>
+        Array.from({ length: w }, (_, x) => {
+          const tile = level.tiles[y]?.[x] ?? "empty";
+          const marker = markers.get(key(x, y));
+          return (
+            <div
+              key={key(x, y)}
+              className={`dev-thumb-cell dev-thumb-${tile}${marker ? ` dev-thumb-marker-${marker}` : ""}`}
+            />
+          );
+        }),
+      )}
+    </div>
+  );
+}
+
 // ── Catalogue ───────────────────────────────────────────────────
 
 /**
@@ -226,18 +268,48 @@ export function LevelCatalogue() {
                   {isOpen ? "▾" : "▸"}
                 </span>
               </button>
-              {isOpen &&
-                group.entries.map((entry) => (
-                  <button
-                    className="dev-catalogue-entry"
-                    key={entry.id}
-                    onClick={() => {
-                      window.location.hash = `#/dev/levels/${entry.id}`;
-                    }}
-                  >
-                    {entry.label}
-                  </button>
-                ))}
+              {isOpen && (
+                <div className="dev-catalogue-grid">
+                  {group.entries.map((entry) => {
+                    const level = devLevelById.get(entry.id);
+                    return (
+                      <div className="dev-catalogue-card" key={entry.id}>
+                        <div className="dev-catalogue-thumb-wrap">
+                          {level && <LevelThumb level={level} />}
+                          <div className="dev-catalogue-overlay">
+                            <button
+                              className="dev-catalogue-overlay-btn"
+                              title={`Lancer ${entry.id}`}
+                              aria-label={`Lancer ${entry.id}`}
+                              onClick={() => {
+                                window.location.hash = `#/dev/levels/${entry.id}`;
+                              }}
+                            >
+                              ▶
+                            </button>
+                            <button
+                              className="dev-catalogue-overlay-btn"
+                              title={`Éditer ${entry.id}`}
+                              aria-label={`Éditer ${entry.id}`}
+                              onClick={() => {
+                                window.location.hash = `#/dev/editor/${entry.id}`;
+                              }}
+                            >
+                              ✎
+                            </button>
+                          </div>
+                        </div>
+                        <span
+                          className="dev-catalogue-entry-label"
+                          title={entry.label}
+                        >
+                          {entry.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           );
         })}
@@ -253,7 +325,37 @@ export function LevelCatalogue() {
  * Read-only validation + solving; no progression, no persistence.
  */
 export function LevelPlayground({ levelId }: { levelId: string }) {
+  // Hooks must run unconditionally — never after an early return.
   const level = devLevelById.get(levelId);
+  const [validation, setValidation] = useState<ReturnType<
+    typeof validateLevel
+  > | null>(null);
+  const [completion, setCompletion] = useState<{ moves: number } | null>(null);
+  const [themeName, setThemeName] = useState<ThemeName>(() =>
+    getActiveThemeName(),
+  );
+  const [skin, setSkin] = useState<SkinPreference>(() =>
+    resolveLevelSkin(level?.id ?? ""),
+  );
+
+  const runValidation = () => {
+    if (!level) return;
+    setValidation(validateLevel(level));
+  };
+
+  const cycleLocalTheme = () => {
+    const idx = themeOrder.indexOf(themeName);
+    const next = themeOrder[(idx + 1) % themeOrder.length];
+    setThemeName(next);
+    setTheme(next);
+  };
+
+  const cycleLocalSkin = () => {
+    const idx = skinOrder.indexOf(skin);
+    const next = skinOrder[(idx + 1) % skinOrder.length];
+    setSkin(next);
+  };
+
   if (!level) {
     return (
       <section className="dev-playground">
@@ -273,34 +375,6 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
     );
   }
 
-  const [validation, setValidation] = useState<ReturnType<
-    typeof validateLevel
-  > | null>(null);
-  const [completion, setCompletion] = useState<{ moves: number } | null>(null);
-  const [themeName, setThemeName] = useState<ThemeName>(() =>
-    getActiveThemeName(),
-  );
-  const [skin, setSkin] = useState<SkinPreference>(() =>
-    resolveLevelSkin(level.id),
-  );
-
-  const runValidation = () => {
-    setValidation(validateLevel(level));
-  };
-
-  const cycleLocalTheme = () => {
-    const idx = themeOrder.indexOf(themeName);
-    const next = themeOrder[(idx + 1) % themeOrder.length];
-    setThemeName(next);
-    setTheme(next);
-  };
-
-  const cycleLocalSkin = () => {
-    const idx = skinOrder.indexOf(skin);
-    const next = skinOrder[(idx + 1) % skinOrder.length];
-    setSkin(next);
-  };
-
   return (
     <section className="dev-playground">
       <div className="topbar">
@@ -313,6 +387,14 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
           ← CATALOGUE
         </button>
         <b>PLAYGROUND</b>
+        <button
+          className="action"
+          onClick={() => {
+            window.location.hash = `#/dev/editor/${level.id}`;
+          }}
+        >
+          ✎ ÉDITER
+        </button>
       </div>
       <p className="dev-banner">
         DEV ONLY · validation + solving · {levelDisplayLabel(level)}

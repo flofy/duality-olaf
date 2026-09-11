@@ -7,8 +7,6 @@ import {
   type GeneratorOptions,
 } from "./levelGen";
 import { LabGame } from "./LevelLab";
-import { LevelEditor } from "./LevelEditor";
-import "./level-editor.css";
 
 type Candidate = { level: GeneratedLevel; validation: LevelValidation };
 
@@ -60,8 +58,6 @@ function BoardPreview({ level }: { level: Level }) {
 }
 
 export function LevelGenerator() {
-  if (window.location.hash === "#/dev/editor") return <LevelEditor />;
-
   const [options, setOptions] = useState<GeneratorOptions>(DEFAULTS);
   const [generation, setGeneration] = useState(0);
   const [selectedSeed, setSelectedSeed] = useState<number | null>(null);

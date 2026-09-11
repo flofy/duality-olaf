@@ -62,24 +62,123 @@
   color: var(--muted);
 }
 
-.dev-catalogue-entry {
-  width: 100%;
-  padding: 8px 10px;
+.dev-catalogue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 4px 2px 10px;
+}
+
+.dev-catalogue-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
   border: 1px solid transparent;
   border-radius: 8px;
-  background: transparent;
-  color: #fff;
-  text-align: left;
-  cursor: pointer;
-  font: 600 11px monospace;
   transition:
     border-color 120ms,
     background 120ms;
 }
 
-.dev-catalogue-entry:hover {
+.dev-catalogue-card:hover {
   border-color: #ffffff22;
   background: #ffffff0d;
+}
+
+.dev-catalogue-entry-label {
+  font-size: 9px;
+  line-height: 1.3;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* ── Miniatures ───────────────────────────────────────────────── */
+
+.dev-catalogue-thumb-wrap {
+  position: relative;
+}
+
+.dev-catalogue-overlay {
+  position: absolute;
+  inset: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 4px;
+  background: #0a0f1ecc;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+
+.dev-catalogue-card:hover .dev-catalogue-overlay,
+.dev-catalogue-overlay:focus-within {
+  opacity: 1;
+}
+
+.dev-catalogue-overlay-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #ffffff33;
+  border-radius: 8px;
+  background: #1a2338;
+  color: #fff;
+  cursor: pointer;
+  font: 700 13px monospace;
+  transition:
+    border-color 120ms,
+    background 120ms,
+    color 120ms,
+    transform 120ms;
+}
+
+.dev-catalogue-overlay-btn:hover {
+  border-color: var(--accent, #ffd166);
+  background: #26314e;
+  color: var(--accent, #ffd166);
+  transform: scale(1.08);
+}
+
+.dev-thumb {
+  display: grid;
+  gap: 1px;
+  width: 100%;
+  border: 1px solid #ffffff18;
+  border-radius: 4px;
+  padding: 2px;
+  background: #0a0f1e;
+}
+
+.dev-thumb-cell {
+  background: #16203a;
+  border-radius: 1px;
+}
+
+.dev-thumb-wall {
+  background: #9aa3b5;
+}
+
+.dev-thumb-special {
+  background: #f0a832;
+}
+
+/* Marqueurs superposés (vaisseau / carré / étoile) */
+.dev-thumb-marker-ball {
+  box-shadow: inset 0 0 0 1px #6fd3ff;
+  background: #1c4d6e;
+}
+
+.dev-thumb-marker-square {
+  box-shadow: inset 0 0 0 1px #ffd166;
+  background: #6e5a1c;
+}
+
+.dev-thumb-marker-star {
+  background: #ffe08a;
 }
 
 .dev-generator-entry {
