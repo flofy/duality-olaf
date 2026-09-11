@@ -120,7 +120,7 @@ function buildCatalogueGroups(): CatalogueGroup[] {
       label: `World ${world.id}`,
       entries: world.levels.map((level, index) => ({
         id: level.id,
-        label: `WORLD ${world.id} · LEVEL ${String(index + 1).padStart(2, "0")}`,
+        label: `WORLD ${world.id} · LEVEL ${String(index + 1).padStart(2, "0")} · ${level.id}`,
         level,
       })),
     });

@@ -1,5 +1,5 @@
 {
-  "id": "world-1-level-10",
+  "id": "world-1-level-02",
   "width": 13,
   "height": 10,
   "tiles": [
@@ -51,13 +51,13 @@
     [
       "wall",
       "empty",
+      "wall",
+      "wall",
+      "wall",
       "empty",
       "empty",
-      "wall",
-      "wall",
       "empty",
-      "wall",
-      "wall",
+      "empty",
       "empty",
       "empty",
       "empty",
@@ -98,13 +98,13 @@
       "empty",
       "empty",
       "empty",
-      "wall",
-      "wall",
-      "empty",
-      "wall",
-      "wall",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
       "empty",
       "wall"
     ],
@@ -156,28 +156,24 @@
   ],
   "ball": {
     "x": 1,
-    "y": 1
+    "y": 4
   },
   "square": {
-    "x": 3,
-    "y": 8
+    "x": 11,
+    "y": 4
   },
   "stars": [
     {
-      "x": 11,
+      "x": 3,
       "y": 1
     },
     {
-      "x": 11,
+      "x": 6,
       "y": 8
     },
     {
-      "x": 6,
-      "y": 3
-    },
-    {
-      "x": 6,
-      "y": 6
+      "x": 10,
+      "y": 1
     }
   ]
 }

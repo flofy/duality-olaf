@@ -16,7 +16,10 @@ const modulesPerWorld = [
   import.meta.glob<Level>("../levels/world-05/*.json", { eager: true }),
 ];
 
-function loadWorld(modules: Record<string, Level>): Level[] {
+function loadWorld(
+  modules: Record<string, Level>,
+  worldNumber: number,
+): Level[] {
   const levels = Object.entries(modules)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([, level]) => level);
@@ -25,21 +28,26 @@ function loadWorld(modules: Record<string, Level>): Level[] {
     throw new Error("World level directory is empty");
   }
 
-  for (const level of levels) {
+  const worldPrefix = `world-${worldNumber}-level-`;
+  levels.forEach((level, index) => {
     validateLevel(level);
-    if (!level.id.startsWith("world-")) {
-      throw new Error(`${level.id}: unexpected level id in world directory`);
+    const expected = `${worldPrefix}${String(index + 1).padStart(2, "0")}`;
+    if (level.id !== expected) {
+      throw new Error(
+        `${level.id}: id must match its file position (expected ${expected}) — ` +
+          "rename the file/id so id order equals play order",
+      );
     }
-  }
+  });
 
   return levels;
 }
 
-const world1 = loadWorld(modulesPerWorld[0]!);
-const world2 = loadWorld(modulesPerWorld[1]!);
-const world3 = loadWorld(modulesPerWorld[2]!);
-const world4 = loadWorld(modulesPerWorld[3]!);
-const world5 = loadWorld(modulesPerWorld[4]!);
+const world1 = loadWorld(modulesPerWorld[0]!, 1);
+const world2 = loadWorld(modulesPerWorld[1]!, 2);
+const world3 = loadWorld(modulesPerWorld[2]!, 3);
+const world4 = loadWorld(modulesPerWorld[3]!, 4);
+const world5 = loadWorld(modulesPerWorld[4]!, 5);
 
 export { puzzleMechanics, worldDesign };
 export { world1, world2, world3, world4, world5 };
@@ -51,19 +59,7 @@ export const worlds: readonly WorldDefinition[] = [
     name: "Découverte",
     subtitle: "Les bases du mouvement",
     status: "available",
-    levels: [
-      world1[0],
-      world1[1],
-      world1[2],
-      world1[3],
-      world1[4],
-      world1[5],
-      world1[6],
-      world1[7],
-      world1[8],
-      world1[9],
-      world1[10],
-    ],
+    levels: world1,
   },
   {
     id: 2,

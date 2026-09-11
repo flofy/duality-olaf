@@ -1,5 +1,5 @@
 {
-  "id": "world-1-level-05",
+  "id": "world-1-level-09",
   "width": 13,
   "height": 10,
   "tiles": [
@@ -39,10 +39,25 @@
       "empty",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
       "wall",
+      "empty",
+      "empty",
+      "empty",
       "wall",
       "wall",
       "empty",
+      "wall",
+      "wall",
       "empty",
       "empty",
       "empty",
@@ -83,11 +98,11 @@
       "empty",
       "empty",
       "empty",
+      "wall",
+      "wall",
       "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
+      "wall",
+      "wall",
       "empty",
       "empty",
       "empty",
@@ -102,21 +117,6 @@
       "empty",
       "empty",
       "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
       "empty",
       "empty",
       "empty",
@@ -159,7 +159,7 @@
     "y": 1
   },
   "square": {
-    "x": 11,
+    "x": 3,
     "y": 8
   },
   "stars": [
@@ -168,12 +168,16 @@
       "y": 1
     },
     {
-      "x": 1,
+      "x": 11,
       "y": 8
     },
     {
       "x": 6,
-      "y": 5
+      "y": 3
+    },
+    {
+      "x": 6,
+      "y": 6
     }
   ]
 }
