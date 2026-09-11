@@ -1,21 +1,45 @@
-import world1Data from "../levels/world-01.json";
-import world2Data from "../levels/world-02.json";
-import world3Data from "../levels/world-03.json";
-import world4Data from "../levels/world-04.json";
-import world5Data from "../levels/world-05.json";
 import type { Level } from "./index";
 import { puzzleMechanics, worldDesign, type WorldDefinition } from "./campaign";
 import { validateLevel } from "./validator";
 
-const world1 = world1Data.levels as Level[];
-const world2 = world2Data as Level[];
-const world3 = world3Data as Level[];
-const world4 = world4Data as Level[];
-const world5 = world5Data as Level[];
+/**
+ * One JSON file per level, grouped by world directory. New levels can be
+ * added by dropping a file in the matching folder — no code change required.
+ * Files are prefixed with a zero-padded index so lexicographic order matches
+ * the intended play order.
+ */
+const modulesPerWorld = [
+  import.meta.glob<Level>("../levels/world-01/*.json", { eager: true }),
+  import.meta.glob<Level>("../levels/world-02/*.json", { eager: true }),
+  import.meta.glob<Level>("../levels/world-03/*.json", { eager: true }),
+  import.meta.glob<Level>("../levels/world-04/*.json", { eager: true }),
+  import.meta.glob<Level>("../levels/world-05/*.json", { eager: true }),
+];
 
-for (const level of [...world1, ...world2, ...world3, ...world4, ...world5]) {
-  validateLevel(level);
+function loadWorld(modules: Record<string, Level>): Level[] {
+  const levels = Object.entries(modules)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, level]) => level);
+
+  if (levels.length === 0) {
+    throw new Error("World level directory is empty");
+  }
+
+  for (const level of levels) {
+    validateLevel(level);
+    if (!level.id.startsWith("world-")) {
+      throw new Error(`${level.id}: unexpected level id in world directory`);
+    }
+  }
+
+  return levels;
 }
+
+const world1 = loadWorld(modulesPerWorld[0]!);
+const world2 = loadWorld(modulesPerWorld[1]!);
+const world3 = loadWorld(modulesPerWorld[2]!);
+const world4 = loadWorld(modulesPerWorld[3]!);
+const world5 = loadWorld(modulesPerWorld[4]!);
 
 export { puzzleMechanics, worldDesign };
 export { world1, world2, world3, world4, world5 };
@@ -28,16 +52,16 @@ export const worlds: readonly WorldDefinition[] = [
     subtitle: "Les bases du mouvement",
     status: "available",
     levels: [
-      world1[2],
-      world1[5],
       world1[0],
       world1[1],
-      world1[8],
-      world1[7],
-      world1[6],
-      world1[4],
-      world1[9],
+      world1[2],
       world1[3],
+      world1[4],
+      world1[5],
+      world1[6],
+      world1[7],
+      world1[8],
+      world1[9],
       world1[10],
     ],
   },
