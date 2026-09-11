@@ -1,24 +1,24 @@
 import world1Data from "../levels/world-01.json";
+import world2Data from "../levels/world-02.json";
+import world3Data from "../levels/world-03.json";
+import world4Data from "../levels/world-04.json";
+import world5Data from "../levels/world-05.json";
 import type { Level } from "./index";
-import {
-  puzzleMechanics,
-  world2,
-  world3,
-  world4,
-  world5,
-  worldDesign,
-  type WorldDefinition,
-} from "./campaign";
+import { puzzleMechanics, worldDesign, type WorldDefinition } from "./campaign";
 import { validateLevel } from "./validator";
 
 const world1 = world1Data.levels as Level[];
+const world2 = world2Data as Level[];
+const world3 = world3Data as Level[];
+const world4 = world4Data as Level[];
+const world5 = world5Data as Level[];
 
-for (const level of world1) {
+for (const level of [...world1, ...world2, ...world3, ...world4, ...world5]) {
   validateLevel(level);
 }
 
-export { puzzleMechanics, world2, world3, world4, world5, worldDesign };
-export { world1 };
+export { puzzleMechanics, worldDesign };
+export { world1, world2, world3, world4, world5 };
 export type { WorldDefinition };
 
 export const worlds: readonly WorldDefinition[] = [
