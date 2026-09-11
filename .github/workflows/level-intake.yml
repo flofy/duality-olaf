@@ -1,0 +1,154 @@
+# Receives level payloads from the web app (Level Lab export) through
+# repository_dispatch and opens a PR with the level file in place.
+#
+# Dispatch example:
+#   POST /repos/<owner>/<repo>/dispatches
+#   {
+#     "event_type": "level-intake",
+#     "client_payload": {
+#       "level": { ...full level JSON... },
+#       "world": 3,
+#       "index": 7,
+#       "action": "add"
+#     }
+#   }
+# The response is always 204 — use the Actions UI to follow the run.
+# A classic PAT with repo scope is required to trigger repository_dispatch:
+# pass it in the Authorization header; never embed it in the app bundle.
+name: Level intake
+
+on:
+  repository_dispatch:
+    types: [level-intake]
+  workflow_dispatch:
+    inputs:
+      level-json:
+        description: Full JSON payload of the level
+        required: true
+        type: string
+      world:
+        description: Target world number (1-5)
+        required: true
+        type: string
+      index:
+        description: Position in play order (1 = first, empty = append)
+        required: false
+        type: string
+      action:
+        description: add (new level) or update (replace existing id)
+        required: false
+        default: add
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: level-intake-${{ github.event.client_payload.branch || inputs.branch || 'manual' }}
+  cancel-in-progress: false
+
+env:
+  LEVELS_DIR: packages/level-format/levels
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare payload file
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_LEVEL: ${{ toJSON(github.event.client_payload.level) }}
+          MANUAL_LEVEL: ${{ inputs.level-json }}
+          DISPATCH_WORLD: ${{ github.event.client_payload.world }}
+          MANUAL_WORLD: ${{ inputs.world }}
+          DISPATCH_INDEX: ${{ github.event.client_payload.index }}
+          MANUAL_INDEX: ${{ inputs.index }}
+          DISPATCH_ACTION: ${{ github.event.client_payload.action }}
+          MANUAL_ACTION: ${{ inputs.action }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            printf '%s' "$MANUAL_LEVEL" > /tmp/level.json
+            world="$MANUAL_WORLD"
+            index="$MANUAL_INDEX"
+            action="${MANUAL_ACTION:-add}"
+          else
+            printf '%s' "$DISPATCH_LEVEL" > /tmp/level.json
+            world="$DISPATCH_WORLD"
+            index="$DISPATCH_INDEX"
+            action="${DISPATCH_ACTION:-add}"
+          fi
+          jq empty /tmp/level.json
+          {
+            echo "world=$world"
+            echo "index=$index"
+            echo "action=$action"
+          } >> "$GITHUB_ENV"
+
+      - name: Validate and place level file
+        run: |
+          set -euo pipefail
+          args=(/tmp/level.json "$world")
+          [ -n "${index:-}" ] && args+=(--index "$index")
+          args+=(--action "$action")
+          node .github/scripts/level-intake.mjs "${args[@]}"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: ${{ hashFiles('pnpm-lock.yaml') != '' && 'pnpm' || '' }}
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Run game tests (structure + solvability gate)
+        run: pnpm test
+
+      - name: Commit on a dedicated branch
+        id: commit
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_BRANCH: ${{ github.event.client_payload.branch }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            branch="level-intake/manual-$(date +%s)"
+          else
+            branch="${DISPATCH_BRANCH:-level-intake/$(date +%s)}"
+          fi
+          level_id=$(jq -r .id /tmp/level.json)
+          git config user.name "level-intake-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add packages/level-format/levels
+          git commit -m "feat(levels): intake $level_id from web lab"
+          git push -u origin "$branch"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "level_id=$level_id" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.commit.outputs.branch }}
+          LEVEL_ID: ${{ steps.commit.outputs.level_id }}
+        run: |
+          set -euo pipefail
+          pr_title="feat(levels): intake $LEVEL_ID"
+          existing_pr=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "$existing_pr" ]; then
+            gh pr edit "$existing_pr" --title "$pr_title"
+          else
+            gh pr create \
+              --head "$BRANCH" \
+              --title "$pr_title" \
+              --body "Level submitted from the web lab (repository_dispatch). CI validates structure and solvability."
+          fi

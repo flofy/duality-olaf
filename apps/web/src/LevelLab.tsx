@@ -32,7 +32,7 @@ import { LevelGenerator } from "./LevelGenerator";
 // ── Game Over Overlay ────────────────────────────────────────────
 
 export type GameOverOverlayProps = {
-  type: "completed" | "gameOver";
+  type: "completed" | "gameOver" | null;
   moves?: number;
   optimalMoves?: number;
   onReset: () => void;
@@ -46,6 +46,7 @@ export function GameOverOverlay({
   onReset,
   onBackToGenerator,
 }: GameOverOverlayProps) {
+  if (type === null) return null;
   const isCompleted = type === "completed";
   const ratio =
     optimalMoves && moves ? Math.round((optimalMoves / moves) * 100) : null;
@@ -529,7 +530,9 @@ export function LabGame({
           }}
         />
         <GameOverOverlay
-          type={state.completed ? "completed" : "gameOver"}
+          type={
+            state.completed ? "completed" : state.gameOver ? "gameOver" : null
+          }
           moves={state.moves}
           optimalMoves={optimalMoves}
           onReset={reset}
