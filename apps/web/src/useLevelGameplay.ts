@@ -17,8 +17,9 @@ const keyboardDirections: Record<string, GameplayDirection> = {
 export function useLevelGameplay(
   level: Level,
   onEscape?: () => void,
-  onMove?: (direction: GameplayDirection) => void,
+  onMove?: (direction: GameplayDirection, moved: boolean) => void,
   onSwitch?: () => void,
+  onReset?: () => void,
 ) {
   const runner = useMemo(() => new LevelRunner(level), [level]);
   const [state, setState] = useState(() => runner.getState());
@@ -31,8 +32,15 @@ export function useLevelGameplay(
     (direction: GameplayDirection) => {
       setState((current) => {
         if (current.completed || current.gameOver) return current;
+        const activeBefore =
+          current.activeForm === "ball" ? current.ball : current.square;
         const next = runner.move(direction);
-        onMove?.(direction);
+        const activeAfter =
+          next.activeForm === "ball" ? next.ball : next.square;
+        onMove?.(
+          direction,
+          activeBefore.x !== activeAfter.x || activeBefore.y !== activeAfter.y,
+        );
         return next;
       });
     },
@@ -41,7 +49,8 @@ export function useLevelGameplay(
 
   const reset = useCallback(() => {
     setState(runner.reset());
-  }, [runner]);
+    onReset?.();
+  }, [onReset, runner]);
 
   const switchForm = useCallback(() => {
     setState((current) => {
