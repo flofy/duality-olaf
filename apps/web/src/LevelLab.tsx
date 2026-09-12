@@ -1,18 +1,11 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type CSSProperties,
-} from "react";
-import { LevelRunner, validateLevel } from "@duality/game";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import type { Level } from "@duality/level-format";
-import { campaign, worlds } from "./levels/campaign";
 import {
   doorSwitchTutorials,
   seasonalEvents,
   teleporterTutorials,
 } from "@duality/level-format";
+import { campaign, worlds } from "./levels/campaign";
 import {
   getActiveThemeName,
   setTheme,
@@ -27,9 +20,7 @@ import {
   type SkinPreference,
 } from "./skins";
 import { hexToCss } from "./theme";
-import { LevelGenerator } from "./LevelGenerator";
-
-// ── Game Over Overlay ────────────────────────────────────────────
+import { useLevelGameplay } from "./useLevelGameplay";
 
 export type GameOverOverlayProps = {
   type: "completed" | "gameOver" | null;
@@ -76,8 +67,6 @@ export function GameOverOverlay({
   );
 }
 
-// ── Catalogue data ──────────────────────────────────────────────
-
 export type CatalogueEntry = {
   id: string;
   label: string;
@@ -89,7 +78,6 @@ export type CatalogueGroup = {
   entries: CatalogueEntry[];
 };
 
-/** All dev-accessible levels, in catalogue order, for by-id lookup. */
 export const allDevLevels: readonly Level[] = [
   ...campaign,
   ...doorSwitchTutorials,
@@ -101,7 +89,6 @@ export const devLevelById: ReadonlyMap<string, Level> = new Map(
   allDevLevels.map((level) => [level.id, level]),
 );
 
-/** Human-readable label, e.g. "WORLD 1 · LEVEL 03" or the raw id. */
 export function levelDisplayLabel(level: Level): string {
   for (const world of worlds) {
     const index = world.levels.findIndex((l) => l.id === level.id);
@@ -114,7 +101,6 @@ export function levelDisplayLabel(level: Level): string {
 function buildCatalogueGroups(): CatalogueGroup[] {
   const groups: CatalogueGroup[] = [];
 
-  // Campaign: one group per world so testers can jump to a specific world.
   for (const world of worlds) {
     groups.push({
       label: `World ${world.id}`,
@@ -126,7 +112,6 @@ function buildCatalogueGroups(): CatalogueGroup[] {
     });
   }
 
-  // Door / switch tutorials
   groups.push({
     label: "Doors & switches",
     entries: doorSwitchTutorials.map((level) => ({
@@ -136,7 +121,6 @@ function buildCatalogueGroups(): CatalogueGroup[] {
     })),
   });
 
-  // Teleporter tutorials
   groups.push({
     label: "Teleporters",
     entries: teleporterTutorials.map((level) => ({
@@ -146,7 +130,6 @@ function buildCatalogueGroups(): CatalogueGroup[] {
     })),
   });
 
-  // Seasonal events
   for (const event of seasonalEvents) {
     groups.push({
       label: event.label,
@@ -161,12 +144,6 @@ function buildCatalogueGroups(): CatalogueGroup[] {
   return groups;
 }
 
-// ── Level thumbnail ─────────────────────────────────────────────
-
-/**
- * Miniature d'un niveau : une cellule par tuile (13 × 10), avec
- * marqueurs vaisseau / carré / étoiles superposés.
- */
 export function LevelThumb({ level }: { level: Level }) {
   const w = level.width;
   const h = level.height;
@@ -203,13 +180,6 @@ export function LevelThumb({ level }: { level: Level }) {
   );
 }
 
-// ── Catalogue ───────────────────────────────────────────────────
-
-/**
- * `/dev/levels` — pure catalogue, no LevelRunner, no solver.
- * Lists every dev-accessible level grouped by world/category.
- * Clicking a level navigates to `#/dev/levels/:levelId`.
- */
 export function LevelCatalogue() {
   const groups = useMemo(() => buildCatalogueGroups(), []);
   const [open, setOpen] = useState<Set<string>>(() => new Set());
@@ -318,18 +288,9 @@ export function LevelCatalogue() {
   );
 }
 
-// ── Playground ──────────────────────────────────────────────────
-
-/**
- * `/dev/levels/:levelId` — single-level playground with solver + preview.
- * Read-only validation + solving; no progression, no persistence.
- */
+/** `/dev/levels/:levelId` — single-level gameplay playground. */
 export function LevelPlayground({ levelId }: { levelId: string }) {
-  // Hooks must run unconditionally — never after an early return.
   const level = devLevelById.get(levelId);
-  const [validation, setValidation] = useState<ReturnType<
-    typeof validateLevel
-  > | null>(null);
   const [completion, setCompletion] = useState<{ moves: number } | null>(null);
   const [themeName, setThemeName] = useState<ThemeName>(() =>
     getActiveThemeName(),
@@ -337,24 +298,6 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
   const [skin, setSkin] = useState<SkinPreference>(() =>
     resolveLevelSkin(level?.id ?? ""),
   );
-
-  const runValidation = () => {
-    if (!level) return;
-    setValidation(validateLevel(level));
-  };
-
-  const cycleLocalTheme = () => {
-    const idx = themeOrder.indexOf(themeName);
-    const next = themeOrder[(idx + 1) % themeOrder.length];
-    setThemeName(next);
-    setTheme(next);
-  };
-
-  const cycleLocalSkin = () => {
-    const idx = skinOrder.indexOf(skin);
-    const next = skinOrder[(idx + 1) % skinOrder.length];
-    setSkin(next);
-  };
 
   if (!level) {
     return (
@@ -397,7 +340,7 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
         </button>
       </div>
       <p className="dev-banner">
-        DEV ONLY · validation + solving · {levelDisplayLabel(level)}
+        DEV ONLY · gameplay · {levelDisplayLabel(level)}
       </p>
       <div className="dev-playground-header">
         <div className="dev-playground-title">
@@ -407,13 +350,7 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
           </span>
         </div>
         <div className="dev-playground-metrics">
-          {completion && <span>✓ {completion.moves} coups · </span>}
-          {validation &&
-            (validation.result.solvable ? (
-              <span>solvable en {validation.difficulty!.moves} coups</span>
-            ) : (
-              <span className="dev-unsolvable">UNSOLVABLE</span>
-            ))}
+          {completion && <span>✓ {completion.moves} coups</span>}
         </div>
       </div>
       <div className="dev-skin-controls">
@@ -426,9 +363,9 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
               setTheme(e.target.value as ThemeName);
             }}
           >
-            {themeOrder.map((t) => (
-              <option key={t} value={t}>
-                {t}
+            {themeOrder.map((theme) => (
+              <option key={theme} value={theme}>
+                {theme}
               </option>
             ))}
           </select>
@@ -439,9 +376,9 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
             value={skin}
             onChange={(e) => setSkin(e.target.value as SkinPreference)}
           >
-            {skinOrder.map((s) => (
-              <option key={s} value={s}>
-                {skinLabels[s]}
+            {skinOrder.map((value) => (
+              <option key={value} value={value}>
+                {skinLabels[value]}
               </option>
             ))}
           </select>
@@ -454,23 +391,9 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
         themeName={themeName}
         onCompletionChange={setCompletion}
       />
-      <div className="dev-controls">
-        <button className="action dev-solver-action" onClick={runValidation}>
-          ⚡ VALIDER / RÉSOUDRE
-        </button>
-      </div>
-      {validation && (
-        <pre className="dev-solver-output">
-          {validation.result.solvable
-            ? `✓ solvable en ${validation.difficulty!.moves} coups\n  explored ${validation.result.exploredStates} states\n  score ${validation.difficulty!.score}`
-            : `✗ unsolvable\n  explored ${validation.result.exploredStates} states`}
-        </pre>
-      )}
     </section>
   );
 }
-
-// ── Lab Game (reusable player) ──────────────────────────────────
 
 export function LabGame({
   level,
@@ -487,140 +410,111 @@ export function LabGame({
   optimalMoves?: number;
   onBackToGenerator?: () => void;
 }) {
-  const runner = useMemo(() => new LevelRunner(level), [level]);
-  const [state, setState] = useState(() => runner.getState());
+  const { state, reset } = useLevelGameplay(level, () => {
+    window.location.hash = "#/dev/levels";
+  });
+
   useEffect(() => {
     onCompletionChange(state.completed ? { moves: state.moves } : null);
   }, [onCompletionChange, state.completed, state.moves]);
-  const move = useCallback(
-    (x: -1 | 0 | 1, y: -1 | 0 | 1) => {
-      setState((current) =>
-        current.completed || current.gameOver ? current : runner.move({ x, y }),
-      );
-    },
-    [runner],
-  );
-  const reset = useCallback(() => setState(runner.reset()), [runner]);
-  const switchForm = useCallback(() => {
-    setState((current) =>
-      current.completed || current.gameOver ? current : runner.switchForm(),
-    );
-  }, [runner]);
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === " ") {
-        e.preventDefault();
-        switchForm();
-      } else if (e.key === "r" || e.key === "R") reset();
-      else if (e.key === "Escape") {
-        window.location.hash = "#/dev/levels";
-      } else if (dirs[e.key]) {
-        e.preventDefault();
-        move(dirs[e.key]!.x, dirs[e.key]!.y);
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [move, reset, switchForm]);
+
   return (
-    <>
-      <div
-        className={`dev-board board ${skin !== "default" ? `seasonal theme-${skin}` : ""}`}
-        style={
-          {
-            ...Object.fromEntries(
-              Object.entries(themes[themeName])
-                .filter(([, v]) => typeof v === "number")
-                .map(([k, v]) => ["--" + k, hexToCss(v as number)]),
-            ),
-            "--cols": level.width,
-            "--rows": level.height,
-          } as CSSProperties
-        }
-      >
-        {level.tiles.flatMap((row, y) =>
-          row.map((tile, x) =>
-            tile === "wall" ? (
-              <div
-                className="wall"
-                style={{ gridColumn: x + 1, gridRow: y + 1 }}
-                key={`w-${x}-${y}`}
-              />
-            ) : null,
+    <div
+      className={`dev-board board ${skin !== "default" ? `seasonal theme-${skin}` : ""}`}
+      style={
+        {
+          ...Object.fromEntries(
+            Object.entries(themes[themeName])
+              .filter(([, value]) => typeof value === "number")
+              .map(([key, value]) => ["--" + key, hexToCss(value as number)]),
           ),
-        )}
-        {level.doors?.map((door) => (
-          <div
-            className={`door ${state.doors[door.id] ? "open" : ""}`}
-            style={{
-              gridColumn: door.position.x + 1,
-              gridRow: door.position.y + 1,
-            }}
-            key={door.id}
-          >
-            {state.doors[door.id] ? "·" : "▢"}
-          </div>
-        ))}
-        {level.switches?.map((item) => (
-          <div
-            className={`switch switch-${item.form}`}
-            style={{
-              gridColumn: item.position.x + 1,
-              gridRow: item.position.y + 1,
-            }}
-            key={item.id}
-          >
-            ⌁
-          </div>
-        ))}
-        {level.teleporters?.map((teleporter) => (
-          <div
-            className="teleporter"
-            style={{
-              gridColumn: teleporter.position.x + 1,
-              gridRow: teleporter.position.y + 1,
-            }}
-            key={teleporter.id}
-          >
-            ◎
-          </div>
-        ))}
-        {level.stars.map((star, index) => (
-          <div
-            className="star"
-            style={{
-              gridColumn: star.x + 1,
-              gridRow: star.y + 1,
-            }}
-            key={`s-${index}`}
-          >
-            ★
-          </div>
-        ))}
+          "--cols": level.width,
+          "--rows": level.height,
+        } as CSSProperties
+      }
+    >
+      {level.tiles.flatMap((row, y) =>
+        row.map((tile, x) =>
+          tile === "wall" ? (
+            <div
+              className="wall"
+              style={{ gridColumn: x + 1, gridRow: y + 1 }}
+              key={`w-${x}-${y}`}
+            />
+          ) : null,
+        ),
+      )}
+      {level.doors?.map((door) => (
         <div
-          className="ball"
+          className={`door ${state.doors[door.id] ? "open" : ""}`}
           style={{
-            gridColumn: state.ball.x + 1,
-            gridRow: state.ball.y + 1,
+            gridColumn: door.position.x + 1,
+            gridRow: door.position.y + 1,
           }}
-        />
+          key={door.id}
+        >
+          {state.doors[door.id] ? "·" : "▢"}
+        </div>
+      ))}
+      {level.switches?.map((item) => (
         <div
-          className="square"
+          className={`switch switch-${item.form}`}
           style={{
-            gridColumn: state.square.x + 1,
-            gridRow: state.square.y + 1,
+            gridColumn: item.position.x + 1,
+            gridRow: item.position.y + 1,
           }}
-        />
-        <GameOverOverlay
-          type={
-            state.completed ? "completed" : state.gameOver ? "gameOver" : null
-          }
-          moves={state.moves}
-          optimalMoves={optimalMoves}
-          onReset={reset}
-          onBackToGenerator={onBackToGenerator}
-        />
-      </div>
-    </>
+          key={item.id}
+        >
+          ⌁
+        </div>
+      ))}
+      {level.teleporters?.map((teleporter) => (
+        <div
+          className="teleporter"
+          style={{
+            gridColumn: teleporter.position.x + 1,
+            gridRow: teleporter.position.y + 1,
+          }}
+          key={teleporter.id}
+        >
+          ◎
+        </div>
+      ))}
+      {level.stars.map((star, index) => (
+        <div
+          className="star"
+          style={{
+            gridColumn: star.x + 1,
+            gridRow: star.y + 1,
+          }}
+          key={`s-${index}`}
+        >
+          ★
+        </div>
+      ))}
+      <div
+        className="piece ball"
+        style={{
+          gridColumn: state.ball.x + 1,
+          gridRow: state.ball.y + 1,
+        }}
+      />
+      <div
+        className="piece square"
+        style={{
+          gridColumn: state.square.x + 1,
+          gridRow: state.square.y + 1,
+        }}
+      />
+      <GameOverOverlay
+        type={
+          state.completed ? "completed" : state.gameOver ? "gameOver" : null
+        }
+        moves={state.moves}
+        optimalMoves={optimalMoves}
+        onReset={reset}
+        onBackToGenerator={onBackToGenerator}
+      />
+    </div>
   );
 }

@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
-import { LevelRunner } from "@duality/game";
 import type { Level } from "@duality/level-format";
 import {
   campaign,
@@ -33,6 +32,7 @@ import { LevelEditor } from "./LevelEditor";
 import { getDevRoute, type DevRoute } from "./devRouting";
 import { InstallButton } from "./InstallButton";
 import { LevelGenerator } from "./LevelGenerator";
+import { useLevelGameplay } from "./useLevelGameplay";
 import {
   formatDebugCommands,
   type DebugCommand,
@@ -455,41 +455,12 @@ function Game(p: {
   next: (w: number, i: number) => void;
 }) {
   const level = campaign[p.li] as Level;
-  const runner = useMemo(() => new LevelRunner(level), [level]);
-  const [s, setS] = useState(() => runner.getState());
   const [commands, setCommands] = useState<DebugCommand[]>([]);
   const [start, setStart] = useState<{
     x: number;
     y: number;
     interactive: boolean;
   } | null>(null);
-  const move = (d: Dir) => {
-    if (s.completed) return;
-    const before = runner.getState();
-    const after = runner.move(d);
-    const activeBefore =
-      before.activeForm === "ball" ? before.ball : before.square;
-    const activeAfter = after.activeForm === "ball" ? after.ball : after.square;
-    const moved =
-      activeBefore.x !== activeAfter.x || activeBefore.y !== activeAfter.y;
-    if (moved && isDevtoolsEnabled) {
-      const direction: DebugDirection =
-        d.x === 1 ? "RIGHT" : d.x === -1 ? "LEFT" : d.y === 1 ? "DOWN" : "UP";
-      setCommands((current) => [...current, { type: "move", direction }]);
-    }
-    setS(after);
-  };
-  const switchForm = () => {
-    if (s.completed) return;
-    const after = runner.switchForm();
-    if (isDevtoolsEnabled)
-      setCommands((current) => [...current, { type: "switch" }]);
-    setS(after);
-  };
-  const reset = () => {
-    setS(runner.reset());
-    if (isDevtoolsEnabled) setCommands([]);
-  };
   const world = worlds.find((x) => x.id === p.w)!;
   const seasonalTheme = resolveLevelSkin(level.id);
   const worldIndex = world.levels.findIndex((x) => x.id === level.id);
@@ -498,20 +469,40 @@ function Game(p: {
     if (worldIndex < world.levels.length - 1) p.next(p.w, worldIndex + 1);
     else p.back();
   };
+  const {
+    state: s,
+    move,
+    reset,
+    switchForm,
+  } = useLevelGameplay(
+    level,
+    p.back,
+    (direction, moved) => {
+      if (!moved || !isDevtoolsEnabled) return;
+      const debugDirection: DebugDirection =
+        direction.x === 1
+          ? "RIGHT"
+          : direction.x === -1
+            ? "LEFT"
+            : direction.y === 1
+              ? "DOWN"
+              : "UP";
+      setCommands((current) => [
+        ...current,
+        { type: "move", direction: debugDirection },
+      ]);
+    },
+    () => {
+      if (isDevtoolsEnabled)
+        setCommands((current) => [...current, { type: "switch" }]);
+    },
+    () => {
+      if (isDevtoolsEnabled) setCommands([]);
+    },
+  );
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      const map: Record<string, Dir> = {
-        ArrowLeft: dirs.left,
-        ArrowRight: dirs.right,
-        ArrowUp: dirs.up,
-        ArrowDown: dirs.down,
-      };
-      if (e.key === " ") {
-        e.preventDefault();
-        switchForm();
-      } else if (e.key === "r" || e.key === "R") reset();
-      else if (e.key === "Escape") p.back();
-      else if (e.key === "Enter" && s.completed) next();
+      if (e.key === "Enter" && s.completed) next();
       else if (e.key === "d" || e.key === "D") {
         if (!isDevtoolsEnabled || commands.length === 0) return;
         e.preventDefault();
@@ -519,14 +510,11 @@ function Game(p: {
       } else if (e.key === "c" || e.key === "C") {
         if (!isDevtoolsEnabled) return;
         setCommands([]);
-      } else if (map[e.key]) {
-        e.preventDefault();
-        move(map[e.key]);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [s.completed, p.li, commands]);
+  }, [s.completed, commands]);
   useEffect(() => {
     if (s.completed) completeLevel(level.id);
   }, [s.completed, level.id]);
@@ -672,7 +660,7 @@ function Game(p: {
           <span className="muted">
             {commands
               .slice(-8)
-              .map((command, index) =>
+              .map((command) =>
                 command.type === "switch"
                   ? "↔"
                   : command.direction === "RIGHT"
