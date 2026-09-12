@@ -493,14 +493,14 @@ export function LabGame({
         </div>
       ))}
       <div
-        className="ball"
+        className="piece ball"
         style={{
           gridColumn: state.ball.x + 1,
           gridRow: state.ball.y + 1,
         }}
       />
       <div
-        className="square"
+        className="piece square"
         style={{
           gridColumn: state.square.x + 1,
           gridRow: state.square.y + 1,
