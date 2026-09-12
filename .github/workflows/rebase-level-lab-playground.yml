@@ -45,3 +45,5 @@ jobs:
           git add apps/web/src/main.tsx
           git commit -m "fix(format): apply oxfmt to main.tsx"
           git push origin HEAD:fix/level-lab-playground
+      - name: Completed
+        run: echo "Temporary maintenance workflow completed"
