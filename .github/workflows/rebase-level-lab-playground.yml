@@ -1,0 +1,47 @@
+name: Rebase level lab playground
+
+on:
+  push:
+    branches:
+      - fix/level-lab-playground
+
+permissions:
+  contents: write
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: fix/level-lab-playground
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Rebase onto main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo "Branch is already based on main."
+            exit 0
+          fi
+          git rebase origin/main
+          git push --force-with-lease origin HEAD:fix/level-lab-playground
+      - name: Format main.tsx
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm exec oxfmt --write apps/web/src/main.tsx
+          if git diff --quiet -- apps/web/src/main.tsx; then
+            echo "main.tsx already formatted"
+            exit 0
+          fi
+          git add apps/web/src/main.tsx
+          git commit -m "fix(format): apply oxfmt to main.tsx"
+          git push origin HEAD:fix/level-lab-playground
