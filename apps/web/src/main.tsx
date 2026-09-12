@@ -469,7 +469,12 @@ function Game(p: {
     if (worldIndex < world.levels.length - 1) p.next(p.w, worldIndex + 1);
     else p.back();
   };
-  const { state: s, move, reset, switchForm } = useLevelGameplay(
+  const {
+    state: s,
+    move,
+    reset,
+    switchForm,
+  } = useLevelGameplay(
     level,
     p.back,
     (direction, moved) => {
