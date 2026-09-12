@@ -4,12 +4,14 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type ChangeEvent,
 } from "react";
 import { createEmptyLevel, type Level, type Tile } from "@duality/level-format";
 import { validateLevel } from "@duality/game";
-import { LabGame } from "./LevelLab";
+import { LabGame, devLevelById } from "./LevelLab";
 import { getActiveThemeName } from "./theme";
 import { resolveLevelSkin } from "./skins";
+import "./level-editor.css";
 
 type Tool =
   | "empty"
@@ -68,18 +70,31 @@ function same(a: { x: number; y: number }, b: { x: number; y: number }) {
   return a.x === b.x && a.y === b.y;
 }
 
-export function LevelEditor() {
-  const [level, setLevel] = useState<Level>(() =>
-    blankLevel("custom-01", 13, 10),
-  );
+export function LevelEditor({
+  initialLevelId = null,
+}: {
+  initialLevelId?: string | null;
+}) {
+  const [level, setLevel] = useState<Level>(() => {
+    const initial =
+      initialLevelId === null ? undefined : devLevelById.get(initialLevelId);
+    return initial ? clone(initial) : blankLevel("custom-01", 13, 10);
+  });
   const [tool, setTool] = useState<Tool>("wall");
-  const [message, setMessage] = useState("Prêt à créer un niveau");
+  const [message, setMessage] = useState(
+    initialLevelId
+      ? "Édition d'un niveau existant — modifie puis exporte le JSON"
+      : "Prêt à créer un niveau",
+  );
   const [playing, setPlaying] = useState(false);
+  const [showImportText, setShowImportText] = useState(false);
+  const [pastedJson, setPastedJson] = useState("");
   const [validation, setValidation] = useState<ReturnType<
     typeof validateLevel
   > | null>(null);
   const paintingRef = useRef(false);
   const lastPaintedRef = useRef<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const themeName = getActiveThemeName();
   const skin = resolveLevelSkin(level.id);
   const json = useMemo(() => JSON.stringify(level, null, 2), [level]);
@@ -216,6 +231,42 @@ export function LevelEditor() {
     setMessage("JSON copié dans le presse-papiers");
   };
 
+  const applyImport = (raw: string) => {
+    try {
+      const parsed = JSON.parse(raw) as Level;
+      if (
+        typeof parsed.id !== "string" ||
+        !Array.isArray(parsed.tiles) ||
+        typeof parsed.width !== "number" ||
+        typeof parsed.height !== "number" ||
+        !Array.isArray(parsed.stars)
+      ) {
+        throw new Error("structure");
+      }
+      setLevel(clone(parsed));
+      setValidation(null);
+      setMessage(`✓ Niveau importé · ${parsed.id}`);
+      return true;
+    } catch {
+      setMessage("✗ JSON invalide — import annulé");
+      return false;
+    }
+  };
+
+  const importJson = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    void file.text().then(applyImport);
+  };
+
+  const importPasted = () => {
+    if (applyImport(pastedJson.trim())) {
+      setPastedJson("");
+      setShowImportText(false);
+    }
+  };
+
   return (
     <section className="dev-editor">
       <div className="topbar">
@@ -297,6 +348,43 @@ export function LevelEditor() {
           <button className="action editor-action" onClick={copyJson}>
             ⧉ COPIER LE JSON
           </button>
+          <button
+            className="action editor-action"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            ⇪ IMPORTER (FICHIER)
+          </button>
+          <button
+            className="action editor-action"
+            onClick={() => setShowImportText((v) => !v)}
+          >
+            ⇪ IMPORTER (COLLER){showImportText ? " ▴" : " ▾"}
+          </button>
+          {showImportText && (
+            <div className="editor-import-text">
+              <textarea
+                value={pastedJson}
+                placeholder='{"id": "custom-01", "width": 13, ...}'
+                onChange={(e) => setPastedJson(e.target.value)}
+                rows={8}
+                spellCheck={false}
+              />
+              <button
+                className="action editor-action"
+                disabled={!pastedJson.trim()}
+                onClick={importPasted}
+              >
+                CHARGER LE JSON
+              </button>
+            </div>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            onChange={importJson}
+            hidden
+          />
           <button
             className="action editor-action"
             onClick={() => {

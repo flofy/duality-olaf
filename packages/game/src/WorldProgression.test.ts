@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { world1 } from "../../level-format/src/campaign";
+import { world1 } from "@duality/level-format";
 import { validateCampaign } from "./LevelValidator";
 
 describe("World 1 progression", () => {

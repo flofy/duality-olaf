@@ -8,6 +8,9 @@ describe("campaign validation", () => {
     level.ball = { x: 1, y: 1 };
     level.square = { x: 5, y: 5 };
     level.stars = [{ x: 3, y: 1 }];
+    // Walls stop the sliding ball on the star row
+    level.tiles[1][0] = "wall";
+    level.tiles[1][11] = "wall";
 
     const validation = validateCampaign([level]);
 

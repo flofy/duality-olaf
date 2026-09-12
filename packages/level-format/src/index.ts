@@ -39,6 +39,7 @@ export function createEmptyLevel(id = "prototype-1"): Level {
     stars: [],
   };
 }
+
 export function isInside(level: Level, position: Position): boolean {
   return (
     position.x >= 0 &&
@@ -47,17 +48,21 @@ export function isInside(level: Level, position: Position): boolean {
     position.y < level.height
   );
 }
+
 export function isWall(level: Level, position: Position): boolean {
   return (
     isInside(level, position) && level.tiles[position.y][position.x] === "wall"
   );
 }
+
 export function samePosition(a: Position, b: Position): boolean {
   return a.x === b.x && a.y === b.y;
 }
+
 export function clonePosition(position: Position): Position {
   return { ...position };
 }
+
 export function cloneLevel(level: Level): Level {
   return {
     ...level,
@@ -85,11 +90,21 @@ export {
   campaign,
   world1,
   world2,
+  world3,
+  world4,
+  world5,
   worlds,
   getWorld,
   getLevel,
+  puzzleMechanics,
+  worldDesign,
+} from "./campaign-json";
+export type {
+  WorldDefinition,
+  PuzzleMechanic,
+  PuzzleDifficulty,
 } from "./campaign";
-export type { WorldDefinition } from "./campaign";
+export { validateLevel } from "./validator";
 export { doorSwitchTutorials } from "./mechanics";
 export { teleporterTutorials } from "./teleporters";
 export { world3Refined } from "./world3-refined";

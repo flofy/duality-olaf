@@ -9,6 +9,9 @@ describe("solveLevel", () => {
     level.ball = { x: 1, y: 1 };
     level.square = { x: 5, y: 5 };
     level.stars = [{ x: 3, y: 1 }];
+    // Walls stop the sliding ball on the star row
+    level.tiles[1][0] = "wall";
+    level.tiles[1][11] = "wall";
 
     const result = solveLevel(level);
 
@@ -17,9 +20,9 @@ describe("solveLevel", () => {
     expect(result.commands).toHaveLength(1);
   });
 
-  it("replays the human Level 6 solution and the solver finds it", () => {
-    const level6 = world1.find((level) => level.id === "world-1-level-06");
-    expect(level6).toBeDefined();
+  it("replays the human Level 2 solution and the solver finds it", () => {
+    const level2 = world1.find((level) => level.id === "world-1-level-02");
+    expect(level2).toBeDefined();
     const commands = [
       { type: "move" as const, direction: { x: 0, y: -1 } },
       { type: "move" as const, direction: { x: 1, y: 0 } },
@@ -28,13 +31,13 @@ describe("solveLevel", () => {
       { type: "move" as const, direction: { x: 1, y: 0 } },
     ];
 
-    const runner = new LevelRunner(level6!);
+    const runner = new LevelRunner(level2!);
     let state = runner.getState();
     for (const command of commands) state = runner.move(command.direction);
 
     expect(state.completed).toBe(true);
 
-    const result = solveLevel(level6!);
+    const result = solveLevel(level2!);
     expect(result.solvable).toBe(true);
     expect(result.moves).toBe(5);
   });

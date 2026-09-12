@@ -29,6 +29,7 @@ import {
   type Direction as GestureDirection,
 } from "./input/GestureInterpreter";
 import { LevelCatalogue, LevelPlayground } from "./LevelLab";
+import { LevelEditor } from "./LevelEditor";
 import { getDevRoute, type DevRoute } from "./devRouting";
 import { InstallButton } from "./InstallButton";
 import { LevelGenerator } from "./LevelGenerator";
@@ -249,6 +250,9 @@ function App() {
           </div>
           {devRoute.type === "catalogue" && <LevelCatalogue />}
           {devRoute.type === "generator" && <LevelGenerator />}
+          {devRoute.type === "editor" && (
+            <LevelEditor initialLevelId={devRoute.levelId} />
+          )}
           {devRoute.type === "playground" && (
             <LevelPlayground levelId={devRoute.levelId} />
           )}

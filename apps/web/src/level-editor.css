@@ -105,6 +105,28 @@
   width: 100%;
 }
 
+.editor-import-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.editor-import-text textarea {
+  width: 100%;
+  resize: vertical;
+  font: 10px monospace;
+  color: #fff;
+  background: #0a0f1e;
+  border: 1px solid #ffffff22;
+  border-radius: 6px;
+  padding: 6px;
+}
+
+.editor-import-text textarea:focus {
+  outline: none;
+  border-color: var(--accent, #ffd166);
+}
+
 .editor-status,
 .editor-validation {
   overflow-wrap: anywhere;

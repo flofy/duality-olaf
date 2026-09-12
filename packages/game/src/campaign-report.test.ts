@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { campaign } from "../../level-format/src/campaign";
+import { campaign } from "../../level-format/src/campaign-json";
 import { formatCampaignReport, validateCampaign } from "./LevelValidator";
 
 describe("World 1 campaign validation", () => {
