@@ -249,6 +249,13 @@
     flex-wrap: wrap;
   }
 
+  .dev-catalogue-groups {
+    max-height: calc(100dvh - 170px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;
+  }
+
   .dev-playground-header {
     align-items: flex-start;
     flex-direction: column;
