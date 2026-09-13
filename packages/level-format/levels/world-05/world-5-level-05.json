@@ -1,0 +1,220 @@
+{
+  "id": "world-5-level-05",
+  "width": 13,
+  "height": 10,
+  "tiles": [
+    [
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ]
+  ],
+  "ball": {
+    "x": 9,
+    "y": 4
+  },
+  "square": {
+    "x": 1,
+    "y": 4
+  },
+  "stars": [
+    {
+      "x": 5,
+      "y": 7
+    },
+    {
+      "x": 10,
+      "y": 1
+    },
+    {
+      "x": 11,
+      "y": 3
+    }
+  ],
+  "doors": [
+    {
+      "id": "door-1",
+      "position": {
+        "x": 3,
+        "y": 5
+      },
+      "initiallyOpen": false
+    }
+  ],
+  "switches": [
+    {
+      "id": "switch-1",
+      "position": {
+        "x": 7,
+        "y": 1
+      },
+      "form": "square",
+      "toggles": [
+        "door-1"
+      ]
+    }
+  ],
+  "teleporters": [
+    {
+      "id": "teleporter-a",
+      "position": {
+        "x": 11,
+        "y": 7
+      },
+      "targetId": "teleporter-b"
+    },
+    {
+      "id": "teleporter-b",
+      "position": {
+        "x": 9,
+        "y": 8
+      },
+      "targetId": "teleporter-a"
+    }
+  ]
+}

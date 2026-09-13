@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import type { Level } from "@duality/level-format";
 import {
   doorSwitchTutorials,
+  isInside,
   seasonalEvents,
   teleporterTutorials,
 } from "@duality/level-format";
@@ -510,20 +511,24 @@ export function LabGame({
             ★
           </div>
         ))}
-        <div
-          className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
-          style={{
-            gridColumn: state.ball.x + 1,
-            gridRow: state.ball.y + 1,
-          }}
-        />
-        <div
-          className={`piece square ${state.activeForm === "square" ? "" : "inactive"}`}
-          style={{
-            gridColumn: state.square.x + 1,
-            gridRow: state.square.y + 1,
-          }}
-        />
+        {isInside(level, state.ball) && (
+          <div
+            className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
+            style={{
+              gridColumn: state.ball.x + 1,
+              gridRow: state.ball.y + 1,
+            }}
+          />
+        )}
+        {isInside(level, state.square) && (
+          <div
+            className={`piece square ${state.activeForm === "square" ? "" : "inactive"}`}
+            style={{
+              gridColumn: state.square.x + 1,
+              gridRow: state.square.y + 1,
+            }}
+          />
+        )}
         <GameOverOverlay
           type={
             state.completed ? "completed" : state.gameOver ? "gameOver" : null

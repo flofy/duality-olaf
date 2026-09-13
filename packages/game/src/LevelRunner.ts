@@ -14,6 +14,8 @@ export type GameState = {
   moves: number;
   completed: boolean;
   gameOver: boolean;
+  /** Set when the last successful move ended with a teleporter warp. */
+  lastTeleport: { from: Position; to: Position } | null;
 };
 
 export class LevelRunner {
@@ -37,6 +39,12 @@ export class LevelRunner {
       moves: state.moves,
       completed: state.completed,
       gameOver: state.gameOver,
+      lastTeleport: state.lastTeleport
+        ? {
+            from: { ...state.lastTeleport.from },
+            to: { ...state.lastTeleport.to },
+          }
+        : null,
     };
     return runner;
   }
@@ -48,6 +56,12 @@ export class LevelRunner {
       square: { ...this.state.square },
       stars: this.state.stars.map((star) => ({ ...star })),
       doors: { ...this.state.doors },
+      lastTeleport: this.state.lastTeleport
+        ? {
+            from: { ...this.state.lastTeleport.from },
+            to: { ...this.state.lastTeleport.to },
+          }
+        : null,
     };
   }
 
@@ -58,8 +72,10 @@ export class LevelRunner {
   }
 
   move(direction: Direction): GameState {
+    if (this.state.gameOver) return this.getState();
     const axis = this.dominantAxis(direction);
     if (axis === null) return this.getState();
+    this.state.lastTeleport = null;
 
     const sign = axis === "x" ? Math.sign(direction.x) : Math.sign(direction.y);
     const current = this.activeEntity();
@@ -70,8 +86,11 @@ export class LevelRunner {
     for (;;) {
       const next: Position = { ...current };
       next[axis] += sign;
-      // Game over if entity slides off the level
+      // Game over if the entity slides off the level: it keeps sliding one
+      // cell beyond the board and vanishes, like in the original game.
       if (!isInside(this.state.level, next)) {
+        current.x = next.x;
+        current.y = next.y;
         this.state.gameOver = true;
         return this.getState();
       }
@@ -144,6 +163,10 @@ export class LevelRunner {
     if (!target) return;
     const other = this.blockingEntity();
     if (target.position.x === other.x && target.position.y === other.y) return;
+    this.state.lastTeleport = {
+      from: { x: current.x, y: current.y },
+      to: { x: target.position.x, y: target.position.y },
+    };
     current.x = target.position.x;
     current.y = target.position.y;
   }
@@ -183,6 +206,7 @@ export class LevelRunner {
       moves: 0,
       completed: level.stars.length === 0,
       gameOver: false,
+      lastTeleport: null,
     };
   }
 }

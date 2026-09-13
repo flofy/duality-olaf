@@ -180,3 +180,64 @@ describe("LevelRunner: cell-centred line/column sliding", () => {
     expect(state.completed).toBe(true);
   });
 });
+
+/** A small level with no border wall so entities can slide off the board. */
+function makeOpenLevel(): Level {
+  return {
+    id: "open",
+    width: 5,
+    height: 3,
+    tiles: Array.from({ length: 3 }, () =>
+      Array.from({ length: 5 }, () => "empty" as const),
+    ),
+    ball: { x: 1, y: 1 },
+    square: { x: 3, y: 1 },
+    stars: [{ x: 4, y: 2 }],
+  };
+}
+
+describe("LevelRunner: sliding off the level", () => {
+  it("slides the active form one cell out of the board and triggers game over", () => {
+    const runner = new LevelRunner(makeOpenLevel());
+    press(runner, LEFT);
+    const state = runner.getState();
+    expect(state.gameOver).toBe(true);
+    expect(state.ball.x).toBe(-1);
+    expect(state.ball.y).toBe(1);
+  });
+
+  it("ends the game for the square too", () => {
+    const runner = new LevelRunner(makeOpenLevel());
+    runner.switchForm(); // square becomes active
+    press(runner, DOWN);
+    const state = runner.getState();
+    expect(state.gameOver).toBe(true);
+    expect(state.square.y).toBe(3); // width 5 x height 3, so y === height
+  });
+
+  it("does not count a move for the losing press", () => {
+    const runner = new LevelRunner(makeOpenLevel());
+    press(runner, LEFT);
+    expect(runner.getState().moves).toBe(0);
+  });
+
+  it("ignores further moves once game over", () => {
+    const runner = new LevelRunner(makeOpenLevel());
+    press(runner, LEFT);
+    press(runner, LEFT); // would push the ball further off the board
+    const state = runner.getState();
+    expect(state.gameOver).toBe(true);
+    expect(state.ball.x).toBe(-1);
+  });
+
+  it("restores the pieces inside the board on reset", () => {
+    const runner = new LevelRunner(makeOpenLevel());
+    press(runner, LEFT);
+    expect(runner.getState().gameOver).toBe(true);
+    runner.reset();
+    const state = runner.getState();
+    expect(state.gameOver).toBe(false);
+    expect(state.ball.x).toBe(1);
+    expect(state.ball.y).toBe(1);
+  });
+});

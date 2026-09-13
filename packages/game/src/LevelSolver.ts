@@ -92,6 +92,8 @@ export function solveLevel(level: Level): SolverResult {
         command.type === "move"
           ? runner.move(command.direction)
           : runner.switchForm();
+      // Falling off the level is terminal: never part of a solution path.
+      if (after.gameOver) continue;
       if (!changed(before, after)) continue;
       const key = stateKey(after);
       if (visited.has(key)) continue;
