@@ -8,7 +8,15 @@ export default defineConfig(({ mode }) => {
     env.VITE_ENABLE_DEVTOOLS === "true" || env.VITE_ENABLE_LEVEL_LAB === "true";
 
   return {
-    base: "./",
+    base: env.VITE_BASE_PATH || "./",
+    resolve: {
+      alias: {
+        "react-router-dom": new URL(
+          "./src/react-router-browser.ts",
+          import.meta.url,
+        ).pathname,
+      },
+    },
     define: {
       "import.meta.env.VITE_ENABLE_DEVTOOLS": JSON.stringify(devtoolsEnabled),
     },
