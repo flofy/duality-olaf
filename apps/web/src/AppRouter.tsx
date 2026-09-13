@@ -29,10 +29,7 @@ import { LevelCatalogue, LevelPlayground } from "./LevelLab";
 import { LevelEditor } from "./LevelEditor";
 import { LevelGenerator } from "./LevelGenerator";
 import { interpretGesture, type Direction } from "./input/GestureInterpreter";
-import {
-  useLevelGameplay,
-  type GameplayDirection,
-} from "./useLevelGameplay";
+import { useLevelGameplay, type GameplayDirection } from "./useLevelGameplay";
 import {
   formatDebugCommands,
   type DebugCommand,
@@ -346,9 +343,7 @@ function WorldLevels() {
             <button
               className="level-button"
               disabled={!unlocked}
-              onClick={() =>
-                navigate(`/world/${world.id}/level/${level.id}`)
-              }
+              onClick={() => navigate(`/world/${world.id}/level/${level.id}`)}
               key={level.id}
             >
               {done
@@ -472,9 +467,7 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
       onPointerDown={(event) => {
         const target = event.target as HTMLElement;
         const interactive = Boolean(
-          target.closest(
-            'button, a, input, textarea, select, [role="dialog"]',
-          ),
+          target.closest('button, a, input, textarea, select, [role="dialog"]'),
         );
         setStart({ x: event.clientX, y: event.clientY, interactive });
       }}
@@ -609,10 +602,12 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
           <strong>🐛 DEBUG</strong>
           <span>{level.id}</span>
           <span>
-            ● {state.ball.x},{state.ball.y} · ■ {state.square.x},{state.square.y}
+            ● {state.ball.x},{state.ball.y} · ■ {state.square.x},
+            {state.square.y}
           </span>
           <span>
-            {state.activeForm} · ★ {state.stars.length} · {commands.length} commandes
+            {state.activeForm} · ★ {state.stars.length} · {commands.length}{" "}
+            commandes
           </span>
           <span className="muted">
             {commands
@@ -636,7 +631,9 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
               type="button"
               disabled={commands.length === 0}
               onClick={() =>
-                void navigator.clipboard?.writeText(formatDebugCommands(commands))
+                void navigator.clipboard?.writeText(
+                  formatDebugCommands(commands),
+                )
               }
             >
               COPIER

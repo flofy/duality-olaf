@@ -30,7 +30,11 @@ import { LevelEditor } from "./LevelEditor";
 import { LevelGenerator } from "./LevelGenerator";
 import { interpretGesture, type Direction } from "./input/GestureInterpreter";
 import { useLevelGameplay, type GameplayDirection } from "./useLevelGameplay";
-import { formatDebugCommands, type DebugCommand, type DebugDirection } from "./debug/CommandRecorder";
+import {
+  formatDebugCommands,
+  type DebugCommand,
+  type DebugDirection,
+} from "./debug/CommandRecorder";
 import { InstallButton } from "./InstallButton";
 
 import "./style.css";
@@ -301,7 +305,10 @@ function Menu() {
           ✨ {skinLabels[skin]}
         </button>
         {isLevelLabEnabled && (
-          <button className="action dev-entry" onClick={() => navigate("/dev/levels")}>
+          <button
+            className="action dev-entry"
+            onClick={() => navigate("/dev/levels")}
+          >
             🧪 LEVEL LAB
           </button>
         )}
@@ -336,9 +343,7 @@ function WorldLevels() {
             <button
               className="level-button"
               disabled={!unlocked}
-              onClick={() =>
-                navigate(`/world/${world.id}/level/${level.id}`)
-              }
+              onClick={() => navigate(`/world/${world.id}/level/${level.id}`)}
               key={level.id}
             >
               {done
@@ -394,7 +399,8 @@ function Help() {
 function ProtectedLevel() {
   const { worldId, levelId } = useParams();
   const world = worlds.find((item) => item.id === Number(worldId));
-  const levelIndex = world?.levels.findIndex((level) => level.id === levelId) ?? -1;
+  const levelIndex =
+    world?.levels.findIndex((level) => level.id === levelId) ?? -1;
 
   if (!world || levelIndex < 0) return <Navigate to="/menu" replace />;
   if (levelIndex > 0 && !isLevelCompleted(world.levels[levelIndex - 1].id)) {
@@ -461,7 +467,7 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
       onPointerDown={(event) => {
         const target = event.target as HTMLElement;
         const interactive = Boolean(
-          target.closest("button, a, input, textarea, select, [role=\"dialog\"]"),
+          target.closest('button, a, input, textarea, select, [role="dialog"]'),
         );
         setStart({ x: event.clientX, y: event.clientY, interactive });
       }}
@@ -480,7 +486,10 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
       }}
     >
       <div className="topbar">
-        <button className="action" onClick={() => navigate(`/world/${world.id}`)}>
+        <button
+          className="action"
+          onClick={() => navigate(`/world/${world.id}`)}
+        >
           ← NIVEAUX
         </button>
         <b>
@@ -593,10 +602,12 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
           <strong>🐛 DEBUG</strong>
           <span>{level.id}</span>
           <span>
-            ● {state.ball.x},{state.ball.y} · ■ {state.square.x},{state.square.y}
+            ● {state.ball.x},{state.ball.y} · ■ {state.square.x},
+            {state.square.y}
           </span>
           <span>
-            {state.activeForm} · ★ {state.stars.length} · {commands.length} commandes
+            {state.activeForm} · ★ {state.stars.length} · {commands.length}{" "}
+            commandes
           </span>
           <span className="muted">
             {commands
@@ -620,12 +631,18 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
               type="button"
               disabled={commands.length === 0}
               onClick={() =>
-                void navigator.clipboard?.writeText(formatDebugCommands(commands))
+                void navigator.clipboard?.writeText(
+                  formatDebugCommands(commands),
+                )
               }
             >
               COPIER
             </button>
-            <button className="action" type="button" onClick={() => setCommands([])}>
+            <button
+              className="action"
+              type="button"
+              onClick={() => setCommands([])}
+            >
               EFFACER
             </button>
           </div>
@@ -683,7 +700,10 @@ const router = createHashRouter([
             element: <LevelPlayground levelId="" />,
           },
           { path: "dev/generator", element: <LevelGenerator /> },
-          { path: "dev/editor", element: <LevelEditor initialLevelId={null} /> },
+          {
+            path: "dev/editor",
+            element: <LevelEditor initialLevelId={null} />,
+          },
           {
             path: "dev/editor/:levelId",
             element: <LevelEditor initialLevelId={""} />,
