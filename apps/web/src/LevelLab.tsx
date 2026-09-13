@@ -5,6 +5,8 @@ import {
   seasonalEvents,
   teleporterTutorials,
 } from "@duality/level-format";
+import { useNavigate } from "react-router";
+import { interpretGesture, type Direction } from "./input/GestureInterpreter";
 import { campaign, worlds } from "./levels/campaign";
 import {
   getActiveThemeName,
@@ -20,7 +22,7 @@ import {
   type SkinPreference,
 } from "./skins";
 import { hexToCss } from "./theme";
-import { useLevelGameplay } from "./useLevelGameplay";
+import { useLevelGameplay, type GameplayDirection } from "./useLevelGameplay";
 
 export type GameOverOverlayProps = {
   type: "completed" | "gameOver" | null;
@@ -181,10 +183,11 @@ export function LevelThumb({ level }: { level: Level }) {
 }
 
 export function LevelCatalogue() {
+  const navigate = useNavigate();
   const groups = useMemo(() => buildCatalogueGroups(), []);
   const [open, setOpen] = useState<Set<string>>(() => new Set());
   const goMenu = () => {
-    window.location.hash = "";
+    navigate("/menu");
   };
   const toggle = (label: string) => {
     setOpen((prev) => {
@@ -203,20 +206,10 @@ export function LevelCatalogue() {
         </button>
         <b>LEVEL LAB</b>
         <div className="dev-catalogue-actions">
-          <button
-            className="action"
-            onClick={() => {
-              window.location.hash = "#/dev/generator";
-            }}
-          >
+          <button className="action" onClick={() => navigate("/dev/generator")}>
             ⚡ GÉNÉRATEUR
           </button>
-          <button
-            className="action"
-            onClick={() => {
-              window.location.hash = "#/dev/editor";
-            }}
-          >
+          <button className="action" onClick={() => navigate("/dev/editor")}>
             ✎ ÉDITEUR
           </button>
         </div>
@@ -251,9 +244,9 @@ export function LevelCatalogue() {
                               className="dev-catalogue-overlay-btn"
                               title={`Lancer ${entry.id}`}
                               aria-label={`Lancer ${entry.id}`}
-                              onClick={() => {
-                                window.location.hash = `#/dev/levels/${entry.id}`;
-                              }}
+                              onClick={() =>
+                                navigate(`/dev/levels/${entry.id}`)
+                              }
                             >
                               ▶
                             </button>
@@ -261,9 +254,9 @@ export function LevelCatalogue() {
                               className="dev-catalogue-overlay-btn"
                               title={`Éditer ${entry.id}`}
                               aria-label={`Éditer ${entry.id}`}
-                              onClick={() => {
-                                window.location.hash = `#/dev/editor/${entry.id}`;
-                              }}
+                              onClick={() =>
+                                navigate(`/dev/editor/${entry.id}`)
+                              }
                             >
                               ✎
                             </button>
@@ -290,6 +283,7 @@ export function LevelCatalogue() {
 
 /** `/dev/levels/:levelId` — single-level gameplay playground. */
 export function LevelPlayground({ levelId }: { levelId: string }) {
+  const navigate = useNavigate();
   const level = devLevelById.get(levelId);
   const [completion, setCompletion] = useState<{ moves: number } | null>(null);
   const [themeName, setThemeName] = useState<ThemeName>(() =>
@@ -303,12 +297,7 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
     return (
       <section className="dev-playground">
         <div className="topbar">
-          <button
-            className="action"
-            onClick={() => {
-              window.location.hash = "#/dev/levels";
-            }}
-          >
+          <button className="action" onClick={() => navigate("/dev/levels")}>
             ← CATALOGUE
           </button>
           <b>PLAYGROUND</b>
@@ -321,20 +310,13 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
   return (
     <section className="dev-playground">
       <div className="topbar">
-        <button
-          className="action"
-          onClick={() => {
-            window.location.hash = "#/dev/levels";
-          }}
-        >
+        <button className="action" onClick={() => navigate("/dev/levels")}>
           ← CATALOGUE
         </button>
         <b>PLAYGROUND</b>
         <button
           className="action"
-          onClick={() => {
-            window.location.hash = `#/dev/editor/${level.id}`;
-          }}
+          onClick={() => navigate(`/dev/editor/${level.id}`)}
         >
           ✎ ÉDITER
         </button>
@@ -395,6 +377,13 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
   );
 }
 
+const gestureDirections: Record<Direction, GameplayDirection> = {
+  left: { x: -1, y: 0 },
+  right: { x: 1, y: 0 },
+  up: { x: 0, y: -1 },
+  down: { x: 0, y: 1 },
+};
+
 export function LabGame({
   level,
   skin,
@@ -410,8 +399,14 @@ export function LabGame({
   optimalMoves?: number;
   onBackToGenerator?: () => void;
 }) {
-  const { state, reset } = useLevelGameplay(level, () => {
-    window.location.hash = "#/dev/levels";
+  const navigate = useNavigate();
+  const [gestureStart, setGestureStart] = useState<{
+    x: number;
+    y: number;
+    interactive: boolean;
+  } | null>(null);
+  const { state, reset, move, switchForm } = useLevelGameplay(level, () => {
+    navigate("/dev/levels");
   });
 
   useEffect(() => {
@@ -420,101 +415,147 @@ export function LabGame({
 
   return (
     <div
-      className={`dev-board board ${skin !== "default" ? `seasonal theme-${skin}` : ""}`}
-      style={
-        {
-          ...Object.fromEntries(
-            Object.entries(themes[themeName])
-              .filter(([, value]) => typeof value === "number")
-              .map(([key, value]) => ["--" + key, hexToCss(value as number)]),
-          ),
-          "--cols": level.width,
-          "--rows": level.height,
-        } as CSSProperties
-      }
-    >
-      {level.tiles.flatMap((row, y) =>
-        row.map((tile, x) =>
-          tile === "wall" ? (
-            <div
-              className="wall"
-              style={{ gridColumn: x + 1, gridRow: y + 1 }}
-              key={`w-${x}-${y}`}
-            />
-          ) : null,
-        ),
-      )}
-      {level.doors?.map((door) => (
-        <div
-          className={`door ${state.doors[door.id] ? "open" : ""}`}
-          style={{
-            gridColumn: door.position.x + 1,
-            gridRow: door.position.y + 1,
-          }}
-          key={door.id}
-        >
-          {state.doors[door.id] ? "·" : "▢"}
-        </div>
-      ))}
-      {level.switches?.map((item) => (
-        <div
-          className={`switch switch-${item.form}`}
-          style={{
-            gridColumn: item.position.x + 1,
-            gridRow: item.position.y + 1,
-          }}
-          key={item.id}
-        >
-          ⌁
-        </div>
-      ))}
-      {level.teleporters?.map((teleporter) => (
-        <div
-          className="teleporter"
-          style={{
-            gridColumn: teleporter.position.x + 1,
-            gridRow: teleporter.position.y + 1,
-          }}
-          key={teleporter.id}
-        >
-          ◎
-        </div>
-      ))}
-      {level.stars.map((star, index) => (
-        <div
-          className="star"
-          style={{
-            gridColumn: star.x + 1,
-            gridRow: star.y + 1,
-          }}
-          key={`s-${index}`}
-        >
-          ★
-        </div>
-      ))}
-      <div
-        className="piece ball"
-        style={{
-          gridColumn: state.ball.x + 1,
-          gridRow: state.ball.y + 1,
-        }}
-      />
-      <div
-        className="piece square"
-        style={{
-          gridColumn: state.square.x + 1,
-          gridRow: state.square.y + 1,
-        }}
-      />
-      <GameOverOverlay
-        type={
-          state.completed ? "completed" : state.gameOver ? "gameOver" : null
+      className="dev-board"
+      onPointerDown={(event) => {
+        const target = event.target as HTMLElement;
+        const interactive = Boolean(
+          target.closest('button, a, input, textarea, select, [role="dialog"]'),
+        );
+        setGestureStart({ x: event.clientX, y: event.clientY, interactive });
+      }}
+      onPointerUp={(event) => {
+        if (!gestureStart) return;
+        const result = interpretGesture(
+          gestureStart,
+          { x: event.clientX, y: event.clientY },
+          24,
+        );
+        const wasInteractive = gestureStart.interactive;
+        setGestureStart(null);
+        if (!wasInteractive && result.type === "swipe" && result.direction) {
+          move(gestureDirections[result.direction]);
         }
-        moves={state.moves}
-        optimalMoves={optimalMoves}
-        onReset={reset}
-        onBackToGenerator={onBackToGenerator}
-      />
+      }}
+    >
+      <div
+        className={`board ${skin !== "default" ? `seasonal theme-${skin}` : ""}`}
+        style={
+          {
+            ...Object.fromEntries(
+              Object.entries(themes[themeName])
+                .filter(([, value]) => typeof value === "number")
+                .map(([key, value]) => ["--" + key, hexToCss(value as number)]),
+            ),
+            "--cols": level.width,
+            "--rows": level.height,
+          } as CSSProperties
+        }
+      >
+        {level.tiles.flatMap((row, y) =>
+          row.map((tile, x) =>
+            tile === "wall" ? (
+              <div
+                className="wall"
+                style={{ gridColumn: x + 1, gridRow: y + 1 }}
+                key={`w-${x}-${y}`}
+              />
+            ) : null,
+          ),
+        )}
+        {level.doors?.map((door) => (
+          <div
+            className={`door ${state.doors[door.id] ? "open" : ""}`}
+            style={{
+              gridColumn: door.position.x + 1,
+              gridRow: door.position.y + 1,
+            }}
+            key={door.id}
+          >
+            {state.doors[door.id] ? "·" : "▣"}
+          </div>
+        ))}
+        {level.switches?.map((item) => (
+          <div
+            className={`switch-tile form-${item.form}`}
+            style={{
+              gridColumn: item.position.x + 1,
+              gridRow: item.position.y + 1,
+            }}
+            key={item.id}
+          >
+            ⌁
+          </div>
+        ))}
+        {level.teleporters?.map((teleporter) => (
+          <div
+            className="teleporter"
+            style={{
+              gridColumn: teleporter.position.x + 1,
+              gridRow: teleporter.position.y + 1,
+            }}
+            key={teleporter.id}
+          >
+            ◎
+          </div>
+        ))}
+        {state.stars.map((star) => (
+          <div
+            className="star"
+            style={{
+              gridColumn: star.x + 1,
+              gridRow: star.y + 1,
+            }}
+            key={`${star.x}-${star.y}`}
+          >
+            ★
+          </div>
+        ))}
+        <div
+          className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
+          style={{
+            gridColumn: state.ball.x + 1,
+            gridRow: state.ball.y + 1,
+          }}
+        />
+        <div
+          className={`piece square ${state.activeForm === "square" ? "" : "inactive"}`}
+          style={{
+            gridColumn: state.square.x + 1,
+            gridRow: state.square.y + 1,
+          }}
+        />
+        <GameOverOverlay
+          type={
+            state.completed ? "completed" : state.gameOver ? "gameOver" : null
+          }
+          moves={state.moves}
+          optimalMoves={optimalMoves}
+          onReset={reset}
+          onBackToGenerator={onBackToGenerator}
+        />
+      </div>
+      <div className="hud">
+        <b>{state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
+        <br />
+        <span className="muted">
+          ★ {level.stars.length - state.stars.length}/{level.stars.length} ·{" "}
+          {state.moves} COUPS · swipe ou flèches
+        </span>
+      </div>
+      <div className="controls dev-controls">
+        <div className="dpad">
+          <button className="up" onClick={() => move(gestureDirections.up)}>
+            ▲
+          </button>
+          <button onClick={() => move(gestureDirections.left)}>◀</button>
+          <button onClick={() => move(gestureDirections.down)}>▼</button>
+          <button onClick={() => move(gestureDirections.right)}>▶</button>
+        </div>
+        <button className="action switch" onClick={switchForm}>
+          ● ⇄ ■<br />
+          CHANGER
+        </button>
+      </div>
     </div>
   );
 }

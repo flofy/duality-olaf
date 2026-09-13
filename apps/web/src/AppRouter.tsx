@@ -1,13 +1,14 @@
 import { useEffect, useState, type CSSProperties } from "react";
+import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import {
-  createHashRouter,
+  createBrowserRouter,
   Navigate,
   Outlet,
-  RouterProvider,
   useNavigate,
   useParams,
-} from "react-router-dom";
+} from "react-router";
+import { RouterProvider } from "react-router/dom";
 import type { Level } from "@duality/level-format";
 import { campaign, worlds, levelLabel } from "./levels/campaign";
 import {
@@ -688,33 +689,41 @@ function DevEditorRoute() {
   return <LevelEditor initialLevelId={levelId ?? null} />;
 }
 
-const router = createHashRouter([
-  {
-    path: "/",
-    element: <AppLayout />,
-    children: [
-      { index: true, element: <Intro /> },
-      { path: "menu", element: <Menu /> },
-      { path: "help", element: <Help /> },
-      { path: "world/:worldId", element: <WorldLevels /> },
-      {
-        path: "world/:worldId/level/:levelId",
-        element: <ProtectedLevel />,
-      },
-      {
-        element: <DevGuard />,
-        children: [
-          { path: "dev/levels", element: <LevelCatalogue /> },
-          { path: "dev/levels/:levelId", element: <DevPlaygroundRoute /> },
-          { path: "dev/generator", element: <LevelGenerator /> },
-          { path: "dev/editor", element: <DevEditorRoute /> },
-          { path: "dev/editor/:levelId", element: <DevEditorRoute /> },
-        ],
-      },
-      { path: "*", element: <Navigate to="/" replace /> },
-    ],
-  },
-]);
+const basename =
+  import.meta.env.BASE_URL === "./"
+    ? "/"
+    : import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
+
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <AppLayout />,
+      children: [
+        { index: true, element: <Intro /> },
+        { path: "menu", element: <Menu /> },
+        { path: "help", element: <Help /> },
+        { path: "world/:worldId", element: <WorldLevels /> },
+        {
+          path: "world/:worldId/level/:levelId",
+          element: <ProtectedLevel />,
+        },
+        {
+          element: <DevGuard />,
+          children: [
+            { path: "dev/levels", element: <LevelCatalogue /> },
+            { path: "dev/levels/:levelId", element: <DevPlaygroundRoute /> },
+            { path: "dev/generator", element: <LevelGenerator /> },
+            { path: "dev/editor", element: <DevEditorRoute /> },
+            { path: "dev/editor/:levelId", element: <DevEditorRoute /> },
+          ],
+        },
+        { path: "*", element: <Navigate to="/" replace /> },
+      ],
+    },
+  ],
+  { basename },
+);
 
 const updateSW = registerSW({
   immediate: true,
@@ -726,3 +735,5 @@ const updateSW = registerSW({
 export function RouterApp() {
   return <RouterProvider router={router} />;
 }
+
+createRoot(document.getElementById("app")!).render(<RouterApp />);

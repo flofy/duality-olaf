@@ -8,6 +8,7 @@ import {
 } from "react";
 import { createEmptyLevel, type Level, type Tile } from "@duality/level-format";
 import { validateLevel } from "@duality/game";
+import { useNavigate } from "react-router";
 import { LabGame, devLevelById } from "./LevelLab";
 import { getActiveThemeName } from "./theme";
 import { resolveLevelSkin } from "./skins";
@@ -75,6 +76,7 @@ export function LevelEditor({
 }: {
   initialLevelId?: string | null;
 }) {
+  const navigate = useNavigate();
   const [level, setLevel] = useState<Level>(() => {
     const initial =
       initialLevelId === null ? undefined : devLevelById.get(initialLevelId);
@@ -270,12 +272,7 @@ export function LevelEditor({
   return (
     <section className="dev-editor">
       <div className="topbar">
-        <button
-          className="action"
-          onClick={() => {
-            window.location.hash = "#/dev/levels";
-          }}
-        >
+        <button className="action" onClick={() => navigate("/dev/levels")}>
           ← LAB
         </button>
         <b>LEVEL EDITOR</b>

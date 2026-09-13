@@ -9,14 +9,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: env.VITE_BASE_PATH || "./",
-    resolve: {
-      alias: {
-        "react-router-dom": new URL(
-          "./src/react-router-browser.ts",
-          import.meta.url,
-        ).pathname,
-      },
-    },
     define: {
       "import.meta.env.VITE_ENABLE_DEVTOOLS": JSON.stringify(devtoolsEnabled),
     },
