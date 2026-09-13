@@ -17,6 +17,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      VITE_BASE_PATH: /duality-olaf/
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -28,6 +30,7 @@ jobs:
           cache: ${{ hashFiles('pnpm-lock.yaml') != '' && 'pnpm' || '' }}
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm build
+      - run: cp apps/web/dist/index.html apps/web/dist/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/web/dist

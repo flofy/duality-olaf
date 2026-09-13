@@ -1,13 +1,16 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
-import type { Level } from "@duality/level-format";
 import {
-  campaign,
-  worlds,
-  getCampaignLevelIndex,
-  levelLabel,
-} from "./levels/campaign";
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  useNavigate,
+  useParams,
+} from "react-router";
+import { RouterProvider } from "react-router/dom";
+import type { Level } from "@duality/level-format";
+import { campaign, worlds, levelLabel } from "./levels/campaign";
 import {
   completeLevel,
   getCompletedCount,
@@ -23,45 +26,43 @@ import {
   skinLabels,
   type SkinPreference,
 } from "./skins";
-import {
-  interpretGesture,
-  type Direction as GestureDirection,
-} from "./input/GestureInterpreter";
 import { LevelCatalogue, LevelPlayground } from "./LevelLab";
 import { LevelEditor } from "./LevelEditor";
-import { getDevRoute, type DevRoute } from "./devRouting";
-import { InstallButton } from "./InstallButton";
 import { LevelGenerator } from "./LevelGenerator";
-import { useLevelGameplay } from "./useLevelGameplay";
+import { interpretGesture, type Direction } from "./input/GestureInterpreter";
+import { useLevelGameplay, type GameplayDirection } from "./useLevelGameplay";
 import {
   formatDebugCommands,
   type DebugCommand,
   type DebugDirection,
 } from "./debug/CommandRecorder";
+import { InstallButton } from "./InstallButton";
 
 import "./style.css";
+
 const isLevelLabEnabled = import.meta.env.VITE_ENABLE_LEVEL_LAB === "true";
 const isDevtoolsEnabled = import.meta.env.VITE_ENABLE_DEVTOOLS === "true";
 
-type Dir = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
-const dirs: Record<GestureDirection, Dir> = {
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
+
+const gestureDirections: Record<Direction, GameplayDirection> = {
   left: { x: -1, y: 0 },
   right: { x: 1, y: 0 },
   up: { x: 0, y: -1 },
   down: { x: 0, y: 1 },
 };
+
 function vars(): CSSProperties {
-  const t = getTheme();
+  const theme = getTheme();
   return Object.fromEntries(
-    Object.entries(t)
-      .filter(([, v]) => typeof v === "number")
-      .map(([k, v]) => ["--" + k, hexToCss(v as number)]),
+    Object.entries(theme)
+      .filter(([, value]) => typeof value === "number")
+      .map(([key, value]) => ["--" + key, hexToCss(value as number)]),
   ) as CSSProperties;
 }
-type BeforeInstallPromptEvent = Event & {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-};
 
 function PwaControls({
   updateSW,
@@ -72,6 +73,7 @@ function PwaControls({
     useState<BeforeInstallPromptEvent | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+
   useEffect(() => {
     const onBeforeInstall = (event: Event) => {
       event.preventDefault();
@@ -86,6 +88,7 @@ function PwaControls({
       window.removeEventListener("appinstalled", onInstalled);
     };
   }, []);
+
   useEffect(() => {
     const onUpdate = () => {
       setUpdateAvailable(true);
@@ -94,7 +97,9 @@ function PwaControls({
     window.addEventListener("duality:pwa-update", onUpdate);
     return () => window.removeEventListener("duality:pwa-update", onUpdate);
   }, []);
+
   if (dismissed || (!updateAvailable && !installPrompt)) return null;
+
   return (
     <div className="pwa-controls" role="status" aria-live="polite">
       <span>
@@ -135,16 +140,20 @@ function FullscreenButton() {
   const [fullscreen, setFullscreen] = useState(() =>
     Boolean(document.fullscreenElement),
   );
+
   useEffect(() => {
     const sync = () => setFullscreen(Boolean(document.fullscreenElement));
     document.addEventListener("fullscreenchange", sync);
     return () => document.removeEventListener("fullscreenchange", sync);
   }, []);
+
   if (!document.fullscreenEnabled) return null;
+
   const toggle = async () => {
     if (document.fullscreenElement) await document.exitFullscreen();
     else await document.documentElement.requestFullscreen();
   };
+
   return (
     <button
       className="action fullscreen-toggle"
@@ -159,22 +168,41 @@ function FullscreenButton() {
   );
 }
 
-function Intro({ onContinue }: { onContinue: () => void }) {
+function AppLayout() {
+  return (
+    <main className="app" style={vars()}>
+      <div className="shell app-enter">
+        <div className="utility-bar">
+          <PwaControls updateSW={updateSW} />
+          <FullscreenButton />
+        </div>
+        <Outlet />
+      </div>
+    </main>
+  );
+}
+
+function Intro() {
+  const navigate = useNavigate();
   const [leaving, setLeaving] = useState(false);
+
   const continueIntro = () => {
+    if (leaving) return;
     setLeaving(true);
-    window.setTimeout(onContinue, 420);
+    window.setTimeout(() => navigate("/menu"), 420);
   };
+
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
         continueIntro();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  });
+
   return (
     <section
       className={`intro ${leaving ? "intro-leaving" : ""}`}
@@ -201,8 +229,8 @@ function Intro({ onContinue }: { onContinue: () => void }) {
       <button
         className="action intro-start"
         type="button"
-        onClick={(e) => {
-          e.stopPropagation();
+        onClick={(event) => {
+          event.stopPropagation();
           continueIntro();
         }}
       >
@@ -213,136 +241,36 @@ function Intro({ onContinue }: { onContinue: () => void }) {
   );
 }
 
-function App() {
-  const [intro, setIntro] = useState(true);
+function Menu() {
+  const navigate = useNavigate();
   const [skinPreference, setSkinPreferenceState] = useState<SkinPreference>(
     () => normalizeSkinPreference(getSkinPreference()),
   );
-  const [view, setView] = useState<"menu" | "levels" | "help" | "game">("menu");
-  const [world, setWorld] = useState(1);
-  const [levelIndex, setLevelIndex] = useState(0);
   const [tick, setTick] = useState(0);
-  const [devRoute, setDevRoute] = useState<DevRoute | null>(
-    isLevelLabEnabled ? getDevRoute(window.location.hash) : null,
-  );
-  useEffect(() => {
-    if (!isLevelLabEnabled) return;
-    const sync = () => setDevRoute(getDevRoute(window.location.hash));
-    window.addEventListener("hashchange", sync);
-    return () => window.removeEventListener("hashchange", sync);
-  }, []);
-  const open = (id: number, index: number) => {
-    const targetWorld = worlds.find((item) => item.id === id);
-    if (!targetWorld) return;
-    if (index > 0 && !isLevelCompleted(targetWorld.levels[index - 1].id))
-      return;
-    setWorld(id);
-    setLevelIndex(getCampaignLevelIndex(id, index));
-    setView("game");
-  };
-  if (isLevelLabEnabled && devRoute)
-    return (
-      <main className="app" style={vars()}>
-        <div className="shell app-enter">
-          <div className="utility-bar">
-            <PwaControls updateSW={updateSW} />
-            <FullscreenButton />
-          </div>
-          {devRoute.type === "catalogue" && <LevelCatalogue />}
-          {devRoute.type === "generator" && <LevelGenerator />}
-          {devRoute.type === "editor" && (
-            <LevelEditor initialLevelId={devRoute.levelId} />
-          )}
-          {devRoute.type === "playground" && (
-            <LevelPlayground levelId={devRoute.levelId} />
-          )}
-        </div>
-      </main>
-    );
-  if (intro)
-    return (
-      <main className="app intro-app" style={vars()}>
-        <Intro onContinue={() => setIntro(false)} />
-      </main>
-    );
-  return (
-    <main className="app" style={vars()}>
-      <div className="shell app-enter">
-        <div className="utility-bar">
-          <PwaControls updateSW={updateSW} />
-          <FullscreenButton />
-        </div>
-        {view === "menu" && (
-          <Menu
-            world={(w) => {
-              setWorld(w);
-              setView("levels");
-            }}
-            help={() => setView("help")}
-            theme={() => {
-              cycleTheme();
-              setTick(tick + 1);
-            }}
-            skin={skinPreference}
-            setSkin={(next) => {
-              setSkinPreference(next);
-              setSkinPreferenceState(next);
-            }}
-            lab={
-              isLevelLabEnabled
-                ? () => {
-                    window.location.hash = "#/dev/levels";
-                  }
-                : undefined
-            }
-          />
-        )}
-        {view === "levels" && (
-          <Levels id={world} back={() => setView("menu")} open={open} />
-        )}
-        {view === "help" && <Help back={() => setView("menu")} />}
-        {view === "game" && (
-          <Game
-            key={`${world}:${levelIndex}`}
-            li={levelIndex}
-            w={world}
-            back={() => setView("levels")}
-            next={open}
-          />
-        )}
-      </div>
-    </main>
-  );
-}
-function Menu(p: {
-  world: (x: number) => void;
-  help: () => void;
-  theme: () => void;
-  skin: SkinPreference;
-  setSkin: (skin: SkinPreference) => void;
-  lab?: () => void;
-}) {
   const availableSkins = getAvailableSkinPreferences();
-  const skin = normalizeSkinPreference(p.skin);
+  const skin = normalizeSkinPreference(skinPreference);
+
   return (
     <section className="menu">
       <h1 className="title">DUALITY</h1>
       <div className="subtitle">CHOISIS TON MONDE</div>
       <div className="world-list">
-        {worlds.map((w) => {
-          const done = w.levels.filter((l) => isLevelCompleted(l.id)).length;
+        {worlds.map((world) => {
+          const done = world.levels.filter((level) =>
+            isLevelCompleted(level.id),
+          ).length;
           return (
             <button
               className="world-button"
-              disabled={w.status !== "available"}
-              onClick={() => p.world(w.id)}
-              key={w.id}
+              disabled={world.status !== "available"}
+              onClick={() => navigate(`/world/${world.id}`)}
+              key={world.id}
             >
-              🌍 MONDE {w.id} — {w.name.toUpperCase()}
+              🌍 MONDE {world.id} — {world.name.toUpperCase()}
               <span className="world-meta">
-                {w.status === "available"
-                  ? `${w.subtitle} · ${done}/${w.levels.length}`
-                  : `${w.subtitle} · BIENTÔT`}
+                {world.status === "available"
+                  ? `${world.subtitle} · ${done}/${world.levels.length}`
+                  : `${world.subtitle} · BIENTÔT`}
               </span>
             </button>
           );
@@ -353,26 +281,35 @@ function Menu(p: {
       </p>
       <div className="modal-actions">
         <InstallButton />
-        <button className="action" onClick={p.help}>
+        <button className="action" onClick={() => navigate("/help")}>
           ? AIDE
         </button>
-        <button className="action" onClick={p.theme}>
+        <button
+          className="action"
+          onClick={() => {
+            cycleTheme();
+            setTick(tick + 1);
+          }}
+        >
           🎨 THÈME
         </button>
         <button
           className="action"
           onClick={() => {
-            const current = normalizeSkinPreference(p.skin);
-            const index = availableSkins.indexOf(current);
+            const index = availableSkins.indexOf(skin);
             const next =
               availableSkins[(index + 1) % availableSkins.length] ?? "auto";
-            p.setSkin(next);
+            setSkinPreference(next);
+            setSkinPreferenceState(next);
           }}
         >
           ✨ {skinLabels[skin]}
         </button>
-        {p.lab && (
-          <button className="action dev-entry" onClick={p.lab}>
+        {isLevelLabEnabled && (
+          <button
+            className="action dev-entry"
+            onClick={() => navigate("/dev/levels")}
+          >
             🧪 LEVEL LAB
           </button>
         )}
@@ -380,33 +317,41 @@ function Menu(p: {
     </section>
   );
 }
-function Levels(p: {
-  id: number;
-  back: () => void;
-  open: (w: number, i: number) => void;
-}) {
-  const world = worlds.find((x) => x.id === p.id)!;
+
+function WorldLevels() {
+  const navigate = useNavigate();
+  const { worldId } = useParams();
+  const id = Number(worldId);
+  const world = worlds.find((item) => item.id === id);
+
+  if (!world) return <Navigate to="/menu" replace />;
+
   return (
     <section className="menu">
       <div className="topbar">
-        <button className="action" onClick={p.back}>
+        <button className="action" onClick={() => navigate("/menu")}>
           ← MONDES
         </button>
         <b>MONDE {world.id}</b>
       </div>
       <h2 className="subtitle">{world.name.toUpperCase()}</h2>
       <div className="levels">
-        {world.levels.map((l, i) => {
-          const unlocked = i === 0 || isLevelCompleted(world.levels[i - 1].id);
-          const done = isLevelCompleted(l.id);
+        {world.levels.map((level, index) => {
+          const unlocked =
+            index === 0 || isLevelCompleted(world.levels[index - 1].id);
+          const done = isLevelCompleted(level.id);
           return (
             <button
               className="level-button"
               disabled={!unlocked}
-              onClick={() => p.open(world.id, i)}
-              key={l.id}
+              onClick={() => navigate(`/world/${world.id}/level/${level.id}`)}
+              key={level.id}
             >
-              {done ? "✓" : unlocked ? String(i + 1).padStart(2, "0") : "🔒"}
+              {done
+                ? "✓"
+                : unlocked
+                  ? String(index + 1).padStart(2, "0")
+                  : "🔒"}
             </button>
           );
         })}
@@ -414,7 +359,9 @@ function Levels(p: {
     </section>
   );
 }
-function Help(p: { back: () => void }) {
+
+function Help() {
+  const navigate = useNavigate();
   const rules: [string, string][] = [
     [
       "SE DÉPLACER",
@@ -433,9 +380,10 @@ function Help(p: { back: () => void }) {
     ["OBJECTIF", "Ramasse toutes les étoiles ★ pour terminer."],
     ["RACCOURCIS", "R recommence · ÉCHAP menu · ENTRÉE suivant."],
   ];
+
   return (
     <section className="help">
-      <button className="action" onClick={p.back}>
+      <button className="action" onClick={() => navigate("/menu")}>
         ← RETOUR
       </button>
       <h1 className="title">COMMENT JOUER ?</h1>
@@ -448,35 +396,44 @@ function Help(p: { back: () => void }) {
     </section>
   );
 }
-function Game(p: {
-  li: number;
-  w: number;
-  back: () => void;
-  next: (w: number, i: number) => void;
-}) {
-  const level = campaign[p.li] as Level;
+
+function ProtectedLevel() {
+  const { worldId, levelId } = useParams();
+  const world = worlds.find((item) => item.id === Number(worldId));
+  const levelIndex =
+    world?.levels.findIndex((level) => level.id === levelId) ?? -1;
+
+  if (!world || levelIndex < 0) return <Navigate to="/menu" replace />;
+  if (levelIndex > 0 && !isLevelCompleted(world.levels[levelIndex - 1].id)) {
+    return <Navigate to={`/world/${world.id}`} replace />;
+  }
+
+  return <Game level={world.levels[levelIndex]} worldId={world.id} />;
+}
+
+function Game({ level, worldId }: { level: Level; worldId: number }) {
+  const navigate = useNavigate();
+  const world = worlds.find((item) => item.id === worldId)!;
+  const worldIndex = world.levels.findIndex((item) => item.id === level.id);
+  const seasonalTheme = resolveLevelSkin(level.id);
   const [commands, setCommands] = useState<DebugCommand[]>([]);
   const [start, setStart] = useState<{
     x: number;
     y: number;
     interactive: boolean;
   } | null>(null);
-  const world = worlds.find((x) => x.id === p.w)!;
-  const seasonalTheme = resolveLevelSkin(level.id);
-  const worldIndex = world.levels.findIndex((x) => x.id === level.id);
-  const next = () => {
-    if (!s.completed) return;
-    if (worldIndex < world.levels.length - 1) p.next(p.w, worldIndex + 1);
-    else p.back();
+
+  const nextLevel = () => {
+    if (worldIndex < world.levels.length - 1) {
+      navigate(`/world/${world.id}/level/${world.levels[worldIndex + 1].id}`);
+    } else {
+      navigate(`/world/${world.id}`);
+    }
   };
-  const {
-    state: s,
-    move,
-    reset,
-    switchForm,
-  } = useLevelGameplay(
+
+  const { state, move, reset, switchForm } = useLevelGameplay(
     level,
-    p.back,
+    () => navigate(`/world/${world.id}`),
     (direction, moved) => {
       if (!moved || !isDevtoolsEnabled) return;
       const debugDirection: DebugDirection =
@@ -500,53 +457,44 @@ function Game(p: {
       if (isDevtoolsEnabled) setCommands([]);
     },
   );
+
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && s.completed) next();
-      else if (e.key === "d" || e.key === "D") {
-        if (!isDevtoolsEnabled || commands.length === 0) return;
-        e.preventDefault();
-        void navigator.clipboard?.writeText(formatDebugCommands(commands));
-      } else if (e.key === "c" || e.key === "C") {
-        if (!isDevtoolsEnabled) return;
-        setCommands([]);
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [s.completed, commands]);
-  useEffect(() => {
-    if (s.completed) completeLevel(level.id);
-  }, [s.completed, level.id]);
+    if (state.completed) completeLevel(level.id);
+  }, [level.id, state.completed]);
+
   return (
     <section
       className="game"
-      onPointerDown={(e) => {
-        const target = e.target as HTMLElement;
+      onPointerDown={(event) => {
+        const target = event.target as HTMLElement;
         const interactive = Boolean(
           target.closest('button, a, input, textarea, select, [role="dialog"]'),
         );
-        setStart({ x: e.clientX, y: e.clientY, interactive });
+        setStart({ x: event.clientX, y: event.clientY, interactive });
       }}
-      onPointerUp={(e) => {
+      onPointerUp={(event) => {
         if (!start) return;
         const result = interpretGesture(
           start,
-          { x: e.clientX, y: e.clientY },
+          { x: event.clientX, y: event.clientY },
           24,
         );
         const wasInteractive = start.interactive;
         setStart(null);
-        if (!wasInteractive && result.type === "swipe" && result.direction)
-          move(dirs[result.direction]);
+        if (!wasInteractive && result.type === "swipe" && result.direction) {
+          move(gestureDirections[result.direction]);
+        }
       }}
     >
       <div className="topbar">
-        <button className="action" onClick={p.back}>
+        <button
+          className="action"
+          onClick={() => navigate(`/world/${world.id}`)}
+        >
           ← NIVEAUX
         </button>
         <b>
-          {levelLabel(worldIndex)} · MONDE {p.w}
+          {levelLabel(worldIndex)} · MONDE {world.id}
         </b>
         <button className="action" onClick={reset}>
           ↻
@@ -554,7 +502,7 @@ function Game(p: {
       </div>
       <div className="board-wrap">
         <div
-          className={`board ${seasonalTheme ? `seasonal theme-${seasonalTheme}` : ""} `}
+          className={`board ${seasonalTheme ? `seasonal theme-${seasonalTheme}` : ""}`}
           style={
             { "--cols": level.width, "--rows": level.height } as CSSProperties
           }
@@ -572,14 +520,14 @@ function Game(p: {
           )}
           {level.doors?.map((door) => (
             <div
-              className={`door ${s.doors[door.id] ? "open" : ""}`}
+              className={`door ${state.doors[door.id] ? "open" : ""}`}
               style={{
                 gridColumn: door.position.x + 1,
                 gridRow: door.position.y + 1,
               }}
               key={door.id}
             >
-              {s.doors[door.id] ? "·" : "▣"}
+              {state.doors[door.id] ? "·" : "▣"}
             </div>
           ))}
           {level.switches?.map((item) => (
@@ -606,7 +554,7 @@ function Game(p: {
               ◉
             </div>
           ))}
-          {s.stars.map((star) => (
+          {state.stars.map((star) => (
             <div
               className="star"
               style={{ gridColumn: star.x + 1, gridRow: star.y + 1 }}
@@ -616,31 +564,34 @@ function Game(p: {
             </div>
           ))}
           <div
-            className={`piece ball ${s.activeForm === "ball" ? "" : "inactive"}`}
-            style={{ gridColumn: s.ball.x + 1, gridRow: s.ball.y + 1 }}
+            className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
+            style={{ gridColumn: state.ball.x + 1, gridRow: state.ball.y + 1 }}
           />
           <div
-            className={`piece square ${s.activeForm === "square" ? "" : "inactive"}`}
-            style={{ gridColumn: s.square.x + 1, gridRow: s.square.y + 1 }}
+            className={`piece square ${state.activeForm === "square" ? "" : "inactive"}`}
+            style={{
+              gridColumn: state.square.x + 1,
+              gridRow: state.square.y + 1,
+            }}
           />
         </div>
       </div>
       <div className="hud">
-        <b>{s.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
+        <b>{state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
         <br />
         <span className="muted">
-          ★ {level.stars.length - s.stars.length}/{level.stars.length} ·{" "}
-          {s.moves} COUPS · swipe ou flèches
+          ★ {level.stars.length - state.stars.length}/{level.stars.length} ·{" "}
+          {state.moves} COUPS · swipe ou flèches
         </span>
       </div>
       <div className="controls">
         <div className="dpad">
-          <button className="up" onClick={() => move(dirs.up)}>
+          <button className="up" onClick={() => move(gestureDirections.up)}>
             ▲
           </button>
-          <button onClick={() => move(dirs.left)}>◀</button>
-          <button onClick={() => move(dirs.down)}>▼</button>
-          <button onClick={() => move(dirs.right)}>▶</button>
+          <button onClick={() => move(gestureDirections.left)}>◀</button>
+          <button onClick={() => move(gestureDirections.down)}>▼</button>
+          <button onClick={() => move(gestureDirections.right)}>▶</button>
         </div>
         <button className="action switch" onClick={switchForm}>
           ● ⇄ ■<br />
@@ -652,10 +603,12 @@ function Game(p: {
           <strong>🐛 DEBUG</strong>
           <span>{level.id}</span>
           <span>
-            ● {s.ball.x},{s.ball.y} · ■ {s.square.x},{s.square.y}
+            ● {state.ball.x},{state.ball.y} · ■ {state.square.x},
+            {state.square.y}
           </span>
           <span>
-            {s.activeForm} · ★ {s.stars.length} · {commands.length} commandes
+            {state.activeForm} · ★ {state.stars.length} · {commands.length}{" "}
+            commandes
           </span>
           <span className="muted">
             {commands
@@ -696,7 +649,7 @@ function Game(p: {
           </div>
         </aside>
       )}
-      {s.completed && (
+      {state.completed && (
         <div className="overlay">
           <div
             className="modal"
@@ -705,12 +658,12 @@ function Game(p: {
             aria-labelledby="completion-title"
           >
             <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
-            <p>{s.moves} coups</p>
+            <p>{state.moves} coups</p>
             <div className="modal-actions">
               <button className="action" onClick={reset}>
                 REJOUER
               </button>
-              <button className="action" onClick={next}>
+              <button className="action" onClick={nextLevel}>
                 {worldIndex < world.levels.length - 1 ? "SUIVANT ▶" : "NIVEAUX"}
               </button>
             </div>
@@ -720,10 +673,67 @@ function Game(p: {
     </section>
   );
 }
+
+function DevGuard() {
+  if (!isLevelLabEnabled) return <Navigate to="/menu" replace />;
+  return <Outlet />;
+}
+
+function DevPlaygroundRoute() {
+  const { levelId } = useParams();
+  return <LevelPlayground levelId={levelId ?? ""} />;
+}
+
+function DevEditorRoute() {
+  const { levelId } = useParams();
+  return <LevelEditor initialLevelId={levelId ?? null} />;
+}
+
+const basename =
+  import.meta.env.BASE_URL === "./"
+    ? "/"
+    : import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
+
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <AppLayout />,
+      children: [
+        { index: true, element: <Intro /> },
+        { path: "menu", element: <Menu /> },
+        { path: "help", element: <Help /> },
+        { path: "world/:worldId", element: <WorldLevels /> },
+        {
+          path: "world/:worldId/level/:levelId",
+          element: <ProtectedLevel />,
+        },
+        {
+          element: <DevGuard />,
+          children: [
+            { path: "dev/levels", element: <LevelCatalogue /> },
+            { path: "dev/levels/:levelId", element: <DevPlaygroundRoute /> },
+            { path: "dev/generator", element: <LevelGenerator /> },
+            { path: "dev/editor", element: <DevEditorRoute /> },
+            { path: "dev/editor/:levelId", element: <DevEditorRoute /> },
+          ],
+        },
+        { path: "*", element: <Navigate to="/" replace /> },
+      ],
+    },
+  ],
+  { basename },
+);
+
 const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
     window.dispatchEvent(new Event("duality:pwa-update"));
   },
 });
-createRoot(document.getElementById("app")!).render(<App />);
+
+export function RouterApp() {
+  return <RouterProvider router={router} />;
+}
+
+createRoot(document.getElementById("app")!).render(<RouterApp />);

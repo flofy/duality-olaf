@@ -1,6 +1,7 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import { validateLevel, type LevelValidation } from "@duality/game";
 import type { Level } from "@duality/level-format";
+import { useNavigate } from "react-router";
 import {
   generateCandidates,
   type GeneratedLevel,
@@ -58,6 +59,7 @@ function BoardPreview({ level }: { level: Level }) {
 }
 
 export function LevelGenerator() {
+  const navigate = useNavigate();
   const [options, setOptions] = useState<GeneratorOptions>(DEFAULTS);
   const [generation, setGeneration] = useState(0);
   const [selectedSeed, setSelectedSeed] = useState<number | null>(null);
@@ -107,21 +109,11 @@ export function LevelGenerator() {
   return (
     <section className="dev-generator">
       <div className="topbar">
-        <button
-          className="action"
-          onClick={() => {
-            window.location.hash = "#/dev/levels";
-          }}
-        >
+        <button className="action" onClick={() => navigate("/dev/levels")}>
           ← LAB
         </button>
         <b>GÉNÉRATEUR DE NIVEAUX</b>
-        <button
-          className="action"
-          onClick={() => {
-            window.location.hash = "#/dev/editor";
-          }}
-        >
+        <button className="action" onClick={() => navigate("/dev/editor")}>
           ✎ ÉDITEUR
         </button>
       </div>
