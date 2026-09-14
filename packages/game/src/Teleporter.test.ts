@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { teleporterTutorials } from "@duality/level-format";
+import { teleporterTutorials, type Level } from "@duality/level-format";
 import { LevelRunner } from "./LevelRunner";
 import { solveLevel } from "./LevelSolver";
 
@@ -24,6 +24,68 @@ describe("teleporters", () => {
     });
     runner.move({ x: 1, y: 0 });
     expect(runner.getState().ball).toEqual({ x: 5, y: 4 });
+  });
+
+  it("teleports when sliding over a pad, not only when stopping on it", () => {
+    const level: Level = {
+      id: "teleporter-pass-over",
+      width: 13,
+      height: 10,
+      tiles: Array.from({ length: 10 }, (_, y) =>
+        Array.from({ length: 13 }, (_, x) =>
+          x === 0 || y === 0 || x === 12 || y === 9
+            ? ("wall" as const)
+            : ("empty" as const),
+        ),
+      ),
+      ball: { x: 1, y: 2 },
+      square: { x: 2, y: 8 },
+      stars: [{ x: 9, y: 7 }],
+      teleporters: [
+        { id: "a", position: { x: 5, y: 2 }, targetId: "b" },
+        { id: "b", position: { x: 9, y: 7 }, targetId: "a" },
+      ],
+    };
+
+    // Nothing blocks row 2 after the pad: under stop-only semantics the ball
+    // would glide to (11,2). Passing over pad A must warp it onto pad B and
+    // end the slide there.
+    const runner = new LevelRunner(level);
+    runner.move({ x: 1, y: 0 });
+    expect(runner.getState().ball).toEqual({ x: 9, y: 7 });
+    expect(runner.getState().lastTeleport).toEqual({
+      from: { x: 5, y: 2 },
+      to: { x: 9, y: 7 },
+    });
+  });
+
+  it("continues sliding when the warp destination is blocked", () => {
+    const level: Level = {
+      id: "teleporter-blocked-destination",
+      width: 13,
+      height: 10,
+      tiles: Array.from({ length: 10 }, (_, y) =>
+        Array.from({ length: 13 }, (_, x) =>
+          x === 0 || y === 0 || x === 12 || y === 9
+            ? ("wall" as const)
+            : ("empty" as const),
+        ),
+      ),
+      ball: { x: 1, y: 2 },
+      square: { x: 9, y: 7 },
+      stars: [{ x: 11, y: 2 }],
+      teleporters: [
+        { id: "a", position: { x: 5, y: 2 }, targetId: "b" },
+        { id: "b", position: { x: 9, y: 7 }, targetId: "a" },
+      ],
+    };
+
+    // Pad B is occupied by the square: the ball is not warped and keeps
+    // sliding along row 2 until the border wall stops it.
+    const runner = new LevelRunner(level);
+    runner.move({ x: 1, y: 0 });
+    expect(runner.getState().ball).toEqual({ x: 11, y: 2 });
+    expect(runner.getState().lastTeleport).toBeNull();
   });
 
   it("keeps all tutorial levels solver-valid", () => {

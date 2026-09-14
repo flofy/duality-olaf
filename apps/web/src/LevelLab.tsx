@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import type { Level } from "@duality/level-format";
 import {
   doorSwitchTutorials,
+  isInside,
   seasonalEvents,
   teleporterTutorials,
 } from "@duality/level-format";
@@ -155,6 +156,15 @@ export function LevelThumb({ level }: { level: Level }) {
   markers.set(key(level.ball.x, level.ball.y), "ball");
   markers.set(key(level.square.x, level.square.y), "square");
   for (const star of level.stars) markers.set(key(star.x, star.y), "star");
+  for (const door of level.doors ?? [])
+    markers.set(key(door.position.x, door.position.y), "door");
+  for (const sw of level.switches ?? [])
+    markers.set(key(sw.position.x, sw.position.y), "switch");
+
+  // Téléporteurs : maps position → id pour affichage A/B
+  const teleporterAt = new Map<string, string>();
+  for (const tp of level.teleporters ?? [])
+    teleporterAt.set(key(tp.position.x, tp.position.y), tp.id);
 
   return (
     <div
@@ -170,11 +180,19 @@ export function LevelThumb({ level }: { level: Level }) {
         Array.from({ length: w }, (_, x) => {
           const tile = level.tiles[y]?.[x] ?? "empty";
           const marker = markers.get(key(x, y));
+          const tpId = teleporterAt.get(key(x, y));
+          const teleporterContent = tpId ? (
+            <span className="dev-thumb-teleport-label">
+              {tpId === "teleporter-a" || tpId.endsWith("-a") ? "A" : "B"}
+            </span>
+          ) : null;
           return (
             <div
               key={key(x, y)}
               className={`dev-thumb-cell dev-thumb-${tile}${marker ? ` dev-thumb-marker-${marker}` : ""}`}
-            />
+            >
+              {teleporterContent}
+            </div>
           );
         }),
       )}
@@ -510,20 +528,24 @@ export function LabGame({
             ★
           </div>
         ))}
-        <div
-          className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
-          style={{
-            gridColumn: state.ball.x + 1,
-            gridRow: state.ball.y + 1,
-          }}
-        />
-        <div
-          className={`piece square ${state.activeForm === "square" ? "" : "inactive"}`}
-          style={{
-            gridColumn: state.square.x + 1,
-            gridRow: state.square.y + 1,
-          }}
-        />
+        {isInside(level, state.ball) && (
+          <div
+            className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
+            style={{
+              gridColumn: state.ball.x + 1,
+              gridRow: state.ball.y + 1,
+            }}
+          />
+        )}
+        {isInside(level, state.square) && (
+          <div
+            className={`piece square ${state.activeForm === "square" ? "" : "inactive"}`}
+            style={{
+              gridColumn: state.square.x + 1,
+              gridRow: state.square.y + 1,
+            }}
+          />
+        )}
         <GameOverOverlay
           type={
             state.completed ? "completed" : state.gameOver ? "gameOver" : null

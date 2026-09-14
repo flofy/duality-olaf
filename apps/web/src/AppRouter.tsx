@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import {
@@ -9,7 +9,7 @@ import {
   useParams,
 } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import type { Level } from "@duality/level-format";
+import { isInside, type Level } from "@duality/level-format";
 import { campaign, worlds, levelLabel } from "./levels/campaign";
 import {
   completeLevel,
@@ -423,13 +423,13 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
     interactive: boolean;
   } | null>(null);
 
-  const nextLevel = () => {
+  const nextLevel = useCallback(() => {
     if (worldIndex < world.levels.length - 1) {
       navigate(`/world/${world.id}/level/${world.levels[worldIndex + 1].id}`);
     } else {
       navigate(`/world/${world.id}`);
     }
-  };
+  }, [navigate, world, worldIndex]);
 
   const { state, move, reset, switchForm } = useLevelGameplay(
     level,
@@ -461,6 +461,30 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
   useEffect(() => {
     if (state.completed) completeLevel(level.id);
   }, [level.id, state.completed]);
+
+  // Keyboard shortcuts for the level: Enter advances once completed, and the
+  // devtools shortcuts (d/copy, c/clear) still work when enabled.
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === "Enter" && state.completed) {
+        event.preventDefault();
+        nextLevel();
+        return;
+      }
+      if (event.key === "d" || event.key === "D") {
+        if (!isDevtoolsEnabled || commands.length === 0) return;
+        event.preventDefault();
+        void navigator.clipboard?.writeText(formatDebugCommands(commands));
+        return;
+      }
+      if (event.key === "c" || event.key === "C") {
+        if (!isDevtoolsEnabled) return;
+        setCommands([]);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [commands, nextLevel, state.completed]);
 
   return (
     <section
@@ -563,17 +587,24 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
               ★
             </div>
           ))}
-          <div
-            className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
-            style={{ gridColumn: state.ball.x + 1, gridRow: state.ball.y + 1 }}
-          />
-          <div
-            className={`piece square ${state.activeForm === "square" ? "" : "inactive"}`}
-            style={{
-              gridColumn: state.square.x + 1,
-              gridRow: state.square.y + 1,
-            }}
-          />
+          {isInside(level, state.ball) && (
+            <div
+              className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
+              style={{
+                gridColumn: state.ball.x + 1,
+                gridRow: state.ball.y + 1,
+              }}
+            />
+          )}
+          {isInside(level, state.square) && (
+            <div
+              className={`piece square ${state.activeForm === "square" ? "" : "inactive"}`}
+              style={{
+                gridColumn: state.square.x + 1,
+                gridRow: state.square.y + 1,
+              }}
+            />
+          )}
         </div>
       </div>
       <div className="hud">
@@ -665,6 +696,30 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
               </button>
               <button className="action" onClick={nextLevel}>
                 {worldIndex < world.levels.length - 1 ? "SUIVANT ▶" : "NIVEAUX"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {state.gameOver && (
+        <div className="overlay">
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="gameover-title"
+          >
+            <h2 id="gameover-title">✗ GAME OVER</h2>
+            <p>Une forme est sortie du niveau…</p>
+            <div className="modal-actions">
+              <button className="action" onClick={reset}>
+                REJOUER
+              </button>
+              <button
+                className="action"
+                onClick={() => navigate(`/world/${world.id}`)}
+              >
+                ← NIVEAUX
               </button>
             </div>
           </div>
