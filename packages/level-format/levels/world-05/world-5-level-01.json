@@ -194,9 +194,7 @@
         "y": 3
       },
       "form": "square",
-      "toggles": [
-        "door-1"
-      ]
+      "toggles": ["door-1"]
     }
   ],
   "teleporters": [

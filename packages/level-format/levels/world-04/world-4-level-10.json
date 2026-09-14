@@ -194,9 +194,7 @@
         "y": 7
       },
       "form": "ball",
-      "toggles": [
-        "door-1"
-      ]
+      "toggles": ["door-1"]
     }
   ]
 }

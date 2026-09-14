@@ -34,13 +34,13 @@ Sélection :
 
 ## Progression obtenue (score solveur)
 
-| Monde | Thème | Mécaniques | Score début → fin |
-|---|---|---|---|
-| 1 | Découverte | mouvement | 10 → 66 |
-| 2 | Positionnement | mouvement | 66 → 106 |
-| 3 | Coordination | mouvement | 108 → 129 |
-| 4 | Combinaisons | + portes/interrupteurs (action requise) | 131 → 202 |
-| 5 | Maîtrise | + téléporteurs (bidirectionnels, action requise) | 210 → 334 |
+| Monde | Thème          | Mécaniques                                       | Score début → fin |
+| ----- | -------------- | ------------------------------------------------ | ----------------- |
+| 1     | Découverte     | mouvement                                        | 10 → 66           |
+| 2     | Positionnement | mouvement                                        | 66 → 106          |
+| 3     | Coordination   | mouvement                                        | 108 → 129         |
+| 4     | Combinaisons   | + portes/interrupteurs (action requise)          | 131 → 202         |
+| 5     | Maîtrise       | + téléporteurs (bidirectionnels, action requise) | 210 → 334         |
 
 ## Plan détaillé
 

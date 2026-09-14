@@ -156,12 +156,15 @@ export function LevelThumb({ level }: { level: Level }) {
   markers.set(key(level.ball.x, level.ball.y), "ball");
   markers.set(key(level.square.x, level.square.y), "square");
   for (const star of level.stars) markers.set(key(star.x, star.y), "star");
-  for (const door of level.doors ?? []) markers.set(key(door.position.x, door.position.y), "door");
-  for (const sw of level.switches ?? []) markers.set(key(sw.position.x, sw.position.y), "switch");
+  for (const door of level.doors ?? [])
+    markers.set(key(door.position.x, door.position.y), "door");
+  for (const sw of level.switches ?? [])
+    markers.set(key(sw.position.x, sw.position.y), "switch");
 
   // Téléporteurs : maps position → id pour affichage A/B
   const teleporterAt = new Map<string, string>();
-  for (const tp of level.teleporters ?? []) teleporterAt.set(key(tp.position.x, tp.position.y), tp.id);
+  for (const tp of level.teleporters ?? [])
+    teleporterAt.set(key(tp.position.x, tp.position.y), tp.id);
 
   return (
     <div

@@ -590,7 +590,10 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
           {isInside(level, state.ball) && (
             <div
               className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
-              style={{ gridColumn: state.ball.x + 1, gridRow: state.ball.y + 1 }}
+              style={{
+                gridColumn: state.ball.x + 1,
+                gridRow: state.ball.y + 1,
+              }}
             />
           )}
           {isInside(level, state.square) && (
@@ -712,7 +715,10 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
               <button className="action" onClick={reset}>
                 REJOUER
               </button>
-              <button className="action" onClick={() => navigate(`/world/${world.id}`)}>
+              <button
+                className="action"
+                onClick={() => navigate(`/world/${world.id}`)}
+              >
                 ← NIVEAUX
               </button>
             </div>
