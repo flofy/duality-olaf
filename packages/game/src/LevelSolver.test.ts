@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { createEmptyLevel, type Level, world1 } from "@duality/level-format";
+import {
+  createEmptyLevel,
+  type Level,
+  world1,
+  world4,
+} from "@duality/level-format";
 import { LevelRunner } from "./LevelRunner";
 import { solveLevel } from "./LevelSolver";
 
@@ -43,6 +48,26 @@ describe("solveLevel", () => {
     expect(result.moves).toBeGreaterThan(0);
   });
 
+  it("falls back to the full model when a door is required", () => {
+    const level = world4[0];
+    expect(level).toBeDefined();
+
+    const result = solveLevel(level!);
+
+    expect(result.solvable).toBe(true);
+    const runner = new LevelRunner(level!);
+    let state = runner.getState();
+    for (const command of result.commands) {
+      state =
+        command.type === "move"
+          ? runner.move(command.direction)
+          : runner.switchForm();
+    }
+
+    expect(state.completed).toBe(true);
+    expect(state.moves).toBe(result.moves);
+  });
+
   it("reports an already complete level", () => {
     const level = createEmptyLevel("solver-complete");
     level.stars = [];
@@ -52,6 +77,19 @@ describe("solveLevel", () => {
       moves: 0,
       commands: [],
     });
+  });
+
+  it("honors an explicit maximum depth", () => {
+    const level = createEmptyLevel("solver-depth");
+    level.ball = { x: 1, y: 1 };
+    level.square = { x: 5, y: 5 };
+    level.stars = [{ x: 3, y: 1 }];
+    level.tiles[1][0] = "wall";
+    level.tiles[1][11] = "wall";
+
+    const result = solveLevel(level, { maxDepth: 0 });
+
+    expect(result.solvable).toBe(false);
   });
 
   it("never treats falling off the board as part of a solution path", () => {
