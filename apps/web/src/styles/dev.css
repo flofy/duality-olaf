@@ -156,6 +156,10 @@
 .dev-thumb-cell {
   background: #16203a;
   border-radius: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .dev-thumb-wall {
@@ -179,6 +183,42 @@
 
 .dev-thumb-marker-star {
   background: #ffe08a;
+}
+
+/* ── Marqueurs mécaniques (portes, interrupteurs, téléporteurs) ── */
+
+.dev-thumb-marker-door {
+  background: rgba(255, 86, 101, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(255, 86, 101, 0.85);
+}
+
+.dev-thumb-marker-switch {
+  background: rgba(86, 204, 255, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(86, 204, 255, 0.85);
+  font-size: 0.55em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dcefff;
+}
+
+.dev-thumb-marker-teleport-pair {
+  background: rgba(180, 130, 255, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(180, 130, 255, 0.9);
+}
+
+.dev-thumb-marker-teleport-self {
+  background: rgba(255, 213, 79, 0.3);
+  box-shadow: inset 0 0 0 1px rgba(255, 213, 79, 0.85);
+}
+
+.dev-thumb-teleport-label {
+  font-size: 0.55em;
+  font-weight: 700;
+  color: #e9e0ff;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
 }
 
 .dev-generator-entry {

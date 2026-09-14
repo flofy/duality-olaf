@@ -16,6 +16,8 @@ export type GameState = {
   gameOver: boolean;
   /** Set when the last successful move ended with a teleporter warp. */
   lastTeleport: { from: Position; to: Position } | null;
+  /** How many pass-over teleports this move has chained so far. */
+  teleportsThisMove: number;
 };
 
 export class LevelRunner {
@@ -45,6 +47,7 @@ export class LevelRunner {
             to: { ...state.lastTeleport.to },
           }
         : null,
+      teleportsThisMove: state.teleportsThisMove,
     };
     return runner;
   }
@@ -62,6 +65,7 @@ export class LevelRunner {
             to: { ...this.state.lastTeleport.to },
           }
         : null,
+      teleportsThisMove: this.state.teleportsThisMove,
     };
   }
 
@@ -76,6 +80,7 @@ export class LevelRunner {
     const axis = this.dominantAxis(direction);
     if (axis === null) return this.getState();
     this.state.lastTeleport = null;
+    this.state.teleportsThisMove = 0;
 
     const sign = axis === "x" ? Math.sign(direction.x) : Math.sign(direction.y);
     const current = this.activeEntity();
@@ -84,6 +89,7 @@ export class LevelRunner {
     let moved = 0;
 
     for (;;) {
+      if (this.state.teleportsThisMove >= 3) break;
       const next: Position = { ...current };
       next[axis] += sign;
       // Game over if the entity slides off the level: it keeps sliding one
@@ -99,12 +105,19 @@ export class LevelRunner {
       current.y = next.y;
       moved += 1;
       swept.push({ x: current.x, y: current.y });
+      // Teleporters trigger as soon as the sliding form passes over a pad:
+      // the form is carried to the paired pad and the slide keeps going in the
+      // same direction from there. If the destination is blocked by the other
+      // form the warp is refused and the slide continues past the pad.
+      if (this.tryTeleport(current, other)) {
+        this.state.teleportsThisMove += 1;
+        continue;
+      }
     }
 
     if (moved === 0) return this.getState();
     this.state.moves += 1;
     this.applySwitches(swept);
-    this.applyTeleport(current);
 
     // Collect stars only with the ball
     if (this.state.activeForm === "ball") {
@@ -152,23 +165,25 @@ export class LevelRunner {
     }
   }
 
-  private applyTeleport(current: Position): void {
+  private tryTeleport(current: Position, other: Position): boolean {
     const entry = this.state.level.teleporters?.find(
       (item) => item.position.x === current.x && item.position.y === current.y,
     );
-    if (!entry) return;
+    if (!entry) return false;
     const target = this.state.level.teleporters?.find(
       (item) => item.id === entry.targetId,
     );
-    if (!target) return;
-    const other = this.blockingEntity();
-    if (target.position.x === other.x && target.position.y === other.y) return;
+    if (!target) return false;
+    if (target.position.x === other.x && target.position.y === other.y) {
+      return false;
+    }
     this.state.lastTeleport = {
       from: { x: current.x, y: current.y },
       to: { x: target.position.x, y: target.position.y },
     };
     current.x = target.position.x;
     current.y = target.position.y;
+    return true;
   }
 
   private activeEntity(): Position {
@@ -207,6 +222,7 @@ export class LevelRunner {
       completed: level.stars.length === 0,
       gameOver: false,
       lastTeleport: null,
+      teleportsThisMove: 0,
     };
   }
 }
