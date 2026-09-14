@@ -69,7 +69,7 @@ export function solveLevel(
   level: Level,
   options?: { maxDepth?: number },
 ): SolverResult {
-  const maxDepth = options?.maxDepth ?? 60;
+  const maxDepth = options?.maxDepth ?? Number.POSITIVE_INFINITY;
   const initial = new LevelRunner(level).getState();
   if (initial.completed)
     return { solvable: true, moves: 0, commands: [], exploredStates: 1 };
