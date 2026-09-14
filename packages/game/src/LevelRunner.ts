@@ -111,7 +111,8 @@ export class LevelRunner {
       // form the warp is refused and the slide continues past the pad.
       if (this.tryTeleport(current, other)) {
         this.state.teleportsThisMove += 1;
-        continue;
+        // The warp ends the slide: the form is dropped on the destination pad.
+        break;
       }
     }
 

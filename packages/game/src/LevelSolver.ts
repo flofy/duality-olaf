@@ -65,7 +65,11 @@ function reconstruct(
   return commands.reverse();
 }
 
-export function solveLevel(level: Level): SolverResult {
+export function solveLevel(
+  level: Level,
+  options?: { maxDepth?: number },
+): SolverResult {
+  const maxDepth = options?.maxDepth ?? 60;
   const initial = new LevelRunner(level).getState();
   if (initial.completed)
     return { solvable: true, moves: 0, commands: [], exploredStates: 1 };
@@ -85,6 +89,7 @@ export function solveLevel(level: Level): SolverResult {
     const nodeIndex = cursor++;
     const node: SearchNode = nodes[nodeIndex]!;
     exploredStates += 1;
+    if (node.depth >= maxDepth) continue;
     for (const command of candidates) {
       const runner = LevelRunner.fromState(node.state);
       const before = runner.getState();

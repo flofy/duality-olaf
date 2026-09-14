@@ -10,7 +10,7 @@ const LEVELS_DIR = path.resolve(
 );
 
 describe("current levels snapshot (pass-over semantics)", () => {
-  it("reports score/moves/solvable for all 55 levels", () => {
+  it.skip("reports score/moves/solvable for all 55 levels", () => {
     const worlds = [1, 2, 3, 4, 5] as const;
     const lines: string[] = [];
     lines.push("WORLD LEVEL  SCORE  MOVES  SOLVABLE");
