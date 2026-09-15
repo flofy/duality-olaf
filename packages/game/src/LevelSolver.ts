@@ -170,7 +170,8 @@ export function solveLevel(
 
     return {
       ...simpleResult,
-      exploredStates: simpleResult.exploredStates + betterResult.exploredStates,
+      exploredStates:
+        simpleResult.exploredStates + betterResult.exploredStates,
     };
   }
 
