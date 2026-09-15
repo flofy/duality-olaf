@@ -44,7 +44,10 @@ describe("solveLevel", () => {
     }
 
     expect(state.completed).toBe(true);
-    expect(state.moves).toBe(result.moves);
+    expect(state.moves).toBe(
+      result.commands.filter((command) => command.type === "move").length,
+    );
+    expect(result.moves).toBe(result.commands.length);
     expect(result.moves).toBeGreaterThan(0);
   });
 
@@ -65,7 +68,10 @@ describe("solveLevel", () => {
     }
 
     expect(state.completed).toBe(true);
-    expect(state.moves).toBe(result.moves);
+    expect(state.moves).toBe(
+      result.commands.filter((command) => command.type === "move").length,
+    );
+    expect(result.moves).toBe(result.commands.length);
   });
 
   it("reports an already complete level", () => {
