@@ -37,21 +37,6 @@
       "wall",
       "empty",
       "empty",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
       "empty",
       "empty",
       "empty",
@@ -70,6 +55,21 @@
       "empty",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
       "empty",
       "empty",
       "empty",
@@ -156,16 +156,16 @@
   ],
   "ball": {
     "x": 1,
-    "y": 1
+    "y": 2
   },
   "square": {
-    "x": 2,
-    "y": 1
+    "x": 6,
+    "y": 7
   },
   "stars": [
     {
-      "x": 5,
-      "y": 1
+      "x": 6,
+      "y": 2
     },
     {
       "x": 5,
@@ -211,21 +211,6 @@
         "wall",
         "empty",
         "empty",
-        "wall",
-        "wall",
-        "wall",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "wall"
-      ],
-      [
-        "wall",
-        "empty",
-        "empty",
         "empty",
         "empty",
         "empty",
@@ -244,6 +229,21 @@
         "empty",
         "empty",
         "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "wall"
+      ],
+      [
+        "wall",
+        "empty",
+        "empty",
+        "wall",
+        "wall",
+        "wall",
         "empty",
         "empty",
         "empty",
@@ -330,16 +330,16 @@
     ],
     "ball": {
       "x": 1,
-      "y": 1
+      "y": 2
     },
     "square": {
-      "x": 2,
-      "y": 1
+      "x": 6,
+      "y": 7
     },
     "stars": [
       {
-        "x": 5,
-        "y": 1
+        "x": 6,
+        "y": 2
       },
       {
         "x": 5,
@@ -385,21 +385,6 @@
           "wall",
           "empty",
           "empty",
-          "wall",
-          "wall",
-          "wall",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "wall"
-        ],
-        [
-          "wall",
-          "empty",
-          "empty",
           "empty",
           "empty",
           "empty",
@@ -418,6 +403,21 @@
           "empty",
           "empty",
           "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "wall"
+        ],
+        [
+          "wall",
+          "empty",
+          "empty",
+          "wall",
+          "wall",
+          "wall",
           "empty",
           "empty",
           "empty",
@@ -504,16 +504,16 @@
       ],
       "ball": {
         "x": 1,
-        "y": 1
+        "y": 2
       },
       "square": {
-        "x": 2,
-        "y": 1
+        "x": 6,
+        "y": 7
       },
       "stars": [
         {
-          "x": 5,
-          "y": 1
+          "x": 6,
+          "y": 2
         },
         {
           "x": 5,
@@ -559,21 +559,6 @@
             "wall",
             "empty",
             "empty",
-            "wall",
-            "wall",
-            "wall",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "wall"
-          ],
-          [
-            "wall",
-            "empty",
-            "empty",
             "empty",
             "empty",
             "empty",
@@ -592,6 +577,21 @@
             "empty",
             "empty",
             "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "wall"
+          ],
+          [
+            "wall",
+            "empty",
+            "empty",
+            "wall",
+            "wall",
+            "wall",
             "empty",
             "empty",
             "empty",
@@ -678,16 +678,16 @@
         ],
         "ball": {
           "x": 1,
-          "y": 1
+          "y": 2
         },
         "square": {
-          "x": 2,
-          "y": 1
+          "x": 6,
+          "y": 7
         },
         "stars": [
           {
-            "x": 5,
-            "y": 1
+            "x": 6,
+            "y": 2
           },
           {
             "x": 5,
@@ -733,21 +733,6 @@
               "wall",
               "empty",
               "empty",
-              "wall",
-              "wall",
-              "wall",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "wall"
-            ],
-            [
-              "wall",
-              "empty",
-              "empty",
               "empty",
               "empty",
               "empty",
@@ -766,6 +751,21 @@
               "empty",
               "empty",
               "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "wall"
+            ],
+            [
+              "wall",
+              "empty",
+              "empty",
+              "wall",
+              "wall",
+              "wall",
               "empty",
               "empty",
               "empty",
@@ -852,16 +852,16 @@
           ],
           "ball": {
             "x": 1,
-            "y": 1
+            "y": 2
           },
           "square": {
-            "x": 2,
-            "y": 1
+            "x": 6,
+            "y": 7
           },
           "stars": [
             {
-              "x": 5,
-              "y": 1
+              "x": 6,
+              "y": 2
             },
             {
               "x": 5,
@@ -907,21 +907,6 @@
                 "wall",
                 "empty",
                 "empty",
-                "wall",
-                "wall",
-                "wall",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "wall"
-              ],
-              [
-                "wall",
-                "empty",
-                "empty",
                 "empty",
                 "empty",
                 "empty",
@@ -940,6 +925,21 @@
                 "empty",
                 "empty",
                 "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "wall"
+              ],
+              [
+                "wall",
+                "empty",
+                "empty",
+                "wall",
+                "wall",
+                "wall",
                 "empty",
                 "empty",
                 "empty",
@@ -1026,16 +1026,16 @@
             ],
             "ball": {
               "x": 1,
-              "y": 1
+              "y": 2
             },
             "square": {
-              "x": 2,
-              "y": 1
+              "x": 6,
+              "y": 7
             },
             "stars": [
               {
-                "x": 5,
-                "y": 1
+                "x": 6,
+                "y": 2
               },
               {
                 "x": 5,
@@ -1043,7 +1043,7 @@
               }
             ],
             "default": {
-              "id": "world-1-level-03",
+              "id": "world-3-level-03",
               "width": 13,
               "height": 10,
               "tiles": [
@@ -1081,21 +1081,6 @@
                   "wall",
                   "empty",
                   "empty",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "empty",
-                  "empty",
                   "empty",
                   "empty",
                   "empty",
@@ -1114,6 +1099,21 @@
                   "empty",
                   "empty",
                   "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "wall",
+                  "wall",
                   "empty",
                   "empty",
                   "empty",
@@ -1200,16 +1200,16 @@
               ],
               "ball": {
                 "x": 1,
-                "y": 1
+                "y": 2
               },
               "square": {
-                "x": 2,
-                "y": 1
+                "x": 6,
+                "y": 7
               },
               "stars": [
                 {
-                  "x": 5,
-                  "y": 1
+                  "x": 6,
+                  "y": 2
                 },
                 {
                   "x": 5,

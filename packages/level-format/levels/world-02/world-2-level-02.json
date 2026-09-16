@@ -1,37 +1,191 @@
 {
+  "id": "world-2-level-02",
+  "width": 13,
+  "height": 10,
+  "tiles": [
+    [
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ]
+  ],
   "ball": {
     "x": 1,
     "y": 1
   },
+  "square": {
+    "x": 2,
+    "y": 1
+  },
+  "stars": [
+    {
+      "x": 5,
+      "y": 1
+    },
+    {
+      "x": 5,
+      "y": 7
+    }
+  ],
   "default": {
     "id": "world-2-level-02",
     "width": 13,
     "height": 10,
     "tiles": [
       [
-        "empty",
         "wall",
         "wall",
         "wall",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "wall"
-      ],
-      [
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "special",
-        "empty",
+        "wall",
+        "wall",
+        "wall",
+        "wall",
+        "wall",
         "wall",
         "wall",
         "wall",
@@ -39,70 +193,10 @@
         "wall"
       ],
       [
-        "empty",
-        "empty",
-        "empty",
-        "special",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "wall",
-        "empty",
-        "empty",
-        "wall"
-      ],
-      [
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "wall",
-        "wall",
-        "wall",
         "wall",
         "empty",
         "empty",
         "empty",
-        "wall",
-        "wall"
-      ],
-      [
-        "wall",
-        "wall",
-        "empty",
-        "empty",
-        "wall",
-        "wall",
-        "wall",
-        "empty",
-        "wall",
-        "wall",
-        "wall",
-        "empty",
-        "wall"
-      ],
-      [
-        "wall",
-        "empty",
-        "empty",
-        "wall",
-        "wall",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "wall"
-      ],
-      [
-        "wall",
-        "empty",
-        "empty",
-        "wall",
         "empty",
         "empty",
         "empty",
@@ -118,6 +212,21 @@
         "empty",
         "empty",
         "wall",
+        "wall",
+        "wall",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "wall"
+      ],
+      [
+        "wall",
+        "empty",
+        "empty",
+        "empty",
         "empty",
         "empty",
         "empty",
@@ -131,7 +240,67 @@
       [
         "wall",
         "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "wall"
+      ],
+      [
         "wall",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "wall",
+        "wall",
+        "wall",
+        "empty",
+        "empty",
+        "wall"
+      ],
+      [
+        "wall",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "wall"
+      ],
+      [
+        "wall",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "wall"
+      ],
+      [
+        "wall",
+        "empty",
+        "empty",
         "empty",
         "empty",
         "empty",
@@ -164,21 +333,17 @@
       "y": 1
     },
     "square": {
-      "x": 10,
-      "y": 3
+      "x": 2,
+      "y": 1
     },
     "stars": [
       {
-        "x": 2,
-        "y": 7
-      },
-      {
-        "x": 6,
+        "x": 5,
         "y": 1
       },
       {
-        "x": 3,
-        "y": 4
+        "x": 5,
+        "y": 7
       }
     ],
     "default": {
@@ -187,29 +352,14 @@
       "height": 10,
       "tiles": [
         [
-          "empty",
           "wall",
           "wall",
           "wall",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "wall"
-        ],
-        [
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "special",
-          "empty",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
           "wall",
           "wall",
           "wall",
@@ -217,70 +367,10 @@
           "wall"
         ],
         [
-          "empty",
-          "empty",
-          "empty",
-          "special",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "wall",
-          "empty",
-          "empty",
-          "wall"
-        ],
-        [
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "wall",
-          "wall",
-          "wall",
           "wall",
           "empty",
           "empty",
           "empty",
-          "wall",
-          "wall"
-        ],
-        [
-          "wall",
-          "wall",
-          "empty",
-          "empty",
-          "wall",
-          "wall",
-          "wall",
-          "empty",
-          "wall",
-          "wall",
-          "wall",
-          "empty",
-          "wall"
-        ],
-        [
-          "wall",
-          "empty",
-          "empty",
-          "wall",
-          "wall",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "wall"
-        ],
-        [
-          "wall",
-          "empty",
-          "empty",
-          "wall",
           "empty",
           "empty",
           "empty",
@@ -296,6 +386,21 @@
           "empty",
           "empty",
           "wall",
+          "wall",
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "wall"
+        ],
+        [
+          "wall",
+          "empty",
+          "empty",
+          "empty",
           "empty",
           "empty",
           "empty",
@@ -309,7 +414,67 @@
         [
           "wall",
           "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "wall"
+        ],
+        [
           "wall",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "wall",
+          "wall",
+          "wall",
+          "empty",
+          "empty",
+          "wall"
+        ],
+        [
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "wall"
+        ],
+        [
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "wall"
+        ],
+        [
+          "wall",
+          "empty",
+          "empty",
           "empty",
           "empty",
           "empty",
@@ -342,21 +507,17 @@
         "y": 1
       },
       "square": {
-        "x": 10,
-        "y": 3
+        "x": 2,
+        "y": 1
       },
       "stars": [
         {
-          "x": 2,
-          "y": 7
-        },
-        {
-          "x": 6,
+          "x": 5,
           "y": 1
         },
         {
-          "x": 3,
-          "y": 4
+          "x": 5,
+          "y": 7
         }
       ],
       "default": {
@@ -365,29 +526,14 @@
         "height": 10,
         "tiles": [
           [
-            "empty",
             "wall",
             "wall",
             "wall",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "wall"
-          ],
-          [
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "special",
-            "empty",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
             "wall",
             "wall",
             "wall",
@@ -395,70 +541,10 @@
             "wall"
           ],
           [
-            "empty",
-            "empty",
-            "empty",
-            "special",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "wall",
-            "empty",
-            "empty",
-            "wall"
-          ],
-          [
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "wall",
-            "wall",
-            "wall",
             "wall",
             "empty",
             "empty",
             "empty",
-            "wall",
-            "wall"
-          ],
-          [
-            "wall",
-            "wall",
-            "empty",
-            "empty",
-            "wall",
-            "wall",
-            "wall",
-            "empty",
-            "wall",
-            "wall",
-            "wall",
-            "empty",
-            "wall"
-          ],
-          [
-            "wall",
-            "empty",
-            "empty",
-            "wall",
-            "wall",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "wall"
-          ],
-          [
-            "wall",
-            "empty",
-            "empty",
-            "wall",
             "empty",
             "empty",
             "empty",
@@ -474,6 +560,21 @@
             "empty",
             "empty",
             "wall",
+            "wall",
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "wall"
+          ],
+          [
+            "wall",
+            "empty",
+            "empty",
+            "empty",
             "empty",
             "empty",
             "empty",
@@ -487,7 +588,67 @@
           [
             "wall",
             "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "wall"
+          ],
+          [
             "wall",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "wall",
+            "wall",
+            "wall",
+            "empty",
+            "empty",
+            "wall"
+          ],
+          [
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "wall"
+          ],
+          [
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "wall"
+          ],
+          [
+            "wall",
+            "empty",
+            "empty",
             "empty",
             "empty",
             "empty",
@@ -520,21 +681,17 @@
           "y": 1
         },
         "square": {
-          "x": 10,
-          "y": 3
+          "x": 2,
+          "y": 1
         },
         "stars": [
           {
-            "x": 2,
-            "y": 7
-          },
-          {
-            "x": 6,
+            "x": 5,
             "y": 1
           },
           {
-            "x": 3,
-            "y": 4
+            "x": 5,
+            "y": 7
           }
         ],
         "default": {
@@ -543,29 +700,14 @@
           "height": 10,
           "tiles": [
             [
-              "empty",
               "wall",
               "wall",
               "wall",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "wall"
-            ],
-            [
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "special",
-              "empty",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
               "wall",
               "wall",
               "wall",
@@ -573,70 +715,10 @@
               "wall"
             ],
             [
-              "empty",
-              "empty",
-              "empty",
-              "special",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "wall",
-              "empty",
-              "empty",
-              "wall"
-            ],
-            [
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "wall",
-              "wall",
-              "wall",
               "wall",
               "empty",
               "empty",
               "empty",
-              "wall",
-              "wall"
-            ],
-            [
-              "wall",
-              "wall",
-              "empty",
-              "empty",
-              "wall",
-              "wall",
-              "wall",
-              "empty",
-              "wall",
-              "wall",
-              "wall",
-              "empty",
-              "wall"
-            ],
-            [
-              "wall",
-              "empty",
-              "empty",
-              "wall",
-              "wall",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "wall"
-            ],
-            [
-              "wall",
-              "empty",
-              "empty",
-              "wall",
               "empty",
               "empty",
               "empty",
@@ -652,6 +734,21 @@
               "empty",
               "empty",
               "wall",
+              "wall",
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "wall"
+            ],
+            [
+              "wall",
+              "empty",
+              "empty",
+              "empty",
               "empty",
               "empty",
               "empty",
@@ -665,7 +762,67 @@
             [
               "wall",
               "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "wall"
+            ],
+            [
               "wall",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "wall",
+              "wall",
+              "wall",
+              "empty",
+              "empty",
+              "wall"
+            ],
+            [
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "wall"
+            ],
+            [
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "wall"
+            ],
+            [
+              "wall",
+              "empty",
+              "empty",
               "empty",
               "empty",
               "empty",
@@ -698,21 +855,17 @@
             "y": 1
           },
           "square": {
-            "x": 10,
-            "y": 3
+            "x": 2,
+            "y": 1
           },
           "stars": [
             {
-              "x": 2,
-              "y": 7
-            },
-            {
-              "x": 6,
+              "x": 5,
               "y": 1
             },
             {
-              "x": 3,
-              "y": 4
+              "x": 5,
+              "y": 7
             }
           ],
           "default": {
@@ -721,29 +874,14 @@
             "height": 10,
             "tiles": [
               [
-                "empty",
                 "wall",
                 "wall",
                 "wall",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "wall"
-              ],
-              [
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "special",
-                "empty",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
                 "wall",
                 "wall",
                 "wall",
@@ -751,70 +889,10 @@
                 "wall"
               ],
               [
-                "empty",
-                "empty",
-                "empty",
-                "special",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "wall",
-                "empty",
-                "empty",
-                "wall"
-              ],
-              [
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "wall",
-                "wall",
-                "wall",
                 "wall",
                 "empty",
                 "empty",
                 "empty",
-                "wall",
-                "wall"
-              ],
-              [
-                "wall",
-                "wall",
-                "empty",
-                "empty",
-                "wall",
-                "wall",
-                "wall",
-                "empty",
-                "wall",
-                "wall",
-                "wall",
-                "empty",
-                "wall"
-              ],
-              [
-                "wall",
-                "empty",
-                "empty",
-                "wall",
-                "wall",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "wall"
-              ],
-              [
-                "wall",
-                "empty",
-                "empty",
-                "wall",
                 "empty",
                 "empty",
                 "empty",
@@ -830,6 +908,21 @@
                 "empty",
                 "empty",
                 "wall",
+                "wall",
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "wall"
+              ],
+              [
+                "wall",
+                "empty",
+                "empty",
+                "empty",
                 "empty",
                 "empty",
                 "empty",
@@ -843,7 +936,67 @@
               [
                 "wall",
                 "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "wall"
+              ],
+              [
                 "wall",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "wall",
+                "wall",
+                "wall",
+                "empty",
+                "empty",
+                "wall"
+              ],
+              [
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "wall"
+              ],
+              [
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "wall"
+              ],
+              [
+                "wall",
+                "empty",
+                "empty",
                 "empty",
                 "empty",
                 "empty",
@@ -876,52 +1029,33 @@
               "y": 1
             },
             "square": {
-              "x": 10,
-              "y": 3
+              "x": 2,
+              "y": 1
             },
             "stars": [
               {
-                "x": 2,
-                "y": 7
-              },
-              {
-                "x": 6,
+                "x": 5,
                 "y": 1
               },
               {
-                "x": 3,
-                "y": 4
+                "x": 5,
+                "y": 7
               }
             ],
             "default": {
-              "id": "world-2-level-02",
+              "id": "world-1-level-03",
               "width": 13,
               "height": 10,
               "tiles": [
                 [
-                  "empty",
                   "wall",
                   "wall",
                   "wall",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "special",
-                  "empty",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
                   "wall",
                   "wall",
                   "wall",
@@ -929,70 +1063,10 @@
                   "wall"
                 ],
                 [
-                  "empty",
-                  "empty",
-                  "empty",
-                  "special",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "wall",
-                  "wall",
-                  "wall",
                   "wall",
                   "empty",
                   "empty",
                   "empty",
-                  "wall",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "empty",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "empty",
-                  "empty",
-                  "wall",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "empty",
-                  "empty",
-                  "wall",
                   "empty",
                   "empty",
                   "empty",
@@ -1008,6 +1082,21 @@
                   "empty",
                   "empty",
                   "wall",
+                  "wall",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
                   "empty",
                   "empty",
                   "empty",
@@ -1021,7 +1110,67 @@
                 [
                   "wall",
                   "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall"
+                ],
+                [
                   "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "empty",
+                  "empty",
                   "empty",
                   "empty",
                   "empty",
@@ -1054,387 +1203,23 @@
                 "y": 1
               },
               "square": {
-                "x": 10,
-                "y": 3
+                "x": 2,
+                "y": 1
               },
               "stars": [
                 {
-                  "x": 2,
+                  "x": 5,
+                  "y": 1
+                },
+                {
+                  "x": 5,
                   "y": 7
-                },
-                {
-                  "x": 6,
-                  "y": 1
-                },
-                {
-                  "x": 3,
-                  "y": 4
                 }
-              ],
-              "default": {
-                "id": "world-1-level-01",
-                "width": 13,
-                "height": 10,
-                "tiles": [
-                  [
-                    "empty",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "special",
-                    "empty",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall"
-                  ],
-                  [
-                    "empty",
-                    "empty",
-                    "empty",
-                    "special",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "empty",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "empty",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall"
-                  ]
-                ],
-                "ball": {
-                  "x": 1,
-                  "y": 1
-                },
-                "square": {
-                  "x": 10,
-                  "y": 3
-                },
-                "stars": [
-                  {
-                    "x": 2,
-                    "y": 7
-                  },
-                  {
-                    "x": 6,
-                    "y": 1
-                  },
-                  {
-                    "x": 3,
-                    "y": 4
-                  }
-                ]
-              }
+              ]
             }
           }
         }
       }
     }
-  },
-  "height": 10,
-  "id": "world-2-level-02",
-  "square": {
-    "x": 10,
-    "y": 3
-  },
-  "stars": [
-    {
-      "x": 2,
-      "y": 7
-    },
-    {
-      "x": 6,
-      "y": 1
-    },
-    {
-      "x": 3,
-      "y": 4
-    },
-    {
-      "x": 5,
-      "y": 5
-    },
-    {
-      "x": 7,
-      "y": 4
-    }
-  ],
-  "tiles": [
-    [
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "special",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall"
-    ],
-    [
-      "empty",
-      "empty",
-      "empty",
-      "special",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "wall",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall"
-    ]
-  ],
-  "width": 13
+  }
 }

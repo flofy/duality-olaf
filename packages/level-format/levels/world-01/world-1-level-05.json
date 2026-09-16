@@ -1,12 +1,1286 @@
 {
   "ball": {
-    "x": 1,
+    "x": 6,
     "y": 1
   },
   "default": {
-    "id": "world-1-level-05",
-    "width": 13,
+    "ball": {
+      "x": 6,
+      "y": 1
+    },
+    "default": {
+      "id": "world-1-level-05",
+      "width": 13,
+      "height": 10,
+      "tiles": [
+        [
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty"
+        ],
+        [
+          "wall",
+          "empty",
+          "special",
+          "empty",
+          "wall",
+          "wall",
+          "empty",
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "special",
+          "wall"
+        ],
+        [
+          "wall",
+          "empty",
+          "empty",
+          "wall",
+          "wall",
+          "empty",
+          "special",
+          "empty",
+          "wall",
+          "wall",
+          "special",
+          "empty",
+          "wall"
+        ],
+        [
+          "wall",
+          "empty",
+          "wall",
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "wall",
+          "wall",
+          "empty",
+          "wall"
+        ],
+        [
+          "wall",
+          "wall",
+          "wall",
+          "empty",
+          "special",
+          "empty",
+          "special",
+          "empty",
+          "empty",
+          "empty",
+          "wall",
+          "wall",
+          "wall"
+        ],
+        [
+          "wall",
+          "wall",
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "wall",
+          "wall",
+          "wall"
+        ],
+        [
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "wall",
+          "wall",
+          "wall",
+          "wall"
+        ],
+        [
+          "wall",
+          "empty",
+          "empty",
+          "wall",
+          "empty",
+          "empty",
+          "special",
+          "empty",
+          "empty",
+          "wall",
+          "empty",
+          "empty",
+          "wall"
+        ],
+        [
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "wall",
+          "empty",
+          "empty",
+          "empty",
+          "wall"
+        ],
+        [
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall",
+          "wall"
+        ]
+      ],
+      "ball": {
+        "x": 6,
+        "y": 1
+      },
+      "square": {
+        "x": 5,
+        "y": 8
+      },
+      "stars": [
+        {
+          "x": 9,
+          "y": 5
+        },
+        {
+          "x": 3,
+          "y": 4
+        },
+        {
+          "x": 6,
+          "y": 4
+        }
+      ],
+      "default": {
+        "id": "world-1-level-05",
+        "width": 13,
+        "height": 10,
+        "tiles": [
+          [
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty"
+          ],
+          [
+            "wall",
+            "empty",
+            "special",
+            "empty",
+            "wall",
+            "wall",
+            "empty",
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "special",
+            "wall"
+          ],
+          [
+            "wall",
+            "empty",
+            "empty",
+            "wall",
+            "wall",
+            "empty",
+            "special",
+            "empty",
+            "wall",
+            "wall",
+            "special",
+            "empty",
+            "wall"
+          ],
+          [
+            "wall",
+            "empty",
+            "wall",
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "wall",
+            "wall",
+            "empty",
+            "wall"
+          ],
+          [
+            "wall",
+            "wall",
+            "wall",
+            "empty",
+            "special",
+            "empty",
+            "special",
+            "empty",
+            "empty",
+            "empty",
+            "wall",
+            "wall",
+            "wall"
+          ],
+          [
+            "wall",
+            "wall",
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "wall",
+            "wall",
+            "wall"
+          ],
+          [
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "empty",
+            "wall",
+            "wall",
+            "wall",
+            "wall"
+          ],
+          [
+            "wall",
+            "empty",
+            "empty",
+            "wall",
+            "empty",
+            "empty",
+            "special",
+            "empty",
+            "empty",
+            "wall",
+            "empty",
+            "empty",
+            "wall"
+          ],
+          [
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "wall",
+            "empty",
+            "empty",
+            "empty",
+            "wall"
+          ],
+          [
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall",
+            "wall"
+          ]
+        ],
+        "ball": {
+          "x": 6,
+          "y": 1
+        },
+        "square": {
+          "x": 5,
+          "y": 8
+        },
+        "stars": [
+          {
+            "x": 9,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 6,
+            "y": 4
+          }
+        ],
+        "default": {
+          "id": "world-1-level-05",
+          "width": 13,
+          "height": 10,
+          "tiles": [
+            [
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty"
+            ],
+            [
+              "wall",
+              "empty",
+              "special",
+              "empty",
+              "wall",
+              "wall",
+              "empty",
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "special",
+              "wall"
+            ],
+            [
+              "wall",
+              "empty",
+              "empty",
+              "wall",
+              "wall",
+              "empty",
+              "special",
+              "empty",
+              "wall",
+              "wall",
+              "special",
+              "empty",
+              "wall"
+            ],
+            [
+              "wall",
+              "empty",
+              "wall",
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "wall",
+              "wall",
+              "empty",
+              "wall"
+            ],
+            [
+              "wall",
+              "wall",
+              "wall",
+              "empty",
+              "special",
+              "empty",
+              "special",
+              "empty",
+              "empty",
+              "empty",
+              "wall",
+              "wall",
+              "wall"
+            ],
+            [
+              "wall",
+              "wall",
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "wall",
+              "wall",
+              "wall"
+            ],
+            [
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "empty",
+              "wall",
+              "wall",
+              "wall",
+              "wall"
+            ],
+            [
+              "wall",
+              "empty",
+              "empty",
+              "wall",
+              "empty",
+              "empty",
+              "special",
+              "empty",
+              "empty",
+              "wall",
+              "empty",
+              "empty",
+              "wall"
+            ],
+            [
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "wall",
+              "empty",
+              "empty",
+              "empty",
+              "wall"
+            ],
+            [
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall",
+              "wall"
+            ]
+          ],
+          "ball": {
+            "x": 6,
+            "y": 1
+          },
+          "square": {
+            "x": 5,
+            "y": 8
+          },
+          "stars": [
+            {
+              "x": 9,
+              "y": 5
+            },
+            {
+              "x": 3,
+              "y": 4
+            },
+            {
+              "x": 6,
+              "y": 4
+            }
+          ],
+          "default": {
+            "id": "world-1-level-05",
+            "width": 13,
+            "height": 10,
+            "tiles": [
+              [
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty"
+              ],
+              [
+                "wall",
+                "empty",
+                "special",
+                "empty",
+                "wall",
+                "wall",
+                "empty",
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "special",
+                "wall"
+              ],
+              [
+                "wall",
+                "empty",
+                "empty",
+                "wall",
+                "wall",
+                "empty",
+                "special",
+                "empty",
+                "wall",
+                "wall",
+                "special",
+                "empty",
+                "wall"
+              ],
+              [
+                "wall",
+                "empty",
+                "wall",
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "wall",
+                "wall",
+                "empty",
+                "wall"
+              ],
+              [
+                "wall",
+                "wall",
+                "wall",
+                "empty",
+                "special",
+                "empty",
+                "special",
+                "empty",
+                "empty",
+                "empty",
+                "wall",
+                "wall",
+                "wall"
+              ],
+              [
+                "wall",
+                "wall",
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "wall",
+                "wall",
+                "wall"
+              ],
+              [
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "empty",
+                "wall",
+                "wall",
+                "wall",
+                "wall"
+              ],
+              [
+                "wall",
+                "empty",
+                "empty",
+                "wall",
+                "empty",
+                "empty",
+                "special",
+                "empty",
+                "empty",
+                "wall",
+                "empty",
+                "empty",
+                "wall"
+              ],
+              [
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "wall",
+                "empty",
+                "empty",
+                "empty",
+                "wall"
+              ],
+              [
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall",
+                "wall"
+              ]
+            ],
+            "ball": {
+              "x": 6,
+              "y": 1
+            },
+            "square": {
+              "x": 5,
+              "y": 8
+            },
+            "stars": [
+              {
+                "x": 9,
+                "y": 5
+              },
+              {
+                "x": 3,
+                "y": 4
+              },
+              {
+                "x": 6,
+                "y": 4
+              }
+            ],
+            "default": {
+              "id": "world-1-level-05",
+              "width": 13,
+              "height": 10,
+              "tiles": [
+                [
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty"
+                ],
+                [
+                  "wall",
+                  "empty",
+                  "special",
+                  "empty",
+                  "wall",
+                  "wall",
+                  "empty",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "special",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "wall",
+                  "empty",
+                  "special",
+                  "empty",
+                  "wall",
+                  "wall",
+                  "special",
+                  "empty",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "empty",
+                  "wall",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "wall",
+                  "empty",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "wall",
+                  "wall",
+                  "empty",
+                  "special",
+                  "empty",
+                  "special",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "wall",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "wall",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "wall",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "special",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall",
+                  "empty",
+                  "empty",
+                  "empty",
+                  "wall"
+                ],
+                [
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall",
+                  "wall"
+                ]
+              ],
+              "ball": {
+                "x": 6,
+                "y": 1
+              },
+              "square": {
+                "x": 5,
+                "y": 8
+              },
+              "stars": [
+                {
+                  "x": 9,
+                  "y": 5
+                },
+                {
+                  "x": 3,
+                  "y": 4
+                },
+                {
+                  "x": 6,
+                  "y": 4
+                }
+              ],
+              "default": {
+                "id": "world-1-level-05",
+                "width": 13,
+                "height": 10,
+                "tiles": [
+                  [
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "empty"
+                  ],
+                  [
+                    "wall",
+                    "empty",
+                    "special",
+                    "empty",
+                    "wall",
+                    "wall",
+                    "empty",
+                    "wall",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "special",
+                    "wall"
+                  ],
+                  [
+                    "wall",
+                    "empty",
+                    "empty",
+                    "wall",
+                    "wall",
+                    "empty",
+                    "special",
+                    "empty",
+                    "wall",
+                    "wall",
+                    "special",
+                    "empty",
+                    "wall"
+                  ],
+                  [
+                    "wall",
+                    "empty",
+                    "wall",
+                    "wall",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "wall",
+                    "wall",
+                    "empty",
+                    "wall"
+                  ],
+                  [
+                    "wall",
+                    "wall",
+                    "wall",
+                    "empty",
+                    "special",
+                    "empty",
+                    "special",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "wall",
+                    "wall",
+                    "wall"
+                  ],
+                  [
+                    "wall",
+                    "wall",
+                    "wall",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "wall",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "wall",
+                    "wall",
+                    "wall"
+                  ],
+                  [
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall"
+                  ],
+                  [
+                    "wall",
+                    "empty",
+                    "empty",
+                    "wall",
+                    "empty",
+                    "empty",
+                    "special",
+                    "empty",
+                    "empty",
+                    "wall",
+                    "empty",
+                    "empty",
+                    "wall"
+                  ],
+                  [
+                    "wall",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "wall",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "wall",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "wall"
+                  ],
+                  [
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall",
+                    "wall"
+                  ]
+                ],
+                "ball": {
+                  "x": 6,
+                  "y": 1
+                },
+                "square": {
+                  "x": 5,
+                  "y": 8
+                },
+                "stars": [
+                  {
+                    "x": 9,
+                    "y": 5
+                  },
+                  {
+                    "x": 3,
+                    "y": 4
+                  },
+                  {
+                    "x": 6,
+                    "y": 4
+                  }
+                ],
+                "default": {
+                  "id": "world-3-level-01",
+                  "width": 13,
+                  "height": 10,
+                  "tiles": [
+                    [
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "empty"
+                    ],
+                    [
+                      "wall",
+                      "empty",
+                      "special",
+                      "empty",
+                      "wall",
+                      "wall",
+                      "empty",
+                      "wall",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "special",
+                      "wall"
+                    ],
+                    [
+                      "wall",
+                      "empty",
+                      "empty",
+                      "wall",
+                      "wall",
+                      "empty",
+                      "special",
+                      "empty",
+                      "wall",
+                      "wall",
+                      "special",
+                      "empty",
+                      "wall"
+                    ],
+                    [
+                      "wall",
+                      "empty",
+                      "wall",
+                      "wall",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "wall",
+                      "wall",
+                      "empty",
+                      "wall"
+                    ],
+                    [
+                      "wall",
+                      "wall",
+                      "wall",
+                      "empty",
+                      "special",
+                      "empty",
+                      "special",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "wall",
+                      "wall",
+                      "wall"
+                    ],
+                    [
+                      "wall",
+                      "wall",
+                      "wall",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "wall",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "wall",
+                      "wall",
+                      "wall"
+                    ],
+                    [
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall"
+                    ],
+                    [
+                      "wall",
+                      "empty",
+                      "empty",
+                      "wall",
+                      "empty",
+                      "empty",
+                      "special",
+                      "empty",
+                      "empty",
+                      "wall",
+                      "empty",
+                      "empty",
+                      "wall"
+                    ],
+                    [
+                      "wall",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "wall",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "wall",
+                      "empty",
+                      "empty",
+                      "empty",
+                      "wall"
+                    ],
+                    [
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall",
+                      "wall"
+                    ]
+                  ],
+                  "ball": {
+                    "x": 6,
+                    "y": 1
+                  },
+                  "square": {
+                    "x": 5,
+                    "y": 8
+                  },
+                  "stars": [
+                    {
+                      "x": 9,
+                      "y": 5
+                    },
+                    {
+                      "x": 3,
+                      "y": 4
+                    },
+                    {
+                      "x": 6,
+                      "y": 4
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "height": 10,
+    "id": "world-1-level-05",
+    "square": {
+      "x": 5,
+      "y": 8
+    },
+    "stars": [
+      {
+        "x": 9,
+        "y": 5
+      },
+      {
+        "x": 3,
+        "y": 4
+      },
+      {
+        "x": 6,
+        "y": 4
+      }
+    ],
     "tiles": [
       [
         "wall",
@@ -25,107 +1299,107 @@
       ],
       [
         "wall",
+        "wall",
+        "wall",
+        "wall",
+        "wall",
+        "wall",
+        "empty",
+        "wall",
+        "wall",
+        "wall",
+        "wall",
+        "wall",
+        "wall"
+      ],
+      [
+        "wall",
+        "wall",
+        "wall",
+        "wall",
+        "wall",
+        "empty",
+        "special",
+        "empty",
+        "wall",
+        "wall",
+        "wall",
+        "wall",
+        "wall"
+      ],
+      [
+        "wall",
+        "wall",
+        "wall",
+        "wall",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "empty",
+        "wall",
+        "wall",
+        "wall",
+        "wall"
+      ],
+      [
+        "wall",
+        "wall",
+        "wall",
+        "empty",
+        "special",
         "empty",
         "special",
         "empty",
         "empty",
         "empty",
-        "empty",
-        "empty",
-        "empty",
         "wall",
         "wall",
-        "empty",
         "wall"
       ],
       [
         "wall",
-        "empty",
-        "empty",
-        "wall",
-        "wall",
-        "wall",
-        "wall",
-        "wall",
         "wall",
         "wall",
         "empty",
         "empty",
+        "empty",
+        "wall",
+        "empty",
+        "empty",
+        "empty",
+        "wall",
+        "wall",
         "wall"
       ],
       [
         "wall",
-        "empty",
         "wall",
         "wall",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
         "wall",
         "empty",
         "empty",
+        "empty",
+        "empty",
+        "empty",
+        "wall",
+        "wall",
+        "wall",
         "wall"
       ],
       [
         "wall",
-        "empty",
-        "wall",
-        "wall",
-        "empty",
-        "wall",
-        "empty",
-        "empty",
-        "empty",
-        "wall",
-        "empty",
-        "empty",
-        "wall"
-      ],
-      [
-        "wall",
-        "empty",
-        "wall",
-        "wall",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "wall",
-        "empty",
-        "empty",
-        "wall"
-      ],
-      [
-        "wall",
-        "empty",
-        "wall",
-        "empty",
-        "wall",
-        "wall",
-        "wall",
         "wall",
         "wall",
         "wall",
         "empty",
         "empty",
-        "wall"
-      ],
-      [
+        "special",
+        "empty",
+        "empty",
         "wall",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
-        "empty",
+        "wall",
+        "wall",
         "wall"
       ],
       [
@@ -134,9 +1408,9 @@
         "wall",
         "wall",
         "wall",
-        "wall",
-        "wall",
-        "wall",
+        "empty",
+        "empty",
+        "empty",
         "wall",
         "wall",
         "wall",
@@ -156,1128 +1430,29 @@
         "wall",
         "wall",
         "wall",
-        "empty"
+        "wall"
       ]
     ],
-    "ball": {
-      "x": 1,
-      "y": 1
-    },
-    "square": {
-      "x": 11,
-      "y": 7
-    },
-    "stars": [
-      {
-        "x": 3,
-        "y": 7
-      },
-      {
-        "x": 8,
-        "y": 1
-      },
-      {
-        "x": 1,
-        "y": 5
-      }
-    ],
-    "default": {
-      "id": "world-1-level-05",
-      "width": 13,
-      "height": 10,
-      "tiles": [
-        [
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall"
-        ],
-        [
-          "wall",
-          "empty",
-          "special",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "wall",
-          "wall",
-          "empty",
-          "wall"
-        ],
-        [
-          "wall",
-          "empty",
-          "empty",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "empty",
-          "empty",
-          "wall"
-        ],
-        [
-          "wall",
-          "empty",
-          "wall",
-          "wall",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "wall",
-          "empty",
-          "empty",
-          "wall"
-        ],
-        [
-          "wall",
-          "empty",
-          "wall",
-          "wall",
-          "empty",
-          "wall",
-          "empty",
-          "empty",
-          "empty",
-          "wall",
-          "empty",
-          "empty",
-          "wall"
-        ],
-        [
-          "wall",
-          "empty",
-          "wall",
-          "wall",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "wall",
-          "empty",
-          "empty",
-          "wall"
-        ],
-        [
-          "wall",
-          "empty",
-          "wall",
-          "empty",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "empty",
-          "empty",
-          "wall"
-        ],
-        [
-          "wall",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "empty",
-          "wall"
-        ],
-        [
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall"
-        ],
-        [
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "wall",
-          "empty"
-        ]
-      ],
-      "ball": {
-        "x": 1,
-        "y": 1
-      },
-      "square": {
-        "x": 11,
-        "y": 7
-      },
-      "stars": [
-        {
-          "x": 3,
-          "y": 7
-        },
-        {
-          "x": 8,
-          "y": 1
-        },
-        {
-          "x": 1,
-          "y": 5
-        }
-      ],
-      "default": {
-        "id": "world-1-level-05",
-        "width": 13,
-        "height": 10,
-        "tiles": [
-          [
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall"
-          ],
-          [
-            "wall",
-            "empty",
-            "special",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "wall",
-            "wall",
-            "empty",
-            "wall"
-          ],
-          [
-            "wall",
-            "empty",
-            "empty",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "empty",
-            "empty",
-            "wall"
-          ],
-          [
-            "wall",
-            "empty",
-            "wall",
-            "wall",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "wall",
-            "empty",
-            "empty",
-            "wall"
-          ],
-          [
-            "wall",
-            "empty",
-            "wall",
-            "wall",
-            "empty",
-            "wall",
-            "empty",
-            "empty",
-            "empty",
-            "wall",
-            "empty",
-            "empty",
-            "wall"
-          ],
-          [
-            "wall",
-            "empty",
-            "wall",
-            "wall",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "wall",
-            "empty",
-            "empty",
-            "wall"
-          ],
-          [
-            "wall",
-            "empty",
-            "wall",
-            "empty",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "empty",
-            "empty",
-            "wall"
-          ],
-          [
-            "wall",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "empty",
-            "wall"
-          ],
-          [
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall"
-          ],
-          [
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "wall",
-            "empty"
-          ]
-        ],
-        "ball": {
-          "x": 1,
-          "y": 1
-        },
-        "square": {
-          "x": 11,
-          "y": 7
-        },
-        "stars": [
-          {
-            "x": 3,
-            "y": 7
-          },
-          {
-            "x": 8,
-            "y": 1
-          },
-          {
-            "x": 1,
-            "y": 5
-          }
-        ],
-        "default": {
-          "id": "world-1-level-05",
-          "width": 13,
-          "height": 10,
-          "tiles": [
-            [
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall"
-            ],
-            [
-              "wall",
-              "empty",
-              "special",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "wall",
-              "wall",
-              "empty",
-              "wall"
-            ],
-            [
-              "wall",
-              "empty",
-              "empty",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "empty",
-              "empty",
-              "wall"
-            ],
-            [
-              "wall",
-              "empty",
-              "wall",
-              "wall",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "wall",
-              "empty",
-              "empty",
-              "wall"
-            ],
-            [
-              "wall",
-              "empty",
-              "wall",
-              "wall",
-              "empty",
-              "wall",
-              "empty",
-              "empty",
-              "empty",
-              "wall",
-              "empty",
-              "empty",
-              "wall"
-            ],
-            [
-              "wall",
-              "empty",
-              "wall",
-              "wall",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "wall",
-              "empty",
-              "empty",
-              "wall"
-            ],
-            [
-              "wall",
-              "empty",
-              "wall",
-              "empty",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "empty",
-              "empty",
-              "wall"
-            ],
-            [
-              "wall",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "empty",
-              "wall"
-            ],
-            [
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall"
-            ],
-            [
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "wall",
-              "empty"
-            ]
-          ],
-          "ball": {
-            "x": 1,
-            "y": 1
-          },
-          "square": {
-            "x": 11,
-            "y": 7
-          },
-          "stars": [
-            {
-              "x": 3,
-              "y": 7
-            },
-            {
-              "x": 8,
-              "y": 1
-            },
-            {
-              "x": 1,
-              "y": 5
-            }
-          ],
-          "default": {
-            "id": "world-1-level-05",
-            "width": 13,
-            "height": 10,
-            "tiles": [
-              [
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall"
-              ],
-              [
-                "wall",
-                "empty",
-                "special",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "wall",
-                "wall",
-                "empty",
-                "wall"
-              ],
-              [
-                "wall",
-                "empty",
-                "empty",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "empty",
-                "empty",
-                "wall"
-              ],
-              [
-                "wall",
-                "empty",
-                "wall",
-                "wall",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "wall",
-                "empty",
-                "empty",
-                "wall"
-              ],
-              [
-                "wall",
-                "empty",
-                "wall",
-                "wall",
-                "empty",
-                "wall",
-                "empty",
-                "empty",
-                "empty",
-                "wall",
-                "empty",
-                "empty",
-                "wall"
-              ],
-              [
-                "wall",
-                "empty",
-                "wall",
-                "wall",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "wall",
-                "empty",
-                "empty",
-                "wall"
-              ],
-              [
-                "wall",
-                "empty",
-                "wall",
-                "empty",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "empty",
-                "empty",
-                "wall"
-              ],
-              [
-                "wall",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "empty",
-                "wall"
-              ],
-              [
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall"
-              ],
-              [
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "wall",
-                "empty"
-              ]
-            ],
-            "ball": {
-              "x": 1,
-              "y": 1
-            },
-            "square": {
-              "x": 11,
-              "y": 7
-            },
-            "stars": [
-              {
-                "x": 3,
-                "y": 7
-              },
-              {
-                "x": 8,
-                "y": 1
-              },
-              {
-                "x": 1,
-                "y": 5
-              }
-            ],
-            "default": {
-              "id": "world-1-level-05",
-              "width": 13,
-              "height": 10,
-              "tiles": [
-                [
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "empty",
-                  "special",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "wall",
-                  "wall",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "empty",
-                  "empty",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "empty",
-                  "wall",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "empty",
-                  "wall",
-                  "wall",
-                  "empty",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "empty",
-                  "wall",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "empty",
-                  "wall",
-                  "empty",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "empty",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "empty",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall"
-                ],
-                [
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "wall",
-                  "empty"
-                ]
-              ],
-              "ball": {
-                "x": 1,
-                "y": 1
-              },
-              "square": {
-                "x": 11,
-                "y": 7
-              },
-              "stars": [
-                {
-                  "x": 3,
-                  "y": 7
-                },
-                {
-                  "x": 8,
-                  "y": 1
-                },
-                {
-                  "x": 1,
-                  "y": 5
-                }
-              ],
-              "default": {
-                "id": "world-2-level-09",
-                "width": 13,
-                "height": 10,
-                "tiles": [
-                  [
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "empty",
-                    "special",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "wall",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "empty",
-                    "wall",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "empty",
-                    "wall",
-                    "wall",
-                    "empty",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "empty",
-                    "wall",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "empty",
-                    "wall",
-                    "empty",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "empty",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall"
-                  ],
-                  [
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "wall",
-                    "empty"
-                  ]
-                ],
-                "ball": {
-                  "x": 1,
-                  "y": 1
-                },
-                "square": {
-                  "x": 11,
-                  "y": 7
-                },
-                "stars": [
-                  {
-                    "x": 3,
-                    "y": 7
-                  },
-                  {
-                    "x": 8,
-                    "y": 1
-                  },
-                  {
-                    "x": 1,
-                    "y": 5
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-    }
+    "width": 13
   },
   "height": 10,
   "id": "world-1-level-05",
   "square": {
-    "x": 11,
-    "y": 7
+    "x": 5,
+    "y": 8
   },
   "stars": [
     {
-      "x": 3,
-      "y": 7
-    },
-    {
-      "x": 8,
-      "y": 1
-    },
-    {
-      "x": 1,
+      "x": 9,
       "y": 5
     },
     {
-      "x": 8,
-      "y": 3
+      "x": 3,
+      "y": 4
+    },
+    {
+      "x": 6,
+      "y": 4
     }
   ],
   "tiles": [
@@ -1298,122 +1473,122 @@
     ],
     [
       "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "empty",
+      "special",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
+      "empty",
+      "special",
       "empty",
       "special",
       "empty",
       "empty",
       "empty",
-      "empty",
-      "empty",
-      "empty",
       "wall",
       "wall",
-      "empty",
       "wall"
     ],
     [
       "wall",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
       "wall",
       "wall",
       "empty",
       "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
       "wall"
     ],
     [
       "wall",
-      "empty",
       "wall",
       "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
       "wall",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
       "wall"
     ],
     [
       "wall",
-      "empty",
+      "wall",
+      "wall",
       "wall",
       "empty",
       "empty",
+      "special",
+      "empty",
+      "empty",
       "wall",
-      "empty",
-      "empty",
-      "empty",
       "wall",
-      "empty",
-      "empty",
+      "wall",
       "wall"
     ],
     [
       "wall",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "empty",
-      "wall",
-      "wall",
       "wall",
       "wall",
       "wall",
       "wall",
       "empty",
       "empty",
-      "wall"
-    ],
-    [
+      "empty",
       "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
       "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
+      "wall",
+      "wall",
       "wall"
     ],
     [

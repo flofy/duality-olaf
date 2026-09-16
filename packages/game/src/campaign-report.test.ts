@@ -3,7 +3,7 @@ import { campaign } from "../../level-format/src/campaign-json";
 import { formatCampaignReport, validateCampaign } from "./LevelValidator";
 
 describe("World 1 campaign validation", () => {
-  it.skip("reports every current level", () => {
+  it("reports every current level", { timeout: 120_000 }, () => {
     const validation = validateCampaign(campaign);
     const report = formatCampaignReport(validation);
 

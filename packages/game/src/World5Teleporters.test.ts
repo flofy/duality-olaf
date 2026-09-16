@@ -4,12 +4,7 @@ import { solveLevel } from "./LevelSolver";
 import { commandsWarp, existsSolutionUsingBothPads } from "./MechanicCoverage";
 
 describe("World 5 — teleporters are structural and two-way", () => {
-  // Skiped in CI: the BFS solver explores a large state space on these
-  // levels (pass-over teleport chaining can blow up exploredStates), and the
-  // 5s default timeout is regularly exceeded on slower CI runners. Restore
-  // when the solver is tuned (e.g. pruning, better visited-set representation,
-  // or A* with an admissible heuristic).
-  it.skip("warps in every optimal solution", () => {
+  it("warps in every optimal solution", { timeout: 120_000 }, () => {
     for (const level of world5) {
       const result = solveLevel(level);
       expect(result.solvable).toBe(true);
@@ -17,7 +12,7 @@ describe("World 5 — teleporters are structural and two-way", () => {
     }
   });
 
-  it.skip(
+  it(
     "offers a solution that warps from both pads",
     { timeout: 180_000 },
     () => {
