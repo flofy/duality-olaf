@@ -35,6 +35,10 @@ const tools: Array<{ id: Tool; label: string; glyph: string }> = [
   { id: "teleporter", label: "Téléporteur", glyph: "◎" },
 ];
 
+/** Local write server (tools/level-serve.mjs) — run `pnpm level:serve`. */
+const LEVEL_SERVER_URL =
+  import.meta.env.VITE_LEVEL_SERVER_URL ?? "http://localhost:34761";
+
 function blankLevel(id: string, width: number, height: number): Level {
   const level = createEmptyLevel(id);
   level.width = width;
@@ -91,6 +95,7 @@ export function LevelEditor({
   const [playing, setPlaying] = useState(false);
   const [showImportText, setShowImportText] = useState(false);
   const [pastedJson, setPastedJson] = useState("");
+  const [targetWorld, setTargetWorld] = useState<number | null>(null);
   const [validation, setValidation] = useState<ReturnType<
     typeof validateLevel
   > | null>(null);
@@ -100,6 +105,7 @@ export function LevelEditor({
   const themeName = getActiveThemeName();
   const skin = resolveLevelSkin(level.id);
   const json = useMemo(() => JSON.stringify(level, null, 2), [level]);
+  const inferredWorld = Number(/world-(\d+)-level-/.exec(level.id)?.[1] ?? 0);
 
   useEffect(() => {
     const stopPainting = () => {
@@ -233,6 +239,37 @@ export function LevelEditor({
     setMessage("JSON copié dans le presse-papiers");
   };
 
+  const saveToServer = async () => {
+    const world = targetWorld ?? inferredWorld;
+    if (world < 1 || world > 5) {
+      setMessage(
+        "✗ Monde cible inconnu — l'id doit suivre world-N-level-XX ou choisis un monde",
+      );
+      return;
+    }
+    try {
+      const response = await fetch(`${LEVEL_SERVER_URL}/api/save-level`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ level, world }),
+      });
+      const payload = (await response.json()) as {
+        ok: boolean;
+        message?: string;
+        errors?: string[];
+      };
+      if (response.ok && payload.ok) {
+        setMessage(`💾 ${payload.message}`);
+      } else {
+        setMessage(`✗ ${payload.errors?.join(" · ") ?? "écriture refusée"}`);
+      }
+    } catch {
+      setMessage(
+        `✗ Serveur local introuvable (${LEVEL_SERVER_URL}) — lance « pnpm level:serve »`,
+      );
+    }
+  };
+
   const applyImport = (raw: string) => {
     try {
       const parsed = JSON.parse(raw) as Level;
@@ -333,6 +370,28 @@ export function LevelEditor({
             ))}
           </div>
           <div className="editor-section-title">ACTIONS</div>
+          <label>
+            MONDE CIBLE (ÉCRITURE LOCALE)
+            <select
+              value={targetWorld ?? ""}
+              onChange={(e) =>
+                setTargetWorld(
+                  e.target.value === "" ? null : Number(e.target.value),
+                )
+              }
+            >
+              <option value="">
+                {inferredWorld >= 1
+                  ? `auto · monde ${inferredWorld} (d'après l'id)`
+                  : "auto — aucun monde dans l'id"}
+              </option>
+              {[1, 2, 3, 4, 5].map((world) => (
+                <option key={world} value={world}>
+                  monde {world}
+                </option>
+              ))}
+            </select>
+          </label>
           <button className="action editor-action" onClick={validate}>
             ⚡ VALIDER / RÉSOUDRE
           </button>
@@ -344,6 +403,9 @@ export function LevelEditor({
           </button>
           <button className="action editor-action" onClick={copyJson}>
             ⧉ COPIER LE JSON
+          </button>
+          <button className="action editor-action" onClick={saveToServer}>
+            ⬇ ÉCRIRE SUR LE DISQUE
           </button>
           <button
             className="action editor-action"
