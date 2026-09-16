@@ -10,7 +10,8 @@
     "test": "pnpm --dir packages/game test",
     "typecheck": "pnpm --dir apps/web typecheck",
     "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check"
+    "fmt:check": "oxfmt --check",
+    "level:serve": "node tools/level-serve.mjs"
   },
   "devDependencies": {
     "oxfmt": "^0.66.0",

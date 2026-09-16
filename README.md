@@ -50,6 +50,16 @@ The current working hypothesis is **55 levels, arranged as 5 worlds × 11 levels
 
 The historical CPC format remains documented separately. We can use it as a reference/conversion source without making the original binaries part of the runtime.
 
+## Level editing workflow
+
+The dev-only editor is available at `/dev/editor` (devtools flag enabled). To save levels straight into `packages/level-format/levels/world-0N/` from the browser without browsing the filesystem, run the local write server in a second terminal:
+
+```sh
+pnpm level:serve   # http://localhost:34761 — POST /api/save-level
+```
+
+Then use **⬇ ÉCRIRE SUR LE DISQUE** in the editor. Levels are validated (same rules as `level-intake.mjs`) before being written: an existing id is updated in place, a new id is appended after the last level of the target world. The target URL can be overridden with `VITE_LEVEL_SERVER_URL`.
+
 ## Play online
 
 The production build is intended for GitHub Pages. When Pages is enabled for this repository, the game is available from the repository Pages deployment.
