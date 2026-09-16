@@ -61,10 +61,7 @@ function reconstruct(
   return commands.reverse();
 }
 
-function solveBfs(
-  level: Level,
-  options?: { maxDepth?: number },
-): SolverResult {
+function solveBfs(level: Level, options?: { maxDepth?: number }): SolverResult {
   const maxDepth = options?.maxDepth ?? Number.POSITIVE_INFINITY;
   const initial = new LevelRunner(level).getState();
   if (initial.completed)
@@ -174,8 +171,7 @@ export function solveLevel(
 
     return {
       ...simpleResult,
-      exploredStates:
-        simpleResult.exploredStates + betterResult.exploredStates,
+      exploredStates: simpleResult.exploredStates + betterResult.exploredStates,
     };
   }
 
