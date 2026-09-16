@@ -144,13 +144,17 @@ export function solveLevel(
   const hasAdvancedMechanics =
     (level.doors?.length ?? 0) > 0 || (level.teleporters?.length ?? 0) > 0;
 
-  if (!hasAdvancedMechanics) return solveBfs(level, options);
+  if (!hasAdvancedMechanics) {
+    return solveBfs(level, options);
+  }
 
   // First solve the geometric puzzle without advanced mechanics. This is a
   // much smaller search space for levels whose doors/teleporters are present
   // but are not actually required by the solution.
   const simpleResult = solveBfs(withoutAdvancedMechanics(level), options);
-  if (!simpleResult.solvable) return solveBfs(level, options);
+  if (!simpleResult.solvable) {
+    return solveBfs(level, options);
+  }
 
   // The simplified solution is only a candidate: mechanics can invalidate it
   // or provide a shorter route. Replay it against the real level first.
