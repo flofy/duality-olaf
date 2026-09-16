@@ -105,9 +105,7 @@ export function LevelEditor({
   const themeName = getActiveThemeName();
   const skin = resolveLevelSkin(level.id);
   const json = useMemo(() => JSON.stringify(level, null, 2), [level]);
-  const inferredWorld = Number(
-    /world-(\d+)-level-/.exec(level.id)?.[1] ?? 0,
-  );
+  const inferredWorld = Number(/world-(\d+)-level-/.exec(level.id)?.[1] ?? 0);
 
   useEffect(() => {
     const stopPainting = () => {
