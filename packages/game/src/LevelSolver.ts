@@ -186,24 +186,6 @@ function buildRelaxedDistances(level: Level): Map<string, Map<string, number>> {
 
       const startKey = positionKey(start);
       const distanceByStar = new Map<string, number>();
-      const queue: Position[] = [start];
-      const visited = new Set<string>([startKey]);
-      const distance = new Map<string, number>([[startKey, 0]]);
-
-      for (let cursor = 0; cursor < queue.length; cursor += 1) {
-        const current = queue[cursor]!;
-        const currentKey = positionKey(current);
-        const currentDistance = distance.get(currentKey)!;
-
-        for (const move of buildRelaxedMoves(level, current)) {
-          const nextKey = positionKey(move.position);
-          if (visited.has(nextKey)) continue;
-          visited.add(nextKey);
-          distance.set(nextKey, currentDistance + 1);
-          queue.push(move.position);
-        }
-      }
-
       for (const star of level.stars) {
         const targetKey = positionKey(star);
         if (targetKey === startKey) {
