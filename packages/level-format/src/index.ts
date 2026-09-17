@@ -1,7 +1,7 @@
 export const GRID_WIDTH = 13;
 export const GRID_HEIGHT = 10;
 
-export type Tile = "empty" | "wall" | "special";
+export type Tile = "empty" | "wall" | "special" | "spike";
 export type Position = { x: number; y: number };
 export type Form = "ball" | "square";
 export type Door = { id: string; position: Position; initiallyOpen?: boolean };
@@ -68,7 +68,7 @@ export function cloneLevel(level: Level): Level {
     ...level,
     tiles: level.tiles.map((row) => [...row]),
     ball: clonePosition(level.ball),
-    square: clonePosition(level.square),
+    square: level.square ? clonePosition(level.square) : level.square,
     stars: level.stars.map(clonePosition),
     doors: level.doors?.map((door) => ({
       ...door,
