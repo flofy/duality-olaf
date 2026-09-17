@@ -1,4 +1,9 @@
-import { cloneLevel, isInside, isWall, type Level } from "@duality/level-format";
+import {
+  cloneLevel,
+  isInside,
+  isWall,
+  type Level,
+} from "@duality/level-format";
 import type { Direction, GameState } from "./LevelRunner";
 import { LevelRunner } from "./LevelRunner";
 
@@ -193,11 +198,7 @@ function buildRelaxedDistances(level: Level): Map<string, Map<string, number>> {
           continue;
         }
 
-        const targetDistance = findRelaxedStarDistance(
-          level,
-          start,
-          star,
-        );
+        const targetDistance = findRelaxedStarDistance(level, start, star);
         if (targetDistance !== null) {
           distanceByStar.set(targetKey, targetDistance);
         }
@@ -225,9 +226,7 @@ function findRelaxedStarDistance(
 
     for (const move of buildRelaxedMoves(level, current)) {
       if (
-        move.swept.some(
-          (cell) => cell.x === target.x && cell.y === target.y,
-        )
+        move.swept.some((cell) => cell.x === target.x && cell.y === target.y)
       ) {
         return currentDistance + 1;
       }
@@ -317,7 +316,10 @@ function solveBfs(level: Level, options?: { maxDepth?: number }): SolverResult {
   return { solvable: false, moves: null, commands: [], exploredStates };
 }
 
-function solveAStar(level: Level, options?: { maxDepth?: number }): SolverResult {
+function solveAStar(
+  level: Level,
+  options?: { maxDepth?: number },
+): SolverResult {
   const maxDepth = options?.maxDepth ?? Number.POSITIVE_INFINITY;
   const initial = new LevelRunner(level).getState();
   if (initial.completed)
