@@ -244,18 +244,72 @@ function findRelaxedStarDistance(
 
 function createHeuristic(level: Level): (state: GameState) => number {
   const distances = buildRelaxedDistances(level);
+  const starKeys = level.stars.map(positionKey);
+
+  const distanceBetweenStars = (
+    fromKey: string,
+    toKey: string,
+  ): number | null => {
+    if (fromKey === toKey) return 0;
+
+    const forward = distances.get(fromKey)?.get(toKey);
+    const backward = distances.get(toKey)?.get(fromKey);
+    if (forward === undefined) return backward ?? null;
+    if (backward === undefined) return forward;
+    return Math.min(forward, backward);
+  };
+
+  const mstCost = (remainingStars: readonly string[]): number => {
+    if (remainingStars.length < 2) return 0;
+
+    const connected = new Set<string>([remainingStars[0]!]);
+    let cost = 0;
+
+    while (connected.size < remainingStars.length) {
+      let bestCost = Number.POSITIVE_INFINITY;
+      let bestStar: string | null = null;
+
+      for (const from of connected) {
+        for (const to of remainingStars) {
+          if (connected.has(to)) continue;
+          const distance = distanceBetweenStars(from, to);
+          if (distance !== null && distance < bestCost) {
+            bestCost = distance;
+            bestStar = to;
+          }
+        }
+      }
+
+      if (bestStar === null) return 0;
+      connected.add(bestStar);
+      cost += bestCost;
+    }
+
+    return cost;
+  };
 
   return (state) => {
     if (state.stars.length === 0) return 0;
-    const fromBall = distances.get(positionKey(state.ball));
-    if (!fromBall) return 0;
 
-    let lowerBound = 0;
-    for (const star of state.stars) {
-      const distance = fromBall.get(positionKey(star));
-      if (distance !== undefined) lowerBound = Math.max(lowerBound, distance);
+    const remainingKeys = state.stars.map(positionKey);
+    const remainingSet = new Set(remainingKeys);
+    const remainingStarKeys = starKeys.filter((key) => remainingSet.has(key));
+    const fromBall = distances.get(positionKey(state.ball));
+    const fromSquare = distances.get(positionKey(state.square));
+
+    let startCost = Number.POSITIVE_INFINITY;
+    for (const starKey of remainingStarKeys) {
+      const ballDistance = fromBall?.get(starKey);
+      const squareDistance = fromSquare?.get(starKey);
+      const distance = Math.min(
+        ballDistance ?? Number.POSITIVE_INFINITY,
+        squareDistance ?? Number.POSITIVE_INFINITY,
+      );
+      startCost = Math.min(startCost, distance);
     }
-    return lowerBound;
+
+    if (!Number.isFinite(startCost)) return 0;
+    return startCost + mstCost(remainingStarKeys);
   };
 }
 
