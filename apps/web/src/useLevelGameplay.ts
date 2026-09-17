@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LevelRunner } from "@duality/game";
 import type { Level } from "@duality/level-format";
+import {
+  playSound,
+  startAudio,
+  toggleSound,
+  vibrate,
+} from "./audioFeedback";
 
 export type GameplayDirection = {
   x: -1 | 0 | 1;
@@ -13,6 +19,10 @@ const keyboardDirections: Record<string, GameplayDirection> = {
   ArrowUp: { x: 0, y: -1 },
   ArrowDown: { x: 0, y: 1 },
 };
+
+function countOpenDoors(doors: Record<string, boolean>) {
+  return Object.values(doors).filter(Boolean).length;
+}
 
 export function useLevelGameplay(
   level: Level,
@@ -32,15 +42,44 @@ export function useLevelGameplay(
     (direction: GameplayDirection) => {
       setState((current) => {
         if (current.completed || current.gameOver) return current;
+
         const activeBefore =
           current.activeForm === "ball" ? current.ball : current.square;
         const next = runner.move(direction);
         const activeAfter =
           next.activeForm === "ball" ? next.ball : next.square;
-        onMove?.(
-          direction,
-          activeBefore.x !== activeAfter.x || activeBefore.y !== activeAfter.y,
-        );
+        const moved =
+          activeBefore.x !== activeAfter.x || activeBefore.y !== activeAfter.y;
+        const collected = next.stars.length < current.stars.length;
+        const openedDoor =
+          countOpenDoors(next.doors) > countOpenDoors(current.doors);
+        const teleported =
+          Math.abs(activeAfter.x - activeBefore.x) +
+            Math.abs(activeAfter.y - activeBefore.y) >
+          1;
+
+        void startAudio();
+        if (!moved) {
+          void playSound("wall");
+          vibrate(22);
+        } else {
+          void playSound("move");
+        }
+        if (collected) {
+          void playSound("collect");
+          vibrate([12, 18, 12]);
+        }
+        if (openedDoor) void playSound("door");
+        if (teleported) {
+          void playSound("teleport");
+          vibrate([8, 20, 8]);
+        }
+        if (next.completed) {
+          void playSound("complete");
+          vibrate([18, 30, 45]);
+        }
+
+        onMove?.(direction, moved);
         return next;
       });
     },
@@ -49,6 +88,8 @@ export function useLevelGameplay(
 
   const reset = useCallback(() => {
     setState(runner.reset());
+    void startAudio();
+    void playSound("reset");
     onReset?.();
   }, [onReset, runner]);
 
@@ -56,6 +97,9 @@ export function useLevelGameplay(
     setState((current) => {
       if (current.completed || current.gameOver) return current;
       const next = runner.switchForm();
+      void startAudio();
+      void playSound("switch");
+      vibrate([10, 25, 10]);
       onSwitch?.();
       return next;
     });
@@ -66,6 +110,11 @@ export function useLevelGameplay(
       if (event.key === " ") {
         event.preventDefault();
         switchForm();
+        return;
+      }
+      if (event.key === "m" || event.key === "M") {
+        event.preventDefault();
+        toggleSound();
         return;
       }
       if (event.key === "r" || event.key === "R") {
