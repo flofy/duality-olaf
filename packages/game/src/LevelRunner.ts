@@ -27,14 +27,20 @@ export class LevelRunner {
   private state: GameState;
 
   constructor(level: Level) {
-    this.initialLevel = cloneLevel(level);
-    this.state = this.createState(this.initialLevel);
+    // createState clones the level before any mutation, so sharing the
+    // caller's object here is safe (and avoids a double tile-grid copy).
+    this.initialLevel = level;
+    this.state = this.createState(level);
   }
 
   static fromState(state: GameState): LevelRunner {
-    const runner = new LevelRunner(state.level);
+    // Built without the constructor so the level grid is *shared*, not
+    // cloned: the runner never mutates the level (only positions, stars,
+    // doors and form), letting the solver explore without copying tiles.
+    const runner = Object.create(LevelRunner.prototype) as LevelRunner;
+    (runner as { initialLevel: Level }).initialLevel = state.level;
     runner.state = {
-      level: cloneLevel(state.level),
+      level: state.level,
       activeForm: state.activeForm,
       ball: { ...state.ball },
       square: { ...state.square },

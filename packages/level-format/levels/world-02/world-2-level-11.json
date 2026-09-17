@@ -4,22 +4,22 @@
   "height": 10,
   "tiles": [
     [
-      "empty",
+      "spike",
       "wall",
       "wall",
       "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
+      "spike",
+      "spike",
+      "spike",
+      "spike",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
       "wall"
     ],
     [
-      "empty",
+      "spike",
       "empty",
       "empty",
       "empty",
@@ -34,7 +34,7 @@
       "wall"
     ],
     [
-      "empty",
+      "spike",
       "empty",
       "empty",
       "special",
@@ -45,11 +45,11 @@
       "empty",
       "wall",
       "empty",
-      "empty",
+      "spike",
       "wall"
     ],
     [
-      "empty",
+      "spike",
       "empty",
       "empty",
       "empty",

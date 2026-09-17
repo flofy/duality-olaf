@@ -5,9 +5,9 @@
   "tiles": [
     [
       "wall",
-      "empty",
-      "empty",
-      "empty",
+      "spike",
+      "spike",
+      "spike",
       "wall",
       "wall",
       "wall",
@@ -28,7 +28,7 @@
       "empty",
       "empty",
       "wall",
-      "empty",
+      "wall",
       "wall",
       "wall",
       "wall"
@@ -45,36 +45,6 @@
       "empty",
       "wall",
       "wall",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "wall",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
       "empty",
       "wall"
     ],
@@ -86,6 +56,36 @@
       "empty",
       "wall",
       "wall",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "spike",
+      "spike",
+      "spike",
+      "spike",
+      "wall",
+      "wall",
       "empty",
       "empty",
       "empty",
@@ -95,10 +95,10 @@
     ],
     [
       "wall",
-      "empty",
-      "empty",
+      "spike",
+      "spike",
       "wall",
-      "empty",
+      "spike",
       "wall",
       "wall",
       "empty",
@@ -110,8 +110,8 @@
     ],
     [
       "wall",
-      "empty",
-      "empty",
+      "spike",
+      "spike",
       "wall",
       "wall",
       "empty",
@@ -140,16 +140,16 @@
     ],
     [
       "wall",
-      "empty",
-      "empty",
-      "empty",
+      "spike",
+      "spike",
+      "spike",
       "wall",
       "wall",
       "wall",
       "wall",
       "wall",
       "wall",
-      "empty",
+      "spike",
       "wall",
       "wall"
     ]
@@ -157,10 +157,6 @@
   "ball": {
     "x": 1,
     "y": 1
-  },
-  "square": {
-    "x": 11,
-    "y": 8
   },
   "stars": [
     {

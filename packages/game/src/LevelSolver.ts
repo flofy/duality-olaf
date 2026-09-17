@@ -18,7 +18,27 @@ export type SolverResult =
       commands: SolverCommand[];
       exploredStates: number;
     }
-  | { solvable: false; moves: null; commands: []; exploredStates: number };
+  | {
+      solvable: false;
+      moves: null;
+      commands: [];
+      exploredStates: number;
+      /** Set when the search stopped because it hit its exploration budget. */
+      budgetExhausted?: boolean;
+    };
+
+export type SolveOptions = {
+  /** Maximum solution length (inclusive). */
+  maxDepth?: number;
+  /**
+   * Safety net against pathological state spaces: stop the search after this
+   * many explored states and report `budgetExhausted` instead of exhausting
+   * time and memory.
+   */
+  maxExploredStates?: number;
+};
+
+const DEFAULT_MAX_EXPLORED_STATES = 500_000;
 
 const DIRECTIONS: readonly Direction[] = [
   { x: 1, y: 0 },
@@ -112,22 +132,100 @@ function positionKey(position: Position): string {
   return `${position.x},${position.y}`;
 }
 
-function stateKey(state: GameState): string {
-  const stars = state.stars
-    .map((star) => `${star.x},${star.y}`)
-    .sort()
-    .join(";");
-  const doors = Object.entries(state.doors)
+function doorKey(state: GameState): string {
+  return Object.entries(state.doors)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([id, open]) => `${id}:${open ? 1 : 0}`)
     .join(";");
+}
+
+/** Base identity of a state: everything except which stars remain. */
+function baseKey(state: GameState): string {
   return [
     state.activeForm,
     `${state.ball.x},${state.ball.y}`,
     `${state.square.x},${state.square.y}`,
-    stars,
-    doors,
+    doorKey(state),
   ].join("|");
+}
+
+/** Bit i of the mask ↔ level.stars[i]. */
+function starIndexMap(level: Level): Map<string, number> {
+  const index = new Map<string, number>();
+  level.stars.forEach((star, i) => index.set(`${star.x},${star.y}`, i));
+  return index;
+}
+
+/**
+ * Remaining stars as a bitmask. Collecting stars is monotonic along a slide,
+ * which enables dominance pruning: reaching the same place / form / doors
+ * with a star-set *superset* at equal-or-higher cost can never beat the
+ * already-seen state, no matter how the rest of the run plays out.
+ */
+function remainingMask(
+  starIndex: ReadonlyMap<string, number>,
+  state: GameState,
+): bigint {
+  let mask = 0n;
+  for (const star of state.stars) {
+    const bit = starIndex.get(`${star.x},${star.y}`);
+    if (bit !== undefined) mask |= 1n << BigInt(bit);
+  }
+  return mask;
+}
+
+type Dominance = Map<string, { masks: bigint[]; depths: number[] }>;
+
+function isDominated(
+  dominance: Dominance,
+  key: string,
+  mask: bigint,
+  depth: number,
+): boolean {
+  const entry = dominance.get(key);
+  if (!entry) return false;
+  return entry.masks.some(
+    (seen, i) => entry.depths[i]! <= depth && (seen & mask) === seen,
+  );
+}
+
+/** Same as isDominated, but ignores the state's own recorded entry. */
+function isDominatedBesidesSelf(
+  dominance: Dominance,
+  key: string,
+  mask: bigint,
+  depth: number,
+): boolean {
+  const entry = dominance.get(key);
+  if (!entry) return false;
+  return entry.masks.some(
+    (seen, i) =>
+      !(seen === mask && entry.depths[i] === depth) &&
+      entry.depths[i]! <= depth &&
+      (seen & mask) === seen,
+  );
+}
+
+function remember(
+  dominance: Dominance,
+  key: string,
+  mask: bigint,
+  depth: number,
+): void {
+  const entry = dominance.get(key) ?? { masks: [], depths: [] };
+  for (let i = entry.masks.length - 1; i >= 0; i -= 1) {
+    // Drop stored states the new one dominates.
+    if (
+      depth <= entry.depths[i]! &&
+      (mask & entry.masks[i]!) === entry.masks[i]!
+    ) {
+      entry.masks.splice(i, 1);
+      entry.depths.splice(i, 1);
+    }
+  }
+  entry.masks.push(mask);
+  entry.depths.push(depth);
+  dominance.set(key, entry);
 }
 
 function reconstruct(
@@ -259,16 +357,20 @@ function createHeuristic(level: Level): (state: GameState) => number {
   };
 }
 
-function solveBfs(level: Level, options?: { maxDepth?: number }): SolverResult {
+function solveBfs(level: Level, options?: SolveOptions): SolverResult {
   const maxDepth = options?.maxDepth ?? Number.POSITIVE_INFINITY;
+  const maxExplored = options?.maxExploredStates ?? DEFAULT_MAX_EXPLORED_STATES;
   const initial = new LevelRunner(level).getState();
   if (initial.completed)
     return { solvable: true, moves: 0, commands: [], exploredStates: 1 };
 
+  const starIndex = starIndexMap(level);
+  const dominance: Dominance = new Map();
+  remember(dominance, baseKey(initial), remainingMask(starIndex, initial), 0);
+
   const nodes: SearchNode[] = [
     { state: initial, parent: null, command: null, depth: 0 },
   ];
-  const visited = new Set<string>([stateKey(initial)]);
   let cursor = 0;
   let exploredStates = 0;
   const candidates: readonly SolverCommand[] = [
@@ -279,7 +381,26 @@ function solveBfs(level: Level, options?: { maxDepth?: number }): SolverResult {
   while (cursor < nodes.length) {
     const nodeIndex = cursor++;
     const node: SearchNode = nodes[nodeIndex]!;
+    if (
+      isDominatedBesidesSelf(
+        dominance,
+        baseKey(node.state),
+        remainingMask(starIndex, node.state),
+        node.depth,
+      )
+    ) {
+      continue;
+    }
     exploredStates += 1;
+    if (exploredStates > maxExplored) {
+      return {
+        solvable: false,
+        moves: null,
+        commands: [],
+        exploredStates,
+        budgetExhausted: true,
+      };
+    }
     if (node.depth >= maxDepth) continue;
 
     for (const command of candidates) {
@@ -289,19 +410,17 @@ function solveBfs(level: Level, options?: { maxDepth?: number }): SolverResult {
           ? runner.move(command.direction)
           : runner.switchForm();
       if (after.gameOver) continue;
-      const key = stateKey(after);
-      if (visited.has(key)) continue;
-
-      const childIndex = nodes.length;
-      nodes.push({
-        state: after,
-        parent: nodeIndex,
-        command,
-        depth: node.depth + 1,
-      });
-      visited.add(key);
+      const childDepth = node.depth + 1;
+      if (childDepth > maxDepth) continue;
 
       if (after.completed) {
+        const childIndex = nodes.length;
+        nodes.push({
+          state: after,
+          parent: nodeIndex,
+          command,
+          depth: childDepth,
+        });
         const commands = reconstruct(nodes, childIndex);
         return {
           solvable: true,
@@ -310,26 +429,38 @@ function solveBfs(level: Level, options?: { maxDepth?: number }): SolverResult {
           exploredStates,
         };
       }
+
+      const key = baseKey(after);
+      const mask = remainingMask(starIndex, after);
+      if (isDominated(dominance, key, mask, childDepth)) continue;
+      remember(dominance, key, mask, childDepth);
+
+      nodes.push({
+        state: after,
+        parent: nodeIndex,
+        command,
+        depth: childDepth,
+      });
     }
   }
 
   return { solvable: false, moves: null, commands: [], exploredStates };
 }
 
-function solveAStar(
-  level: Level,
-  options?: { maxDepth?: number },
-): SolverResult {
+function solveAStar(level: Level, options?: SolveOptions): SolverResult {
   const maxDepth = options?.maxDepth ?? Number.POSITIVE_INFINITY;
+  const maxExplored = options?.maxExploredStates ?? DEFAULT_MAX_EXPLORED_STATES;
   const initial = new LevelRunner(level).getState();
   if (initial.completed)
     return { solvable: true, moves: 0, commands: [], exploredStates: 1 };
 
   const heuristic = createHeuristic(level);
+  const starIndex = starIndexMap(level);
+  const dominance: Dominance = new Map();
+  remember(dominance, baseKey(initial), remainingMask(starIndex, initial), 0);
   const nodes: SearchNode[] = [
     { state: initial, parent: null, command: null, depth: 0 },
   ];
-  const bestCost = new Map<string, number>([[stateKey(initial), 0]]);
   const open = new MinHeap();
   open.push({
     nodeIndex: 0,
@@ -346,10 +477,27 @@ function solveAStar(
   while (open.size > 0) {
     const entry = open.pop()!;
     const node = nodes[entry.nodeIndex]!;
-    const key = stateKey(node.state);
-    if (bestCost.get(key) !== node.depth) continue;
+    if (
+      isDominatedBesidesSelf(
+        dominance,
+        baseKey(node.state),
+        remainingMask(starIndex, node.state),
+        node.depth,
+      )
+    ) {
+      continue;
+    }
 
     exploredStates += 1;
+    if (exploredStates > maxExplored) {
+      return {
+        solvable: false,
+        moves: null,
+        commands: [],
+        exploredStates,
+        budgetExhausted: true,
+      };
+    }
     if (node.state.completed) {
       return {
         solvable: true,
@@ -370,9 +518,10 @@ function solveAStar(
 
       const childDepth = node.depth + 1;
       if (childDepth > maxDepth) continue;
-      const childKey = stateKey(after);
-      const previousCost = bestCost.get(childKey);
-      if (previousCost !== undefined && previousCost <= childDepth) continue;
+      const key = baseKey(after);
+      const mask = remainingMask(starIndex, after);
+      if (isDominated(dominance, key, mask, childDepth)) continue;
+      remember(dominance, key, mask, childDepth);
 
       const childIndex = nodes.length;
       nodes.push({
@@ -381,7 +530,6 @@ function solveAStar(
         command,
         depth: childDepth,
       });
-      bestCost.set(childKey, childDepth);
       open.push({
         nodeIndex: childIndex,
         priority: childDepth + heuristic(after),
@@ -408,10 +556,7 @@ function replayOnLevel(
   return replay(new LevelRunner(level), commands);
 }
 
-export function solveLevel(
-  level: Level,
-  options?: { maxDepth?: number },
-): SolverResult {
+export function solveLevel(level: Level, options?: SolveOptions): SolverResult {
   const hasAdvancedMechanics =
     (level.doors?.length ?? 0) > 0 || (level.teleporters?.length ?? 0) > 0;
 
@@ -420,6 +565,11 @@ export function solveLevel(
   }
 
   const simpleResult = solveAStar(withoutAdvancedMechanics(level), options);
+  if (!simpleResult.solvable && simpleResult.budgetExhausted) {
+    // The relaxed search already blew the budget; the full-mechanics search
+    // can only be worse. Surface the exhaustion instead of digging deeper.
+    return simpleResult;
+  }
   if (!simpleResult.solvable) {
     return solveBfs(level, options);
   }
@@ -427,6 +577,7 @@ export function solveLevel(
   if (replayOnLevel(level, simpleResult.commands).completed) {
     const betterResult = solveAStar(level, {
       maxDepth: simpleResult.moves - 1,
+      maxExploredStates: options?.maxExploredStates,
     });
     if (betterResult.solvable) {
       return {

@@ -12,9 +12,9 @@
       "wall",
       "wall",
       "wall",
-      "empty",
-      "empty",
-      "empty",
+      "spike",
+      "spike",
+      "spike",
       "wall",
       "wall"
     ],
@@ -147,8 +147,8 @@
       "wall",
       "wall",
       "wall",
-      "empty",
-      "empty",
+      "wall",
+      "wall",
       "wall",
       "wall",
       "wall"
@@ -157,10 +157,6 @@
   "ball": {
     "x": 1,
     "y": 1
-  },
-  "square": {
-    "x": 11,
-    "y": 7
   },
   "stars": [
     {
@@ -174,6 +170,10 @@
     {
       "x": 11,
       "y": 1
+    },
+    {
+      "x": 11,
+      "y": 7
     }
   ]
 }
