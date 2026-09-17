@@ -4,6 +4,7 @@ import {
   doorSwitchTutorials,
   seasonalEvents,
   teleporterTutorials,
+  challengeLevels,
 } from "@duality/level-format";
 import { useNavigate } from "react-router";
 import { interpretGesture, type Direction } from "./input/GestureInterpreter";
@@ -84,6 +85,7 @@ export const allDevLevels: readonly Level[] = [
   ...doorSwitchTutorials,
   ...teleporterTutorials,
   ...seasonalEvents.flatMap((event) => event.levels),
+  ...challengeLevels,
 ];
 
 export const devLevelById: ReadonlyMap<string, Level> = new Map(
@@ -131,6 +133,15 @@ function buildCatalogueGroups(): CatalogueGroup[] {
     })),
   });
 
+  groups.push({
+    label: "Défis & bonus",
+    entries: challengeLevels.map((level) => ({
+      id: level.id,
+      label: level.id,
+      level,
+    })),
+  });
+
   for (const event of seasonalEvents) {
     groups.push({
       label: event.label,
@@ -145,7 +156,7 @@ function buildCatalogueGroups(): CatalogueGroup[] {
   return groups;
 }
 
-export function LevelThumb({ level }: { level: Level }) {
+function LevelThumb({ level }: { level: Level }) {
   const w = level.width;
   const h = level.height;
   const key = (x: number, y: number) => `${x}:${y}`;
