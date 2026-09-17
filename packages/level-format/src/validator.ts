@@ -25,7 +25,7 @@ export function validateLevel(level: Level): void {
     }
   }
 
-  const positions = [level.ball, level.square, ...level.stars];
+  const positions = [level.ball, ...(level.square ? [level.square] : []), ...level.stars];
   for (const position of positions) {
     if (
       !Number.isInteger(position.x) ||
