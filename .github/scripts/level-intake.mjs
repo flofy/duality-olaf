@@ -79,6 +79,25 @@ if (!Array.isArray(level.tiles) || level.tiles.length !== level.height) {
   });
 }
 
+const KNOWN_KEYS = new Set([
+  "id",
+  "width",
+  "height",
+  "tiles",
+  "ball",
+  "square",
+  "stars",
+  "doors",
+  "switches",
+  "teleporters",
+]);
+
+for (const key of Object.keys(level)) {
+  if (!KNOWN_KEYS.has(key)) {
+    fail(`unknown key '${key}' — save tools must only write format fields`);
+  }
+}
+
 const positions = [
   ["ball", level.ball],
   ...(level.square ? [["square", level.square]] : []),

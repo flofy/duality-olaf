@@ -27,6 +27,58 @@ export type Level = {
   teleporters?: Teleporter[];
 };
 
+const LEVEL_KEYS = [
+  "id",
+  "width",
+  "height",
+  "tiles",
+  "ball",
+  "square",
+  "stars",
+  "doors",
+  "switches",
+  "teleporters",
+] as const;
+
+/**
+ * Rebuild a level keeping only the known fields of the format, dropping any
+ * junk a legacy tool may have serialized (e.g. a stale "default" blob).
+ * Returns a fresh deep copy.
+ */
+export function sanitizeLevel(level: Level): Level {
+  const clean: Level = {
+    id: level.id,
+    width: level.width,
+    height: level.height,
+    tiles: level.tiles.map((row) => [...row]),
+    ball: clonePosition(level.ball),
+    ...(level.square ? { square: clonePosition(level.square) } : {}),
+    stars: level.stars.map(clonePosition),
+  };
+  if (level.doors) {
+    clean.doors = level.doors.map((door) => ({
+      ...door,
+      position: clonePosition(door.position),
+    }));
+  }
+  if (level.switches) {
+    clean.switches = level.switches.map((item) => ({
+      ...item,
+      position: clonePosition(item.position),
+      toggles: [...item.toggles],
+    }));
+  }
+  if (level.teleporters) {
+    clean.teleporters = level.teleporters.map((item) => ({
+      ...item,
+      position: clonePosition(item.position),
+    }));
+  }
+  return clean;
+}
+
+export { LEVEL_KEYS };
+
 export function createEmptyLevel(id = "prototype-1"): Level {
   return {
     id,

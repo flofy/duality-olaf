@@ -1,5 +1,10 @@
 import { useMemo, useState } from "react";
-import { cloneLevel, type Level, type Switch } from "@duality/level-format";
+import {
+  cloneLevel,
+  sanitizeLevel,
+  type Level,
+  type Switch,
+} from "@duality/level-format";
 import { validateLevel, type LevelValidation } from "@duality/game";
 import { useNavigate } from "react-router";
 import { devLevelById } from "./LevelLab";
@@ -28,7 +33,8 @@ export function LevelEditor({
   const [level, setLevel] = useState<Level>(() => {
     const initial =
       initialLevelId === null ? undefined : devLevelById.get(initialLevelId);
-    return initial ? cloneLevel(initial) : blankLevel("custom-01", 13, 10);
+    // sanitizeLevel drops any junk key a legacy tool may have serialized.
+    return initial ? sanitizeLevel(initial) : blankLevel("custom-01", 13, 10);
   });
   const [tool, setTool] = useState<LevelEditorTool>("wall");
   // Which form(s) a newly placed switch reacts to (tool: "switch").
@@ -43,7 +49,11 @@ export function LevelEditor({
   const [pastedJson, setPastedJson] = useState("");
   const [targetWorld, setTargetWorld] = useState<number | null>(null);
   const [validation, setValidation] = useState<LevelValidation | null>(null);
-  const json = useMemo(() => JSON.stringify(level, null, 2), [level]);
+  // Always display / copy / export a sanitized level: no junk keys.
+  const json = useMemo(
+    () => JSON.stringify(sanitizeLevel(level), null, 2),
+    [level],
+  );
   const inferredWorld = inferWorld(level.id);
 
   const update = (next: Level) => {
@@ -95,7 +105,7 @@ export function LevelEditor({
       const response = await fetch(`${LEVEL_SERVER_URL}/api/save-level`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ level, world }),
+        body: JSON.stringify({ level: sanitizeLevel(level), world }),
       });
       const payload = (await response.json()) as {
         ok: boolean;
@@ -126,7 +136,7 @@ export function LevelEditor({
       ) {
         throw new Error("structure");
       }
-      update(cloneLevel(parsed));
+      update(sanitizeLevel(parsed));
       setMessage(`✓ Niveau importé · ${parsed.id}`);
       return true;
     } catch {

@@ -112,9 +112,24 @@ function saveLevel(level, worldNumber) {
   const errors = validateLevel(level, worldNumber);
   if (errors.length > 0) return { ok: false, errors };
 
+  // Keep only the known fields of the format: legacy junk (e.g. a stale
+  // "default" blob) never reaches the level files again.
+  const clean = {
+    id: level.id,
+    width: level.width,
+    height: level.height,
+    tiles: level.tiles,
+    ball: level.ball,
+    stars: level.stars,
+  };
+  if (level.square !== undefined) clean.square = level.square;
+  if (level.doors) clean.doors = level.doors;
+  if (level.switches) clean.switches = level.switches;
+  if (level.teleporters) clean.teleporters = level.teleporters;
+
   const existing = readWorldFiles(worldDir);
   const existingIndex = existing.findIndex((entry) => entry.id === level.id);
-  const payload = JSON.stringify(level, null, 2) + "\n";
+  const payload = JSON.stringify(clean, null, 2) + "\n";
 
   if (existingIndex >= 0) {
     const name = existing[existingIndex].name;
