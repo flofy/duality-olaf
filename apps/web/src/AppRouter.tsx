@@ -462,8 +462,6 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
     if (state.completed) completeLevel(level.id);
   }, [level.id, state.completed]);
 
-  // Keyboard shortcuts for the level: Enter advances once completed, and the
-  // devtools shortcuts (d/copy, c/clear) still work when enabled.
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       if (event.key === "Enter" && state.completed) {
@@ -539,6 +537,13 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
                   style={{ gridColumn: x + 1, gridRow: y + 1 }}
                   key={`wall-${x}-${y}`}
                 />
+              ) : tile === "spike" ? (
+                <div
+                  className="spike"
+                  style={{ gridColumn: x + 1, gridRow: y + 1 }}
+                  key={`spike-${x}-${y}`}
+                  aria-label="Piques"
+                />
               ) : null,
             ),
           )}
@@ -589,20 +594,22 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
           ))}
           {isInside(level, state.ball) && (
             <div
-              className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
+              className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"} moving`}
               style={{
                 gridColumn: state.ball.x + 1,
                 gridRow: state.ball.y + 1,
               }}
+              key={`ball-${state.ball.x}-${state.ball.y}`}
             />
           )}
-          {isInside(level, state.square) && (
+          {level.square && isInside(level, state.square) && (
             <div
-              className={`piece square ${state.activeForm === "square" ? "" : "inactive"}`}
+              className={`piece square ${state.activeForm === "square" ? "" : "inactive"} moving`}
               style={{
                 gridColumn: state.square.x + 1,
                 gridRow: state.square.y + 1,
               }}
+              key={`square-${state.square.x}-${state.square.y}`}
             />
           )}
         </div>
@@ -624,18 +631,22 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
           <button onClick={() => move(gestureDirections.down)}>▼</button>
           <button onClick={() => move(gestureDirections.right)}>▶</button>
         </div>
-        <button className="action switch" onClick={switchForm}>
-          ● ⇄ ■<br />
-          CHANGER
-        </button>
+        {level.square && (
+          <button className="action switch" onClick={switchForm}>
+            ● ⇄ ■<br />
+            CHANGER
+          </button>
+        )}
       </div>
       {isDevtoolsEnabled && (
         <aside className="dev-entry" aria-label="Outils de développement">
           <strong>🐛 DEBUG</strong>
           <span>{level.id}</span>
           <span>
-            ● {state.ball.x},{state.ball.y} · ■ {state.square.x},
-            {state.square.y}
+            ● {state.ball.x},{state.ball.y}
+            {level.square
+              ? ` · ■ ${state.square.x},${state.square.y}`
+              : " · ■ absent"}
           </span>
           <span>
             {state.activeForm} · ★ {state.stars.length} · {commands.length}{" "}
