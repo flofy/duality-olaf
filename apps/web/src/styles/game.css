@@ -130,6 +130,19 @@
   text-shadow: 0 1px 2px #0006;
 }
 
+/* Switches are colour-coded by the form(s) that can trigger them. */
+.switch-tile.form-ball {
+  color: var(--ball);
+}
+
+.switch-tile.form-square {
+  color: var(--square);
+}
+
+.switch-tile.form-either {
+  color: var(--accent);
+}
+
 .piece {
   position: relative;
   width: var(--tile);

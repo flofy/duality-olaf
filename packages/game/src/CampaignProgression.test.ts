@@ -2,23 +2,31 @@ import { describe, expect, it } from "vitest";
 import { campaign, worlds } from "@duality/level-format";
 import { validateCampaign } from "./LevelValidator";
 
+// One validation pass per test *file* (vitest isolates files in workers), so
+// both tests below reuse this result instead of re-solving all 55 levels.
+const validation = validateCampaign(campaign);
+const scoreById = new Map(
+  validation.levels.map((entry) => [
+    entry.id,
+    entry.difficulty?.score ?? Infinity,
+  ]),
+);
+
 const scores = (worldIndex: number): number[] =>
   worlds[worldIndex]!.levels.map(
-    (level) =>
-      validateCampaign([level]).levels[0]?.difficulty?.score ?? Infinity,
+    (level) => scoreById.get(level.id) ?? Infinity,
   );
 
 describe("campaign progression", () => {
   it("ships 55 solvable levels", { timeout: 120_000 }, () => {
     expect(campaign).toHaveLength(55);
-    const validation = validateCampaign(campaign);
     expect(validation.solvable).toBe(55);
     expect(validation.unsolvable).toBe(0);
   });
 
   it(
     "keeps every world strictly ordered from easier to harder",
-    { timeout: 500_000 },
+    { timeout: 120_000 },
     () => {
       for (let index = 0; index < worlds.length; index += 1) {
         const worldScores = scores(index);

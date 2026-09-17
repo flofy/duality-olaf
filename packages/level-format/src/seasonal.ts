@@ -97,6 +97,14 @@ export const christmas: SeasonalEvent = {
 
 export const seasonalEvents: readonly SeasonalEvent[] = [halloween, christmas];
 
+/**
+ * Bonus / challenge levels that are playable (via the Level Lab catalogue) but
+ * deliberately kept out of the linear campaign array so they are not part of
+ * the solver validation gate in CI.  Move problematic or experimental levels
+ * here while they are being tuned.
+ */
+export const challengeLevels: readonly Level[] = [];
+
 function dayOfYear(date: Date): number {
   const yearStart = Date.UTC(date.getUTCFullYear(), 0, 1);
   return (

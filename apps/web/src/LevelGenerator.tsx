@@ -50,10 +50,15 @@ function BoardPreview({ level }: { level: Level }) {
         className="piece ball"
         style={{ gridColumn: level.ball.x + 1, gridRow: level.ball.y + 1 }}
       />
-      <div
-        className="piece square"
-        style={{ gridColumn: level.square.x + 1, gridRow: level.square.y + 1 }}
-      />
+      {level.square && (
+        <div
+          className="piece square"
+          style={{
+            gridColumn: level.square.x + 1,
+            gridRow: level.square.y + 1,
+          }}
+        />
+      )}
     </div>
   );
 }

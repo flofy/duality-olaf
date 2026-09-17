@@ -1,79 +1,28 @@
+import { useMemo, useState } from "react";
 import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-  type ChangeEvent,
-} from "react";
-import { createEmptyLevel, type Level, type Tile } from "@duality/level-format";
-import { validateLevel } from "@duality/game";
+  cloneLevel,
+  sanitizeLevel,
+  type Level,
+  type Switch,
+} from "@duality/level-format";
+import { validateLevel, type LevelValidation } from "@duality/game";
 import { useNavigate } from "react-router";
-import { LabGame, devLevelById } from "./LevelLab";
-import { getActiveThemeName } from "./theme";
-import { resolveLevelSkin } from "./skins";
+import { devLevelById } from "./LevelLab";
+import { LevelEditorTools, type LevelEditorTool } from "./LevelEditorTools";
+import { EditorActions } from "./level-editor/EditorActions";
+import { EditorGrid } from "./level-editor/EditorGrid";
+import { PlayOverlay } from "./level-editor/PlayOverlay";
+import {
+  applyTool,
+  blankLevel,
+  inferWorld,
+  resizeLevel,
+} from "./level-editor/levelOps";
 import "./level-editor.css";
-
-type Tool =
-  | "empty"
-  | "wall"
-  | "star"
-  | "ball"
-  | "square"
-  | "door"
-  | "switch"
-  | "teleporter";
-
-const tools: Array<{ id: Tool; label: string; glyph: string }> = [
-  { id: "empty", label: "Case vide", glyph: "·" },
-  { id: "wall", label: "Mur", glyph: "■" },
-  { id: "star", label: "Étoile", glyph: "★" },
-  { id: "ball", label: "Balle", glyph: "●" },
-  { id: "square", label: "Carré", glyph: "■" },
-  { id: "door", label: "Porte", glyph: "▣" },
-  { id: "switch", label: "Interrupteur", glyph: "⌁" },
-  { id: "teleporter", label: "Téléporteur", glyph: "◎" },
-];
 
 /** Local write server (tools/level-serve.mjs) — run `pnpm level:serve`. */
 const LEVEL_SERVER_URL =
   import.meta.env.VITE_LEVEL_SERVER_URL ?? "http://localhost:34761";
-
-function blankLevel(id: string, width: number, height: number): Level {
-  const level = createEmptyLevel(id);
-  level.width = width;
-  level.height = height;
-  level.tiles = Array.from({ length: height }, () =>
-    Array.from({ length: width }, () => "empty" as Tile),
-  );
-  level.ball = { x: Math.min(1, width - 1), y: Math.min(1, height - 1) };
-  level.square = { x: Math.min(2, width - 1), y: Math.min(1, height - 1) };
-  return level;
-}
-
-function clone(level: Level): Level {
-  return {
-    ...level,
-    tiles: level.tiles.map((row) => [...row]),
-    ball: { ...level.ball },
-    square: { ...level.square },
-    stars: level.stars.map((p) => ({ ...p })),
-    doors: level.doors?.map((d) => ({ ...d, position: { ...d.position } })),
-    switches: level.switches?.map((s) => ({
-      ...s,
-      position: { ...s.position },
-      toggles: [...s.toggles],
-    })),
-    teleporters: level.teleporters?.map((t) => ({
-      ...t,
-      position: { ...t.position },
-    })),
-  };
-}
-
-function same(a: { x: number; y: number }, b: { x: number; y: number }) {
-  return a.x === b.x && a.y === b.y;
-}
 
 export function LevelEditor({
   initialLevelId = null,
@@ -84,9 +33,12 @@ export function LevelEditor({
   const [level, setLevel] = useState<Level>(() => {
     const initial =
       initialLevelId === null ? undefined : devLevelById.get(initialLevelId);
-    return initial ? clone(initial) : blankLevel("custom-01", 13, 10);
+    // sanitizeLevel drops any junk key a legacy tool may have serialized.
+    return initial ? sanitizeLevel(initial) : blankLevel("custom-01", 13, 10);
   });
-  const [tool, setTool] = useState<Tool>("wall");
+  const [tool, setTool] = useState<LevelEditorTool>("wall");
+  // Which form(s) a newly placed switch reacts to (tool: "switch").
+  const [switchForm, setSwitchForm] = useState<Switch["form"]>("either");
   const [message, setMessage] = useState(
     initialLevelId
       ? "Édition d'un niveau existant — modifie puis exporte le JSON"
@@ -96,132 +48,34 @@ export function LevelEditor({
   const [showImportText, setShowImportText] = useState(false);
   const [pastedJson, setPastedJson] = useState("");
   const [targetWorld, setTargetWorld] = useState<number | null>(null);
-  const [validation, setValidation] = useState<ReturnType<
-    typeof validateLevel
-  > | null>(null);
-  const paintingRef = useRef(false);
-  const lastPaintedRef = useRef<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const themeName = getActiveThemeName();
-  const skin = resolveLevelSkin(level.id);
-  const json = useMemo(() => JSON.stringify(level, null, 2), [level]);
-  const inferredWorld = Number(/world-(\d+)-level-/.exec(level.id)?.[1] ?? 0);
+  const [validation, setValidation] = useState<LevelValidation | null>(null);
+  // Always display / copy / export a sanitized level: no junk keys.
+  const json = useMemo(
+    () => JSON.stringify(sanitizeLevel(level), null, 2),
+    [level],
+  );
+  const inferredWorld = inferWorld(level.id);
 
-  useEffect(() => {
-    const stopPainting = () => {
-      paintingRef.current = false;
-      lastPaintedRef.current = null;
-    };
-    window.addEventListener("pointerup", stopPainting);
-    window.addEventListener("pointercancel", stopPainting);
-    return () => {
-      window.removeEventListener("pointerup", stopPainting);
-      window.removeEventListener("pointercancel", stopPainting);
-    };
-  }, []);
-
-  const update = (mutate: (next: Level) => void) => {
-    setLevel((current) => {
-      const next = clone(current);
-      mutate(next);
-      return next;
-    });
+  const update = (next: Level) => {
+    setLevel(next);
     setValidation(null);
   };
 
   const paint = (x: number, y: number) => {
-    update((next) => {
-      if (tool === "empty" || tool === "wall") next.tiles[y]![x] = tool;
-      if (tool === "star") {
-        const index = next.stars.findIndex((p) => same(p, { x, y }));
-        if (index >= 0) next.stars.splice(index, 1);
-        else next.stars.push({ x, y });
-      }
-      if (tool === "ball") next.ball = { x, y };
-      if (tool === "square") next.square = { x, y };
-      if (tool === "door") {
-        next.doors ??= [];
-        const index = next.doors.findIndex((d) => same(d.position, { x, y }));
-        if (index >= 0) next.doors.splice(index, 1);
-        else {
-          next.doors.push({
-            id: `door-${next.doors.length + 1}`,
-            position: { x, y },
-          });
-        }
-      }
-      if (tool === "switch") {
-        next.switches ??= [];
-        const index = next.switches.findIndex((s) =>
-          same(s.position, { x, y }),
-        );
-        if (index >= 0) next.switches.splice(index, 1);
-        else {
-          const door = next.doors?.[0];
-          next.switches.push({
-            id: `switch-${next.switches.length + 1}`,
-            position: { x, y },
-            form: "either",
-            toggles: door ? [door.id] : [],
-          });
-        }
-      }
-      if (tool === "teleporter") {
-        next.teleporters ??= [];
-        const index = next.teleporters.findIndex((t) =>
-          same(t.position, { x, y }),
-        );
-        if (index >= 0) next.teleporters.splice(index, 1);
-        else {
-          const existing = next.teleporters[0];
-          next.teleporters.push({
-            id: `teleporter-${next.teleporters.length + 1}`,
-            position: { x, y },
-            targetId:
-              existing?.id ?? `teleporter-${next.teleporters.length + 2}`,
-          });
-        }
-      }
-    });
+    const next = cloneLevel(level);
+    applyTool(next, tool, x, y, { switchForm });
+    update(next);
   };
 
   const newLevel = () => {
-    setLevel(blankLevel("custom-01", level.width, level.height));
-    setValidation(null);
+    update(blankLevel("custom-01", level.width, level.height));
     setPlaying(false);
     setMessage("Nouveau niveau");
   };
 
   const resize = (width: number, height: number) => {
-    if (width < 3 || height < 3 || width > 20 || height > 20) return;
-    setLevel((current) => {
-      const next = blankLevel(current.id, width, height);
-      for (let y = 0; y < Math.min(height, current.height); y++) {
-        for (let x = 0; x < Math.min(width, current.width); x++) {
-          next.tiles[y]![x] = current.tiles[y]![x]!;
-        }
-      }
-      next.stars = current.stars.filter((p) => p.x < width && p.y < height);
-      next.ball =
-        current.ball.x < width && current.ball.y < height
-          ? current.ball
-          : next.ball;
-      next.square =
-        current.square.x < width && current.square.y < height
-          ? current.square
-          : next.square;
-      next.doors = current.doors?.filter(
-        (d) => d.position.x < width && d.position.y < height,
-      );
-      next.switches = current.switches?.filter(
-        (s) => s.position.x < width && s.position.y < height,
-      );
-      next.teleporters = current.teleporters?.filter(
-        (t) => t.position.x < width && t.position.y < height,
-      );
-      return next;
-    });
-    setValidation(null);
+    const next = resizeLevel(level, width, height);
+    if (next) update(next);
   };
 
   const validate = () => {
@@ -251,7 +105,7 @@ export function LevelEditor({
       const response = await fetch(`${LEVEL_SERVER_URL}/api/save-level`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ level, world }),
+        body: JSON.stringify({ level: sanitizeLevel(level), world }),
       });
       const payload = (await response.json()) as {
         ok: boolean;
@@ -282,8 +136,7 @@ export function LevelEditor({
       ) {
         throw new Error("structure");
       }
-      setLevel(clone(parsed));
-      setValidation(null);
+      update(sanitizeLevel(parsed));
       setMessage(`✓ Niveau importé · ${parsed.id}`);
       return true;
     } catch {
@@ -292,10 +145,7 @@ export function LevelEditor({
     }
   };
 
-  const importJson = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
+  const importFile = (file: File) => {
     void file.text().then(applyImport);
   };
 
@@ -304,6 +154,16 @@ export function LevelEditor({
       setPastedJson("");
       setShowImportText(false);
     }
+  };
+
+  const exportJson = () => {
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${level.id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -352,194 +212,68 @@ export function LevelEditor({
             </label>
           </div>
           <div className="editor-section-title">OUTILS</div>
-          <div
-            className="editor-tools"
-            role="toolbar"
-            aria-label="Outils de niveau"
-          >
-            {tools.map((item) => (
-              <button
-                key={item.id}
-                className={`editor-tool ${tool === item.id ? "selected" : ""}`}
-                onClick={() => setTool(item.id)}
-                title={item.label}
+          <LevelEditorTools selected={tool} onSelect={setTool} />
+          {tool === "switch" && (
+            <>
+              <div className="editor-section-title">
+                RÉACTION DE L'INTERRUPTEUR
+              </div>
+              <div
+                className="editor-tools"
+                role="radiogroup"
+                aria-label="Forme activatrice de l'interrupteur"
               >
-                <span>{item.glyph}</span>
-                {item.label}
-              </button>
-            ))}
-          </div>
-          <div className="editor-section-title">ACTIONS</div>
-          <label>
-            MONDE CIBLE (ÉCRITURE LOCALE)
-            <select
-              value={targetWorld ?? ""}
-              onChange={(e) =>
-                setTargetWorld(
-                  e.target.value === "" ? null : Number(e.target.value),
-                )
-              }
-            >
-              <option value="">
-                {inferredWorld >= 1
-                  ? `auto · monde ${inferredWorld} (d'après l'id)`
-                  : "auto — aucun monde dans l'id"}
-              </option>
-              {[1, 2, 3, 4, 5].map((world) => (
-                <option key={world} value={world}>
-                  monde {world}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button className="action editor-action" onClick={validate}>
-            ⚡ VALIDER / RÉSOUDRE
-          </button>
-          <button
-            className="action editor-action"
-            onClick={() => setPlaying(true)}
-          >
-            ▶ TESTER LE NIVEAU
-          </button>
-          <button className="action editor-action" onClick={copyJson}>
-            ⧉ COPIER LE JSON
-          </button>
-          <button className="action editor-action" onClick={saveToServer}>
-            ⬇ ÉCRIRE SUR LE DISQUE
-          </button>
-          <button
-            className="action editor-action"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            ⇪ IMPORTER (FICHIER)
-          </button>
-          <button
-            className="action editor-action"
-            onClick={() => setShowImportText((v) => !v)}
-          >
-            ⇪ IMPORTER (COLLER){showImportText ? " ▴" : " ▾"}
-          </button>
-          {showImportText && (
-            <div className="editor-import-text">
-              <textarea
-                value={pastedJson}
-                placeholder='{"id": "custom-01", "width": 13, ...}'
-                onChange={(e) => setPastedJson(e.target.value)}
-                rows={8}
-                spellCheck={false}
-              />
-              <button
-                className="action editor-action"
-                disabled={!pastedJson.trim()}
-                onClick={importPasted}
-              >
-                CHARGER LE JSON
-              </button>
-            </div>
+                {(
+                  [
+                    { form: "either", glyph: "●⇄■", label: "Les deux" },
+                    { form: "ball", glyph: "●", label: "Boule" },
+                    { form: "square", glyph: "■", label: "Carré" },
+                  ] as const
+                ).map((item) => (
+                  <button
+                    key={item.form}
+                    type="button"
+                    className={`editor-tool ${switchForm === item.form ? "selected" : ""}`}
+                    onClick={() => setSwitchForm(item.form)}
+                    title={item.label}
+                    aria-pressed={switchForm === item.form}
+                  >
+                    <span>{item.glyph}</span>
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </>
           )}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/json,.json"
-            onChange={importJson}
-            hidden
+          <EditorActions
+            message={message}
+            validation={validation}
+            targetWorld={targetWorld}
+            inferredWorld={inferredWorld}
+            showImportText={showImportText}
+            pastedJson={pastedJson}
+            onValidate={validate}
+            onTest={() => setPlaying(true)}
+            onCopyJson={() => void copyJson()}
+            onSaveToServer={() => void saveToServer()}
+            onTargetWorldChange={setTargetWorld}
+            onToggleImportText={() => setShowImportText((v) => !v)}
+            onPasteJsonChange={setPastedJson}
+            onImportPasted={importPasted}
+            onImportFile={importFile}
+            onExport={exportJson}
           />
-          <button
-            className="action editor-action"
-            onClick={() => {
-              const blob = new Blob([json], { type: "application/json" });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = `${level.id}.json`;
-              a.click();
-              URL.revokeObjectURL(url);
-            }}
-          >
-            ↓ EXPORTER
-          </button>
-          <div className="editor-status" role="status">
-            {message}
-          </div>
-          {validation && (
-            <div
-              className={`editor-validation ${validation.result.solvable ? "ok" : "error"}`}
-            >
-              {validation.result.solvable
-                ? `Solvable · ${validation.difficulty?.moves} coups · score ${validation.difficulty?.score}`
-                : `Unsolvable · ${validation.result.exploredStates} états explorés`}
-            </div>
-          )}
         </aside>
         <div className="editor-workspace">
           <div className="editor-board-shell">
-            <div
-              className="editor-board board"
-              style={
-                {
-                  "--cols": level.width,
-                  "--rows": level.height,
-                } as CSSProperties
-              }
-              aria-label="Grille d'édition"
-            >
-              {level.tiles.flatMap((row, y) =>
-                row.map((tile, x) => {
-                  const star = level.stars.some((p) => p.x === x && p.y === y);
-                  const ball = same(level.ball, { x, y });
-                  const square = same(level.square, { x, y });
-                  const door = level.doors?.find((d) =>
-                    same(d.position, { x, y }),
-                  );
-                  const sw = level.switches?.find((s) =>
-                    same(s.position, { x, y }),
-                  );
-                  const tp = level.teleporters?.find((t) =>
-                    same(t.position, { x, y }),
-                  );
-                  return (
-                    <button
-                      type="button"
-                      key={`${x}-${y}`}
-                      className={`editor-cell ${tile === "wall" ? "wall" : ""}`}
-                      style={{ gridColumn: x + 1, gridRow: y + 1 }}
-                      onPointerDown={(e) => {
-                        if (e.button !== 0 && e.pointerType === "mouse") return;
-                        if (tool === "wall" || tool === "empty") {
-                          paintingRef.current = true;
-                          lastPaintedRef.current = `${x}-${y}`;
-                        }
-                        paint(x, y);
-                      }}
-                      onPointerEnter={() => {
-                        if (!paintingRef.current) return;
-                        const key = `${x}-${y}`;
-                        if (lastPaintedRef.current === key) return;
-                        lastPaintedRef.current = key;
-                        paint(x, y);
-                      }}
-                      aria-label={`Case ${x + 1}, ${y + 1}`}
-                    >
-                      {ball && <span className="editor-entity ball">●</span>}
-                      {square && (
-                        <span className="editor-entity square">■</span>
-                      )}
-                      {star && <span className="editor-entity star">★</span>}
-                      {door && <span className="editor-entity door">▣</span>}
-                      {sw && <span className="editor-entity switch">⌁</span>}
-                      {tp && (
-                        <span className="editor-entity teleporter">◎</span>
-                      )}
-                    </button>
-                  );
-                }),
-              )}
-            </div>
+            <EditorGrid level={level} tool={tool} onPaint={paint} />
           </div>
           <p className="editor-hint">
-            Clique (ou clique-glisse pour les murs/cases vides) pour appliquer
-            l'outil sélectionné. Les éléments mécaniques sont créés avec des
-            identifiants automatiques.
+            Clique (ou clique-glisse pour les murs, piques et cases vides) pour
+            appliquer l'outil sélectionné. Le carré est optionnel : re-clique
+            sur sa case pour le retirer. Les piques sont mortelles : une pièce
+            qui glisse dessus déclenche un game over. Les éléments mécaniques
+            sont créés avec des identifiants automatiques.
           </p>
           <details className="editor-json">
             <summary>JSON du niveau</summary>
@@ -548,26 +282,11 @@ export function LevelEditor({
         </div>
       </div>
       {playing && (
-        <div className="editor-play-overlay">
-          <div className="editor-play-panel">
-            <div className="topbar">
-              <b>TEST · {level.id}</b>
-              <button className="action" onClick={() => setPlaying(false)}>
-                ✕ FERMER
-              </button>
-            </div>
-            <LabGame
-              level={level}
-              skin={skin}
-              themeName={themeName}
-              onCompletionChange={(completion) =>
-                completion &&
-                setMessage(`✓ Test terminé en ${completion.moves} coups`)
-              }
-              onBackToGenerator={() => setPlaying(false)}
-            />
-          </div>
-        </div>
+        <PlayOverlay
+          level={level}
+          onClose={() => setPlaying(false)}
+          onComplete={(text) => setMessage(text)}
+        />
       )}
     </section>
   );

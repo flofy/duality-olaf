@@ -1,19 +1,19 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Level } from "@duality/level-format";
 import {
   doorSwitchTutorials,
-  isInside,
   seasonalEvents,
   teleporterTutorials,
+  challengeLevels,
 } from "@duality/level-format";
 import { useNavigate } from "react-router";
 import { interpretGesture, type Direction } from "./input/GestureInterpreter";
+import { GameBoard } from "./GameBoard";
 import { campaign, worlds } from "./levels/campaign";
 import {
   getActiveThemeName,
   setTheme,
   themeOrder,
-  themes,
   type ThemeName,
 } from "./theme";
 import {
@@ -22,7 +22,6 @@ import {
   skinOrder,
   type SkinPreference,
 } from "./skins";
-import { hexToCss } from "./theme";
 import { useLevelGameplay, type GameplayDirection } from "./useLevelGameplay";
 
 export type GameOverOverlayProps = {
@@ -86,6 +85,7 @@ export const allDevLevels: readonly Level[] = [
   ...doorSwitchTutorials,
   ...teleporterTutorials,
   ...seasonalEvents.flatMap((event) => event.levels),
+  ...challengeLevels,
 ];
 
 export const devLevelById: ReadonlyMap<string, Level> = new Map(
@@ -133,6 +133,15 @@ function buildCatalogueGroups(): CatalogueGroup[] {
     })),
   });
 
+  groups.push({
+    label: "Défis & bonus",
+    entries: challengeLevels.map((level) => ({
+      id: level.id,
+      label: level.id,
+      level,
+    })),
+  });
+
   for (const event of seasonalEvents) {
     groups.push({
       label: event.label,
@@ -147,14 +156,14 @@ function buildCatalogueGroups(): CatalogueGroup[] {
   return groups;
 }
 
-export function LevelThumb({ level }: { level: Level }) {
+function LevelThumb({ level }: { level: Level }) {
   const w = level.width;
   const h = level.height;
   const key = (x: number, y: number) => `${x}:${y}`;
 
   const markers = new Map<string, string>();
   markers.set(key(level.ball.x, level.ball.y), "ball");
-  markers.set(key(level.square.x, level.square.y), "square");
+  if (level.square) markers.set(key(level.square.x, level.square.y), "square");
   for (const star of level.stars) markers.set(key(star.x, star.y), "star");
   for (const door of level.doors ?? [])
     markers.set(key(door.position.x, door.position.y), "door");
@@ -455,97 +464,7 @@ export function LabGame({
         }
       }}
     >
-      <div
-        className={`board ${skin !== "default" ? `seasonal theme-${skin}` : ""}`}
-        style={
-          {
-            ...Object.fromEntries(
-              Object.entries(themes[themeName])
-                .filter(([, value]) => typeof value === "number")
-                .map(([key, value]) => ["--" + key, hexToCss(value as number)]),
-            ),
-            "--cols": level.width,
-            "--rows": level.height,
-          } as CSSProperties
-        }
-      >
-        {level.tiles.flatMap((row, y) =>
-          row.map((tile, x) =>
-            tile === "wall" ? (
-              <div
-                className="wall"
-                style={{ gridColumn: x + 1, gridRow: y + 1 }}
-                key={`w-${x}-${y}`}
-              />
-            ) : null,
-          ),
-        )}
-        {level.doors?.map((door) => (
-          <div
-            className={`door ${state.doors[door.id] ? "open" : ""}`}
-            style={{
-              gridColumn: door.position.x + 1,
-              gridRow: door.position.y + 1,
-            }}
-            key={door.id}
-          >
-            {state.doors[door.id] ? "·" : "▣"}
-          </div>
-        ))}
-        {level.switches?.map((item) => (
-          <div
-            className={`switch-tile form-${item.form}`}
-            style={{
-              gridColumn: item.position.x + 1,
-              gridRow: item.position.y + 1,
-            }}
-            key={item.id}
-          >
-            ⌁
-          </div>
-        ))}
-        {level.teleporters?.map((teleporter) => (
-          <div
-            className="teleporter"
-            style={{
-              gridColumn: teleporter.position.x + 1,
-              gridRow: teleporter.position.y + 1,
-            }}
-            key={teleporter.id}
-          >
-            ◎
-          </div>
-        ))}
-        {state.stars.map((star) => (
-          <div
-            className="star"
-            style={{
-              gridColumn: star.x + 1,
-              gridRow: star.y + 1,
-            }}
-            key={`${star.x}-${star.y}`}
-          >
-            ★
-          </div>
-        ))}
-        {isInside(level, state.ball) && (
-          <div
-            className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"}`}
-            style={{
-              gridColumn: state.ball.x + 1,
-              gridRow: state.ball.y + 1,
-            }}
-          />
-        )}
-        {isInside(level, state.square) && (
-          <div
-            className={`piece square ${state.activeForm === "square" ? "" : "inactive"}`}
-            style={{
-              gridColumn: state.square.x + 1,
-              gridRow: state.square.y + 1,
-            }}
-          />
-        )}
+      <GameBoard level={level} state={state} skin={skin} themeName={themeName}>
         <GameOverOverlay
           type={
             state.completed ? "completed" : state.gameOver ? "gameOver" : null
@@ -555,7 +474,7 @@ export function LabGame({
           onReset={reset}
           onBackToGenerator={onBackToGenerator}
         />
-      </div>
+      </GameBoard>
       <div className="hud">
         <b>{state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
         <br />

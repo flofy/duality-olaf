@@ -12,6 +12,7 @@ function makeLevel(
     square?: Position;
     stars?: Position[];
     innerWalls?: Position[];
+    spikes?: Position[];
   } = {},
 ): Level {
   const width = 13;
@@ -24,6 +25,7 @@ function makeLevel(
     ),
   );
   for (const w of options.innerWalls ?? []) tiles[w.y][w.x] = "wall";
+  for (const s of options.spikes ?? []) tiles[s.y][s.x] = "spike";
   return {
     id: "test",
     width,
@@ -239,5 +241,67 @@ describe("LevelRunner: sliding off the level", () => {
     expect(state.gameOver).toBe(false);
     expect(state.ball.x).toBe(1);
     expect(state.ball.y).toBe(1);
+  });
+});
+
+describe("LevelRunner: spikes are lethal wherever they are placed", () => {
+  it("ends the run when the ball slides onto a spike", () => {
+    const runner = new LevelRunner(
+      makeLevel({ ball: { x: 2, y: 2 }, spikes: [{ x: 5, y: 2 }] }),
+    );
+    press(runner, RIGHT);
+    const state = runner.getState();
+    expect(state.gameOver).toBe(true);
+    expect(state.ball.x).toBe(5); // the ball dies on the spike cell
+    expect(state.ball.y).toBe(2);
+  });
+
+  it("ends the run when the square slides onto a spike", () => {
+    const runner = new LevelRunner(
+      makeLevel({ square: { x: 4, y: 6 }, spikes: [{ x: 4, y: 3 }] }),
+    );
+    runner.switchForm(); // square becomes active
+    press(runner, UP);
+    const state = runner.getState();
+    expect(state.gameOver).toBe(true);
+    expect(state.square.x).toBe(4);
+    expect(state.square.y).toBe(3);
+  });
+
+  it("kills on touch, not only when stopping on a spike", () => {
+    // Wall at x=8 stops the slide, but the spike at x=5 is hit mid-slide.
+    const runner = new LevelRunner(
+      makeLevel({
+        ball: { x: 2, y: 2 },
+        innerWalls: [{ x: 8, y: 2 }],
+        spikes: [{ x: 5, y: 2 }],
+      }),
+    );
+    press(runner, RIGHT);
+    const state = runner.getState();
+    expect(state.gameOver).toBe(true);
+    expect(state.ball.x).toBe(5);
+  });
+
+  it("does not count the losing move and revives on reset", () => {
+    const runner = new LevelRunner(
+      makeLevel({ ball: { x: 2, y: 2 }, spikes: [{ x: 5, y: 2 }] }),
+    );
+    press(runner, RIGHT);
+    expect(runner.getState().moves).toBe(0); // fatal press is free, like off-board death
+    runner.reset();
+    const state = runner.getState();
+    expect(state.gameOver).toBe(false);
+    expect(state.moves).toBe(0);
+    expect(state.ball.x).toBe(2);
+  });
+
+  it("does not trigger game over for spikes the active piece never touches", () => {
+    const runner = new LevelRunner(
+      makeLevel({ ball: { x: 2, y: 2 }, spikes: [{ x: 5, y: 7 }] }),
+    );
+    press(runner, RIGHT); // slides along row 2, far from the spike at row 7
+    const state = runner.getState();
+    expect(state.gameOver).toBe(false);
   });
 });

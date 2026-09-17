@@ -1,5 +1,5 @@
 import type { Form, Level, Position } from "@duality/level-format";
-import { cloneLevel, isInside, isWall } from "@duality/level-format";
+import { cloneLevel, isInside, isSpike, isWall } from "@duality/level-format";
 
 export type Direction = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
 export type DoorState = Record<string, boolean>;
@@ -27,14 +27,20 @@ export class LevelRunner {
   private state: GameState;
 
   constructor(level: Level) {
-    this.initialLevel = cloneLevel(level);
-    this.state = this.createState(this.initialLevel);
+    // createState clones the level before any mutation, so sharing the
+    // caller's object here is safe (and avoids a double tile-grid copy).
+    this.initialLevel = level;
+    this.state = this.createState(level);
   }
 
   static fromState(state: GameState): LevelRunner {
-    const runner = new LevelRunner(state.level);
+    // Built without the constructor so the level grid is *shared*, not
+    // cloned: the runner never mutates the level (only positions, stars,
+    // doors and form), letting the solver explore without copying tiles.
+    const runner = Object.create(LevelRunner.prototype) as LevelRunner;
+    (runner as { initialLevel: Level }).initialLevel = state.level;
     runner.state = {
-      level: cloneLevel(state.level),
+      level: state.level,
       activeForm: state.activeForm,
       ball: { ...state.ball },
       square: { ...state.square },
@@ -106,6 +112,12 @@ export class LevelRunner {
       current.y = next.y;
       moved += 1;
       swept.push({ x: current.x, y: current.y });
+      // Spikes are lethal wherever they are placed: sliding onto one — even
+      // while passing over — ends the run immediately.
+      if (isSpike(this.state.level, current)) {
+        this.state.gameOver = true;
+        return this.getState();
+      }
       if (this.tryTeleport(current, other)) {
         this.state.teleportsThisMove += 1;
         break;
