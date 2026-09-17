@@ -4,6 +4,8 @@ import { cloneLevel, isInside, isWall } from "@duality/level-format";
 export type Direction = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
 export type DoorState = Record<string, boolean>;
 
+const HIDDEN_POSITION: Position = { x: -1, y: -1 };
+
 export type GameState = {
   level: Level;
   activeForm: Form;
@@ -70,6 +72,7 @@ export class LevelRunner {
   }
 
   switchForm(): GameState {
+    if (!this.initialLevel.square) return this.getState();
     this.state.activeForm =
       this.state.activeForm === "ball" ? "square" : "ball";
     return this.getState();
@@ -92,8 +95,6 @@ export class LevelRunner {
       if (this.state.teleportsThisMove >= 3) break;
       const next: Position = { ...current };
       next[axis] += sign;
-      // Game over if the entity slides off the level: it keeps sliding one
-      // cell beyond the board and vanishes, like in the original game.
       if (!isInside(this.state.level, next)) {
         current.x = next.x;
         current.y = next.y;
@@ -105,13 +106,8 @@ export class LevelRunner {
       current.y = next.y;
       moved += 1;
       swept.push({ x: current.x, y: current.y });
-      // Teleporters trigger as soon as the sliding form passes over a pad:
-      // the form is carried to the paired pad and the slide keeps going in the
-      // same direction from there. If the destination is blocked by the other
-      // form the warp is refused and the slide continues past the pad.
       if (this.tryTeleport(current, other)) {
         this.state.teleportsThisMove += 1;
-        // The warp ends the slide: the form is dropped on the destination pad.
         break;
       }
     }
@@ -120,7 +116,6 @@ export class LevelRunner {
     this.state.moves += 1;
     this.applySwitches(swept);
 
-    // Collect stars only with the ball
     if (this.state.activeForm === "ball") {
       this.state.stars = this.state.stars.filter(
         (star) =>
@@ -211,7 +206,7 @@ export class LevelRunner {
       level: cloneLevel(level),
       activeForm: "ball",
       ball: { ...level.ball },
-      square: { ...level.square },
+      square: level.square ? { ...level.square } : { ...HIDDEN_POSITION },
       stars: level.stars.map((star) => ({ ...star })),
       doors: Object.fromEntries(
         (level.doors ?? []).map((door) => [
