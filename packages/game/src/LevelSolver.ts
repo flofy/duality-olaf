@@ -1,6 +1,11 @@
+import {
+  cloneLevel,
+  isInside,
+  isWall,
+  type Level,
+} from "@duality/level-format";
 import type { Direction, GameState } from "./LevelRunner";
 import { LevelRunner } from "./LevelRunner";
-import type { Level } from "@duality/level-format";
 
 export type SolverCommand =
   | { type: "move"; direction: Direction }
@@ -29,6 +34,84 @@ type SearchNode = {
   depth: number;
 };
 
+type OpenEntry = {
+  nodeIndex: number;
+  priority: number;
+  depth: number;
+};
+
+type RelaxedMove = {
+  position: Position;
+  swept: Position[];
+};
+
+type Position = { x: number; y: number };
+
+class MinHeap {
+  private readonly items: OpenEntry[] = [];
+
+  get size(): number {
+    return this.items.length;
+  }
+
+  push(entry: OpenEntry): void {
+    this.items.push(entry);
+    let index = this.items.length - 1;
+    while (index > 0) {
+      const parent = Math.floor((index - 1) / 2);
+      if (!this.less(this.items[index]!, this.items[parent]!)) break;
+      [this.items[index], this.items[parent]] = [
+        this.items[parent]!,
+        this.items[index]!,
+      ];
+      index = parent;
+    }
+  }
+
+  pop(): OpenEntry | undefined {
+    const first = this.items[0];
+    if (!first) return undefined;
+    const last = this.items.pop()!;
+    if (this.items.length === 0) return first;
+    this.items[0] = last;
+
+    let index = 0;
+    for (;;) {
+      const left = index * 2 + 1;
+      const right = left + 1;
+      let smallest = index;
+      if (
+        left < this.items.length &&
+        this.less(this.items[left]!, this.items[smallest]!)
+      ) {
+        smallest = left;
+      }
+      if (
+        right < this.items.length &&
+        this.less(this.items[right]!, this.items[smallest]!)
+      ) {
+        smallest = right;
+      }
+      if (smallest === index) break;
+      [this.items[index], this.items[smallest]] = [
+        this.items[smallest]!,
+        this.items[index]!,
+      ];
+      index = smallest;
+    }
+    return first;
+  }
+
+  private less(a: OpenEntry, b: OpenEntry): boolean {
+    if (a.priority !== b.priority) return a.priority < b.priority;
+    return a.depth > b.depth;
+  }
+}
+
+function positionKey(position: Position): string {
+  return `${position.x},${position.y}`;
+}
+
 function stateKey(state: GameState): string {
   const stars = state.stars
     .map((star) => `${star.x},${star.y}`)
@@ -47,10 +130,6 @@ function stateKey(state: GameState): string {
   ].join("|");
 }
 
-function changed(before: GameState, after: GameState): boolean {
-  return stateKey(before) !== stateKey(after);
-}
-
 function reconstruct(
   nodes: readonly SearchNode[],
   index: number,
@@ -65,11 +144,123 @@ function reconstruct(
   return commands.reverse();
 }
 
-export function solveLevel(
+function relaxedMove(
   level: Level,
-  options?: { maxDepth?: number },
-): SolverResult {
-  const maxDepth = options?.maxDepth ?? 60;
+  position: Position,
+  direction: Direction,
+): RelaxedMove | null {
+  const axis =
+    Math.abs(direction.x) >= Math.abs(direction.y)
+      ? direction.x === 0
+        ? "y"
+        : "x"
+      : "y";
+  const sign = axis === "x" ? Math.sign(direction.x) : Math.sign(direction.y);
+  if (sign === 0) return null;
+
+  const current = { ...position };
+  const swept: Position[] = [];
+  for (;;) {
+    const next = { ...current };
+    next[axis] += sign;
+    if (!isInside(level, next)) return null;
+    if (isWall(level, next)) break;
+    current.x = next.x;
+    current.y = next.y;
+    swept.push({ ...current });
+  }
+
+  if (current.x === position.x && current.y === position.y) return null;
+  return { position: current, swept };
+}
+
+function buildRelaxedMoves(level: Level, position: Position): RelaxedMove[] {
+  return DIRECTIONS.flatMap((direction) => {
+    const move = relaxedMove(level, position, direction);
+    return move ? [move] : [];
+  });
+}
+
+function buildRelaxedDistances(level: Level): Map<string, Map<string, number>> {
+  const distances = new Map<string, Map<string, number>>();
+
+  for (let y = 0; y < level.height; y += 1) {
+    for (let x = 0; x < level.width; x += 1) {
+      const start = { x, y };
+      if (isWall(level, start)) continue;
+
+      const startKey = positionKey(start);
+      const distanceByStar = new Map<string, number>();
+      for (const star of level.stars) {
+        const targetKey = positionKey(star);
+        if (targetKey === startKey) {
+          distanceByStar.set(targetKey, 0);
+          continue;
+        }
+
+        const targetDistance = findRelaxedStarDistance(level, start, star);
+        if (targetDistance !== null) {
+          distanceByStar.set(targetKey, targetDistance);
+        }
+      }
+
+      distances.set(startKey, distanceByStar);
+    }
+  }
+
+  return distances;
+}
+
+function findRelaxedStarDistance(
+  level: Level,
+  start: Position,
+  target: Position,
+): number | null {
+  const queue: Position[] = [start];
+  const visited = new Set<string>([positionKey(start)]);
+  const distance = new Map<string, number>([[positionKey(start), 0]]);
+
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const current = queue[cursor]!;
+    const currentDistance = distance.get(positionKey(current))!;
+
+    for (const move of buildRelaxedMoves(level, current)) {
+      if (
+        move.swept.some((cell) => cell.x === target.x && cell.y === target.y)
+      ) {
+        return currentDistance + 1;
+      }
+
+      const nextKey = positionKey(move.position);
+      if (visited.has(nextKey)) continue;
+      visited.add(nextKey);
+      distance.set(nextKey, currentDistance + 1);
+      queue.push(move.position);
+    }
+  }
+
+  return null;
+}
+
+function createHeuristic(level: Level): (state: GameState) => number {
+  const distances = buildRelaxedDistances(level);
+
+  return (state) => {
+    if (state.stars.length === 0) return 0;
+    const fromBall = distances.get(positionKey(state.ball));
+    if (!fromBall) return 0;
+
+    let lowerBound = 0;
+    for (const star of state.stars) {
+      const distance = fromBall.get(positionKey(star));
+      if (distance !== undefined) lowerBound = Math.max(lowerBound, distance);
+    }
+    return lowerBound;
+  };
+}
+
+function solveBfs(level: Level, options?: { maxDepth?: number }): SolverResult {
+  const maxDepth = options?.maxDepth ?? Number.POSITIVE_INFINITY;
   const initial = new LevelRunner(level).getState();
   if (initial.completed)
     return { solvable: true, moves: 0, commands: [], exploredStates: 1 };
@@ -90,18 +281,17 @@ export function solveLevel(
     const node: SearchNode = nodes[nodeIndex]!;
     exploredStates += 1;
     if (node.depth >= maxDepth) continue;
+
     for (const command of candidates) {
       const runner = LevelRunner.fromState(node.state);
-      const before = runner.getState();
       const after =
         command.type === "move"
           ? runner.move(command.direction)
           : runner.switchForm();
-      // Falling off the level is terminal: never part of a solution path.
       if (after.gameOver) continue;
-      if (!changed(before, after)) continue;
       const key = stateKey(after);
       if (visited.has(key)) continue;
+
       const childIndex = nodes.length;
       nodes.push({
         state: after,
@@ -110,6 +300,7 @@ export function solveLevel(
         depth: node.depth + 1,
       });
       visited.add(key);
+
       if (after.completed) {
         const commands = reconstruct(nodes, childIndex);
         return {
@@ -123,6 +314,135 @@ export function solveLevel(
   }
 
   return { solvable: false, moves: null, commands: [], exploredStates };
+}
+
+function solveAStar(
+  level: Level,
+  options?: { maxDepth?: number },
+): SolverResult {
+  const maxDepth = options?.maxDepth ?? Number.POSITIVE_INFINITY;
+  const initial = new LevelRunner(level).getState();
+  if (initial.completed)
+    return { solvable: true, moves: 0, commands: [], exploredStates: 1 };
+
+  const heuristic = createHeuristic(level);
+  const nodes: SearchNode[] = [
+    { state: initial, parent: null, command: null, depth: 0 },
+  ];
+  const bestCost = new Map<string, number>([[stateKey(initial), 0]]);
+  const open = new MinHeap();
+  open.push({
+    nodeIndex: 0,
+    priority: heuristic(initial),
+    depth: 0,
+  });
+
+  let exploredStates = 0;
+  const candidates: readonly SolverCommand[] = [
+    ...DIRECTIONS.map((direction) => ({ type: "move" as const, direction })),
+    { type: "switch" as const },
+  ];
+
+  while (open.size > 0) {
+    const entry = open.pop()!;
+    const node = nodes[entry.nodeIndex]!;
+    const key = stateKey(node.state);
+    if (bestCost.get(key) !== node.depth) continue;
+
+    exploredStates += 1;
+    if (node.state.completed) {
+      return {
+        solvable: true,
+        moves: node.depth,
+        commands: reconstruct(nodes, entry.nodeIndex),
+        exploredStates,
+      };
+    }
+    if (node.depth >= maxDepth) continue;
+
+    for (const command of candidates) {
+      const runner = LevelRunner.fromState(node.state);
+      const after =
+        command.type === "move"
+          ? runner.move(command.direction)
+          : runner.switchForm();
+      if (after.gameOver) continue;
+
+      const childDepth = node.depth + 1;
+      if (childDepth > maxDepth) continue;
+      const childKey = stateKey(after);
+      const previousCost = bestCost.get(childKey);
+      if (previousCost !== undefined && previousCost <= childDepth) continue;
+
+      const childIndex = nodes.length;
+      nodes.push({
+        state: after,
+        parent: entry.nodeIndex,
+        command,
+        depth: childDepth,
+      });
+      bestCost.set(childKey, childDepth);
+      open.push({
+        nodeIndex: childIndex,
+        priority: childDepth + heuristic(after),
+        depth: childDepth,
+      });
+    }
+  }
+
+  return { solvable: false, moves: null, commands: [], exploredStates };
+}
+
+function withoutAdvancedMechanics(level: Level): Level {
+  const simplified = cloneLevel(level);
+  simplified.doors = undefined;
+  simplified.switches = undefined;
+  simplified.teleporters = undefined;
+  return simplified;
+}
+
+function replayOnLevel(
+  level: Level,
+  commands: readonly SolverCommand[],
+): GameState {
+  return replay(new LevelRunner(level), commands);
+}
+
+export function solveLevel(
+  level: Level,
+  options?: { maxDepth?: number },
+): SolverResult {
+  const hasAdvancedMechanics =
+    (level.doors?.length ?? 0) > 0 || (level.teleporters?.length ?? 0) > 0;
+
+  if (!hasAdvancedMechanics) {
+    return solveAStar(level, options);
+  }
+
+  const simpleResult = solveAStar(withoutAdvancedMechanics(level), options);
+  if (!simpleResult.solvable) {
+    return solveBfs(level, options);
+  }
+
+  if (replayOnLevel(level, simpleResult.commands).completed) {
+    const betterResult = solveAStar(level, {
+      maxDepth: simpleResult.moves - 1,
+    });
+    if (betterResult.solvable) {
+      return {
+        ...betterResult,
+        exploredStates:
+          simpleResult.exploredStates + betterResult.exploredStates,
+      };
+    }
+
+    return {
+      ...simpleResult,
+      exploredStates: simpleResult.exploredStates + betterResult.exploredStates,
+    };
+  }
+
+  return solveBfs(level, options);
 }
 
 export function replay(

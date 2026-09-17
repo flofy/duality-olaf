@@ -3,17 +3,21 @@ import { campaign } from "@duality/level-format";
 import { rankCampaign, validateCampaign } from "./LevelValidator";
 
 describe("campaign difficulty ranking", () => {
-  it.skip("ranks every solvable level from easier to harder", () => {
-    const validation = validateCampaign(campaign);
-    const ranked = rankCampaign(validation);
+  it(
+    "ranks every solvable level from easier to harder",
+    { timeout: 120_000 },
+    () => {
+      const validation = validateCampaign(campaign);
+      const ranked = rankCampaign(validation);
 
-    expect(ranked).toHaveLength(campaign.length);
-    expect(ranked.every((entry) => entry.result.solvable)).toBe(true);
+      expect(ranked).toHaveLength(campaign.length);
+      expect(ranked.every((entry) => entry.result.solvable)).toBe(true);
 
-    for (let index = 1; index < ranked.length; index += 1) {
-      expect(ranked[index - 1].difficulty!.score).toBeLessThanOrEqual(
-        ranked[index].difficulty!.score,
-      );
-    }
-  });
+      for (let index = 1; index < ranked.length; index += 1) {
+        expect(ranked[index - 1].difficulty!.score).toBeLessThanOrEqual(
+          ranked[index].difficulty!.score,
+        );
+      }
+    },
+  );
 });
