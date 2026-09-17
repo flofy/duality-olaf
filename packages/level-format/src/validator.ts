@@ -1,6 +1,6 @@
 import type { Level, Tile } from "./index";
 
-const VALID_TILES: readonly Tile[] = ["empty", "wall", "special"];
+const VALID_TILES: readonly Tile[] = ["empty", "wall", "special", "spike"];
 
 export function validateLevel(level: Level): void {
   if (!level.id) throw new Error("Level id is required");
@@ -25,7 +25,11 @@ export function validateLevel(level: Level): void {
     }
   }
 
-  const positions = [level.ball, ...(level.square ? [level.square] : []), ...level.stars];
+  const positions = [
+    level.ball,
+    ...(level.square ? [level.square] : []),
+    ...level.stars,
+  ];
   for (const position of positions) {
     if (
       !Number.isInteger(position.x) ||
