@@ -239,6 +239,10 @@
   font-size: 75%;
 }
 
+.editor-entity.spike {
+  font-size: 60%;
+}
+
 .editor-hint,
 .editor-json {
   width: min(100%, 1100px);

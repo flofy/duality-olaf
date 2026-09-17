@@ -19,7 +19,8 @@ export type Level = {
   height: number;
   tiles: Tile[][];
   ball: Position;
-  square: Position;
+  /** Optional: some levels are ball-only ("■ absent" in game HUD). */
+  square?: Position;
   stars: Position[];
   doors?: Door[];
   switches?: Switch[];

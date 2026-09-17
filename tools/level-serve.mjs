@@ -24,7 +24,7 @@ import http from "node:http";
 const REPO_ROOT = path.resolve(import.meta.dirname, "..");
 const LEVELS_ROOT = path.join(REPO_ROOT, "packages/level-format/levels");
 const PORT = Number(process.env.PORT ?? 34761);
-const VALID_TILES = new Set(["empty", "wall", "special"]);
+const VALID_TILES = new Set(["empty", "wall", "special", "spike"]);
 
 /** Same structural rules as level-intake.mjs / @duality/level-format. */
 function validateLevel(level, worldNumber) {
@@ -54,7 +54,7 @@ function validateLevel(level, worldNumber) {
 
   const positions = [
     ["ball", level.ball],
-    ["square", level.square],
+    ...(level.square ? [["square", level.square]] : []),
     ...(level.stars ?? []).map((star, index) => [`stars[${index}]`, star]),
   ];
   for (const [label, position] of positions) {

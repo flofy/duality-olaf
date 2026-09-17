@@ -1,6 +1,7 @@
 export type LevelEditorTool =
   | "empty"
   | "wall"
+  | "spike"
   | "star"
   | "ball"
   | "square"
@@ -17,9 +18,10 @@ type LevelEditorToolDefinition = {
 export const levelEditorTools: LevelEditorToolDefinition[] = [
   { id: "empty", label: "Case vide", glyph: "·" },
   { id: "wall", label: "Mur", glyph: "■" },
+  { id: "spike", label: "Piques", glyph: "▲" },
   { id: "star", label: "Étoile", glyph: "★" },
   { id: "ball", label: "Balle", glyph: "●" },
-  { id: "square", label: "Carré", glyph: "■" },
+  { id: "square", label: "Carré (re-clic pour retirer)", glyph: "■" },
   { id: "door", label: "Porte", glyph: "▣" },
   { id: "switch", label: "Interrupteur", glyph: "⌁" },
   { id: "teleporter", label: "Téléporteur", glyph: "◎" },
@@ -33,11 +35,7 @@ export function LevelEditorTools({
   onSelect: (tool: LevelEditorTool) => void;
 }) {
   return (
-    <div
-      className="editor-tools"
-      role="toolbar"
-      aria-label="Outils de niveau"
-    >
+    <div className="editor-tools" role="toolbar" aria-label="Outils de niveau">
       {levelEditorTools.map((item) => (
         <button
           key={item.id}

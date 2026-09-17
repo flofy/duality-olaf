@@ -154,7 +154,7 @@ export function LevelThumb({ level }: { level: Level }) {
 
   const markers = new Map<string, string>();
   markers.set(key(level.ball.x, level.ball.y), "ball");
-  markers.set(key(level.square.x, level.square.y), "square");
+  if (level.square) markers.set(key(level.square.x, level.square.y), "square");
   for (const star of level.stars) markers.set(key(star.x, star.y), "star");
   for (const door of level.doors ?? [])
     markers.set(key(door.position.x, door.position.y), "door");

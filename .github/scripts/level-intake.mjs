@@ -54,7 +54,7 @@ if (
 const level = JSON.parse(fs.readFileSync(levelPath, "utf8"));
 
 // ── Structural validation (same rules as @duality/level-format) ──────
-const VALID_TILES = new Set(["empty", "wall", "special"]);
+const VALID_TILES = new Set(["empty", "wall", "special", "spike"]);
 const errors = [];
 const fail = (message) => errors.push(`${level.id ?? "?"}: ${message}`);
 
@@ -81,7 +81,7 @@ if (!Array.isArray(level.tiles) || level.tiles.length !== level.height) {
 
 const positions = [
   ["ball", level.ball],
-  ["square", level.square],
+  ...(level.square ? [["square", level.square]] : []),
   ...(level.stars ?? []).map((star, index) => [`stars[${index}]`, star]),
 ];
 for (const [label, position] of positions) {
