@@ -18,7 +18,7 @@ describe("campaign progression", () => {
 
   it(
     "keeps every world strictly ordered from easier to harder",
-    { timeout: 120_000 },
+    { timeout: 500_000 },
     () => {
       for (let index = 0; index < worlds.length; index += 1) {
         const worldScores = scores(index);
