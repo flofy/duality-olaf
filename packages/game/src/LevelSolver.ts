@@ -246,7 +246,10 @@ function createHeuristic(level: Level): (state: GameState) => number {
   const distances = buildRelaxedDistances(level);
   const starKeys = level.stars.map(positionKey);
 
-  const distanceBetweenStars = (fromKey: string, toKey: string): number | null => {
+  const distanceBetweenStars = (
+    fromKey: string,
+    toKey: string,
+  ): number | null => {
     if (fromKey === toKey) return 0;
 
     const forward = distances.get(fromKey)?.get(toKey);
