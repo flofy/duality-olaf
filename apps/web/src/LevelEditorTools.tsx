@@ -8,11 +8,13 @@ export type LevelEditorTool =
   | "switch"
   | "teleporter";
 
-export const levelEditorTools: Array<{
+type LevelEditorToolDefinition = {
   id: LevelEditorTool;
   label: string;
   glyph: string;
-}> = [
+};
+
+export const levelEditorTools: LevelEditorToolDefinition[] = [
   { id: "empty", label: "Case vide", glyph: "·" },
   { id: "wall", label: "Mur", glyph: "■" },
   { id: "star", label: "Étoile", glyph: "★" },
