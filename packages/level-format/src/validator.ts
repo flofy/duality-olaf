@@ -44,5 +44,8 @@ export function validateLevel(level: Level): void {
     if (level.tiles[position.y][position.x] === "wall") {
       throw new Error(`${level.id}: entity cannot be placed on a wall`);
     }
+    if (level.tiles[position.y][position.x] === "spike") {
+      throw new Error(`${level.id}: entity cannot be placed on a spike`);
+    }
   }
 }

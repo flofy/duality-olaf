@@ -56,6 +56,13 @@ export function isWall(level: Level, position: Position): boolean {
   );
 }
 
+/** Spikes are lethal wherever they are placed. */
+export function isSpike(level: Level, position: Position): boolean {
+  return (
+    isInside(level, position) && level.tiles[position.y][position.x] === "spike"
+  );
+}
+
 export function samePosition(a: Position, b: Position): boolean {
   return a.x === b.x && a.y === b.y;
 }

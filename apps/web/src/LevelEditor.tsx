@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { cloneLevel, type Level } from "@duality/level-format";
+import { cloneLevel, type Level, type Switch } from "@duality/level-format";
 import { validateLevel, type LevelValidation } from "@duality/game";
 import { useNavigate } from "react-router";
 import { devLevelById } from "./LevelLab";
@@ -31,6 +31,8 @@ export function LevelEditor({
     return initial ? cloneLevel(initial) : blankLevel("custom-01", 13, 10);
   });
   const [tool, setTool] = useState<LevelEditorTool>("wall");
+  // Which form(s) a newly placed switch reacts to (tool: "switch").
+  const [switchForm, setSwitchForm] = useState<Switch["form"]>("either");
   const [message, setMessage] = useState(
     initialLevelId
       ? "Édition d'un niveau existant — modifie puis exporte le JSON"
@@ -51,7 +53,7 @@ export function LevelEditor({
 
   const paint = (x: number, y: number) => {
     const next = cloneLevel(level);
-    applyTool(next, tool, x, y);
+    applyTool(next, tool, x, y, { switchForm });
     update(next);
   };
 
@@ -201,6 +203,38 @@ export function LevelEditor({
           </div>
           <div className="editor-section-title">OUTILS</div>
           <LevelEditorTools selected={tool} onSelect={setTool} />
+          {tool === "switch" && (
+            <>
+              <div className="editor-section-title">
+                RÉACTION DE L'INTERRUPTEUR
+              </div>
+              <div
+                className="editor-tools"
+                role="radiogroup"
+                aria-label="Forme activatrice de l'interrupteur"
+              >
+                {(
+                  [
+                    { form: "either", glyph: "●⇄■", label: "Les deux" },
+                    { form: "ball", glyph: "●", label: "Boule" },
+                    { form: "square", glyph: "■", label: "Carré" },
+                  ] as const
+                ).map((item) => (
+                  <button
+                    key={item.form}
+                    type="button"
+                    className={`editor-tool ${switchForm === item.form ? "selected" : ""}`}
+                    onClick={() => setSwitchForm(item.form)}
+                    title={item.label}
+                    aria-pressed={switchForm === item.form}
+                  >
+                    <span>{item.glyph}</span>
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
           <EditorActions
             message={message}
             validation={validation}
@@ -227,8 +261,9 @@ export function LevelEditor({
           <p className="editor-hint">
             Clique (ou clique-glisse pour les murs, piques et cases vides) pour
             appliquer l'outil sélectionné. Le carré est optionnel : re-clique
-            sur sa case pour le retirer. Les éléments mécaniques sont créés avec
-            des identifiants automatiques.
+            sur sa case pour le retirer. Les piques sont mortelles : une pièce
+            qui glisse dessus déclenche un game over. Les éléments mécaniques
+            sont créés avec des identifiants automatiques.
           </p>
           <details className="editor-json">
             <summary>JSON du niveau</summary>

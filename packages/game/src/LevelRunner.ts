@@ -1,5 +1,5 @@
 import type { Form, Level, Position } from "@duality/level-format";
-import { cloneLevel, isInside, isWall } from "@duality/level-format";
+import { cloneLevel, isInside, isSpike, isWall } from "@duality/level-format";
 
 export type Direction = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
 export type DoorState = Record<string, boolean>;
@@ -106,6 +106,12 @@ export class LevelRunner {
       current.y = next.y;
       moved += 1;
       swept.push({ x: current.x, y: current.y });
+      // Spikes are lethal wherever they are placed: sliding onto one — even
+      // while passing over — ends the run immediately.
+      if (isSpike(this.state.level, current)) {
+        this.state.gameOver = true;
+        return this.getState();
+      }
       if (this.tryTeleport(current, other)) {
         this.state.teleportsThisMove += 1;
         break;

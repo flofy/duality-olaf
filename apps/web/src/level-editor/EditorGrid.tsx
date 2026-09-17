@@ -1,6 +1,7 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 import type { Level } from "@duality/level-format";
 import type { LevelEditorTool } from "../LevelEditorTools";
+import { switchGlyph } from "../GameBoard";
 import { isDragPaintTool } from "./levelOps";
 
 function same(
@@ -79,7 +80,11 @@ export function EditorGrid({ level, tool, onPaint }: EditorGridProps) {
               {square && <span className="editor-entity square">■</span>}
               {star && <span className="editor-entity star">★</span>}
               {door && <span className="editor-entity door">▣</span>}
-              {sw && <span className="editor-entity switch">⌁</span>}
+              {sw && (
+                <span className={`editor-entity switch form-${sw.form}`}>
+                  {switchGlyph(sw.form)}
+                </span>
+              )}
               {tp && <span className="editor-entity teleporter">◎</span>}
               {tile === "spike" && (
                 <span className="editor-entity spike">▲</span>

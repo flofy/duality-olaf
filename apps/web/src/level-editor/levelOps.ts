@@ -2,9 +2,15 @@ import {
   createEmptyLevel,
   type Level,
   type Position,
+  type Switch,
   type Tile,
 } from "@duality/level-format";
 import type { LevelEditorTool } from "../LevelEditorTools";
+
+/** Extra context some tools need (e.g. which form a new switch reacts to). */
+export type ToolOptions = {
+  switchForm?: Switch["form"];
+};
 
 function same(a: Position | undefined, b: Position): boolean {
   return a !== undefined && a.x === b.x && a.y === b.y;
@@ -40,6 +46,7 @@ export function applyTool(
   tool: LevelEditorTool,
   x: number,
   y: number,
+  options: ToolOptions = {},
 ): void {
   if (tool === "empty" || tool === "wall" || tool === "spike") {
     level.tiles[y]![x] = tool;
@@ -74,7 +81,7 @@ export function applyTool(
       level.switches.push({
         id: `switch-${level.switches.length + 1}`,
         position: { x, y },
-        form: "either",
+        form: options.switchForm ?? "either",
         toggles: door ? [door.id] : [],
       });
     }
