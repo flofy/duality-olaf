@@ -12,28 +12,8 @@ import { useNavigate } from "react-router";
 import { LabGame, devLevelById } from "./LevelLab";
 import { getActiveThemeName } from "./theme";
 import { resolveLevelSkin } from "./skins";
+import { LevelEditorTools, type LevelEditorTool } from "./LevelEditorTools";
 import "./level-editor.css";
-
-type Tool =
-  | "empty"
-  | "wall"
-  | "star"
-  | "ball"
-  | "square"
-  | "door"
-  | "switch"
-  | "teleporter";
-
-const tools: Array<{ id: Tool; label: string; glyph: string }> = [
-  { id: "empty", label: "Case vide", glyph: "·" },
-  { id: "wall", label: "Mur", glyph: "■" },
-  { id: "star", label: "Étoile", glyph: "★" },
-  { id: "ball", label: "Balle", glyph: "●" },
-  { id: "square", label: "Carré", glyph: "■" },
-  { id: "door", label: "Porte", glyph: "▣" },
-  { id: "switch", label: "Interrupteur", glyph: "⌁" },
-  { id: "teleporter", label: "Téléporteur", glyph: "◎" },
-];
 
 /** Local write server (tools/level-serve.mjs) — run `pnpm level:serve`. */
 const LEVEL_SERVER_URL =
@@ -86,7 +66,7 @@ export function LevelEditor({
       initialLevelId === null ? undefined : devLevelById.get(initialLevelId);
     return initial ? clone(initial) : blankLevel("custom-01", 13, 10);
   });
-  const [tool, setTool] = useState<Tool>("wall");
+  const [tool, setTool] = useState<LevelEditorTool>("wall");
   const [message, setMessage] = useState(
     initialLevelId
       ? "Édition d'un niveau existant — modifie puis exporte le JSON"
@@ -352,23 +332,7 @@ export function LevelEditor({
             </label>
           </div>
           <div className="editor-section-title">OUTILS</div>
-          <div
-            className="editor-tools"
-            role="toolbar"
-            aria-label="Outils de niveau"
-          >
-            {tools.map((item) => (
-              <button
-                key={item.id}
-                className={`editor-tool ${tool === item.id ? "selected" : ""}`}
-                onClick={() => setTool(item.id)}
-                title={item.label}
-              >
-                <span>{item.glyph}</span>
-                {item.label}
-              </button>
-            ))}
-          </div>
+          <LevelEditorTools selected={tool} onSelect={setTool} />
           <div className="editor-section-title">ACTIONS</div>
           <label>
             MONDE CIBLE (ÉCRITURE LOCALE)
