@@ -295,69 +295,93 @@ function buildRelaxedMoves(level: Level, position: Position): RelaxedMove[] {
   });
 }
 
+type RelaxedReverseEdge = {
+  from: string;
+};
+
+type RelaxedReverseGraph = Map<string, RelaxedReverseEdge[]>;
+
+function buildRelaxedReverseGraph(
+  graph: RelaxedMovementGraph,
+): RelaxedReverseGraph {
+  const reverse: RelaxedReverseGraph = new Map();
+
+  for (const [fromKey, moves] of graph) {
+    for (const move of moves) {
+      const toKey = positionKey(move.position);
+      const edges = reverse.get(toKey) ?? [];
+      edges.push({ from: fromKey });
+      reverse.set(toKey, edges);
+    }
+  }
+
+  return reverse;
+}
+
 function buildRelaxedDistances(
   level: Level,
   graph: RelaxedMovementGraph,
 ): Map<string, Map<string, number>> {
+  const reverse = buildRelaxedReverseGraph(graph);
   const distances = new Map<string, Map<string, number>>();
 
-  for (let y = 0; y < level.height; y += 1) {
-    for (let x = 0; x < level.width; x += 1) {
-      const start = { x, y };
-      if (isWall(level, start)) continue;
+  for (const star of level.stars) {
+    const targetKey = positionKey(star);
+    const distanceToStar = new Map<string, number>([[targetKey, 0]]);
+    const queue = [targetKey];
 
-      const startKey = positionKey(start);
-      const distanceByStar = new Map<string, number>();
-      for (const star of level.stars) {
-        const targetKey = positionKey(star);
-        if (targetKey === startKey) {
-          distanceByStar.set(targetKey, 0);
+    for (const [fromKey, moves] of graph) {
+      if (
+        moves.some((move) =>
+          move.swept.some((cell) => positionKey(cell) === targetKey),
+        )
+      ) {
+        const previousDistance = distanceToStar.get(fromKey);
+        if (previousDistance === undefined || previousDistance > 1) {
+          distanceToStar.set(fromKey, 1);
+          queue.push(fromKey);
+        }
+      }
+    }
+
+    for (let cursor = 0; cursor < queue.length; cursor += 1) {
+      const currentKey = queue[cursor]!;
+      const currentDistance = distanceToStar.get(currentKey)!;
+
+      for (const edge of reverse.get(currentKey) ?? []) {
+        const nextDistance = currentDistance + 1;
+        const previousDistance = distanceToStar.get(edge.from);
+        if (
+          previousDistance !== undefined &&
+          previousDistance <= nextDistance
+        ) {
           continue;
         }
 
-        const targetDistance = findRelaxedStarDistance(graph, start, star);
-        if (targetDistance !== null) {
-          distanceByStar.set(targetKey, targetDistance);
-        }
+        distanceToStar.set(edge.from, nextDistance);
+        queue.push(edge.from);
       }
+    }
 
-      distances.set(startKey, distanceByStar);
+    for (const [fromKey, distance] of distanceToStar) {
+      const row = distances.get(fromKey) ?? new Map<string, number>();
+      row.set(targetKey, distance);
+      distances.set(fromKey, row);
+    }
+  }
+
+  for (let y = 0; y < level.height; y += 1) {
+    for (let x = 0; x < level.width; x += 1) {
+      const position = { x, y };
+      if (isWall(level, position)) continue;
+      distances.set(
+        positionKey(position),
+        distances.get(positionKey(position)) ?? new Map(),
+      );
     }
   }
 
   return distances;
-}
-
-function findRelaxedStarDistance(
-  graph: RelaxedMovementGraph,
-  start: Position,
-  target: Position,
-): number | null {
-  const queue: Position[] = [start];
-  const visited = new Set<string>([positionKey(start)]);
-  const distance = new Map<string, number>([[positionKey(start), 0]]);
-
-  for (let cursor = 0; cursor < queue.length; cursor += 1) {
-    const current = queue[cursor]!;
-    const currentKey = positionKey(current);
-    const currentDistance = distance.get(currentKey)!;
-
-    for (const move of graph.get(currentKey) ?? []) {
-      if (
-        move.swept.some((cell) => cell.x === target.x && cell.y === target.y)
-      ) {
-        return currentDistance + 1;
-      }
-
-      const nextKey = positionKey(move.position);
-      if (visited.has(nextKey)) continue;
-      visited.add(nextKey);
-      distance.set(nextKey, currentDistance + 1);
-      queue.push(move.position);
-    }
-  }
-
-  return null;
 }
 
 function createHeuristic(level: Level): (state: GameState) => number {
