@@ -1,24 +1,28 @@
 {
   "name": "duality-olaf",
-  "version": "0.1.0",
   "private": true,
-  "description": "A modern TypeScript/Phaser reimplementation inspired by Olaf / Maouss DS.",
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "pnpm --dir apps/web dev",
-    "build": "pnpm --dir apps/web build",
-    "preview": "pnpm --dir apps/web preview",
-    "test": "pnpm --dir packages/game test",
-    "typecheck": "pnpm --dir apps/web typecheck",
-    "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check",
-    "level:serve": "node tools/level-serve.mjs"
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "test:coverage": "pnpm -r test:coverage",
+    "knip": "knip",
+    "madge": "madge --circular .",
+    "snyk": "snyk test",
+    "inspect": "pnpm -r inspect"
   },
   "devDependencies": {
-    "oxfmt": "^0.66.0",
-    "typescript": "^5.9.2"
+    "knip": "^4.0.0",
+    "madge": "^6.0.0",
+    "snyk": "^1.1235.0",
+    "vite-plugin-inspect": "^0.7.40"
   },
-  "engines": {
-    "node": ">=24 <25"
-  },
-  "packageManager": "pnpm@10.15.0"
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tools/*"
+  ],
+  "packageManager": "pnpm@8.15.0"
 }
