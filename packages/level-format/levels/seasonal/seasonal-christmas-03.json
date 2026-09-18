@@ -1,5 +1,5 @@
 {
-  "id": "world-1-level-02",
+  "id": "seasonal-christmas-03",
   "width": 13,
   "height": 10,
   "tiles": [
@@ -52,7 +52,22 @@
       "wall",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
       "wall",
+      "empty",
+      "empty",
+      "empty",
       "wall",
       "wall",
       "empty",
@@ -72,8 +87,8 @@
       "empty",
       "empty",
       "empty",
-      "empty",
-      "empty",
+      "wall",
+      "wall",
       "empty",
       "empty",
       "wall"
@@ -89,21 +104,6 @@
       "empty",
       "empty",
       "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
       "empty",
       "empty",
       "wall"
@@ -155,21 +155,41 @@
     ]
   ],
   "ball": {
-    "x": 1,
-    "y": 1
+    "x": 2,
+    "y": 8
   },
   "stars": [
     {
-      "x": 11,
+      "x": 3,
       "y": 1
     },
     {
-      "x": 11,
-      "y": 8
+      "x": 5,
+      "y": 2
     },
     {
-      "x": 1,
-      "y": 8
+      "x": 7,
+      "y": 3
+    },
+    {
+      "x": 9,
+      "y": 4
+    },
+    {
+      "x": 7,
+      "y": 5
+    },
+    {
+      "x": 5,
+      "y": 6
+    },
+    {
+      "x": 3,
+      "y": 7
     }
-  ]
+  ],
+  "square": {
+    "x": 10,
+    "y": 1
+  }
 }

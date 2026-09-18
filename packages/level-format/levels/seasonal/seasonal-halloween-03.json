@@ -1,5 +1,5 @@
 {
-  "id": "world-1-level-02",
+  "id": "seasonal-halloween-03",
   "width": 13,
   "height": 10,
   "tiles": [
@@ -52,7 +52,22 @@
       "wall",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
       "wall",
+      "empty",
+      "empty",
+      "empty",
       "wall",
       "wall",
       "empty",
@@ -71,8 +86,8 @@
       "empty",
       "empty",
       "empty",
-      "empty",
-      "empty",
+      "wall",
+      "wall",
       "empty",
       "empty",
       "empty",
@@ -89,21 +104,6 @@
       "empty",
       "empty",
       "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
       "empty",
       "empty",
       "wall"
@@ -155,21 +155,37 @@
     ]
   ],
   "ball": {
-    "x": 1,
-    "y": 1
+    "x": 2,
+    "y": 4
   },
   "stars": [
     {
-      "x": 11,
+      "x": 3,
       "y": 1
     },
     {
-      "x": 11,
+      "x": 6,
+      "y": 2
+    },
+    {
+      "x": 9,
+      "y": 1
+    },
+    {
+      "x": 9,
       "y": 8
     },
     {
-      "x": 1,
+      "x": 6,
+      "y": 7
+    },
+    {
+      "x": 3,
       "y": 8
     }
-  ]
+  ],
+  "square": {
+    "x": 10,
+    "y": 5
+  }
 }

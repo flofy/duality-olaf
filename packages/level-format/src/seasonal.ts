@@ -1,5 +1,5 @@
-import type { Level, Position } from "./index";
-import { BAT_MASK, TREE_MASK, shapeToStars } from "./shapes";
+import type { Level } from "./index";
+import { validateLevel } from "./validator";
 
 export type SeasonalTheme = "halloween" | "christmas";
 
@@ -12,26 +12,51 @@ export type SeasonalEvent = {
   levels: readonly Level[];
 };
 
-const p = (x: number, y: number): Position => ({ x, y });
-const WIDTH = 13;
-const HEIGHT = 10;
+/**
+ * One JSON file per level, grouped by directory. Seasonal events and challenge
+ * levels follow the same authoring flow as the campaign: drop a file, no code
+ * change required. Files are named `<id>.json` so lexicographic order matches
+ * the intended play order.
+ */
+const seasonalModules = import.meta.glob<Level>("../levels/seasonal/*.json", {
+  eager: true,
+});
 
-function makeLevel(
-  id: string,
-  ball: Position,
-  square: Position,
-  stars: Position[],
-  walls: Position[] = [],
-): Level {
-  const tiles = Array.from({ length: HEIGHT }, (_, y) =>
-    Array.from({ length: WIDTH }, (_, x) =>
-      x === 0 || y === 0 || x === WIDTH - 1 || y === HEIGHT - 1
-        ? ("wall" as const)
-        : ("empty" as const),
-    ),
-  );
-  for (const wall of walls) tiles[wall.y]![wall.x] = "wall";
-  return { id, width: WIDTH, height: HEIGHT, tiles, ball, square, stars };
+const challengeModules = import.meta.glob<Level>(
+  "../levels/challenges/*.json",
+  {
+    eager: true,
+  },
+);
+
+/**
+ * Load every seasonal level for a theme and assert the id order matches the
+ * play order (`seasonal-halloween-01`, `-02`, …) so a rename cannot silently
+ * reshuffle an event.
+ */
+function loadSeasonalTheme(theme: SeasonalTheme): Level[] {
+  const prefix = `seasonal-${theme}-`;
+  const levels = Object.entries(seasonalModules)
+    .filter(([, level]) => level.id.startsWith(prefix))
+    .sort(([, a], [, b]) => a.id.localeCompare(b.id))
+    .map(([, level]) => level);
+
+  if (levels.length === 0) {
+    throw new Error(`No seasonal levels found for theme '${theme}'`);
+  }
+
+  levels.forEach((level, index) => {
+    validateLevel(level);
+    const expected = `${prefix}${String(index + 1).padStart(2, "0")}`;
+    if (level.id !== expected) {
+      throw new Error(
+        `${level.id}: id must match its file position (expected ${expected}) — ` +
+          "rename the file/id so id order equals play order",
+      );
+    }
+  });
+
+  return levels;
 }
 
 /** Seasonal worlds reuse the core movement rules and keep stable IDs across years. */
@@ -41,28 +66,7 @@ export const halloween: SeasonalEvent = {
   label: "Halloween",
   start: { month: 10, day: 20 },
   end: { month: 11, day: 3 },
-  levels: [
-    makeLevel(
-      "seasonal-halloween-01",
-      p(1, 1),
-      p(11, 8),
-      shapeToStars(BAT_MASK, 2, 1),
-    ),
-    makeLevel(
-      "seasonal-halloween-02",
-      p(1, 8),
-      p(11, 1),
-      [p(2, 2), p(5, 5), p(8, 2), p(10, 7)],
-      [p(4, 3), p(5, 3), p(8, 6), p(9, 6)],
-    ),
-    makeLevel(
-      "seasonal-halloween-03",
-      p(2, 4),
-      p(10, 5),
-      [p(3, 1), p(6, 2), p(9, 1), p(9, 8), p(6, 7), p(3, 8)],
-      [p(4, 4), p(5, 4), p(7, 5), p(8, 5)],
-    ),
-  ],
+  levels: loadSeasonalTheme("halloween"),
 };
 
 export const christmas: SeasonalEvent = {
@@ -71,28 +75,7 @@ export const christmas: SeasonalEvent = {
   label: "Christmas",
   start: { month: 12, day: 1 },
   end: { month: 1, day: 7 },
-  levels: [
-    makeLevel(
-      "seasonal-christmas-01",
-      p(1, 8),
-      p(11, 8),
-      shapeToStars(TREE_MASK, 2, 1),
-    ),
-    makeLevel(
-      "seasonal-christmas-02",
-      p(1, 1),
-      p(11, 8),
-      [p(3, 2), p(5, 3), p(7, 4), p(9, 5), p(7, 6), p(5, 7)],
-      [p(6, 2), p(6, 3), p(6, 6), p(6, 7)],
-    ),
-    makeLevel(
-      "seasonal-christmas-03",
-      p(2, 8),
-      p(10, 1),
-      [p(3, 1), p(5, 2), p(7, 3), p(9, 4), p(7, 5), p(5, 6), p(3, 7)],
-      [p(4, 4), p(5, 4), p(8, 5), p(9, 5)],
-    ),
-  ],
+  levels: loadSeasonalTheme("christmas"),
 };
 
 export const seasonalEvents: readonly SeasonalEvent[] = [halloween, christmas];
@@ -103,7 +86,14 @@ export const seasonalEvents: readonly SeasonalEvent[] = [halloween, christmas];
  * the solver validation gate in CI.  Move problematic or experimental levels
  * here while they are being tuned.
  */
-export const challengeLevels: readonly Level[] = [];
+export const challengeLevels: readonly Level[] = Object.entries(
+  challengeModules,
+)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([, level]) => {
+    validateLevel(level);
+    return level;
+  });
 
 function dayOfYear(date: Date): number {
   const yearStart = Date.UTC(date.getUTCFullYear(), 0, 1);
