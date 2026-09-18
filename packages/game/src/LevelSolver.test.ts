@@ -8,6 +8,53 @@ import {
 import { LevelRunner } from "./LevelRunner";
 import { solveLevel } from "./LevelSolver";
 
+const COMMANDS = [
+  { type: "move" as const, direction: { x: 1 as const, y: 0 as const } },
+  { type: "move" as const, direction: { x: -1 as const, y: 0 as const } },
+  { type: "move" as const, direction: { x: 0 as const, y: 1 as const } },
+  { type: "move" as const, direction: { x: 0 as const, y: -1 as const } },
+  { type: "switch" as const },
+];
+
+function stateKey(state: ReturnType<LevelRunner["getState"]>): string {
+  return [
+    state.activeForm,
+    state.ball.x,
+    state.ball.y,
+    state.square.x,
+    state.square.y,
+    state.stars.map((star) => `${star.x},${star.y}`).join(";"),
+  ].join("|");
+}
+
+function referenceBfs(level: Level): number | null {
+  const initial = new LevelRunner(level).getState();
+  if (initial.completed) return 0;
+
+  const queue = [{ state: initial, depth: 0 }];
+  const visited = new Set([stateKey(initial)]);
+
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const { state, depth } = queue[cursor]!;
+    for (const command of COMMANDS) {
+      const runner = LevelRunner.fromState(state);
+      const after =
+        command.type === "move"
+          ? runner.move(command.direction)
+          : runner.switchForm();
+      if (after.gameOver) continue;
+      if (after.completed) return depth + 1;
+
+      const key = stateKey(after);
+      if (visited.has(key)) continue;
+      visited.add(key);
+      queue.push({ state: after, depth: depth + 1 });
+    }
+  }
+
+  return null;
+}
+
 describe("solveLevel", () => {
   it("solves a level by collecting a star", () => {
     const level = createEmptyLevel("solver-simple");
@@ -92,6 +139,36 @@ describe("solveLevel", () => {
       result.commands.filter((command) => command.type === "move").length,
     );
     expect(result.moves).toBe(result.commands.length);
+  });
+
+  it("keeps A* optimal on small reference levels", () => {
+    const levels: Level[] = [];
+
+    const direct = createEmptyLevel("solver-reference-direct");
+    direct.ball = { x: 1, y: 1 };
+    direct.square = { x: 5, y: 5 };
+    direct.stars = [{ x: 3, y: 1 }];
+    direct.tiles[1][0] = "wall";
+    direct.tiles[1][11] = "wall";
+    levels.push(direct);
+
+    const swept = {
+      id: "solver-reference-swept",
+      width: 5,
+      height: 1,
+      tiles: [["wall", "empty", "empty", "empty", "wall"]] as Level["tiles"],
+      ball: { x: 1, y: 0 },
+      square: { x: 3, y: 0 },
+      stars: [{ x: 2, y: 0 }],
+    };
+    levels.push(swept);
+
+    for (const level of levels) {
+      const expected = referenceBfs(level);
+      const result = solveLevel(level);
+      expect(result.solvable).toBe(expected !== null);
+      expect(result.moves).toBe(expected);
+    }
   });
 
   it("reports an already complete level", () => {
