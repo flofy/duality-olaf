@@ -13,8 +13,7 @@ import {
 export function AudioSettings() {
   const [soundEnabled, setSoundEnabledState] = useState(isSoundEnabled);
   const [volume, setVolume] = useState(getMasterVolume);
-  const [ambientEnabled, setAmbientEnabledState] =
-    useState(getAmbientEnabled);
+  const [ambientEnabled, setAmbientEnabledState] = useState(getAmbientEnabled);
   const [hapticEnabled, setHapticEnabledState] = useState(getHapticEnabled);
 
   const updateSound = (enabled: boolean) => {
@@ -38,7 +37,10 @@ export function AudioSettings() {
   };
 
   return (
-    <section className="audio-settings" aria-label="Réglages audio et vibrations">
+    <section
+      className="audio-settings"
+      aria-label="Réglages audio et vibrations"
+    >
       <div className="audio-settings-title">🔊 AUDIO & VIBRATIONS</div>
       <div className="audio-setting-row">
         <button
