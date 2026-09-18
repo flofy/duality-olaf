@@ -32,7 +32,14 @@ type CellProps = {
   themeName: string;
 };
 
-function Cell({ entity, size, isStarCollected, isDoorOpen, skin, themeName }: CellProps) {
+function Cell({
+  entity,
+  size,
+  isStarCollected,
+  isDoorOpen,
+  skin,
+  themeName,
+}: CellProps) {
   const theme = getTheme();
   const cellStyle: CSSProperties = {
     width: size,
@@ -120,11 +127,15 @@ function Cell({ entity, size, isStarCollected, isDoorOpen, skin, themeName }: Ce
 
 export function GameBoard({ level, state, skin, themeName }: GameBoardProps) {
   const cellSize = 40;
-  const collectedStarIds = useMemo(() => new Set(state.stars.map((s) => `${s.x},${s.y}`)), [state.stars]);
+  const collectedStarIds = useMemo(
+    () => new Set(state.stars.map((s) => `${s.x},${s.y}`)),
+    [state.stars],
+  );
   const openDoors = useMemo(() => new Set(state.openDoors), [state.openDoors]);
 
   const isDoorOpen = (doorId: string) => openDoors.has(doorId);
-  const isStarCollected = (x: number, y: number) => collectedStarIds.has(`${x},${y}`);
+  const isStarCollected = (x: number, y: number) =>
+    collectedStarIds.has(`${x},${y}`);
 
   const boardStyle: CSSProperties = {
     display: "grid",

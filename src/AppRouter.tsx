@@ -121,16 +121,21 @@ function PwaControls({
     return () => window.removeEventListener("duality:pwa-update", onUpdate);
   }, []);
 
-  if (dismissed || (!updateAvailable && !installPrompt && isInstalled)) return null;
+  if (dismissed || (!updateAvailable && !installPrompt && isInstalled))
+    return null;
 
   return (
-    <div className="pwa-controls pwa-controls-bottom" role="status" aria-live="polite">
+    <div
+      className="pwa-controls pwa-controls-bottom"
+      role="status"
+      aria-live="polite"
+    >
       <span>
         {updateAvailable
           ? "Nouvelle version disponible"
           : isInstalled
-          ? "Application installée"
-          : "Installe Duality pour jouer en plein ecran"}
+            ? "Application installée"
+            : "Installe Duality pour jouer en plein ecran"}
       </span>
       <div className="pwa-actions">
         {updateAvailable && (
@@ -213,9 +218,10 @@ function PwaInstallIndicator() {
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || 
-                           window.navigator.standalone || 
-                           document.referrer.includes('android-app://');
+    const isStandaloneMode =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone ||
+      document.referrer.includes("android-app://");
     setIsStandalone(isStandaloneMode);
   }, []);
 
@@ -234,14 +240,15 @@ function AppLayout() {
 
   useEffect(() => {
     const checkInstalled = () => {
-      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || 
-                             window.navigator.standalone || 
-                             document.referrer.includes('android-app://');
+      const isStandaloneMode =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone ||
+        document.referrer.includes("android-app://");
       setIsInstalled(isStandaloneMode);
     };
     checkInstalled();
-    window.addEventListener('load', checkInstalled);
-    return () => window.removeEventListener('load', checkInstalled);
+    window.addEventListener("load", checkInstalled);
+    return () => window.removeEventListener("load", checkInstalled);
   }, []);
 
   return (
@@ -254,11 +261,11 @@ function AppLayout() {
             <FullscreenButton />
           </div>
         </div>
-        
+
         <div className="app-content">
           <Outlet />
         </div>
-        
+
         <PwaControls updateSW={updateSW} isInstalled={isInstalled} />
       </div>
     </main>
@@ -339,7 +346,7 @@ function Menu() {
         <h1 className="title">DUALITY</h1>
         <div className="subtitle">CHOISIS TON MONDE</div>
       </div>
-      
+
       <div className="world-list">
         {worlds.map((world) => {
           const done = world.levels.filter((level) =>
@@ -364,11 +371,11 @@ function Menu() {
           );
         })}
       </div>
-      
+
       <p className="muted">
         {getCompletedCount()} termines - {campaign.length} jouables
       </p>
-      
+
       <div className="menu-actions">
         <Button
           icon={<ArrowRight size={18} />}
@@ -413,11 +420,7 @@ function WorldLevels() {
               onClick={() => navigate(`/world/${world.id}/level/${level.id}`)}
               key={level.id}
             >
-              {done
-                ? "V"
-                : unlocked
-                  ? String(index + 1).padStart(2, "0")
-                  : "O"}
+              {done ? "V" : unlocked ? String(index + 1).padStart(2, "0") : "O"}
             </button>
           );
         })}
@@ -606,8 +609,8 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
         <b>{state.activeForm === "ball" ? "BALLE" : "CARRE"}</b>
         <br />
         <span className="muted">
-          ETOILES {level.stars.length - state.stars.length}/{level.stars.length} - {" "}
-          {state.moves} COUPS - swipe ou fleches
+          ETOILES {level.stars.length - state.stars.length}/{level.stars.length}{" "}
+          - {state.moves} COUPS - swipe ou fleches
         </span>
       </div>
       <div className="controls">
@@ -648,8 +651,8 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
               : " - CARRE absent"}
           </span>
           <span>
-            {state.activeForm} - ETOILES {state.stars.length} - {commands.length}{" "}
-            commandes
+            {state.activeForm} - ETOILES {state.stars.length} -{" "}
+            {commands.length} commandes
           </span>
           <span className="muted">
             {commands
@@ -709,7 +712,9 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
               />
               <Button
                 icon={<ArrowRight size={18} />}
-                label={worldIndex < world.levels.length - 1 ? "SUIVANT" : "NIVEAUX"}
+                label={
+                  worldIndex < world.levels.length - 1 ? "SUIVANT" : "NIVEAUX"
+                }
                 onClick={nextLevel}
                 variant="primary"
               />

@@ -18,7 +18,7 @@ export function BurgerMenu() {
       icon: <ArrowLeft size={18} />,
       label: "MONDES",
       path: "/menu",
-      variant: "secondary" as const
+      variant: "secondary" as const,
     },
     {
       icon: <Reset size={18} />,
@@ -30,19 +30,19 @@ export function BurgerMenu() {
       icon: <Help size={18} />,
       label: "AIDE",
       path: "/help",
-      variant: "secondary" as const
+      variant: "secondary" as const,
     },
     {
       icon: <Theme size={18} />,
       label: "THÈME",
       path: "/config",
-      variant: "secondary" as const
+      variant: "secondary" as const,
     },
     {
       icon: <Skin size={18} />,
       label: "SKIN",
       path: "/config",
-      variant: "secondary" as const
+      variant: "secondary" as const,
     },
   ];
 
@@ -115,7 +115,7 @@ export function BurgerMenu() {
                 />
               </svg>
             </button>
-            
+
             <div className="burger-menu-items">
               {menuItems.map((item, index) => (
                 <Button

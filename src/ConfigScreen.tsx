@@ -8,12 +8,7 @@ import {
   Skin,
   ResetIcon as Reset,
 } from "./components/Icons";
-import {
-  cycleTheme,
-  getActiveThemeName,
-  getTheme,
-  hexToCss,
-} from "./theme";
+import { cycleTheme, getActiveThemeName, getTheme, hexToCss } from "./theme";
 import {
   getAvailableSkinPreferences,
   getSkinPreference,
@@ -26,8 +21,8 @@ import { campaign } from "./levels/campaign";
 
 export function ConfigScreen() {
   const navigate = useNavigate();
-  const [skinPreference, setSkinPreferenceState] = useState(
-    () => normalizeSkinPreference(getSkinPreference())
+  const [skinPreference, setSkinPreferenceState] = useState(() =>
+    normalizeSkinPreference(getSkinPreference()),
   );
   const [tick, setTick] = useState(0);
   const availableSkins = getAvailableSkinPreferences();
@@ -87,16 +82,15 @@ export function ConfigScreen() {
               label={skinLabels[skin]}
               onClick={() => {
                 const index = availableSkins.indexOf(skin);
-                const next = availableSkins[(index + 1) % availableSkins.length] ?? "auto";
+                const next =
+                  availableSkins[(index + 1) % availableSkins.length] ?? "auto";
                 setSkinPreference(next);
                 setSkinPreferenceState(next);
               }}
               variant="primary"
               className="config-button"
             />
-            <p className="muted">
-              Skin actuel: {skinLabels[skin]}
-            </p>
+            <p className="muted">Skin actuel: {skinLabels[skin]}</p>
           </div>
         </div>
 
@@ -106,7 +100,10 @@ export function ConfigScreen() {
             <p>
               Niveaux terminés: {getCompletedCount()} / {campaign.length}
             </p>
-            <p className="muted">Progression: {Math.round((getCompletedCount() / campaign.length) * 100)}%</p>
+            <p className="muted">
+              Progression:{" "}
+              {Math.round((getCompletedCount() / campaign.length) * 100)}%
+            </p>
           </div>
         </div>
 

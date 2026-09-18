@@ -43,7 +43,8 @@ export const Button = ({
   variant = "primary",
   children,
 }: ButtonProps) => {
-  const { bg, text, hoverBg, disabledBg, disabledText } = buttonVariants[variant];
+  const { bg, text, hoverBg, disabledBg, disabledText } =
+    buttonVariants[variant];
 
   return (
     <button
@@ -82,7 +83,17 @@ export const Button = ({
         }
       }}
     >
-      {icon && <span style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>{icon}</span>}
+      {icon && (
+        <span
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {icon}
+        </span>
+      )}
       {label && <span>{label}</span>}
       {children}
     </button>
@@ -134,7 +145,14 @@ export const DPadButton = ({
         }
       }}
     >
-      <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
+      <span
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
         {icon}
       </span>
     </button>
@@ -190,7 +208,14 @@ export const CenterDPadButton = ({
         }
       }}
     >
-      <span style={{ display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px" }}>
+      <span
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "24px",
+        }}
+      >
         {icon}
       </span>
       <span style={{ fontSize: "10px", fontWeight: "bold" }}>{label}</span>
