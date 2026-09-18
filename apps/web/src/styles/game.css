@@ -13,9 +13,11 @@
 }
 
 .board-wrap {
+  flex: 1 1 auto;
   display: grid;
   place-items: center;
   min-height: 0;
+  overflow: hidden;
 }
 
 .board {
@@ -220,7 +222,7 @@
 .controls {
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: center;
   gap: 16px;
   margin-top: 14px;
 }
@@ -230,6 +232,14 @@
   grid-template-columns: repeat(3, clamp(46px, 12vw, 58px));
   grid-template-rows: repeat(2, clamp(46px, 10vw, 54px));
   gap: 5px;
+}
+
+/* The inline styles of DPadButton fix 48px; stretch to fill the grid tracks
+   so the keys stay aligned whatever the viewport width. */
+.dpad .dpad-button {
+  width: 100%;
+  height: 100%;
+  padding: 0;
 }
 
 .up {
