@@ -15,6 +15,9 @@
 .pwa-controls span {
   min-width: 0;
   flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pwa-actions {
