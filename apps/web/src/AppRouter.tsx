@@ -39,6 +39,20 @@ import {
 } from "./debug/CommandRecorder";
 import { InstallButton } from "./InstallButton";
 
+// Import des nouveaux composants
+import { Button, DPadButton, CenterDPadButton } from "./components/Button";
+import {
+  ArrowLeft,
+  ArrowRight,
+  SwitchForm,
+  ResetIcon as Reset,
+  Maximize,
+  Minimize,
+  Help,
+  ThemeIcon as Theme,
+  Skin,
+} from "./components/Icons";
+
 import "./style.css";
 
 const isLevelLabEnabled = import.meta.env.VITE_ENABLE_LEVEL_LAB === "true";
@@ -105,12 +119,13 @@ function PwaControls({
     <div className="pwa-controls" role="status" aria-live="polite">
       <span>
         {updateAvailable
-          ? "✨ Nouvelle version disponible"
+          ? "🎨 Nouvelle version disponible"
           : "📱 Installe Duality pour jouer en plein écran"}
       </span>
       <div className="pwa-actions">
-        <button
-          className="pwa-action"
+        <Button
+          icon={<ArrowRight size={16} />}
+          label={updateAvailable ? "METTRE À JOUR" : "INSTALLER"}
           onClick={
             updateAvailable
               ? () => updateSW(true)
@@ -121,9 +136,9 @@ function PwaControls({
                   setInstallPrompt(null);
                 }
           }
-        >
-          {updateAvailable ? "METTRE À JOUR" : "INSTALLER"}
-        </button>
+          variant="primary"
+        />
+        
         <button
           className="pwa-dismiss"
           type="button"
@@ -156,16 +171,15 @@ function FullscreenButton() {
   };
 
   return (
-    <button
-      className="action fullscreen-toggle"
-      type="button"
+    <Button
+      icon={fullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+      label={fullscreen ? "FENÊTRÉ" : "PLEIN ÉCRAN"}
       onClick={toggle}
       aria-label={
         fullscreen ? "Quitter le plein écran" : "Passer en plein écran"
       }
-    >
-      {fullscreen ? "↙ FENÊTRÉ" : "⛶ PLEIN ÉCRAN"}
-    </button>
+      variant="secondary"
+    />
   );
 }
 
@@ -177,7 +191,9 @@ function AppLayout() {
           <PwaControls updateSW={updateSW} />
           <FullscreenButton />
         </div>
-        <Outlet />
+        <div className="app-content">
+          <Outlet />
+        </div>
       </div>
     </main>
   );
@@ -227,16 +243,16 @@ function Intro() {
         </div>
         <span className="intro-switch">● ⇄ ■</span>
       </div>
-      <button
-        className="action intro-start"
-        type="button"
+      <Button
+        icon={<ArrowRight size={20} />}
+        label="JOUER"
         onClick={(event) => {
           event.stopPropagation();
           continueIntro();
         }}
-      >
-        JOUER ▶
-      </button>
+        className="intro-start"
+        variant="primary"
+      />
       <span className="intro-hint">ENTRÉE · ESPACE · CLIQUER</span>
     </section>
   );
@@ -261,19 +277,21 @@ function Menu() {
             isLevelCompleted(level.id),
           ).length;
           return (
-            <button
-              className="world-button"
-              disabled={world.status !== "available"}
-              onClick={() => navigate(`/world/${world.id}`)}
-              key={world.id}
-            >
-              🌍 MONDE {world.id} — {world.name.toUpperCase()}
-              <span className="world-meta">
+            <div key={world.id} style={{ position: "relative" }}>
+              <Button
+                icon={<ArrowRight size={20} />}
+                label={`MONDE ${world.id} — ${world.name.toUpperCase()}`}
+                onClick={() => navigate(`/world/${world.id}`)}
+                disabled={world.status !== "available"}
+                variant="primary"
+                className="world-button"
+              />
+              <div className="world-meta">
                 {world.status === "available"
-                  ? `${world.subtitle} · ${done}/${world.levels.length}`
-                  : `${world.subtitle} · BIENTÔT`}
-              </span>
-            </button>
+                  ? `${world.subtitle} • ${done}/${world.levels.length}`
+                  : `${world.subtitle} • BIENTÔT`}
+              </div>
+            </div>
           );
         })}
       </div>
@@ -281,21 +299,24 @@ function Menu() {
         {getCompletedCount()} terminé(s) · {campaign.length} jouables
       </p>
       <div className="modal-actions">
-        <InstallButton />
-        <button className="action" onClick={() => navigate("/help")}>
-          ? AIDE
-        </button>
-        <button
-          className="action"
+        <Button
+          icon={<Help size={18} />}
+          label="AIDE"
+          onClick={() => navigate("/help")}
+          variant="secondary"
+        />
+        <Button
+          icon={<Theme size={18} />}
+          label="THÈME"
           onClick={() => {
             cycleTheme();
             setTick(tick + 1);
           }}
-        >
-          🎨 THÈME
-        </button>
-        <button
-          className="action"
+          variant="secondary"
+        />
+        <Button
+          icon={<Skin size={18} />}
+          label={skinLabels[skin]}
           onClick={() => {
             const index = availableSkins.indexOf(skin);
             const next =
@@ -303,9 +324,8 @@ function Menu() {
             setSkinPreference(next);
             setSkinPreferenceState(next);
           }}
-        >
-          ✨ {skinLabels[skin]}
-        </button>
+          variant="secondary"
+        />
         {isLevelLabEnabled && (
           <button
             className="action dev-entry"
@@ -330,9 +350,12 @@ function WorldLevels() {
   return (
     <section className="menu">
       <div className="topbar">
-        <button className="action" onClick={() => navigate("/menu")}>
-          ← MONDES
-        </button>
+        <Button
+          icon={<ArrowLeft size={18} />}
+          label="MONDES"
+          onClick={() => navigate("/menu")}
+          variant="secondary"
+        />
         <b>MONDE {world.id}</b>
       </div>
       <h2 className="subtitle">{world.name.toUpperCase()}</h2>
@@ -372,7 +395,7 @@ function Help() {
     ["BLOQUER", "La boule et le carré peuvent se servir mutuellement de mur."],
     [
       "PORTES",
-      "Une porte bloque le passage tant qu’un interrupteur lié ne l’a pas ouverte.",
+      "Une porte bloque le passage tant qu'un interrupteur lié ne l'a pas ouverte.",
     ],
     [
       "TÉLÉPORTER",
@@ -384,9 +407,12 @@ function Help() {
 
   return (
     <section className="help">
-      <button className="action" onClick={() => navigate("/menu")}>
-        ← RETOUR
-      </button>
+      <Button
+        icon={<ArrowLeft size={18} />}
+        label="RETOUR"
+        onClick={() => navigate("/menu")}
+        variant="secondary"
+      />
       <h1 className="title">COMMENT JOUER ?</h1>
       {rules.map(([title, text]) => (
         <section key={title}>
@@ -510,18 +536,21 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
       }}
     >
       <div className="topbar">
-        <button
-          className="action"
+        <Button
+          icon={<ArrowLeft size={18} />}
+          label="NIVEAUX"
           onClick={() => navigate(`/world/${world.id}`)}
-        >
-          ← NIVEAUX
-        </button>
+          variant="secondary"
+        />
         <b>
           {levelLabel(worldIndex)} · MONDE {world.id}
         </b>
-        <button className="action" onClick={reset}>
-          ↻
-        </button>
+        <Button
+          icon={<Reset size={18} />}
+          label="RECOMMENCER"
+          onClick={reset}
+          variant="secondary"
+        />
       </div>
       <div className="board-wrap">
         <GameBoard
@@ -535,24 +564,35 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
         <b>{state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
         <br />
         <span className="muted">
-          ★ {level.stars.length - state.stars.length}/{level.stars.length} ·{" "}
+          ★ {level.stars.length - state.stars.length}/{level.stars.length} · {" "}
           {state.moves} COUPS · swipe ou flèches
         </span>
       </div>
       <div className="controls">
         <div className="dpad">
-          <button className="up" onClick={() => move(gestureDirections.up)}>
-            ▲
-          </button>
-          <button onClick={() => move(gestureDirections.left)}>◀</button>
-          <button onClick={() => move(gestureDirections.down)}>▼</button>
-          <button onClick={() => move(gestureDirections.right)}>▶</button>
+          <DPadButton
+            icon={<ArrowUp size={24} color="var(--text)" />}
+            onClick={() => move(gestureDirections.up)}
+          />
+          <DPadButton
+            icon={<ArrowLeft size={24} color="var(--text)" />}
+            onClick={() => move(gestureDirections.left)}
+          />
+          <DPadButton
+            icon={<ArrowDown size={24} color="var(--text)" />}
+            onClick={() => move(gestureDirections.down)}
+          />
+          <DPadButton
+            icon={<ArrowRight size={24} color="var(--text)" />}
+            onClick={() => move(gestureDirections.right)}
+          />
         </div>
         {level.square && (
-          <button className="action switch" onClick={switchForm}>
-            ● ⇄ ■<br />
-            CHANGER
-          </button>
+          <CenterDPadButton
+            icon={<SwitchForm size={24} color="var(--text)" />}
+            label="CHANGER"
+            onClick={switchForm}
+          />
         )}
       </div>
       {isDevtoolsEnabled && (
@@ -619,12 +659,18 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
             <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
             <p>{state.moves} coups</p>
             <div className="modal-actions">
-              <button className="action" onClick={reset}>
-                REJOUER
-              </button>
-              <button className="action" onClick={nextLevel}>
-                {worldIndex < world.levels.length - 1 ? "SUIVANT ▶" : "NIVEAUX"}
-              </button>
+              <Button
+                icon={<Reset size={18} />}
+                label="REJOUER"
+                onClick={reset}
+                variant="primary"
+              />
+              <Button
+                icon={<ArrowRight size={18} />}
+                label={worldIndex < world.levels.length - 1 ? "SUIVANT" : "NIVEAUX"}
+                onClick={nextLevel}
+                variant="primary"
+              />
             </div>
           </div>
         </div>
@@ -640,15 +686,18 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
             <h2 id="gameover-title">✗ GAME OVER</h2>
             <p>Une forme est sortie du niveau…</p>
             <div className="modal-actions">
-              <button className="action" onClick={reset}>
-                REJOUER
-              </button>
-              <button
-                className="action"
+              <Button
+                icon={<Reset size={18} />}
+                label="REJOUER"
+                onClick={reset}
+                variant="primary"
+              />
+              <Button
+                icon={<ArrowLeft size={18} />}
+                label="NIVEAUX"
                 onClick={() => navigate(`/world/${world.id}`)}
-              >
-                ← NIVEAUX
-              </button>
+                variant="secondary"
+              />
             </div>
           </div>
         </div>
@@ -675,7 +724,7 @@ function DevEditorRoute() {
 const basename =
   import.meta.env.BASE_URL === "./"
     ? "/"
-    : import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
+    : import.meta.env.BASE_URL.replace(//$/, "") || "/";
 
 const router = createBrowserRouter(
   [
