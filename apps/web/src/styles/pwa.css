@@ -1,27 +1,272 @@
-.pwa-controls {
+/* ── Burger menu (bouton 44px, barres en CSS pur → croix) ────── */
+.burger-toggle {
   position: relative;
-  z-index: 10;
+  z-index: 3005;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.burger-toggle:hover,
+.burger-toggle:focus-visible {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  outline: none;
+}
+
+.burger-toggle span,
+.burger-toggle span::before,
+.burger-toggle span::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 2px;
+  margin: -1px 0 0 -11px;
+  border-radius: 2px;
+  background: currentColor;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.burger-toggle span::before,
+.burger-toggle span::after {
+  content: "";
+}
+
+.burger-toggle span::before {
+  transform: translateY(-7px);
+}
+
+.burger-toggle span::after {
+  transform: translateY(7px);
+}
+
+/* Open: middle bar fades, outer bars slide to center and form a clean X. */
+.burger-toggle.open span {
+  opacity: 0;
+}
+
+.burger-toggle.open span::before {
+  transform: translateY(0) rotate(45deg);
+}
+
+.burger-toggle.open span::after {
+  transform: translateY(0) rotate(-45deg);
+}
+
+/* ── Panneau menu plein écran (fade + léger slide, fdrweb) ───── */
+.menu-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 3002;
+  width: 100vw;
+  height: 100dvh;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  padding: max(10px, env(safe-area-inset-top)) 1.25rem
+    max(1.5rem, env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--background) 97%, black);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.2s;
+}
+
+.menu-panel.open {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+/* Header: croix de fermeture alignée sur le burger (haut droite). */
+.menu-panel-header {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 44px;
+}
+
+/* Body: scrollable and vertically centered. */
+.menu-panel-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.menu-close {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.menu-close:hover,
+.menu-close:focus-visible {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  outline: none;
+}
+
+.menu-close span,
+.menu-close span::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 2px;
+  margin: -1px 0 0 -11px;
+  border-radius: 2px;
+  background: currentColor;
+  content: "";
+}
+
+.menu-close span {
+  transform: rotate(45deg);
+}
+
+.menu-close span::before {
+  transform: rotate(-45deg);
+}
+
+.menu-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (min-width: 601px) {
+  .menu-group {
+    width: min(520px, 100%);
+  }
+}
+
+.menu-group-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 11px monospace;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.menu-group-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.menu-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 9px 12px;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  border-radius: 14px;
-  background: var(--background);
-  box-shadow: 0 12px 32px #0008;
-  font: 700 12px monospace;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #0003;
+  color: var(--text);
+  font: 700 14px monospace;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
 }
 
-.pwa-controls span {
-  min-width: 0;
-  flex: 1;
+.menu-item:hover,
+.menu-item.active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  transform: translateX(2px);
 }
 
-.pwa-actions {
+.menu-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.dev-group .menu-item {
+  background: color-mix(in srgb, #ffb347 6%, #0003);
+}
+
+.dev-group .menu-item:hover {
+  background: color-mix(in srgb, #ffb347 14%, transparent);
+}
+
+/* Audio settings block fills the group width, borderless like menu items. */
+.menu-group .audio-settings {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  background: #0003;
+}
+
+/* ── Error boundary fallback ─────────────────────────────────── */
+.error-boundary {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  flex: none;
-  margin-left: auto;
+  gap: 16px;
+  width: min(480px, 100%);
+  margin: auto;
+  padding: 24px;
+  text-align: center;
+}
+
+.error-detail {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: 8px;
+  background: #0004;
+  font: 12px monospace;
+  color: var(--muted);
+}
+
+.error-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.error-actions .menu-item {
+  width: auto;
+  white-space: nowrap;
 }
