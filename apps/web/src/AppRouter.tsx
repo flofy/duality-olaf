@@ -26,11 +26,11 @@ import { LevelEditor } from "./LevelEditor";
 import { LevelGenerator } from "./LevelGenerator";
 import { Game } from "./GameScreen";
 import { Button } from "./components/Button";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { BurgerMenu } from "./BurgerMenu";
 import {
   ArrowLeft,
   ArrowRight,
-  Maximize,
-  Minimize,
   Help as HelpIcon,
   ThemeIcon as Theme,
   Skin,
@@ -39,11 +39,6 @@ import {
 import "./style.css";
 
 const isLevelLabEnabled = import.meta.env.VITE_ENABLE_LEVEL_LAB === "true";
-
-type BeforeInstallPromptEvent = Event & {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-};
 
 function vars(): CSSProperties {
   const theme = getTheme();
@@ -54,121 +49,17 @@ function vars(): CSSProperties {
   ) as CSSProperties;
 }
 
-function PwaControls({
-  updateSW,
-}: {
-  updateSW: (reloadPage?: boolean) => Promise<void>;
-}) {
-  const [installPrompt, setInstallPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-
-  useEffect(() => {
-    const onBeforeInstall = (event: Event) => {
-      event.preventDefault();
-      setInstallPrompt(event as BeforeInstallPromptEvent);
-      setDismissed(false);
-    };
-    const onInstalled = () => setInstallPrompt(null);
-    window.addEventListener("beforeinstallprompt", onBeforeInstall);
-    window.addEventListener("appinstalled", onInstalled);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onBeforeInstall);
-      window.removeEventListener("appinstalled", onInstalled);
-    };
-  }, []);
-
-  useEffect(() => {
-    const onUpdate = () => {
-      setUpdateAvailable(true);
-      setDismissed(false);
-    };
-    window.addEventListener("duality:pwa-update", onUpdate);
-    return () => window.removeEventListener("duality:pwa-update", onUpdate);
-  }, []);
-
-  if (dismissed || (!updateAvailable && !installPrompt)) return null;
-
-  return (
-    <div className="pwa-controls" role="status" aria-live="polite">
-      <span>
-        {updateAvailable
-          ? "🎨 Nouvelle version disponible"
-          : "📱 Installe Duality pour jouer en plein écran"}
-      </span>
-      <div className="pwa-actions">
-        <Button
-          icon={<ArrowRight size={16} />}
-          label={updateAvailable ? "METTRE À JOUR" : "INSTALLER"}
-          onClick={
-            updateAvailable
-              ? () => updateSW(true)
-              : async () => {
-                  if (!installPrompt) return;
-                  await installPrompt.prompt();
-                  await installPrompt.userChoice;
-                  setInstallPrompt(null);
-                }
-          }
-          variant="primary"
-        />
-
-        <button
-          className="pwa-dismiss"
-          type="button"
-          aria-label="Fermer"
-          onClick={() => setDismissed(true)}
-        >
-          ×
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function FullscreenButton() {
-  const [fullscreen, setFullscreen] = useState(() =>
-    Boolean(document.fullscreenElement),
-  );
-
-  useEffect(() => {
-    const sync = () => setFullscreen(Boolean(document.fullscreenElement));
-    document.addEventListener("fullscreenchange", sync);
-    return () => document.removeEventListener("fullscreenchange", sync);
-  }, []);
-
-  if (!document.fullscreenEnabled) return null;
-
-  const toggle = async () => {
-    if (document.fullscreenElement) await document.exitFullscreen();
-    else await document.documentElement.requestFullscreen();
-  };
-
-  return (
-    <Button
-      icon={fullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
-      label={fullscreen ? "FENÊTRÉ" : "PLEIN ÉCRAN"}
-      onClick={toggle}
-      aria-label={
-        fullscreen ? "Quitter le plein écran" : "Passer en plein écran"
-      }
-      className="fullscreen-toggle"
-      variant="secondary"
-    />
-  );
-}
-
 function AppLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [, setTick] = useState(0);
   const location = useLocation();
 
-  // Close the drawer whenever the route changes.
+  // Close the menu whenever the route changes.
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname]);
 
-  // Close the drawer with the Escape key.
+  // Close the menu with the Escape key.
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (event: KeyboardEvent) => {
@@ -193,49 +84,19 @@ function AppLayout() {
             <span aria-hidden="true" />
           </button>
           <span className="utility-title">DUALITY</span>
-          <FullscreenButton />
         </div>
         <div className="app-content">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </div>
       </div>
-      <div
-        id="app-menu"
-        className={`menu-panel ${menuOpen ? "open" : ""}`}
-        aria-hidden={!menuOpen}
-      >
-        <MenuLinks />
-        <div className="menu-panel-section">
-          <PwaControls updateSW={updateSW} />
-        </div>
-      </div>
+      <BurgerMenu
+        open={menuOpen}
+        updateSW={updateSW}
+        onThemeChange={() => setTick((tick) => tick + 1)}
+      />
     </main>
-  );
-}
-
-function MenuLinks() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const links: Array<{ label: string; to: string; icon: ReactNode }> = [
-    { label: "MENU", to: "/menu", icon: <ArrowRight size={18} /> },
-    { label: "AIDE", to: "/help", icon: <HelpIcon size={18} /> },
-  ];
-  return (
-    <div className="menu-links">
-      {links.map((link) => (
-        <button
-          key={link.to}
-          type="button"
-          className={`menu-link ${
-            location.pathname.startsWith(link.to) ? "active" : ""
-          }`}
-          onClick={() => navigate(link.to)}
-        >
-          {link.icon}
-          <span>{link.label}</span>
-        </button>
-      ))}
-    </div>
   );
 }
 
@@ -537,7 +398,11 @@ const updateSW = registerSW({
 });
 
 export function RouterApp() {
-  return <RouterProvider router={router} />;
+  return (
+    <ErrorBoundary>
+      <RouterProvider router={router} />
+    </ErrorBoundary>
+  );
 }
 
 createRoot(document.getElementById("app")!).render(<RouterApp />);

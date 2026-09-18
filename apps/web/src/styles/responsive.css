@@ -27,10 +27,6 @@
     font-size: 12px;
   }
 
-  .fullscreen-toggle {
-    display: none;
-  }
-
   .menu,
   .help,
   .game {
@@ -54,12 +50,6 @@
 
   .levels {
     grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-}
-
-@media (display-mode: standalone), (display-mode: fullscreen) {
-  .fullscreen-toggle {
-    display: none;
   }
 }
 

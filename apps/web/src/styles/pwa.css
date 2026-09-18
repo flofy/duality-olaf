@@ -1,35 +1,3 @@
-.pwa-controls {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 9px 12px;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  border-radius: 14px;
-  background: var(--background);
-  box-shadow: 0 12px 32px #0008;
-  font: 700 12px monospace;
-}
-
-.pwa-controls span {
-  min-width: 0;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.pwa-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  flex: none;
-  min-width: 0;
-  margin-left: auto;
-}
-
 /* ── Burger menu (bouton 44px, barres en CSS pur → croix) ────── */
 .utility-title {
   flex: 1;
@@ -132,43 +100,88 @@
   transition-delay: 0s;
 }
 
-.menu-links {
+.menu-group {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 12px;
+  gap: 10px;
   width: min(360px, 100%);
   margin: 0 auto;
 }
 
-.menu-link {
+.menu-group-title {
+  font: 700 11px monospace;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding: 4px 2px 0;
+}
+
+.menu-item {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
+  width: 100%;
   padding: 14px;
   border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
   border-radius: 12px;
   background: transparent;
   color: var(--text);
-  font: 700 15px monospace;
-  letter-spacing: 2px;
+  font: 700 14px monospace;
+  letter-spacing: 1px;
   cursor: pointer;
+  text-align: left;
 }
 
-.menu-link:hover,
-.menu-link.active {
+.menu-item:hover,
+.menu-item.active {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
-.menu-panel-section {
-  width: min(360px, 100%);
-  margin: 0 auto;
-  border-top: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
-  padding-top: 16px;
+.dev-group .menu-item {
+  border-color: color-mix(in srgb, #ffb347 35%, transparent);
 }
 
-.menu-panel-section .pwa-controls {
+.dev-group .menu-item:hover {
+  border-color: #ffb347;
+  background: color-mix(in srgb, #ffb347 12%, transparent);
+}
+
+/* Audio settings block fills the group width. */
+.menu-group .audio-settings {
   width: 100%;
+  margin: 0;
+}
+
+/* ── Error boundary fallback ─────────────────────────────────── */
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: min(480px, 100%);
+  margin: auto;
+  padding: 24px;
+  text-align: center;
+}
+
+.error-detail {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: 8px;
+  background: #0004;
+  font: 12px monospace;
+  color: var(--muted);
+}
+
+.error-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.error-actions .menu-item {
+  width: auto;
+  white-space: nowrap;
 }

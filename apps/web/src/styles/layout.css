@@ -36,16 +36,6 @@
   margin-bottom: 10px;
 }
 
-.utility-bar .pwa-controls {
-  flex: 1;
-  margin: 0;
-  max-width: none;
-}
-
-.fullscreen-toggle {
-  white-space: nowrap;
-}
-
 .menu,
 .help,
 .game {
