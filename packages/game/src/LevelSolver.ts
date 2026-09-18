@@ -297,7 +297,6 @@ function buildRelaxedMoves(level: Level, position: Position): RelaxedMove[] {
 
 type RelaxedReverseEdge = {
   from: string;
-  cost: number;
 };
 
 type RelaxedReverseGraph = Map<string, RelaxedReverseEdge[]>;
@@ -311,15 +310,7 @@ function buildRelaxedReverseGraph(
     for (const move of moves) {
       const toKey = positionKey(move.position);
       const edges = reverse.get(toKey) ?? [];
-      edges.push({ from: fromKey, cost: 1 });
-
-      for (const cell of move.swept) {
-        const sweptKey = positionKey(cell);
-        const sweptEdges = reverse.get(sweptKey) ?? [];
-        sweptEdges.push({ from: fromKey, cost: 1 });
-        reverse.set(sweptKey, sweptEdges);
-      }
-
+      edges.push({ from: fromKey });
       reverse.set(toKey, edges);
     }
   }
@@ -339,14 +330,31 @@ function buildRelaxedDistances(
     const distanceToStar = new Map<string, number>([[targetKey, 0]]);
     const queue = [targetKey];
 
+    for (const [fromKey, moves] of graph) {
+      if (
+        moves.some((move) =>
+          move.swept.some((cell) => positionKey(cell) === targetKey),
+        )
+      ) {
+        const previousDistance = distanceToStar.get(fromKey);
+        if (previousDistance === undefined || previousDistance > 1) {
+          distanceToStar.set(fromKey, 1);
+          queue.push(fromKey);
+        }
+      }
+    }
+
     for (let cursor = 0; cursor < queue.length; cursor += 1) {
       const currentKey = queue[cursor]!;
       const currentDistance = distanceToStar.get(currentKey)!;
 
       for (const edge of reverse.get(currentKey) ?? []) {
-        const nextDistance = currentDistance + edge.cost;
+        const nextDistance = currentDistance + 1;
         const previousDistance = distanceToStar.get(edge.from);
-        if (previousDistance !== undefined && previousDistance <= nextDistance) {
+        if (
+          previousDistance !== undefined &&
+          previousDistance <= nextDistance
+        ) {
           continue;
         }
 
@@ -366,7 +374,10 @@ function buildRelaxedDistances(
     for (let x = 0; x < level.width; x += 1) {
       const position = { x, y };
       if (isWall(level, position)) continue;
-      distances.set(positionKey(position), distances.get(positionKey(position)) ?? new Map());
+      distances.set(
+        positionKey(position),
+        distances.get(positionKey(position)) ?? new Map(),
+      );
     }
   }
 
