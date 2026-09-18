@@ -69,8 +69,9 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 24px;
-  padding: 4.5rem 1.25rem 2rem;
+  gap: 20px;
+  padding: max(10px, env(safe-area-inset-top)) 1.25rem
+    max(1.5rem, env(safe-area-inset-bottom));
   background: color-mix(in srgb, var(--background) 97%, black);
   overflow-y: auto;
   visibility: hidden;
@@ -91,28 +92,86 @@
   transition-delay: 0s;
 }
 
+/* Header: croix de fermeture alignée sur le burger (haut droite). */
+.menu-panel-header {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 44px;
+}
+
+.menu-close {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.menu-close:hover,
+.menu-close:focus-visible {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  outline: none;
+}
+
+.menu-close span,
+.menu-close span::before {
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  content: "";
+}
+
+.menu-close span {
+  transform: rotate(45deg);
+}
+
+.menu-close span::before {
+  transform: rotate(90deg);
+}
+
 .menu-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  width: min(360px, 100%);
+  gap: 8px;
+  width: min(420px, 100%);
   margin: 0 auto;
 }
 
 .menu-group-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font: 700 11px monospace;
   letter-spacing: 2px;
   color: var(--muted);
   text-transform: uppercase;
-  padding: 4px 2px 0;
+}
+
+.menu-group-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 14px;
+  padding: 14px 16px;
   border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
   border-radius: 12px;
   background: transparent;
@@ -121,12 +180,22 @@
   letter-spacing: 1px;
   cursor: pointer;
   text-align: left;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.15s ease;
 }
 
 .menu-item:hover,
 .menu-item.active {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) 12%, transparent);
+  transform: translateX(2px);
+}
+
+.menu-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .dev-group .menu-item {

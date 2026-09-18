@@ -19,7 +19,6 @@ import {
 } from "./skins";
 import { cycleTheme, getTheme } from "./theme";
 import {
-  ArrowRight,
   Help as HelpIcon,
   Maximize,
   Minimize,
@@ -54,6 +53,7 @@ type BurgerMenuProps = {
   open: boolean;
   updateSW: (reloadPage?: boolean) => Promise<void>;
   onThemeChange: () => void;
+  onClose: () => void;
 };
 
 function isStandaloneDisplay(): boolean {
@@ -64,7 +64,12 @@ function isStandaloneDisplay(): boolean {
   );
 }
 
-export function BurgerMenu({ open, updateSW, onThemeChange }: BurgerMenuProps) {
+export function BurgerMenu({
+  open,
+  updateSW,
+  onThemeChange,
+  onClose,
+}: BurgerMenuProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [fullscreen, setFullscreen] = useState(() =>
@@ -150,17 +155,19 @@ export function BurgerMenu({ open, updateSW, onThemeChange }: BurgerMenuProps) {
       className={`menu-panel ${open ? "open" : ""}`}
       aria-hidden={!open}
     >
-      <nav className="menu-group" aria-label="Navigation">
+      <div className="menu-panel-header">
         <button
           type="button"
-          className={`menu-item ${
-            location.pathname.startsWith("/menu") ? "active" : ""
-          }`}
-          onClick={() => go("/menu")}
+          className="menu-close"
+          aria-label="Fermer le menu"
+          onClick={onClose}
         >
-          <ArrowRight size={18} />
-          <span>MENU</span>
+          <span aria-hidden="true" />
         </button>
+      </div>
+
+      <div className="menu-group">
+        <div className="menu-group-title">JEU</div>
         <button
           type="button"
           className={`menu-item ${
@@ -171,7 +178,7 @@ export function BurgerMenu({ open, updateSW, onThemeChange }: BurgerMenuProps) {
           <HelpIcon size={18} />
           <span>AIDE</span>
         </button>
-      </nav>
+      </div>
 
       <div className="menu-group">
         <div className="menu-group-title">AFFICHAGE</div>

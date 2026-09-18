@@ -94,6 +94,7 @@ function AppLayout() {
         open={menuOpen}
         updateSW={updateSW}
         onThemeChange={() => setTick((tick) => tick + 1)}
+        onClose={() => setMenuOpen(false)}
       />
     </main>
   );
