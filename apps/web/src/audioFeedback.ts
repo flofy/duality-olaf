@@ -1,11 +1,52 @@
 const SOUND_KEY = "duality.sound.enabled";
+const VOLUME_KEY = "duality.sound.volume";
+const AMBIENT_KEY = "duality.sound.ambient";
+const HAPTIC_KEY = "duality.haptic.enabled";
+
+const DEFAULT_VOLUME = 0.16;
 
 let context: AudioContext | null = null;
 let masterGain: GainNode | null = null;
 let musicTimer: number | null = null;
 
+function readBoolean(key: string, fallback = true) {
+  try {
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : value === "true";
+  } catch {
+    return fallback;
+  }
+}
+
+function writeValue(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Ignore storage failures; audio preferences remain usable for the session.
+  }
+}
+
+function readVolume() {
+  try {
+    const value = Number(localStorage.getItem(VOLUME_KEY));
+    return Number.isFinite(value)
+      ? Math.min(1, Math.max(0, value))
+      : DEFAULT_VOLUME;
+  } catch {
+    return DEFAULT_VOLUME;
+  }
+}
+
 function isEnabled() {
-  return localStorage.getItem(SOUND_KEY) !== "false";
+  return readBoolean(SOUND_KEY);
+}
+
+function isAmbientEnabled() {
+  return readBoolean(AMBIENT_KEY);
+}
+
+function isHapticEnabled() {
+  return readBoolean(HAPTIC_KEY);
 }
 
 function getAudioContext() {
@@ -19,7 +60,7 @@ function getAudioContext() {
 
   context = new AudioContextClass();
   masterGain = context.createGain();
-  masterGain.gain.value = 0.16;
+  masterGain.gain.value = readVolume();
   masterGain.connect(context.destination);
   return context;
 }
@@ -99,12 +140,12 @@ export type SoundEffect =
 export async function startAudio() {
   if (!isEnabled()) return;
   const audio = await resumeAudio();
-  if (!audio || musicTimer !== null) return;
+  if (!audio || !isAmbientEnabled() || musicTimer !== null) return;
 
   const notes = [220, 277.18, 329.63, 277.18, 246.94, 329.63, 369.99, 329.63];
   let index = 0;
   const playNote = () => {
-    if (!isEnabled()) return;
+    if (!isEnabled() || !isAmbientEnabled()) return;
     tone(notes[index % notes.length]!, 0.42, "triangle", 0.018);
     index += 1;
   };
@@ -155,16 +196,13 @@ export async function playSound(effect: SoundEffect) {
 }
 
 export function vibrate(pattern: number | number[]) {
-  if (!isEnabled() || !("vibrate" in navigator)) return;
+  if (!isHapticEnabled() || !("vibrate" in navigator)) return;
   navigator.vibrate(pattern);
 }
 
 export function setSoundEnabled(enabled: boolean) {
-  localStorage.setItem(SOUND_KEY, String(enabled));
-  if (!enabled && musicTimer !== null) {
-    window.clearInterval(musicTimer);
-    musicTimer = null;
-  }
+  writeValue(SOUND_KEY, String(enabled));
+  if (!enabled) stopAudio();
 }
 
 export function isSoundEnabled() {
@@ -175,6 +213,51 @@ export function toggleSound() {
   const enabled = !isEnabled();
   setSoundEnabled(enabled);
   if (enabled) void startAudio();
+  return enabled;
+}
+
+export function getMasterVolume() {
+  return readVolume();
+}
+
+export function setMasterVolume(volume: number) {
+  const normalized = Math.min(1, Math.max(0, volume));
+  writeValue(VOLUME_KEY, String(normalized));
+  if (masterGain && context) {
+    masterGain.gain.setTargetAtTime(normalized, context.currentTime, 0.015);
+  }
+}
+
+export function getAmbientEnabled() {
+  return isAmbientEnabled();
+}
+
+export function setAmbientEnabled(enabled: boolean) {
+  writeValue(AMBIENT_KEY, String(enabled));
+  if (!enabled) {
+    stopAudio();
+  } else if (isEnabled()) {
+    void startAudio();
+  }
+}
+
+export function toggleAmbient() {
+  const enabled = !isAmbientEnabled();
+  setAmbientEnabled(enabled);
+  return enabled;
+}
+
+export function getHapticEnabled() {
+  return isHapticEnabled();
+}
+
+export function setHapticEnabled(enabled: boolean) {
+  writeValue(HAPTIC_KEY, String(enabled));
+}
+
+export function toggleHaptic() {
+  const enabled = !isHapticEnabled();
+  setHapticEnabled(enabled);
   return enabled;
 }
 
