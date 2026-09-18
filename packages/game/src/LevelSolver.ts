@@ -272,14 +272,36 @@ function relaxedMove(
   return { position: current, swept };
 }
 
-function buildRelaxedMoves(level: Level, position: Position): RelaxedMove[] {
+type RelaxedMovementGraph = Map<string, RelaxedMove[]>;
+
+function buildRelaxedMovementGraph(level: Level): RelaxedMovementGraph {
+  const graph: RelaxedMovementGraph = new Map();
+
+  for (let y = 0; y < level.height; y += 1) {
+    for (let x = 0; x < level.width; x += 1) {
+      const position = { x, y };
+      if (isWall(level, position)) continue;
+      graph.set(positionKey(position), buildRelaxedMoves(level, position));
+    }
+  }
+
+  return graph;
+}
+
+function buildRelaxedMoves(
+  level: Level,
+  position: Position,
+): RelaxedMove[] {
   return DIRECTIONS.flatMap((direction) => {
     const move = relaxedMove(level, position, direction);
     return move ? [move] : [];
   });
 }
 
-function buildRelaxedDistances(level: Level): Map<string, Map<string, number>> {
+function buildRelaxedDistances(
+  level: Level,
+  graph: RelaxedMovementGraph,
+): Map<string, Map<string, number>> {
   const distances = new Map<string, Map<string, number>>();
 
   for (let y = 0; y < level.height; y += 1) {
@@ -296,7 +318,7 @@ function buildRelaxedDistances(level: Level): Map<string, Map<string, number>> {
           continue;
         }
 
-        const targetDistance = findRelaxedStarDistance(level, start, star);
+        const targetDistance = findRelaxedStarDistance(graph, start, star);
         if (targetDistance !== null) {
           distanceByStar.set(targetKey, targetDistance);
         }
@@ -310,7 +332,7 @@ function buildRelaxedDistances(level: Level): Map<string, Map<string, number>> {
 }
 
 function findRelaxedStarDistance(
-  level: Level,
+  graph: RelaxedMovementGraph,
   start: Position,
   target: Position,
 ): number | null {
@@ -320,9 +342,10 @@ function findRelaxedStarDistance(
 
   for (let cursor = 0; cursor < queue.length; cursor += 1) {
     const current = queue[cursor]!;
-    const currentDistance = distance.get(positionKey(current))!;
+    const currentKey = positionKey(current);
+    const currentDistance = distance.get(currentKey)!;
 
-    for (const move of buildRelaxedMoves(level, current)) {
+    for (const move of graph.get(currentKey) ?? []) {
       if (
         move.swept.some((cell) => cell.x === target.x && cell.y === target.y)
       ) {
@@ -341,7 +364,8 @@ function findRelaxedStarDistance(
 }
 
 function createHeuristic(level: Level): (state: GameState) => number {
-  const distances = buildRelaxedDistances(level);
+  const graph = buildRelaxedMovementGraph(level);
+  const distances = buildRelaxedDistances(level, graph);
   const starKeys = level.stars.map(positionKey);
 
   const distanceBetweenStars = (
