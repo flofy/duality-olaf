@@ -1,13 +1,4 @@
 /* ── Burger menu (bouton 44px, barres en CSS pur → croix) ────── */
-.utility-title {
-  flex: 1;
-  text-align: center;
-  font: 700 13px monospace;
-  letter-spacing: 2px;
-  color: var(--text);
-  pointer-events: none;
-}
-
 .burger-toggle {
   position: relative;
   z-index: 3005;

@@ -23,10 +23,6 @@
       max(8px, env(safe-area-inset-left));
   }
 
-  .utility-title {
-    font-size: 12px;
-  }
-
   .menu,
   .help,
   .game {

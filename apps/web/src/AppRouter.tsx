@@ -83,7 +83,6 @@ function AppLayout() {
           >
             <span aria-hidden="true" />
           </button>
-          <span className="utility-title">DUALITY</span>
         </div>
         <div className="app-content">
           <ErrorBoundary>
