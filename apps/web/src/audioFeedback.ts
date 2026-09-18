@@ -195,9 +195,29 @@ export async function playSound(effect: SoundEffect) {
   }
 }
 
+export function isHapticSupported() {
+  return (
+    typeof navigator !== "undefined" && typeof navigator.vibrate === "function"
+  );
+}
+
 export function vibrate(pattern: number | number[]) {
-  if (!isHapticEnabled() || !("vibrate" in navigator)) return;
-  navigator.vibrate(pattern);
+  if (!isHapticEnabled() || !isHapticSupported()) return false;
+  return navigator.vibrate(pattern);
+}
+
+export async function testSound() {
+  if (typeof window === "undefined") return false;
+  const audio = await resumeAudio();
+  if (!audio) return false;
+  tone(523.25, 0.12, "triangle", 0.08);
+  tone(783.99, 0.18, "triangle", 0.06, 0.1);
+  return true;
+}
+
+export function testHaptic() {
+  if (!isHapticSupported()) return false;
+  return navigator.vibrate(35);
 }
 
 export function setSoundEnabled(enabled: boolean) {
