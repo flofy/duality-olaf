@@ -42,13 +42,15 @@ import { InstallButton } from "./InstallButton";
 // Import des nouveaux composants
 import { Button, DPadButton, CenterDPadButton } from "./components/Button";
 import {
+  ArrowUp,
+  ArrowDown,
   ArrowLeft,
   ArrowRight,
   SwitchForm,
   ResetIcon as Reset,
   Maximize,
   Minimize,
-  Help,
+  Help as HelpIcon,
   ThemeIcon as Theme,
   Skin,
 } from "./components/Icons";
@@ -138,7 +140,7 @@ function PwaControls({
           }
           variant="primary"
         />
-        
+
         <button
           className="pwa-dismiss"
           type="button"
@@ -300,7 +302,7 @@ function Menu() {
       </p>
       <div className="modal-actions">
         <Button
-          icon={<Help size={18} />}
+          icon={<HelpIcon size={18} />}
           label="AIDE"
           onClick={() => navigate("/help")}
           variant="secondary"
@@ -564,7 +566,7 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
         <b>{state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
         <br />
         <span className="muted">
-          ★ {level.stars.length - state.stars.length}/{level.stars.length} · {" "}
+          ★ {level.stars.length - state.stars.length}/{level.stars.length} ·{" "}
           {state.moves} COUPS · swipe ou flèches
         </span>
       </div>
@@ -667,7 +669,9 @@ function Game({ level, worldId }: { level: Level; worldId: number }) {
               />
               <Button
                 icon={<ArrowRight size={18} />}
-                label={worldIndex < world.levels.length - 1 ? "SUIVANT" : "NIVEAUX"}
+                label={
+                  worldIndex < world.levels.length - 1 ? "SUIVANT" : "NIVEAUX"
+                }
                 onClick={nextLevel}
                 variant="primary"
               />
@@ -724,7 +728,7 @@ function DevEditorRoute() {
 const basename =
   import.meta.env.BASE_URL === "./"
     ? "/"
-    : import.meta.env.BASE_URL.replace(//$/, "") || "/";
+    : import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
 const router = createBrowserRouter(
   [

@@ -1,10 +1,10 @@
-import React, { type ReactNode } from "react";
+import React, { type MouseEventHandler, type ReactNode } from "react";
 import { type IconProps } from "./Icons";
 
 export type ButtonProps = {
   icon?: ReactNode;
   label: string;
-  onClick: () => void;
+  onClick: MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   className?: string;
   variant?: "primary" | "secondary" | "danger";
@@ -42,7 +42,8 @@ export const Button = ({
   className = "",
   variant = "primary",
 }: ButtonProps) => {
-  const { bg, text, hoverBg, disabledBg, disabledText } = buttonVariants[variant];
+  const { bg, text, hoverBg, disabledBg, disabledText } =
+    buttonVariants[variant];
 
   return (
     <button
@@ -84,7 +85,9 @@ export const Button = ({
         }
       }}
     >
-      {icon && <span style={{ fontSize: "20px", display: "flex" }}>{icon}</span>}
+      {icon && (
+        <span style={{ fontSize: "20px", display: "flex" }}>{icon}</span>
+      )}
       <span>{label}</span>
     </button>
   );

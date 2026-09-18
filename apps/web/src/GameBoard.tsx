@@ -2,7 +2,15 @@ import type { GameState } from "@duality/game";
 import { isInside, type Level, type Switch } from "@duality/level-format";
 import type { CSSProperties, ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
-import { Spike, Ball, Square, Star, Door, Teleporter, SwitchIcon } from "./components/Icons";
+import {
+  Spike,
+  Ball,
+  Square,
+  Star,
+  Door,
+  Teleporter,
+  SwitchIcon,
+} from "./components/Icons";
 
 /**
  * Visual glyph for a switch, distinguishing which form(s) can trigger it.
@@ -38,15 +46,17 @@ export function GameBoard({
   return (
     <div
       className={`board ${skin !== "default" ? `seasonal theme-${skin}` : ""}`}
-      style={{
-        ...Object.fromEntries(
-          Object.entries(themes[themeName])
-            .filter(([, value]) => typeof value === "number")
-            .map(([key, value]) => ["--" + key, hexToCss(value as number)]),
-        ),
-        "--cols": level.width,
-        "--rows": level.height,
-      } as CSSProperties}
+      style={
+        {
+          ...Object.fromEntries(
+            Object.entries(themes[themeName])
+              .filter(([, value]) => typeof value === "number")
+              .map(([key, value]) => ["--" + key, hexToCss(value as number)]),
+          ),
+          "--cols": level.width,
+          "--rows": level.height,
+        } as CSSProperties
+      }
     >
       {level.tiles.flatMap((row, y) =>
         row.map((tile, x) =>
@@ -73,7 +83,7 @@ export function GameBoard({
               style={{ gridColumn: x + 1, gridRow: y + 1 }}
               key={`empty-${x}-${y}`}
             />
-          )
+          ),
         ),
       )}
 
