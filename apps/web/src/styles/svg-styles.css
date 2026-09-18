@@ -1,0 +1,54 @@
+/* SVG Icon Styles */
+.svg-icon {
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* Dynamic colors for SVG */
+.svg-icon--wall { fill: var(--wall, #65718a); }
+.svg-icon--ball { fill: var(--ball, #4aa3ff); }
+.svg-icon--square { fill: var(--square, #ffd447); }
+.svg-icon--star { fill: var(--star, #ffd700); }
+.svg-icon--spike { fill: var(--spike, #ff4444); }
+.svg-icon--door { fill: var(--door, #7a5c3d); }
+.svg-icon--teleporter { stroke: var(--teleporter, #9b59b6); fill: none; }
+.svg-icon--switch { fill: var(--switch, #ffd447); }
+
+/* Hover effects */
+.svg-icon:hover { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); }
+
+/* Button SVG styles */
+.modern-button .svg-icon { margin-right: 8px; }
+.dpad-button .svg-icon { width: 24px; height: 24px; }
+.dpad-center-button .svg-icon { width: 20px; height: 20px; }
+
+/* Shadows */
+.svg-icon--ball, .svg-icon--square { filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.3)); }
+.svg-icon--star { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.5)); }
+.svg-icon--spike { filter: drop-shadow(0 0 4px rgba(255, 0, 0, 0.5)); }
+.svg-icon--teleporter { filter: drop-shadow(0 0 6px rgba(155, 89, 182, 0.5)); }
+
+/* Transitions */
+.svg-icon { transition: transform 0.2s ease, filter 0.2s ease; }
+.svg-icon:active { transform: scale(0.95); }
+
+/* Board SVG styles */
+.board .svg-icon { width: 100%; height: 100%; max-width: 24px; max-height: 24px; }
+.board .svg-icon--ball, .board .svg-icon--square { max-width: 28px; max-height: 28px; }
+
+/* Menu SVG styles */
+.menu .svg-icon, .topbar .svg-icon { width: 20px; height: 20px; }
+.hud .svg-icon { width: 18px; height: 18px; }
+.overlay .svg-icon { width: 24px; height: 24px; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .svg-icon { width: 18px; height: 18px; }
+  .board .svg-icon { max-width: 20px; max-height: 20px; }
+  .board .svg-icon--ball, .board .svg-icon--square { max-width: 22px; max-height: 22px; }
+}
+
+/* Utility classes */
+.svg-icon--disabled { opacity: 0.5; filter: grayscale(100%); }
+.svg-icon--active { filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7)); }
