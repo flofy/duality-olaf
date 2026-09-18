@@ -28,13 +28,20 @@
 .burger-toggle span::before,
 .burger-toggle span::after {
   position: absolute;
+  top: 50%;
+  left: 50%;
   width: 22px;
   height: 2px;
+  margin: -1px 0 0 -11px;
   border-radius: 2px;
   background: currentColor;
   transition:
     transform 0.2s ease,
     opacity 0.2s ease;
+}
+
+.burger-toggle span::before,
+.burger-toggle span::after {
   content: "";
 }
 
@@ -46,16 +53,17 @@
   transform: translateY(7px);
 }
 
+/* Open: middle bar fades, outer bars slide to center and form a clean X. */
 .burger-toggle.open span {
-  transform: rotate(45deg);
+  opacity: 0;
 }
 
 .burger-toggle.open span::before {
-  transform: rotate(90deg);
+  transform: translateY(0) rotate(45deg);
 }
 
 .burger-toggle.open span::after {
-  opacity: 0;
+  transform: translateY(0) rotate(-45deg);
 }
 
 /* ── Panneau menu plein écran (fade + léger slide, fdrweb) ───── */
@@ -66,14 +74,12 @@
   width: 100vw;
   height: 100dvh;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 20px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
   padding: max(10px, env(safe-area-inset-top)) 1.25rem
     max(1.5rem, env(safe-area-inset-bottom));
   background: color-mix(in srgb, var(--background) 97%, black);
-  overflow-y: auto;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
@@ -97,6 +103,18 @@
   display: flex;
   justify-content: flex-end;
   min-height: 44px;
+}
+
+/* Body: scrollable and vertically centered. */
+.menu-panel-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 0;
 }
 
 .menu-close {
@@ -126,8 +144,11 @@
 .menu-close span,
 .menu-close span::before {
   position: absolute;
+  top: 50%;
+  left: 50%;
   width: 22px;
   height: 2px;
+  margin: -1px 0 0 -11px;
   border-radius: 2px;
   background: currentColor;
   content: "";
@@ -138,15 +159,20 @@
 }
 
 .menu-close span::before {
-  transform: rotate(90deg);
+  transform: rotate(-45deg);
 }
 
 .menu-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: min(420px, 100%);
-  margin: 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 601px) {
+  .menu-group {
+    width: min(520px, 100%);
+  }
 }
 
 .menu-group-title {
@@ -172,24 +198,22 @@
   gap: 12px;
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border: 0;
   border-radius: 12px;
-  background: transparent;
+  background: #0003;
   color: var(--text);
   font: 700 14px monospace;
   letter-spacing: 1px;
   cursor: pointer;
   text-align: left;
   transition:
-    border-color 0.15s ease,
     background 0.15s ease,
     transform 0.15s ease;
 }
 
 .menu-item:hover,
 .menu-item.active {
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
   transform: translateX(2px);
 }
 
@@ -199,18 +223,19 @@
 }
 
 .dev-group .menu-item {
-  border-color: color-mix(in srgb, #ffb347 35%, transparent);
+  background: color-mix(in srgb, #ffb347 6%, #0003);
 }
 
 .dev-group .menu-item:hover {
-  border-color: #ffb347;
-  background: color-mix(in srgb, #ffb347 12%, transparent);
+  background: color-mix(in srgb, #ffb347 14%, transparent);
 }
 
-/* Audio settings block fills the group width. */
+/* Audio settings block fills the group width, borderless like menu items. */
 .menu-group .audio-settings {
   width: 100%;
   margin: 0;
+  border: 0;
+  background: #0003;
 }
 
 /* ── Error boundary fallback ─────────────────────────────────── */

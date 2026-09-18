@@ -166,116 +166,118 @@ export function BurgerMenu({
         </button>
       </div>
 
-      <div className="menu-group">
-        <div className="menu-group-title">JEU</div>
-        <button
-          type="button"
-          className={`menu-item ${
-            location.pathname.startsWith("/help") ? "active" : ""
-          }`}
-          onClick={() => go("/help")}
-        >
-          <HelpIcon size={18} />
-          <span>AIDE</span>
-        </button>
-      </div>
-
-      <div className="menu-group">
-        <div className="menu-group-title">AFFICHAGE</div>
-        <button
-          type="button"
-          className="menu-item"
-          onClick={() => void toggleFullscreen()}
-        >
-          {fullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
-          <span>{fullscreen ? "FENÊTRÉ" : "PLEIN ÉCRAN"}</span>
-        </button>
-        <button
-          type="button"
-          className="menu-item"
-          onClick={() => {
-            cycleTheme();
-            onThemeChange();
-          }}
-        >
-          <Theme size={18} />
-          <span>THÈME · {getTheme().name.toUpperCase()}</span>
-        </button>
-        <button type="button" className="menu-item" onClick={cycleSkin}>
-          <Skin size={18} />
-          <span>SKIN · {skinLabels[skin].toUpperCase()}</span>
-        </button>
-        <button
-          type="button"
-          className="menu-item"
-          onClick={() => setControlsMode(cycleControlsMode())}
-        >
-          <span aria-hidden="true">🎮</span>
-          <span>
-            COMMANDES · {controlsModeLabels[controlsMode].toUpperCase()}
-          </span>
-        </button>
-      </div>
-
-      <div className="menu-group">
-        <AudioSettings />
-      </div>
-
-      {(canInstall || updateAvailable) && (
+      <div className="menu-panel-body">
         <div className="menu-group">
-          <div className="menu-group-title">APPLICATION</div>
-          {canInstall && (
-            <button
-              type="button"
-              className="menu-item"
-              onClick={() => void install()}
-            >
-              <span aria-hidden="true">📱</span>
-              <span>INSTALLER</span>
-            </button>
-          )}
-          {updateAvailable && (
-            <button
-              type="button"
-              className="menu-item"
-              onClick={() => void updateSW(true)}
-            >
-              <span aria-hidden="true">🔄</span>
-              <span>METTRE À JOUR</span>
-            </button>
-          )}
+          <div className="menu-group-title">JEU</div>
+          <button
+            type="button"
+            className={`menu-item ${
+              location.pathname.startsWith("/help") ? "active" : ""
+            }`}
+            onClick={() => go("/help")}
+          >
+            <HelpIcon size={18} />
+            <span>AIDE</span>
+          </button>
         </div>
-      )}
 
-      {isDevEnabled && (
-        <div className="menu-group dev-group">
-          <div className="menu-group-title">DÉVELOPPEMENT</div>
+        <div className="menu-group">
+          <div className="menu-group-title">AFFICHAGE</div>
           <button
             type="button"
-            className="menu-item dev-item"
-            onClick={() => go("/dev/levels")}
+            className="menu-item"
+            onClick={() => void toggleFullscreen()}
           >
-            <span aria-hidden="true">🧪</span>
-            <span>LEVEL LAB</span>
+            {fullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+            <span>{fullscreen ? "FENÊTRÉ" : "PLEIN ÉCRAN"}</span>
           </button>
           <button
             type="button"
-            className="menu-item dev-item"
-            onClick={() => go("/dev/generator")}
+            className="menu-item"
+            onClick={() => {
+              cycleTheme();
+              onThemeChange();
+            }}
           >
-            <span aria-hidden="true">🧬</span>
-            <span>GÉNÉRATEUR</span>
+            <Theme size={18} />
+            <span>THÈME · {getTheme().name.toUpperCase()}</span>
+          </button>
+          <button type="button" className="menu-item" onClick={cycleSkin}>
+            <Skin size={18} />
+            <span>SKIN · {skinLabels[skin].toUpperCase()}</span>
           </button>
           <button
             type="button"
-            className="menu-item dev-item"
-            onClick={() => go("/dev/editor")}
+            className="menu-item"
+            onClick={() => setControlsMode(cycleControlsMode())}
           >
-            <span aria-hidden="true">✏️</span>
-            <span>ÉDITEUR</span>
+            <span aria-hidden="true">🎮</span>
+            <span>
+              COMMANDES · {controlsModeLabels[controlsMode].toUpperCase()}
+            </span>
           </button>
         </div>
-      )}
+
+        <div className="menu-group">
+          <AudioSettings />
+        </div>
+
+        {(canInstall || updateAvailable) && (
+          <div className="menu-group">
+            <div className="menu-group-title">APPLICATION</div>
+            {canInstall && (
+              <button
+                type="button"
+                className="menu-item"
+                onClick={() => void install()}
+              >
+                <span aria-hidden="true">📱</span>
+                <span>INSTALLER</span>
+              </button>
+            )}
+            {updateAvailable && (
+              <button
+                type="button"
+                className="menu-item"
+                onClick={() => void updateSW(true)}
+              >
+                <span aria-hidden="true">🔄</span>
+                <span>METTRE À JOUR</span>
+              </button>
+            )}
+          </div>
+        )}
+
+        {isDevEnabled && (
+          <div className="menu-group dev-group">
+            <div className="menu-group-title">DÉVELOPPEMENT</div>
+            <button
+              type="button"
+              className="menu-item dev-item"
+              onClick={() => go("/dev/levels")}
+            >
+              <span aria-hidden="true">🧪</span>
+              <span>LEVEL LAB</span>
+            </button>
+            <button
+              type="button"
+              className="menu-item dev-item"
+              onClick={() => go("/dev/generator")}
+            >
+              <span aria-hidden="true">🧬</span>
+              <span>GÉNÉRATEUR</span>
+            </button>
+            <button
+              type="button"
+              className="menu-item dev-item"
+              onClick={() => go("/dev/editor")}
+            >
+              <span aria-hidden="true">✏️</span>
+              <span>ÉDITEUR</span>
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
