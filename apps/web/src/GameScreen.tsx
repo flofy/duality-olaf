@@ -38,6 +38,227 @@ type GestureStart = {
   interactive: boolean;
 };
 
+function GameHud({
+  level,
+  activeForm,
+  starsRemaining,
+  moves,
+}: {
+  level: Level;
+  activeForm: "ball" | "square";
+  starsRemaining: number;
+  moves: number;
+}) {
+  return (
+    <div className="hud">
+      <b>{activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
+      <br />
+      <span className="muted">
+        ★ {level.stars.length - starsRemaining}/{level.stars.length} · {moves}{" "}
+        COUPS · swipe ou flèches
+      </span>
+    </div>
+  );
+}
+
+function GameControls({
+  hasSquare,
+  onMove,
+  onSwitch,
+}: {
+  hasSquare: boolean;
+  onMove: (direction: GameplayDirection) => void;
+  onSwitch: () => void;
+}) {
+  return (
+    <div className="controls">
+      <div className="dpad">
+        <DPadButton
+          icon={<ArrowUp size={24} color="var(--text)" />}
+          onClick={() => onMove(gestureDirections.up)}
+        />
+        <DPadButton
+          icon={<ArrowLeft size={24} color="var(--text)" />}
+          onClick={() => onMove(gestureDirections.left)}
+        />
+        <DPadButton
+          icon={<ArrowDown size={24} color="var(--text)" />}
+          onClick={() => onMove(gestureDirections.down)}
+        />
+        <DPadButton
+          icon={<ArrowRight size={24} color="var(--text)" />}
+          onClick={() => onMove(gestureDirections.right)}
+        />
+      </div>
+      {hasSquare && (
+        <CenterDPadButton
+          icon={<SwitchForm size={24} color="var(--text)" />}
+          label="CHANGER"
+          onClick={onSwitch}
+          className="switch-toggle"
+        />
+      )}
+    </div>
+  );
+}
+
+function DebugPanel({
+  level,
+  state,
+  commands,
+  onClear,
+}: {
+  level: Level;
+  state: ReturnType<typeof useLevelGameplay>["state"];
+  commands: DebugCommand[];
+  onClear: () => void;
+}) {
+  const copy = () =>
+    void navigator.clipboard?.writeText(formatDebugCommands(commands));
+
+  return (
+    <aside className="dev-entry" aria-label="Outils de développement">
+      <strong>🐛 DEBUG</strong>
+      <span>{level.id}</span>
+      <span>
+        ● {state.ball.x},{state.ball.y}
+        {level.square
+          ? ` · ■ ${state.square.x},${state.square.y}`
+          : " · ■ absent"}
+      </span>
+      <span>
+        {state.activeForm} · ★ {state.stars.length} · {commands.length}{" "}
+        commandes
+      </span>
+      <span className="muted">
+        {commands
+          .slice(-8)
+          .map((command) =>
+            command.type === "switch"
+              ? "↔"
+              : command.direction === "RIGHT"
+                ? "→"
+                : command.direction === "LEFT"
+                  ? "←"
+                  : command.direction === "DOWN"
+                    ? "↓"
+                    : "↑",
+          )
+          .join(" ") || "—"}
+      </span>
+      <div className="modal-actions">
+        <button
+          className="action"
+          type="button"
+          disabled={commands.length === 0}
+          onClick={copy}
+        >
+          COPIER
+        </button>
+        <button className="action" type="button" onClick={onClear}>
+          EFFACER
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+function CompletionOverlay({
+  worldIndex,
+  worldLength,
+  hasNextWorld,
+  completed,
+  moves,
+  onReset,
+  onNext,
+}: {
+  worldIndex: number;
+  worldLength: number;
+  hasNextWorld: boolean;
+  completed: boolean;
+  moves: number;
+  onReset: () => void;
+  onNext: () => void;
+}) {
+  if (!completed) return null;
+
+  return (
+    <div className="overlay">
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="completion-title"
+      >
+        <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
+        <p>{moves} coups</p>
+        <div className="modal-actions">
+          <Button
+            icon={<Reset size={18} />}
+            label="REJOUER"
+            onClick={onReset}
+            variant="primary"
+          />
+          <Button
+            icon={<ArrowRight size={18} />}
+            label={
+              worldIndex < worldLength - 1
+                ? "SUIVANT"
+                : hasNextWorld
+                  ? "MONDE SUIVANT"
+                  : "NIVEAUX"
+            }
+            onClick={onNext}
+            variant="primary"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GameOverOverlay({
+  worldId,
+  gameOver,
+  onReset,
+}: {
+  worldId: number;
+  gameOver: boolean;
+  onReset: () => void;
+}) {
+  const navigate = useNavigate();
+
+  if (!gameOver) return null;
+
+  return (
+    <div className="overlay">
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="gameover-title"
+      >
+        <h2 id="gameover-title">✗ GAME OVER</h2>
+        <p>Une forme est sortie du niveau…</p>
+        <div className="modal-actions">
+          <Button
+            icon={<Reset size={18} />}
+            label="REJOUER"
+            onClick={onReset}
+            variant="primary"
+          />
+          <Button
+            icon={<ArrowLeft size={18} />}
+            label="NIVEAUX"
+            onClick={() => navigate(`/world/${worldId}`)}
+            variant="secondary"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Game({ level, worldId }: { level: Level; worldId: number }) {
   const navigate = useNavigate();
   const world = worlds.find((item) => item.id === worldId)!;
@@ -170,42 +391,17 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
           themeName={getActiveThemeName()}
         />
       </div>
-      <div className="hud">
-        <b>{state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
-        <br />
-        <span className="muted">
-          ★ {level.stars.length - state.stars.length}/{level.stars.length} ·{" "}
-          {state.moves} COUPS · swipe ou flèches
-        </span>
-      </div>
-      <div className="controls">
-        <div className="dpad">
-          <DPadButton
-            icon={<ArrowUp size={24} color="var(--text)" />}
-            onClick={() => move(gestureDirections.up)}
-          />
-          <DPadButton
-            icon={<ArrowLeft size={24} color="var(--text)" />}
-            onClick={() => move(gestureDirections.left)}
-          />
-          <DPadButton
-            icon={<ArrowDown size={24} color="var(--text)" />}
-            onClick={() => move(gestureDirections.down)}
-          />
-          <DPadButton
-            icon={<ArrowRight size={24} color="var(--text)" />}
-            onClick={() => move(gestureDirections.right)}
-          />
-        </div>
-        {level.square && (
-          <CenterDPadButton
-            icon={<SwitchForm size={24} color="var(--text)" />}
-            label="CHANGER"
-            onClick={switchForm}
-            className="switch-toggle"
-          />
-        )}
-      </div>
+      <GameHud
+        level={level}
+        activeForm={state.activeForm}
+        starsRemaining={state.stars.length}
+        moves={state.moves}
+      />
+      <GameControls
+        hasSquare={Boolean(level.square)}
+        onMove={move}
+        onSwitch={switchForm}
+      />
       {/* Mobile : RECOMMENCER quitte la barre supérieure pour le bas de l'écran
           (rangée hors .controls, donc insensible à la préférence d'affichage
           des contrôles : on peut toujours relancer le niveau). */}
@@ -219,118 +415,27 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
         />
       </div>
       {isDevtoolsEnabled && (
-        <aside className="dev-entry" aria-label="Outils de développement">
-          <strong>🐛 DEBUG</strong>
-          <span>{level.id}</span>
-          <span>
-            ● {state.ball.x},{state.ball.y}
-            {level.square
-              ? ` · ■ ${state.square.x},${state.square.y}`
-              : " · ■ absent"}
-          </span>
-          <span>
-            {state.activeForm} · ★ {state.stars.length} · {commands.length}{" "}
-            commandes
-          </span>
-          <span className="muted">
-            {commands
-              .slice(-8)
-              .map((command) =>
-                command.type === "switch"
-                  ? "↔"
-                  : command.direction === "RIGHT"
-                    ? "→"
-                    : command.direction === "LEFT"
-                      ? "←"
-                      : command.direction === "DOWN"
-                        ? "↓"
-                        : "↑",
-              )
-              .join(" ") || "—"}
-          </span>
-          <div className="modal-actions">
-            <button
-              className="action"
-              type="button"
-              disabled={commands.length === 0}
-              onClick={() =>
-                void navigator.clipboard?.writeText(
-                  formatDebugCommands(commands),
-                )
-              }
-            >
-              COPIER
-            </button>
-            <button
-              className="action"
-              type="button"
-              onClick={() => setCommands([])}
-            >
-              EFFACER
-            </button>
-          </div>
-        </aside>
+        <DebugPanel
+          level={level}
+          state={state}
+          commands={commands}
+          onClear={() => setCommands([])}
+        />
       )}
-      {state.completed && (
-        <div className="overlay">
-          <div
-            className="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="completion-title"
-          >
-            <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
-            <p>{state.moves} coups</p>
-            <div className="modal-actions">
-              <Button
-                icon={<Reset size={18} />}
-                label="REJOUER"
-                onClick={reset}
-                variant="primary"
-              />
-              <Button
-                icon={<ArrowRight size={18} />}
-                label={
-                  worldIndex < world.levels.length - 1
-                    ? "SUIVANT"
-                    : nextWorld
-                      ? "MONDE SUIVANT"
-                      : "NIVEAUX"
-                }
-                onClick={nextLevel}
-                variant="primary"
-              />
-            </div>
-          </div>
-        </div>
-      )}
-      {state.gameOver && (
-        <div className="overlay">
-          <div
-            className="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="gameover-title"
-          >
-            <h2 id="gameover-title">✗ GAME OVER</h2>
-            <p>Une forme est sortie du niveau…</p>
-            <div className="modal-actions">
-              <Button
-                icon={<Reset size={18} />}
-                label="REJOUER"
-                onClick={reset}
-                variant="primary"
-              />
-              <Button
-                icon={<ArrowLeft size={18} />}
-                label="NIVEAUX"
-                onClick={() => navigate(`/world/${world.id}`)}
-                variant="secondary"
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <CompletionOverlay
+        worldIndex={worldIndex}
+        worldLength={world.levels.length}
+        hasNextWorld={Boolean(nextWorld)}
+        completed={state.completed}
+        moves={state.moves}
+        onReset={reset}
+        onNext={nextLevel}
+      />
+      <GameOverOverlay
+        worldId={world.id}
+        gameOver={state.gameOver}
+        onReset={reset}
+      />
     </section>
   );
 }
