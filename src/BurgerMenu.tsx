@@ -5,7 +5,7 @@ import {
   Help,
   ThemeIcon as Theme,
   Skin,
-  ResetIcon as Reset,
+  Maximize,
   ArrowLeft,
 } from "./components/Icons";
 
@@ -21,9 +21,14 @@ export function BurgerMenu() {
       variant: "secondary" as const,
     },
     {
-      icon: <Reset size={18} />,
-      label: "RECOMMENCER",
-      path: "/menu",
+      icon: (
+        <div style={{ display: "flex", gap: "4px" }}>
+          <Theme size={16} />
+          <Skin size={16} />
+        </div>
+      ),
+      label: "THÈME - SKIN",
+      path: "/config",
       variant: "secondary" as const,
     },
     {
@@ -33,15 +38,9 @@ export function BurgerMenu() {
       variant: "secondary" as const,
     },
     {
-      icon: <Theme size={18} />,
-      label: "THÈME",
-      path: "/config",
-      variant: "secondary" as const,
-    },
-    {
-      icon: <Skin size={18} />,
-      label: "SKIN",
-      path: "/config",
+      icon: <Maximize size={18} />,
+      label: "PLEIN ÉCRAN",
+      path: "/fullscreen",
       variant: "secondary" as const,
     },
   ];
@@ -101,14 +100,15 @@ export function BurgerMenu() {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                {/* Croix avec barres horizontales et verticales (alignées sur les 3 traits du menu) */}
                 <path
-                  d="M18 6L6 18"
+                  d="M6 12H18"
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
                 />
                 <path
-                  d="M6 6L18 18"
+                  d="M12 6V18"
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
