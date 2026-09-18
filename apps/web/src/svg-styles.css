@@ -1,0 +1,68 @@
+/* SVG Styles for Duality */
+/* Ensure all SVG elements are not selectable */
+
+svg {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  pointer-events: none;
+}
+
+/* SVG icons styling */
+svg:not(:root) {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Specific SVG element styling for game elements */
+.game-board svg {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Button icons */
+.button-icon svg {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* D-pad icons */
+.dpad-button svg,
+.center-dpad-button svg {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  pointer-events: none;
+}
+
+/* Menu icons */
+.menu svg {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Ensure all interactive elements with SVG children are not selectable */
+button svg,
+a svg {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Prevent text selection on all SVG containing elements */
+[style*="user-select"] svg,
+.user-select-none svg {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
