@@ -8,6 +8,7 @@ export type ButtonProps = {
   disabled?: boolean;
   className?: string;
   variant?: "primary" | "secondary" | "danger";
+  "aria-label"?: string;
   children?: ReactNode;
 };
 
@@ -42,6 +43,7 @@ export const Button = ({
   disabled = false,
   className = "",
   variant = "primary",
+  "aria-label": ariaLabel,
   children,
 }: ButtonProps) => {
   const { bg, text, hoverBg, disabledBg, disabledText } =
@@ -51,6 +53,7 @@ export const Button = ({
       className={`modern-button ${className}`}
       onClick={onClick}
       disabled={disabled}
+      aria-label={ariaLabel}
       style={{
         display: "inline-flex",
         alignItems: "center",

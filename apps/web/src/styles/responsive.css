@@ -23,8 +23,8 @@
       max(8px, env(safe-area-inset-left));
   }
 
-  .utility-bar .pwa-controls {
-    width: 100%;
+  .utility-title {
+    font-size: 12px;
   }
 
   .fullscreen-toggle {

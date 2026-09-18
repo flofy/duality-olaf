@@ -29,3 +29,100 @@
   min-width: 0;
   margin-left: auto;
 }
+
+/* ── Burger menu ─────────────────────────────────────────────── */
+.utility-title {
+  flex: 1;
+  text-align: center;
+  font: 700 13px monospace;
+  letter-spacing: 2px;
+  color: var(--text);
+  pointer-events: none;
+}
+
+.burger-toggle {
+  flex: none;
+}
+
+/* ── Drawer ──────────────────────────────────────────────────── */
+.app-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(84vw, 320px);
+  padding: max(16px, env(safe-area-inset-top)) 16px
+    max(16px, env(safe-area-inset-bottom)) 16px;
+  background: var(--background);
+  border-left: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow: -12px 0 40px #000a;
+  transform: translateX(100%);
+  transition:
+    transform 240ms ease,
+    visibility 240ms;
+  visibility: hidden;
+}
+
+.app-drawer.open {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 700 15px monospace;
+  letter-spacing: 2px;
+  color: var(--accent);
+}
+
+.drawer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: 700 13px monospace;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.drawer-link:hover,
+.drawer-link.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.drawer-section {
+  border-top: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+  padding-top: 12px;
+}
+
+.drawer-section .pwa-controls {
+  width: 100%;
+}
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  padding: 0;
+  border: 0;
+  background: #0009;
+  cursor: pointer;
+}

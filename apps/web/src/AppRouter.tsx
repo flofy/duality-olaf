@@ -1,10 +1,11 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import {
   createBrowserRouter,
   Navigate,
   Outlet,
+  useLocation,
   useNavigate,
   useParams,
 } from "react-router";
@@ -28,6 +29,7 @@ import { Button } from "./components/Button";
 import {
   ArrowLeft,
   ArrowRight,
+  BurgerIcon,
   Maximize,
   Minimize,
   Help as HelpIcon,
@@ -152,24 +154,97 @@ function FullscreenButton() {
       aria-label={
         fullscreen ? "Quitter le plein écran" : "Passer en plein écran"
       }
+      className="fullscreen-toggle"
       variant="secondary"
     />
   );
 }
 
 function AppLayout() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Close the drawer whenever the route changes.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  // Close the drawer with the Escape key.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   return (
     <main className="app" style={vars()}>
       <div className="shell app-enter">
         <div className="utility-bar">
-          <PwaControls updateSW={updateSW} />
+          <Button
+            icon={<BurgerIcon size={18} />}
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            className={`burger-toggle ${menuOpen ? "open" : ""}`}
+            variant="secondary"
+          />
+          <span className="utility-title">DUALITY</span>
           <FullscreenButton />
         </div>
         <div className="app-content">
           <Outlet />
         </div>
       </div>
+      <nav
+        className={`app-drawer ${menuOpen ? "open" : ""}`}
+        aria-hidden={!menuOpen}
+      >
+        <div className="drawer-header">
+          <span className="drawer-title">DUALITY</span>
+        </div>
+        <DrawerLinks />
+        <div className="drawer-section">
+          <PwaControls updateSW={updateSW} />
+        </div>
+      </nav>
+      {menuOpen && (
+        <button
+          className="drawer-backdrop"
+          type="button"
+          aria-label="Fermer le menu"
+          onClick={() => setMenuOpen(false)}
+          tabIndex={-1}
+        />
+      )}
     </main>
+  );
+}
+
+function DrawerLinks() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const links: Array<{ label: string; to: string; icon: ReactNode }> = [
+    { label: "MENU", to: "/menu", icon: <ArrowRight size={18} /> },
+    { label: "AIDE", to: "/help", icon: <HelpIcon size={18} /> },
+  ];
+  return (
+    <div className="drawer-links">
+      {links.map((link) => (
+        <button
+          key={link.to}
+          type="button"
+          className={`drawer-link ${
+            location.pathname.startsWith(link.to) ? "active" : ""
+          }`}
+          onClick={() => navigate(link.to)}
+        >
+          {link.icon}
+          <span>{link.label}</span>
+        </button>
+      ))}
+    </div>
   );
 }
 
