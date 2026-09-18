@@ -25,6 +25,26 @@ describe("solveLevel", () => {
     expect(result.commands).toHaveLength(1);
   });
 
+  it("collects a star swept before the final stop", () => {
+    const level: Level = {
+      id: "solver-swept-star",
+      width: 5,
+      height: 1,
+      tiles: [["wall", "empty", "empty", "empty", "wall"]],
+      ball: { x: 1, y: 0 },
+      square: { x: 3, y: 0 },
+      stars: [{ x: 2, y: 0 }],
+    };
+
+    const result = solveLevel(level);
+
+    expect(result.solvable).toBe(true);
+    expect(result.moves).toBe(1);
+    expect(result.commands).toEqual([
+      { type: "move", direction: { x: 1, y: 0 } },
+    ]);
+  });
+
   it("replays the solver solution of world-1-level-02 through the runner", () => {
     const level2 = world1.find((level) => level.id === "world-1-level-02");
     expect(level2).toBeDefined();
