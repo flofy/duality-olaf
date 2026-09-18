@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LevelRunner } from "@duality/game";
 import type { Level } from "@duality/level-format";
-import {
-  playSound,
-  startAudio,
-  toggleSound,
-  vibrate,
-} from "./audioFeedback";
+import { playSound, startAudio, toggleSound, vibrate } from "./audioFeedback";
 
 export type GameplayDirection = {
   x: -1 | 0 | 1;
