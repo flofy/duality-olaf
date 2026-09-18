@@ -288,10 +288,7 @@ function buildRelaxedMovementGraph(level: Level): RelaxedMovementGraph {
   return graph;
 }
 
-function buildRelaxedMoves(
-  level: Level,
-  position: Position,
-): RelaxedMove[] {
+function buildRelaxedMoves(level: Level, position: Position): RelaxedMove[] {
   return DIRECTIONS.flatMap((direction) => {
     const move = relaxedMove(level, position, direction);
     return move ? [move] : [];
