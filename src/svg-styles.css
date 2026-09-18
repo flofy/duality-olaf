@@ -1,0 +1,124 @@
+/* Styles pour les SVG et le centrage des éléments dans le jeu Duality */
+
+/* Style de base pour tous les SVG dans le jeu */
+svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Centrage parfait pour les icônes dans les boutons */
+.modern-button svg,
+.dpad-button svg,
+.center-dpad-button svg {
+  display: block;
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+
+/* Style pour les cellules du plateau de jeu */
+.game-board > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Style pour les icônes dans les cellules */
+.game-board svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans le HUD */
+.hud svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans les barres utilitaires */
+.utility-bar svg,
+.top-utility-bar svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans le menu */
+.menu svg,
+.world-button svg,
+.config-button svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans le menu burger */
+.burger-menu-button svg,
+.burger-menu-close svg,
+.burger-menu-item svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans les modales */
+.modal svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans l'écran de configuration */
+.config-screen svg,
+.config-section svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans l'écran d'aide */
+.help svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans les boutons de l'écran de jeu */
+.game .topbar svg,
+.game .controls svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans le D-pad */
+.dpad svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans les boutons de développement */
+.dev-entry svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans les boutons de la modale de complétion */
+.modal-actions svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans l'intro */
+.intro svg,
+.intro-logo svg,
+.intro-demo svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour les icônes dans le bandeau PWA */
+.pwa-controls svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Style pour l'indicateur PWA installé */
+.pwa-installed-indicator svg {
+  display: block;
+  margin: 0 auto;
+}
