@@ -132,21 +132,28 @@ function positionKey(position: Position): string {
   return `${position.x},${position.y}`;
 }
 
-function doorKey(state: GameState): string {
-  return Object.entries(state.doors)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([id, open]) => `${id}:${open ? 1 : 0}`)
-    .join(";");
-}
+function createBaseKey(level: Level): (state: GameState) => string {
+  const doorIds = (level.doors ?? []).map((door) => door.id);
+  const width = level.width;
 
-/** Base identity of a state: everything except which stars remain. */
-function baseKey(state: GameState): string {
-  return [
-    state.activeForm,
-    `${state.ball.x},${state.ball.y}`,
-    `${state.square.x},${state.square.y}`,
-    doorKey(state),
-  ].join("|");
+  const positionIndex = (position: Position): number =>
+    position.x + position.y * width;
+
+  return (state) => {
+    let doorMask = 0n;
+    for (let i = 0; i < doorIds.length; i += 1) {
+      if (state.doors[doorIds[i]!] === true) {
+        doorMask |= 1n << BigInt(i);
+      }
+    }
+
+    return [
+      state.activeForm === "ball" ? 0 : 1,
+      positionIndex(state.ball),
+      positionIndex(state.square),
+      doorMask,
+    ].join("|");
+  };
 }
 
 /** Bit i of the mask ↔ level.stars[i]. */
@@ -384,10 +391,13 @@ function buildRelaxedDistances(
   return distances;
 }
 
-function createHeuristic(level: Level): (state: GameState) => number {
+function createHeuristic(
+  level: Level,
+  starIndex: ReadonlyMap<string, number>,
+): (state: GameState) => number {
   const graph = buildRelaxedMovementGraph(level);
   const distances = buildRelaxedDistances(level, graph);
-  const starKeys = level.stars.map(positionKey);
+  const mstCache = new Map<bigint, number>();
 
   const distanceBetweenStars = (
     fromKey: string,
@@ -402,8 +412,16 @@ function createHeuristic(level: Level): (state: GameState) => number {
     return Math.min(forward, backward);
   };
 
-  const mstCost = (remainingStars: readonly string[]): number => {
-    if (remainingStars.length < 2) return 0;
+  const mstCost = (
+    remainingStars: readonly string[],
+    remainingMaskValue: bigint,
+  ): number => {
+    const cached = mstCache.get(remainingMaskValue);
+    if (cached !== undefined) return cached;
+    if (remainingStars.length < 2) {
+      mstCache.set(remainingMaskValue, 0);
+      return 0;
+    }
 
     const connected = new Set<string>([remainingStars[0]!]);
     let cost = 0;
@@ -423,22 +441,33 @@ function createHeuristic(level: Level): (state: GameState) => number {
         }
       }
 
-      if (bestStar === null) return 0;
+      if (bestStar === null) {
+        mstCache.set(remainingMaskValue, 0);
+        return 0;
+      }
       connected.add(bestStar);
       cost += bestCost;
     }
 
+    mstCache.set(remainingMaskValue, cost);
     return cost;
   };
+
+  const heuristicCache = new Map<string, number>();
 
   return (state) => {
     if (state.stars.length === 0) return 0;
 
-    const remainingKeys = state.stars.map(positionKey);
-    const remainingSet = new Set(remainingKeys);
-    const remainingStarKeys = starKeys.filter((key) => remainingSet.has(key));
-    const fromBall = distances.get(positionKey(state.ball));
-    const fromSquare = distances.get(positionKey(state.square));
+    const remainingMaskValue = remainingMask(starIndex, state);
+    const ballKey = positionKey(state.ball);
+    const squareKey = positionKey(state.square);
+    const cacheKey = `${ballKey}|${squareKey}|${remainingMaskValue}`;
+    const cached = heuristicCache.get(cacheKey);
+    if (cached !== undefined) return cached;
+
+    const remainingStarKeys = state.stars.map(positionKey);
+    const fromBall = distances.get(ballKey);
+    const fromSquare = distances.get(squareKey);
 
     let startCost = Number.POSITIVE_INFINITY;
     for (const starKey of remainingStarKeys) {
@@ -452,7 +481,9 @@ function createHeuristic(level: Level): (state: GameState) => number {
     }
 
     if (!Number.isFinite(startCost)) return 0;
-    return startCost + mstCost(remainingStarKeys);
+    const value = startCost + mstCost(remainingStarKeys, remainingMaskValue);
+    heuristicCache.set(cacheKey, value);
+    return value;
   };
 }
 
@@ -464,8 +495,9 @@ function solveBfs(level: Level, options?: SolveOptions): SolverResult {
     return { solvable: true, moves: 0, commands: [], exploredStates: 1 };
 
   const starIndex = starIndexMap(level);
+  const stateKey = createBaseKey(level);
   const dominance: Dominance = new Map();
-  remember(dominance, baseKey(initial), remainingMask(starIndex, initial), 0);
+  remember(dominance, stateKey(initial), remainingMask(starIndex, initial), 0);
 
   const nodes: SearchNode[] = [
     { state: initial, parent: null, command: null, depth: 0 },
@@ -483,7 +515,7 @@ function solveBfs(level: Level, options?: SolveOptions): SolverResult {
     if (
       isDominatedBesidesSelf(
         dominance,
-        baseKey(node.state),
+        stateKey(node.state),
         remainingMask(starIndex, node.state),
         node.depth,
       )
@@ -529,7 +561,7 @@ function solveBfs(level: Level, options?: SolveOptions): SolverResult {
         };
       }
 
-      const key = baseKey(after);
+      const key = stateKey(after);
       const mask = remainingMask(starIndex, after);
       if (isDominated(dominance, key, mask, childDepth)) continue;
       remember(dominance, key, mask, childDepth);
@@ -553,10 +585,11 @@ function solveAStar(level: Level, options?: SolveOptions): SolverResult {
   if (initial.completed)
     return { solvable: true, moves: 0, commands: [], exploredStates: 1 };
 
-  const heuristic = createHeuristic(level);
   const starIndex = starIndexMap(level);
+  const heuristic = createHeuristic(level, starIndex);
+  const stateKey = createBaseKey(level);
   const dominance: Dominance = new Map();
-  remember(dominance, baseKey(initial), remainingMask(starIndex, initial), 0);
+  remember(dominance, stateKey(initial), remainingMask(starIndex, initial), 0);
   const nodes: SearchNode[] = [
     { state: initial, parent: null, command: null, depth: 0 },
   ];
@@ -579,7 +612,7 @@ function solveAStar(level: Level, options?: SolveOptions): SolverResult {
     if (
       isDominatedBesidesSelf(
         dominance,
-        baseKey(node.state),
+        stateKey(node.state),
         remainingMask(starIndex, node.state),
         node.depth,
       )
@@ -617,7 +650,7 @@ function solveAStar(level: Level, options?: SolveOptions): SolverResult {
 
       const childDepth = node.depth + 1;
       if (childDepth > maxDepth) continue;
-      const key = baseKey(after);
+      const key = stateKey(after);
       const mask = remainingMask(starIndex, after);
       if (isDominated(dominance, key, mask, childDepth)) continue;
       remember(dominance, key, mask, childDepth);
