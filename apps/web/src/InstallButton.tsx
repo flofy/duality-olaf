@@ -5,6 +5,7 @@ import {
   getControlsMode,
   type ControlsMode,
 } from "./controls";
+import { AudioSettings } from "./AudioSettings";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -137,6 +138,7 @@ export function InstallButton() {
           📱 INSTALLER
         </button>
       )}
+      <AudioSettings />
     </>
   );
 }
