@@ -19,14 +19,15 @@
 }
 
 .board {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--tile));
+  grid-template-rows: repeat(var(--rows), var(--tile));
   --tile: min(
     48px,
     calc((min(100vw, 760px) - 48px) / 13),
     calc((100dvh - 250px) / 13)
   );
-  display: grid;
-  grid-template-columns: repeat(var(--cols), var(--tile));
-  grid-template-rows: repeat(var(--rows), var(--tile));
+  aspect-ratio: var(--cols) / var(--rows);
   max-width: 100%;
   max-height: 100%;
   background: var(--board);

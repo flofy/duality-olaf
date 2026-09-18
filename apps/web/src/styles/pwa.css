@@ -26,5 +26,6 @@
   justify-content: flex-end;
   gap: 4px;
   flex: none;
+  min-width: 0;
   margin-left: auto;
 }

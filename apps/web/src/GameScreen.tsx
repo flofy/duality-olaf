@@ -188,6 +188,7 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
             icon={<SwitchForm size={24} color="var(--text)" />}
             label="CHANGER"
             onClick={switchForm}
+            className="switch-toggle"
           />
         )}
       </div>

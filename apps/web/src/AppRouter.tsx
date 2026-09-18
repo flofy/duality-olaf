@@ -281,7 +281,7 @@ function Menu() {
         />
         <Button
           icon={<Theme size={18} />}
-          label="THÈME"
+          label={getTheme().name.toUpperCase()}
           onClick={() => {
             cycleTheme();
             setTick(tick + 1);
