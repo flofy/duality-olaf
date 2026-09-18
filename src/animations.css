@@ -2,7 +2,8 @@
 
 /* Animation pour les pics (spikes) */
 @keyframes spikePulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
@@ -18,7 +19,8 @@
 
 /* Animation pour les étoiles */
 @keyframes starTwinkle {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1) rotate(0deg);
     opacity: 1;
   }
@@ -117,7 +119,8 @@
 
 /* Animation pour le changement de forme */
 @keyframes formSwitch {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -177,7 +180,8 @@
 
 /* Animation pour l'indicateur PWA */
 @keyframes pwaPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -207,7 +211,8 @@
 
 /* Animation pour le bouton plein écran */
 @keyframes fullscreenPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

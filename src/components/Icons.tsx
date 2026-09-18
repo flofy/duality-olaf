@@ -7,7 +7,11 @@ export type IconProps = {
 };
 
 // Spike (danger)
-export const Spike = ({ size = 24, color = "#ff4444", className }: IconProps) => (
+export const Spike = ({
+  size = 24,
+  color = "#ff4444",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -25,16 +29,16 @@ export const Spike = ({ size = 24, color = "#ff4444", className }: IconProps) =>
       d="M12 4L13 7H19L17 9L18 13L12 11L6 13L8 9L4 7H9L12 4Z"
       fill="#cc0000"
     />
-    <path
-      d="M12 2L12 4"
-      stroke="#880000"
-      strokeWidth="1.5"
-    />
+    <path d="M12 2L12 4" stroke="#880000" strokeWidth="1.5" />
   </svg>
 );
 
 // Ball
-export const Ball = ({ size = 24, color = "#4aa3ff", className }: IconProps) => (
+export const Ball = ({
+  size = 24,
+  color = "#4aa3ff",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -53,7 +57,11 @@ export const Ball = ({ size = 24, color = "#4aa3ff", className }: IconProps) => 
 );
 
 // Square
-export const Square = ({ size = 24, color = "#ffd447", className }: IconProps) => (
+export const Square = ({
+  size = 24,
+  color = "#ffd447",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -65,15 +73,35 @@ export const Square = ({ size = 24, color = "#ffd447", className }: IconProps) =
   >
     <rect x="3" y="3" width="18" height="18" rx="2" fill="#d4a840" />
     <rect x="2" y="2" width="20" height="20" rx="2" fill={color} />
-    <rect x="4" y="4" width="16" height="16" rx="1" fill="white" opacity={0.3} />
+    <rect
+      x="4"
+      y="4"
+      width="16"
+      height="16"
+      rx="1"
+      fill="white"
+      opacity={0.3}
+    />
     <rect x="2" y="2" width="20" height="2" rx="1" fill="white" opacity={0.5} />
     <rect x="2" y="2" width="2" height="20" rx="1" fill="white" opacity={0.5} />
-    <rect x="2" y="2" width="20" height="20" rx="2" stroke="#e6b830" strokeWidth="0.5" />
+    <rect
+      x="2"
+      y="2"
+      width="20"
+      height="20"
+      rx="2"
+      stroke="#e6b830"
+      strokeWidth="0.5"
+    />
   </svg>
 );
 
 // Star
-export const Star = ({ size = 24, color = "#ffd700", className }: IconProps) => (
+export const Star = ({
+  size = 24,
+  color = "#ffd700",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -83,9 +111,7 @@ export const Star = ({ size = 24, color = "#ffd700", className }: IconProps) => 
     className={className}
     style={{ display: "block", margin: "0 auto" }}
   >
-    <path
-      d="M12 2L14.5 9.5L22 10.5L16 14L17.5 21L12 18L6.5 21L8 14L2 10.5L9.5 9.5L12 2Z"
-    />
+    <path d="M12 2L14.5 9.5L22 10.5L16 14L17.5 21L12 18L6.5 21L8 14L2 10.5L9.5 9.5L12 2Z" />
     <path
       d="M12 4L13 8L16 8L14 11L15 15L12 13L9 15L10 11L8 8L11 8L12 4Z"
       fill="white"
@@ -95,7 +121,12 @@ export const Star = ({ size = 24, color = "#ffd700", className }: IconProps) => 
 );
 
 // Door
-export const Door = ({ size = 24, color = "#7a5c3d", isOpen = false, className }: IconProps & { isOpen?: boolean }) => (
+export const Door = ({
+  size = 24,
+  color = "#7a5c3d",
+  isOpen = false,
+  className,
+}: IconProps & { isOpen?: boolean }) => (
   <svg
     width={size}
     height={size}
@@ -114,14 +145,16 @@ export const Door = ({ size = 24, color = "#7a5c3d", isOpen = false, className }
         <circle cx="12" cy="12" r="0.5" fill="#ffd447" />
       </>
     )}
-    {isOpen && (
-      <path d="M8 10L10 8L12 10" stroke="#5d432c" strokeWidth="1" />
-    )}
+    {isOpen && <path d="M8 10L10 8L12 10" stroke="#5d432c" strokeWidth="1" />}
   </svg>
 );
 
 // Teleporter
-export const Teleporter = ({ size = 24, color = "#9b59b6", className }: IconProps) => (
+export const Teleporter = ({
+  size = 24,
+  color = "#9b59b6",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -146,7 +179,12 @@ export const Teleporter = ({ size = 24, color = "#9b59b6", className }: IconProp
 );
 
 // SwitchIcon
-export const SwitchIcon = ({ size = 24, color = "#ffd447", form = "either", className }: IconProps & { form?: "ball" | "square" | "either" }) => {
+export const SwitchIcon = ({
+  size = 24,
+  color = "#ffd447",
+  form = "either",
+  className,
+}: IconProps & { form?: "ball" | "square" | "either" }) => {
   const glyph = form === "ball" ? "●" : form === "square" ? "■" : "⌁";
   return (
     <svg
@@ -158,10 +196,33 @@ export const SwitchIcon = ({ size = 24, color = "#ffd447", form = "either", clas
       className={className}
       style={{ display: "block", margin: "0 auto" }}
     >
-      <rect x="6" y="6" width="12" height="12" rx="2" fill={color} opacity={0.4} />
-      <rect x="7" y="7" width="10" height="10" rx="1" fill={color} opacity={0.6} />
+      <rect
+        x="6"
+        y="6"
+        width="12"
+        height="12"
+        rx="2"
+        fill={color}
+        opacity={0.4}
+      />
+      <rect
+        x="7"
+        y="7"
+        width="10"
+        height="10"
+        rx="1"
+        fill={color}
+        opacity={0.6}
+      />
       <circle cx="12" cy="12" r="3" fill={color} />
-      <text x="12" y="15" fontSize="10" textAnchor="middle" fill="white" fontWeight="bold">
+      <text
+        x="12"
+        y="15"
+        fontSize="10"
+        textAnchor="middle"
+        fill="white"
+        fontWeight="bold"
+      >
         {glyph}
       </text>
       <circle cx="12" cy="10" r="1" fill="white" opacity={0.8} />
@@ -170,7 +231,11 @@ export const SwitchIcon = ({ size = 24, color = "#ffd447", form = "either", clas
 };
 
 // Arrows
-export const ArrowUp = ({ size = 24, color = "#fff", className }: IconProps) => (
+export const ArrowUp = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -185,7 +250,11 @@ export const ArrowUp = ({ size = 24, color = "#fff", className }: IconProps) => 
   </svg>
 );
 
-export const ArrowDown = ({ size = 24, color = "#fff", className }: IconProps) => (
+export const ArrowDown = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -200,7 +269,11 @@ export const ArrowDown = ({ size = 24, color = "#fff", className }: IconProps) =
   </svg>
 );
 
-export const ArrowLeft = ({ size = 24, color = "#fff", className }: IconProps) => (
+export const ArrowLeft = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -215,7 +288,11 @@ export const ArrowLeft = ({ size = 24, color = "#fff", className }: IconProps) =
   </svg>
 );
 
-export const ArrowRight = ({ size = 24, color = "#fff", className }: IconProps) => (
+export const ArrowRight = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -231,7 +308,11 @@ export const ArrowRight = ({ size = 24, color = "#fff", className }: IconProps) 
 );
 
 // SwitchForm
-export const SwitchForm = ({ size = 24, color = "#fff", className }: IconProps) => (
+export const SwitchForm = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -244,14 +325,26 @@ export const SwitchForm = ({ size = 24, color = "#fff", className }: IconProps) 
     <circle cx="8" cy="12" r="4" fill={color} />
     <circle cx="8" cy="12" r="1" fill="white" opacity={0.8} />
     <rect x="13" y="10" width="6" height="6" rx="1" fill={color} />
-    <rect x="14" y="11" width="2" height="2" rx="0.5" fill="white" opacity={0.8} />
+    <rect
+      x="14"
+      y="11"
+      width="2"
+      height="2"
+      rx="0.5"
+      fill="white"
+      opacity={0.8}
+    />
     <path d="M10 12H13" stroke={color} strokeWidth="2" />
     <path d="M11 11L12 12L11 13" stroke={color} strokeWidth="1.5" />
   </svg>
 );
 
 // ResetIcon
-export const ResetIcon = ({ size = 24, color = "#fff", className }: IconProps) => (
+export const ResetIcon = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -266,36 +359,20 @@ export const ResetIcon = ({ size = 24, color = "#fff", className }: IconProps) =
       stroke={color}
       strokeWidth="2"
     />
-    <path
-      d="M12 2V6"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <path
-      d="M12 18V22"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <path
-      d="M22 12H18"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <path
-      d="M2 12H6"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
+    <path d="M12 2V6" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <path d="M12 18V22" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <path d="M22 12H18" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <path d="M2 12H6" stroke={color} strokeWidth="2" strokeLinecap="round" />
     <circle cx="12" cy="12" r="2" fill={color} />
   </svg>
 );
 
 // Maximize
-export const Maximize = ({ size = 24, color = "#fff", className }: IconProps) => (
+export const Maximize = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -305,14 +382,26 @@ export const Maximize = ({ size = 24, color = "#fff", className }: IconProps) =>
     className={className}
     style={{ display: "block", margin: "0 auto" }}
   >
-    <rect x="2" y="2" width="20" height="20" rx="2" stroke={color} strokeWidth="2" />
+    <rect
+      x="2"
+      y="2"
+      width="20"
+      height="20"
+      rx="2"
+      stroke={color}
+      strokeWidth="2"
+    />
     <path d="M12 2V22" stroke={color} strokeWidth="2" />
     <path d="M2 12H22" stroke={color} strokeWidth="2" />
   </svg>
 );
 
 // Minimize
-export const Minimize = ({ size = 24, color = "#fff", className }: IconProps) => (
+export const Minimize = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -322,7 +411,15 @@ export const Minimize = ({ size = 24, color = "#fff", className }: IconProps) =>
     className={className}
     style={{ display: "block", margin: "0 auto" }}
   >
-    <rect x="4" y="4" width="16" height="16" rx="2" stroke={color} strokeWidth="2" />
+    <rect
+      x="4"
+      y="4"
+      width="16"
+      height="16"
+      rx="2"
+      stroke={color}
+      strokeWidth="2"
+    />
     <path d="M10 10L14 14M14 10L10 14" stroke={color} strokeWidth="2" />
   </svg>
 );
@@ -346,7 +443,11 @@ export const Help = ({ size = 24, color = "#fff", className }: IconProps) => (
 );
 
 // ThemeIcon
-export const ThemeIcon = ({ size = 24, color = "#fff", className }: IconProps) => (
+export const ThemeIcon = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -386,7 +487,11 @@ export const Skin = ({ size = 24, color = "#fff", className }: IconProps) => (
 );
 
 // Check
-export const Check = ({ size = 24, color = "#4CAF50", className }: IconProps) => (
+export const Check = ({
+  size = 24,
+  color = "#4CAF50",
+  className,
+}: IconProps) => (
   <svg
     width={size}
     height={size}
