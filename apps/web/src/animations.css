@@ -1,0 +1,613 @@
+/* Animations for Duality */
+
+/* App entry animation */
+.app-enter {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Intro animations */
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.intro-grid {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(20px, 20px);
+  }
+}
+
+.intro-logo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  animation: logoPulse 2s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.intro-ball {
+  color: var(--ballActive);
+  animation: ballBounce 1s ease-in-out infinite;
+}
+
+@keyframes ballBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.intro-square {
+  color: var(--squareActive);
+  animation: squareBounce 1s ease-in-out infinite 0.5s;
+}
+
+@keyframes squareBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.intro-tagline {
+  font-size: 18px;
+  margin-bottom: 32px;
+  opacity: 0.8;
+}
+
+.intro-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.intro-track {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.intro-demo-ball {
+  color: var(--ballActive);
+  font-size: 24px;
+  animation: demoBall 2s ease-in-out infinite;
+}
+
+@keyframes demoBall {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(20px);
+  }
+}
+
+.intro-star {
+  color: gold;
+  font-size: 24px;
+  animation: starTwinkle 1s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.intro-demo-square {
+  color: var(--squareActive);
+  font-size: 24px;
+  animation: demoSquare 2s ease-in-out infinite;
+}
+
+@keyframes demoSquare {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-20px);
+  }
+}
+
+.intro-switch {
+  font-size: 24px;
+  animation: switchPulse 1s ease-in-out infinite;
+}
+
+@keyframes switchPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.intro-start {
+  margin-top: 16px;
+}
+
+.intro-hint {
+  font-size: 14px;
+  margin-top: 16px;
+  opacity: 0.6;
+}
+
+.intro-leaving {
+  animation: fadeOut 0.4s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Menu animations */
+.menu {
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.world-button {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.world-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Game animations */
+.game {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.board-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+/* Control animations */
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  align-self: flex-start;
+}
+
+.dpad-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--text);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  user-select: none;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dpad-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dpad-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.center-dpad-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--text);
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  user-select: none;
+}
+
+.center-dpad-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.center-dpad-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.center-dpad-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-dpad-label {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* HUD animations */
+.hud {
+  text-align: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  margin: 16px;
+}
+
+/* Modal animations */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal {
+  background: var(--background);
+  border: 2px solid var(--text);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.action {
+  background: var(--primary);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  user-select: none;
+}
+
+.action:hover:not(:disabled) {
+  background: var(--primaryDark);
+}
+
+.action:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* PWA Controls animations */
+.pwa-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 1000;
+  animation: slideUp 0.3s ease-out;
+}
+
+.pwa-controls-bottom {
+  flex-direction: column;
+  gap: 8px;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.pwa-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pwa-dismiss {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.pwa-installed-indicator {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  z-index: 1000;
+  user-select: none;
+}
+
+/* Utility bar */
+.utility-bar {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  z-index: 100;
+}
+
+.top-utility-bar {
+  top: 0;
+  right: 0;
+  flex-direction: row-reverse;
+}
+
+.utility-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Button animations */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button primary {
+  background: var(--primary);
+}
+
+.button.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--text);
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-label {
+  font-weight: bold;
+}
+
+/* Burger menu animations */
+.burger-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.burger-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.burger-menu-content {
+  background: var(--background);
+  border: 2px solid var(--text);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  align-self: flex-end;
+  user-select: none;
+}
+
+.close-button:hover {
+  opacity: 0.8;
+}
+
+/* Fullscreen button */
+.fullscreen-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Dev tools */
+.dev-entry {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid var(--text);
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 300px;
+  font-size: 12px;
+  z-index: 100;
+  user-select: none;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .intro-logo {
+    font-size: 32px;
+  }
+
+  .world-button {
+    width: 100%;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+  .dpad {
+    align-self: stretch;
+  }
+}
+
+/* SwitchForm - No blink animation */
+@keyframes noBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+}
+
+/* Ensure SVG elements are not selectable */
+svg {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
