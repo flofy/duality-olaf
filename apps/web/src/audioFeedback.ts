@@ -196,7 +196,9 @@ export async function playSound(effect: SoundEffect) {
 }
 
 export function isHapticSupported() {
-  return typeof navigator !== "undefined" && typeof navigator.vibrate === "function";
+  return (
+    typeof navigator !== "undefined" && typeof navigator.vibrate === "function"
+  );
 }
 
 export function vibrate(pattern: number | number[]) {
