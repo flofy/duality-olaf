@@ -45,6 +45,44 @@ describe("solveLevel", () => {
     ]);
   });
 
+  it("solves a level when a star is only reachable by a different relaxed route", () => {
+    const level: Level = {
+      id: "solver-relaxed-route",
+      width: 5,
+      height: 3,
+      tiles: [
+        ["wall", "wall", "wall", "wall", "wall"],
+        ["wall", "empty", "empty", "empty", "wall"],
+        ["wall", "empty", "empty", "empty", "wall"],
+      ],
+      ball: { x: 1, y: 1 },
+      square: { x: 3, y: 2 },
+      stars: [{ x: 3, y: 1 }, { x: 1, y: 2 }],
+    };
+
+    const result = solveLevel(level);
+
+    expect(result.solvable).toBe(true);
+    expect(result.moves).toBe(2);
+  });
+
+  it("does not create a relaxed path through a swept cell", () => {
+    const level: Level = {
+      id: "solver-swept-not-stop",
+      width: 5,
+      height: 1,
+      tiles: [["wall", "empty", "empty", "empty", "wall"]],
+      ball: { x: 1, y: 0 },
+      square: { x: 3, y: 0 },
+      stars: [{ x: 2, y: 0 }, { x: 3, y: 0 }],
+    };
+
+    const result = solveLevel(level);
+
+    expect(result.solvable).toBe(true);
+    expect(result.moves).toBe(2);
+  });
+
   it("replays the solver solution of world-1-level-02 through the runner", () => {
     const level2 = world1.find((level) => level.id === "world-1-level-02");
     expect(level2).toBeDefined();
