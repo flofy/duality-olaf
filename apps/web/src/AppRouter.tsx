@@ -29,7 +29,6 @@ import { Button } from "./components/Button";
 import {
   ArrowLeft,
   ArrowRight,
-  BurgerIcon,
   Maximize,
   Minimize,
   Help as HelpIcon,
@@ -183,13 +182,16 @@ function AppLayout() {
     <main className="app" style={vars()}>
       <div className="shell app-enter">
         <div className="utility-bar">
-          <Button
-            icon={<BurgerIcon size={18} />}
-            onClick={() => setMenuOpen((open) => !open)}
-            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          <button
+            type="button"
             className={`burger-toggle ${menuOpen ? "open" : ""}`}
-            variant="secondary"
-          />
+            aria-expanded={menuOpen}
+            aria-controls="app-menu"
+            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span aria-hidden="true" />
+          </button>
           <span className="utility-title">DUALITY</span>
           <FullscreenButton />
         </div>
@@ -197,32 +199,21 @@ function AppLayout() {
           <Outlet />
         </div>
       </div>
-      <nav
-        className={`app-drawer ${menuOpen ? "open" : ""}`}
+      <div
+        id="app-menu"
+        className={`menu-panel ${menuOpen ? "open" : ""}`}
         aria-hidden={!menuOpen}
       >
-        <div className="drawer-header">
-          <span className="drawer-title">DUALITY</span>
-        </div>
-        <DrawerLinks />
-        <div className="drawer-section">
+        <MenuLinks />
+        <div className="menu-panel-section">
           <PwaControls updateSW={updateSW} />
         </div>
-      </nav>
-      {menuOpen && (
-        <button
-          className="drawer-backdrop"
-          type="button"
-          aria-label="Fermer le menu"
-          onClick={() => setMenuOpen(false)}
-          tabIndex={-1}
-        />
-      )}
+      </div>
     </main>
   );
 }
 
-function DrawerLinks() {
+function MenuLinks() {
   const navigate = useNavigate();
   const location = useLocation();
   const links: Array<{ label: string; to: string; icon: ReactNode }> = [
@@ -230,12 +221,12 @@ function DrawerLinks() {
     { label: "AIDE", to: "/help", icon: <HelpIcon size={18} /> },
   ];
   return (
-    <div className="drawer-links">
+    <div className="menu-links">
       {links.map((link) => (
         <button
           key={link.to}
           type="button"
-          className={`drawer-link ${
+          className={`menu-link ${
             location.pathname.startsWith(link.to) ? "active" : ""
           }`}
           onClick={() => navigate(link.to)}

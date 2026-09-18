@@ -30,7 +30,7 @@
   margin-left: auto;
 }
 
-/* ── Burger menu ─────────────────────────────────────────────── */
+/* ── Burger menu (bouton 44px, barres en CSS pur → croix) ────── */
 .utility-title {
   flex: 1;
   text-align: center;
@@ -41,88 +41,134 @@
 }
 
 .burger-toggle {
+  position: relative;
+  z-index: 3005;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex: none;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
-/* ── Drawer ──────────────────────────────────────────────────── */
-.app-drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 200;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: min(84vw, 320px);
-  padding: max(16px, env(safe-area-inset-top)) 16px
-    max(16px, env(safe-area-inset-bottom)) 16px;
-  background: var(--background);
-  border-left: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-  box-shadow: -12px 0 40px #000a;
-  transform: translateX(100%);
+.burger-toggle:hover,
+.burger-toggle:focus-visible {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  outline: none;
+}
+
+.burger-toggle span,
+.burger-toggle span::before,
+.burger-toggle span::after {
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
   transition:
-    transform 240ms ease,
-    visibility 240ms;
-  visibility: hidden;
+    transform 0.2s ease,
+    opacity 0.2s ease;
+  content: "";
 }
 
-.app-drawer.open {
-  transform: translateX(0);
-  visibility: visible;
+.burger-toggle span::before {
+  transform: translateY(-7px);
 }
 
-.drawer-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font: 700 15px monospace;
-  letter-spacing: 2px;
-  color: var(--accent);
+.burger-toggle span::after {
+  transform: translateY(7px);
 }
 
-.drawer-links {
+.burger-toggle.open span {
+  transform: rotate(45deg);
+}
+
+.burger-toggle.open span::before {
+  transform: rotate(90deg);
+}
+
+.burger-toggle.open span::after {
+  opacity: 0;
+}
+
+/* ── Panneau menu plein écran (fade + léger slide, fdrweb) ───── */
+.menu-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 3002;
+  width: 100vw;
+  height: 100dvh;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: stretch;
+  gap: 24px;
+  padding: 4.5rem 1.25rem 2rem;
+  background: color-mix(in srgb, var(--background) 97%, black);
+  overflow-y: auto;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.2s;
 }
 
-.drawer-link {
+.menu-panel.open {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.menu-links {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  width: min(360px, 100%);
+  margin: 0 auto;
+}
+
+.menu-link {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  padding: 12px 14px;
+  padding: 14px;
   border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
-  border-radius: 10px;
+  border-radius: 12px;
   background: transparent;
   color: var(--text);
-  font: 700 13px monospace;
-  letter-spacing: 1px;
+  font: 700 15px monospace;
+  letter-spacing: 2px;
   cursor: pointer;
-  text-align: left;
 }
 
-.drawer-link:hover,
-.drawer-link.active {
+.menu-link:hover,
+.menu-link.active {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
-.drawer-section {
+.menu-panel-section {
+  width: min(360px, 100%);
+  margin: 0 auto;
   border-top: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
-  padding-top: 12px;
+  padding-top: 16px;
 }
 
-.drawer-section .pwa-controls {
+.menu-panel-section .pwa-controls {
   width: 100%;
-}
-
-.drawer-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 190;
-  padding: 0;
-  border: 0;
-  background: #0009;
-  cursor: pointer;
 }
