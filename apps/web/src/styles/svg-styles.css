@@ -1,130 +1,175 @@
-/* SVG Icon Styles */
+/* Styles pour les icônes SVG - Centrage et design améliorés */
 .svg-icon {
   display: block;
   flex-shrink: 0;
-  pointer-events: none;
+  margin: 0 auto;
 }
 
-/* Dynamic colors for SVG */
-.svg-icon--wall {
-  fill: var(--wall, #65718a);
-}
-.svg-icon--ball {
-  fill: var(--ball, #4aa3ff);
-}
-.svg-icon--square {
-  fill: var(--square, #ffd447);
-}
-.svg-icon--star {
-  fill: var(--star, #ffd700);
-}
-.svg-icon--spike {
-  fill: var(--spike, #ff4444);
-}
-.svg-icon--door {
-  fill: var(--door, #7a5c3d);
-}
-.svg-icon--teleporter {
-  stroke: var(--teleporter, #9b59b6);
-  fill: none;
-}
-.svg-icon--switch {
-  fill: var(--switch, #ffd447);
+.svg-icon--wall { fill: var(--wall); }
+.svg-icon--ball { fill: var(--ball); }
+.svg-icon--square { fill: var(--square); }
+.svg-icon--star { fill: var(--star); }
+.svg-icon--spike { fill: var(--spike, #ff4444); }
+.svg-icon--door { fill: var(--door, #7a5c3d); }
+.svg-icon--teleporter { stroke: var(--teleporter, #9b59b6); fill: none; }
+.svg-icon--switch { fill: var(--switch, #ffd447); }
+
+.svg-icon:hover { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); }
+
+.modern-button .svg-icon { margin-right: 8px; }
+.dpad-button .svg-icon { width: 24px; height: 24px; }
+.center-dpad-button .svg-icon { width: 24px; height: 24px; }
+
+@media (max-width: 600px) {
+  .svg-icon { width: 20px; height: 20px; }
+  .dpad-button .svg-icon { width: 20px; height: 20px; }
+  .center-dpad-button .svg-icon { width: 20px; height: 20px; }
 }
 
-/* Hover effects */
-.svg-icon:hover {
-  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
-}
-
-/* Button SVG styles */
-.modern-button .svg-icon {
-  margin-right: 8px;
-}
-.dpad-button .svg-icon {
-  width: 24px;
-  height: 24px;
-}
-.dpad-center-button .svg-icon {
-  width: 20px;
-  height: 20px;
-}
-
-/* Shadows */
-.svg-icon--ball,
-.svg-icon--square {
-  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.3));
-}
-.svg-icon--star {
-  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.5));
-}
-.svg-icon--spike {
-  filter: drop-shadow(0 0 4px rgba(255, 0, 0, 0.5));
-}
-.svg-icon--teleporter {
-  filter: drop-shadow(0 0 6px rgba(155, 89, 182, 0.5));
-}
-
-/* Transitions */
-.svg-icon {
-  transition:
-    transform 0.2s ease,
-    filter 0.2s ease;
-}
-.svg-icon:active {
-  transform: scale(0.95);
-}
-
-/* Board SVG styles */
-.board .svg-icon {
+.spike-container,
+.star-container,
+.teleporter,
+.door,
+.switch-tile,
+.piece {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100%;
-  max-width: 24px;
-  max-height: 24px;
-}
-.board .svg-icon--ball,
-.board .svg-icon--square {
-  max-width: 28px;
-  max-height: 28px;
 }
 
-/* Menu SVG styles */
-.menu .svg-icon,
-.topbar .svg-icon {
-  width: 20px;
-  height: 20px;
-}
-.hud .svg-icon {
-  width: 18px;
-  height: 18px;
-}
-.overlay .svg-icon {
-  width: 24px;
-  height: 24px;
+.board > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .svg-icon {
-    width: 18px;
-    height: 18px;
-  }
-  .board .svg-icon {
-    max-width: 20px;
-    max-height: 20px;
-  }
-  .board .svg-icon--ball,
-  .board .svg-icon--square {
-    max-width: 22px;
-    max-height: 22px;
-  }
+.board > div > svg,
+.board > div > .svg-icon { display: block; margin: 0 auto; }
+
+.modern-button {
+  position: relative;
+  overflow: hidden;
 }
 
-/* Utility classes */
-.svg-icon--disabled {
-  opacity: 0.5;
-  filter: grayscale(100%);
+.modern-button:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+  transition: opacity 0.2s ease;
+  opacity: 0;
 }
-.svg-icon--active {
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+
+.modern-button:hover:not(:disabled):before { opacity: 1; }
+
+.dpad-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text, #fff);
 }
+
+.center-dpad-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text, #fff);
+}
+
+.dpad-button:disabled,
+.center-dpad-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.svg-icon--active { opacity: 1; }
+.svg-icon--disabled { opacity: 0.5; }
+
+.pwa-controls {
+  background: rgba(0, 0, 0, 0.9);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  color: white;
+}
+
+.pwa-actions { display: flex; align-items: center; gap: 8px; }
+
+.pwa-dismiss {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.pwa-dismiss:hover { opacity: 1; }
+
+.utility-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.pwa-controls span { flex: 1; font-weight: 500; }
+.pwa-controls .modern-button {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
+  gap: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.board > div { display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; position: relative; }
+.board .svg-icon { width: 70%; height: 70%; max-width: 24px; max-height: 24px; }
+.board .piece .svg-icon,
+.board .star-container .svg-icon { width: 80%; height: 80%; max-width: 28px; max-height: 28px; }
+.board .spike-container .svg-icon,
+.board .teleporter .svg-icon { width: 60%; height: 60%; }
+.board .door .svg-icon,
+.board .switch-tile .svg-icon { width: 70%; height: 70%; }
