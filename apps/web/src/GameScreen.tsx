@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { type Level } from "@duality/level-format";
+import type { Level } from "@duality/level-format";
 import { useNavigate } from "react-router";
 import { GameBoard } from "./GameBoard";
 import {
@@ -8,11 +8,9 @@ import {
   type DebugDirection,
 } from "./debug/CommandRecorder";
 import { interpretGesture, type Direction } from "./input/GestureInterpreter";
-import {
-  getActiveThemeName,
-  resolveLevelSkin,
-} from "./theme";
-import { completeLevel, isLevelCompleted } from "./progression";
+import { getActiveThemeName } from "./theme";
+import { resolveLevelSkin } from "./skins";
+import { completeLevel } from "./progression";
 import { levelLabel, worlds } from "./levels/campaign";
 import { useLevelGameplay, type GameplayDirection } from "./useLevelGameplay";
 
@@ -139,22 +137,20 @@ function DebugPanel({
 }
 
 function CompletionOverlay({
-  worldId,
   worldIndex,
+  worldLength,
   completed,
   moves,
   onReset,
   onNext,
 }: {
-  worldId: number;
   worldIndex: number;
+  worldLength: number;
   completed: boolean;
   moves: number;
   onReset: () => void;
   onNext: () => void;
 }) {
-  const navigate = useNavigate();
-
   if (!completed) return null;
 
   return (
@@ -172,9 +168,7 @@ function CompletionOverlay({
             REJOUER
           </button>
           <button className="action" onClick={onNext}>
-            {worldIndex < worlds[worldId - 1].levels.length - 1
-              ? "SUIVANT ▶"
-              : "NIVEAUX"}
+            {worldIndex < worldLength - 1 ? "SUIVANT ▶" : "NIVEAUX"}
           </button>
         </div>
       </div>
@@ -366,8 +360,8 @@ export function GameScreen({
         />
       )}
       <CompletionOverlay
-        worldId={world.id}
         worldIndex={worldIndex}
+        worldLength={world.levels.length}
         completed={state.completed}
         moves={state.moves}
         onReset={reset}
