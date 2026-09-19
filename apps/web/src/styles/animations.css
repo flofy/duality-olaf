@@ -252,7 +252,3 @@ button:hover:not(:disabled) {
 .switch-toggle:active {
   animation: switchFormPulse 0.3s ease;
 }
-
-.center-dpad-button:hover:not(:disabled) {
-  animation: switchFormPulse 0.3s ease infinite;
-}

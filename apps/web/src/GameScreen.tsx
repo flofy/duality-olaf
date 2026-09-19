@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { type Level } from "@duality/level-format";
 import { worlds, levelLabel } from "./levels/campaign";
-import { completeLevel } from "./progression";
+import { completeLevel, getNextWorld } from "./progression";
 import { getActiveThemeName } from "./theme";
 import { resolveLevelSkin } from "./skins";
 import { GameBoard } from "./GameBoard";
@@ -42,6 +42,7 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
   const navigate = useNavigate();
   const world = worlds.find((item) => item.id === worldId)!;
   const worldIndex = world.levels.findIndex((item) => item.id === level.id);
+  const nextWorld = getNextWorld(world.id);
   const seasonalTheme = resolveLevelSkin(level.id);
   const [commands, setCommands] = useState<DebugCommand[]>([]);
   const [start, setStart] = useState<GestureStart | null>(null);
@@ -49,10 +50,13 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
   const nextLevel = useCallback(() => {
     if (worldIndex < world.levels.length - 1) {
       navigate(`/world/${world.id}/level/${world.levels[worldIndex + 1].id}`);
+    } else if (nextWorld) {
+      // Dernier niveau du monde : enchaîner sur le premier du monde suivant.
+      navigate(`/world/${nextWorld.id}/level/${nextWorld.levels[0].id}`);
     } else {
       navigate(`/world/${world.id}`);
     }
-  }, [navigate, world, worldIndex]);
+  }, [navigate, nextWorld, world, worldIndex]);
 
   const { state, move, reset, switchForm } = useLevelGameplay(
     level,
@@ -84,6 +88,13 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
   useEffect(() => {
     if (state.completed) completeLevel(level.id);
   }, [level.id, state.completed]);
+
+  // Le burger menu peut demander un reset (menu JEU → RECOMMENCER).
+  useEffect(() => {
+    const onGameReset = () => reset();
+    window.addEventListener("duality:game-reset", onGameReset);
+    return () => window.removeEventListener("duality:game-reset", onGameReset);
+  }, [reset]);
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
@@ -132,9 +143,11 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
       }}
     >
       <div className="topbar">
+        {/* Retour au monde : icône seule (le contexte « MONDE x » est déjà dans
+            le titre), d'où le libellé porté par aria-label. */}
         <Button
           icon={<ArrowLeft size={18} />}
-          label="NIVEAUX"
+          aria-label={`Retour aux niveaux · monde ${world.id}`}
           onClick={() => navigate(`/world/${world.id}`)}
           variant="secondary"
         />
@@ -146,6 +159,7 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
           label="RECOMMENCER"
           onClick={reset}
           variant="secondary"
+          className="topbar-restart"
         />
       </div>
       <div className="board-wrap">
@@ -191,6 +205,18 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
             className="switch-toggle"
           />
         )}
+      </div>
+      {/* Mobile : RECOMMENCER quitte la barre supérieure pour le bas de l'écran
+          (rangée hors .controls, donc insensible à la préférence d'affichage
+          des contrôles : on peut toujours relancer le niveau). */}
+      <div className="mobile-restart">
+        <Button
+          icon={<Reset size={18} />}
+          label="RECOMMENCER"
+          onClick={reset}
+          variant="secondary"
+          className="restart-button"
+        />
       </div>
       {isDevtoolsEnabled && (
         <aside className="dev-entry" aria-label="Outils de développement">
@@ -265,7 +291,11 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
               <Button
                 icon={<ArrowRight size={18} />}
                 label={
-                  worldIndex < world.levels.length - 1 ? "SUIVANT" : "NIVEAUX"
+                  worldIndex < world.levels.length - 1
+                    ? "SUIVANT"
+                    : nextWorld
+                      ? "MONDE SUIVANT"
+                      : "NIVEAUX"
                 }
                 onClick={nextLevel}
                 variant="primary"

@@ -18,26 +18,40 @@
   place-items: center;
   min-height: 0;
   overflow: hidden;
+  /* Référence de taille (cqw/cqh) pour dimensionner la grille ci-dessous. */
+  container-type: size;
 }
 
 .board {
   display: grid;
-  grid-template-columns: repeat(var(--cols), var(--tile));
-  grid-template-rows: repeat(var(--rows), var(--tile));
-  --tile: min(
-    48px,
-    calc((min(100vw, 760px) - 48px) / 13),
-    calc((100dvh - 250px) / 13)
-  );
-  aspect-ratio: var(--cols) / var(--rows);
-  max-width: 100%;
-  max-height: 100%;
+  /* Mode « carré » (défaut) : les cellules restent carrées et la grille prend
+     la plus grande place disponible dans .board-wrap, tout en conservant le
+     ratio du niveau (les colonnes/lignes viennent du niveau via --cols/--rows).
+     Sélecteur .game .board : nécessaire pour l'emporter sur svg-styles.css
+     (importé après, mêmes propriétés en width/height 100%). */
+  --tile: min(72px, calc(100cqw / var(--cols)), calc(100cqh / var(--rows)));
   background: var(--board);
   box-shadow: 0 12px 35px #0008;
   border-radius: 3px;
   overflow: hidden;
   touch-action: none;
   user-select: none;
+}
+
+.game .board {
+  width: calc(var(--tile) * var(--cols));
+  height: calc(var(--tile) * var(--rows));
+  grid-template-columns: repeat(var(--cols), var(--tile));
+  grid-template-rows: repeat(var(--rows), var(--tile));
+}
+
+/* Mode « plein » : la grille s'étire pour occuper tout l'espace disponible
+   (les cellules suivent la forme de l'écran et ne restent plus carrées). */
+html[data-board-display="fill"] .game .board {
+  width: 100%;
+  height: 100%;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
 }
 
 .wall {
@@ -242,7 +256,8 @@
   padding: 0;
 }
 
-.up {
+/* Up sits directly above Down (column 2) so the vertical arrows line up. */
+.dpad button:nth-child(1) {
   grid-column: 2;
   grid-row: 1;
 }
@@ -265,6 +280,36 @@
 .switch {
   min-width: clamp(110px, 24vw, 130px);
   text-align: center;
+}
+
+/* ── Barre supérieure et actions mobiles ───────────────────────────────
+   En mobile, RECOMMENCER quitte le topbar pour la rangée .mobile-restart
+   placée sous les contrôles (cf. GameScreen). */
+.mobile-restart {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .game .topbar {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  /* Le composant Button porte `display: inline-flex` en style inline : il faut
+     donc `!important` pour l'écarter du topbar en mobile. */
+  .game .topbar .topbar-restart {
+    display: none !important;
+  }
+
+  .mobile-restart {
+    /* Aligné à droite : zone d'atteinte naturelle du pouce, et équilibre
+       visuel avec le D-pad (centré/gauche) au-dessus. */
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  /* La rangée d'actions gagnée en bas réduit la hauteur du plateau : le mode
+     « carré » tient déjà compte de l'espace réel via .board-wrap (cqh). */
 }
 
 /* Seasonal skins are presentation-only: gameplay stays in LevelRunner. */

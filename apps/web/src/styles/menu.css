@@ -37,21 +37,22 @@
   font: 700 clamp(15px, 3vw, 18px) monospace;
 }
 
+/* Passage au monde suivant : apparaît sous la grille dès que le monde courant
+   est terminé (cf. WorldLevels). */
+.world-next {
+  width: 100%;
+  margin-top: clamp(14px, 3vw, 22px);
+}
+
+/* Bloc audio : simple contenu d'une section du menu. Le titre (« AUDIO &
+   VIBRATIONS ») est celui de la section, porté par BurgerMenu. */
 .audio-settings {
   display: grid;
   gap: 10px;
-  width: min(100%, 560px);
-  margin: 6px auto 0;
+  width: 100%;
   padding: 12px;
-  border: 1px solid var(--muted);
   border-radius: 10px;
-  background: #0002;
-}
-
-.audio-settings-title {
-  color: var(--accent);
-  font: 700 12px monospace;
-  letter-spacing: 0.08em;
+  background: #0003;
 }
 
 .audio-setting-row {
@@ -109,24 +110,13 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  padding-top: 2px;
+  padding-top: 10px;
   border-top: 1px solid #fff2;
 }
 
-.audio-test {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.audio-test-label {
-  color: var(--muted);
-  font: 700 11px monospace;
-}
-
 .audio-test-button {
-  min-width: 96px;
+  width: 100%;
+  text-align: center;
 }
 
 .audio-test-button:disabled,

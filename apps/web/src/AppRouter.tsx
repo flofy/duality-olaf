@@ -1,4 +1,10 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import {
@@ -11,16 +17,14 @@ import {
 } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { campaign, worlds } from "./levels/campaign";
-import { getCompletedCount, isLevelCompleted } from "./progression";
-import { cycleTheme, getTheme, hexToCss } from "./theme";
 import {
-  getAvailableSkinPreferences,
-  getSkinPreference,
-  normalizeSkinPreference,
-  setSkinPreference,
-  skinLabels,
-  type SkinPreference,
-} from "./skins";
+  getCompletedCount,
+  getNextWorld,
+  isLevelCompleted,
+  isWorldCompleted,
+  isWorldUnlocked,
+} from "./progression";
+import { getTheme, hexToCss } from "./theme";
 import { LevelCatalogue, LevelPlayground } from "./LevelLab";
 import { LevelEditor } from "./LevelEditor";
 import { LevelGenerator } from "./LevelGenerator";
@@ -28,13 +32,7 @@ import { Game } from "./GameScreen";
 import { Button } from "./components/Button";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { BurgerMenu } from "./BurgerMenu";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Help as HelpIcon,
-  ThemeIcon as Theme,
-  Skin,
-} from "./components/Icons";
+import { ArrowLeft, ArrowRight, Help as HelpIcon } from "./components/Icons";
 
 import "./style.css";
 
@@ -52,6 +50,10 @@ function vars(): CSSProperties {
 function AppLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [, setTick] = useState(0);
+  // Le burger est l'unique contrôle ouvert/fermé du menu : on le référence pour
+  // lui rendre le focus à la fermeture (le panneau le prend à l'ouverture).
+  const burgerRef = useRef<HTMLButtonElement>(null);
+  const wasMenuOpen = useRef(false);
   const location = useLocation();
 
   // Close the menu whenever the route changes.
@@ -69,26 +71,37 @@ function AppLayout() {
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
+  // Le focus entre dans le panneau à l'ouverture (cf. BurgerMenu) et revient au
+  // burger à la fermeture, pour ne jamais le laisser dans le vide.
+  useEffect(() => {
+    if (!menuOpen && wasMenuOpen.current) burgerRef.current?.focus();
+    wasMenuOpen.current = menuOpen;
+  }, [menuOpen]);
+
   return (
     <main className="app" style={vars()}>
-      <div className="shell app-enter">
-        <div className="utility-bar">
-          <button
-            type="button"
-            className={`burger-toggle ${menuOpen ? "open" : ""}`}
-            aria-expanded={menuOpen}
-            aria-controls="app-menu"
-            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            <span aria-hidden="true" />
-          </button>
-        </div>
-        <div className="app-content">
-          <ErrorBoundary>
-            <Outlet />
-          </ErrorBoundary>
-        </div>
+      {/* inert : menu ouvert, la page derrière n'est ni cliquable ni focusable.
+          Le burger reste atteignable : il vit à côté, pas dans .shell. */}
+      <div className="shell app-enter" inert={menuOpen}>
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
+      </div>
+      {/* Barre utilitaire hors de .shell, à côté du panneau : elle passe au-dessus
+          de lui (z-index, cf. layout.css) et le burger devient l'unique bouton
+          ouvert/fermé — plus de croix dupliquée à superposer. */}
+      <div className="utility-bar">
+        <button
+          ref={burgerRef}
+          type="button"
+          className={`burger-toggle ${menuOpen ? "open" : ""}`}
+          aria-expanded={menuOpen}
+          aria-controls="app-menu"
+          aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span aria-hidden="true" />
+        </button>
       </div>
       <BurgerMenu
         open={menuOpen}
@@ -161,12 +174,6 @@ function Intro() {
 
 function Menu() {
   const navigate = useNavigate();
-  const [skinPreference, setSkinPreferenceState] = useState<SkinPreference>(
-    () => normalizeSkinPreference(getSkinPreference()),
-  );
-  const [tick, setTick] = useState(0);
-  const availableSkins = getAvailableSkinPreferences();
-  const skin = normalizeSkinPreference(skinPreference);
 
   return (
     <section className="menu">
@@ -177,21 +184,28 @@ function Menu() {
           const done = world.levels.filter((level) =>
             isLevelCompleted(level.id),
           ).length;
+          // Un monde ne s'ouvre qu'une fois le précédent entièrement terminé.
+          const unlocked =
+            world.status === "available" && isWorldUnlocked(world.id);
+          const meta =
+            world.status !== "available"
+              ? `${world.subtitle} • BIENTÔT`
+              : !unlocked
+                ? `${world.subtitle} • 🔒 FINIS LE MONDE ${world.id - 1}`
+                : done === world.levels.length
+                  ? `${world.subtitle} • ✓ TERMINÉ`
+                  : `${world.subtitle} • ${done}/${world.levels.length}`;
           return (
             <div key={world.id} style={{ position: "relative" }}>
               <Button
                 icon={<ArrowRight size={20} />}
                 label={`MONDE ${world.id} — ${world.name.toUpperCase()}`}
                 onClick={() => navigate(`/world/${world.id}`)}
-                disabled={world.status !== "available"}
+                disabled={!unlocked}
                 variant="primary"
                 className="world-button"
               />
-              <div className="world-meta">
-                {world.status === "available"
-                  ? `${world.subtitle} • ${done}/${world.levels.length}`
-                  : `${world.subtitle} • BIENTÔT`}
-              </div>
+              <div className="world-meta">{meta}</div>
             </div>
           );
         })}
@@ -204,27 +218,6 @@ function Menu() {
           icon={<HelpIcon size={18} />}
           label="AIDE"
           onClick={() => navigate("/help")}
-          variant="secondary"
-        />
-        <Button
-          icon={<Theme size={18} />}
-          label={getTheme().name.toUpperCase()}
-          onClick={() => {
-            cycleTheme();
-            setTick(tick + 1);
-          }}
-          variant="secondary"
-        />
-        <Button
-          icon={<Skin size={18} />}
-          label={skinLabels[skin]}
-          onClick={() => {
-            const index = availableSkins.indexOf(skin);
-            const next =
-              availableSkins[(index + 1) % availableSkins.length] ?? "auto";
-            setSkinPreference(next);
-            setSkinPreferenceState(next);
-          }}
           variant="secondary"
         />
         {isLevelLabEnabled && (
@@ -247,6 +240,11 @@ function WorldLevels() {
   const world = worlds.find((item) => item.id === id);
 
   if (!world) return <Navigate to="/menu" replace />;
+  if (world.status !== "available") return <Navigate to="/menu" replace />;
+  if (!isWorldUnlocked(world.id)) return <Navigate to="/menu" replace />;
+
+  const completed = isWorldCompleted(world.id);
+  const nextWorld = completed ? getNextWorld(world.id) : null;
 
   return (
     <section className="menu">
@@ -281,6 +279,16 @@ function WorldLevels() {
           );
         })}
       </div>
+      {/* Le passage au monde suivant apparaît dès que celui-ci est terminé. */}
+      {nextWorld && (
+        <Button
+          icon={<ArrowRight size={18} />}
+          label={`MONDE ${nextWorld.id} · ${nextWorld.name.toUpperCase()}`}
+          onClick={() => navigate(`/world/${nextWorld.id}`)}
+          variant="primary"
+          className="world-next"
+        />
+      )}
     </section>
   );
 }
@@ -332,6 +340,10 @@ function ProtectedLevel() {
     world?.levels.findIndex((level) => level.id === levelId) ?? -1;
 
   if (!world || levelIndex < 0) return <Navigate to="/menu" replace />;
+  // Les mondes sont séquentiels : pas d'accès direct à un monde verrouillé.
+  if (world.status !== "available" || !isWorldUnlocked(world.id)) {
+    return <Navigate to="/menu" replace />;
+  }
   if (levelIndex > 0 && !isLevelCompleted(world.levels[levelIndex - 1].id)) {
     return <Navigate to={`/world/${world.id}`} replace />;
   }

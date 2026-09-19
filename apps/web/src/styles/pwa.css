@@ -1,7 +1,9 @@
 /* ── Burger menu (bouton 44px, barres en CSS pur → croix) ────── */
 .burger-toggle {
+  /* Pas de z-index ici : il serait piégé par le contexte d'empilement de
+     .utility-bar. C'est la barre (3003, cf. layout.css) qui est au-dessus du
+     panneau de menu. `relative` sert de repère aux barres en absolute. */
   position: relative;
-  z-index: 3005;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -37,7 +39,7 @@
   background: currentColor;
   transition:
     transform 0.2s ease,
-    opacity 0.2s ease;
+    background-color 0.2s ease;
 }
 
 .burger-toggle span::before,
@@ -53,9 +55,12 @@
   transform: translateY(7px);
 }
 
-/* Open: middle bar fades, outer bars slide to center and form a clean X. */
+/* Ouvert : la barre du milieu s'efface, les barres extérieures se croisent.
+   On efface la COULEUR de fond et non `opacity` : l'opacité s'applique aussi aux
+   pseudo-éléments, masquant alors la croix entière (bug historique resté invisible
+   tant que le burger était caché sous le panneau). */
 .burger-toggle.open span {
-  opacity: 0;
+  background-color: transparent;
 }
 
 .burger-toggle.open span::before {
@@ -66,19 +71,22 @@
   transform: translateY(0) rotate(-45deg);
 }
 
-/* ── Panneau menu plein écran (fade + léger slide, fdrweb) ───── */
+/* Couches d'empilement : la barre utilitaire (3003, cf. layout.css) reste
+   au-dessus de ce panneau (3002) et porte l'unique bouton ouvert/fermé. */
 .menu-panel {
   position: fixed;
   inset: 0;
   z-index: 3002;
+  /* Largeur commune à toutes les sections : le libellé des items démarre donc
+     toujours au même x, quelle que soit la taille de l'écran. */
+  --menu-w: 520px;
   width: 100vw;
   height: 100dvh;
   box-sizing: border-box;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   gap: 12px;
-  padding: max(10px, env(safe-area-inset-top)) 1.25rem
-    max(1.5rem, env(safe-area-inset-bottom));
+  padding: 0 0 max(1.5rem, env(safe-area-inset-bottom));
   background: color-mix(in srgb, var(--background) 97%, black);
   visibility: hidden;
   opacity: 0;
@@ -98,68 +106,28 @@
   transition-delay: 0s;
 }
 
-/* Header: croix de fermeture alignée sur le burger (haut droite). */
-.menu-panel-header {
-  display: flex;
-  justify-content: flex-end;
-  min-height: 44px;
-}
+/* ── Panneau menu plein écran (fade + léger slide, fdrweb) ───── */
 
-/* Body: scrollable and vertically centered. */
+/* Body : seule zone scrollable. Le centrage vertical se fait par `margin: auto`
+   sur .menu-sections, et non par `justify-content: center` qui rogne le haut du
+   contenu dès qu'il dépasse la hauteur disponible. */
 .menu-panel-body {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
   min-height: 0;
   overflow-y: auto;
-  padding: 8px 0;
+  /* padding-top = hauteur du burger (utility-bar) : le contenu scrolle
+     jamais sous le burger. padding-bottom pour respirer en bas. */
+  padding: calc(60px + 8px) 1.25rem 2rem;
 }
 
-.menu-close {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  width: 44px;
-  height: 44px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  color: var(--text);
-  background: transparent;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.menu-close:hover,
-.menu-close:focus-visible {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  outline: none;
-}
-
-.menu-close span,
-.menu-close span::before {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 22px;
-  height: 2px;
-  margin: -1px 0 0 -11px;
-  border-radius: 2px;
-  background: currentColor;
-  content: "";
-}
-
-.menu-close span {
-  transform: rotate(45deg);
-}
-
-.menu-close span::before {
-  transform: rotate(-45deg);
+/* Colonne unique de sections : centrée, largeur bornée par --menu-w. */
+.menu-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: min(var(--menu-w), 100%);
+  margin: auto;
 }
 
 .menu-group {
@@ -169,16 +137,12 @@
   width: 100%;
 }
 
-@media (min-width: 601px) {
-  .menu-group {
-    width: min(520px, 100%);
-  }
-}
-
+/* Titre de section : <h3> pour la hiérarchie DOM, style inchangé. */
 .menu-group-title {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin: 0;
   font: 700 11px monospace;
   letter-spacing: 2px;
   color: var(--muted);
@@ -222,20 +186,42 @@
   outline-offset: 2px;
 }
 
+/* Emplacement d'icône de largeur fixe : le libellé démarre toujours au même x,
+   que l'icône soit un SVG ou un emoji. */
+.menu-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Un libellé = une seule ligne (on tronque plutôt que de revenir à la ligne). */
+.menu-item-label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* THÈME et SKIN partagent une ligne : deux colonnes dès que la largeur le
+   permet, empilés sinon (auto-fit, pas de media query). */
+.menu-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 8px;
+}
+
 .dev-group .menu-item {
   background: color-mix(in srgb, #ffb347 6%, #0003);
 }
 
 .dev-group .menu-item:hover {
   background: color-mix(in srgb, #ffb347 14%, transparent);
-}
-
-/* Audio settings block fills the group width, borderless like menu items. */
-.menu-group .audio-settings {
-  width: 100%;
-  margin: 0;
-  border: 0;
-  background: #0003;
 }
 
 /* ── Error boundary fallback ─────────────────────────────────── */

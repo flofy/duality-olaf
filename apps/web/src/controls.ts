@@ -65,7 +65,7 @@ export function installControlsStyles(): void {
       html:not([data-controls-mode="visible"]) .game .controls { display: none; }
     }
     @media (max-width: 600px) {
-      .game .controls { display: flex; justify-content: flex-end; }
+      .game .controls { display: flex; justify-content: flex-start; }
       .game .controls .switch { display: block; }
       .game .controls .dpad { display: none; }
       html[data-controls-mode="visible"] .game .dpad { display: grid; }

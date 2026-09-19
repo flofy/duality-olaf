@@ -6,6 +6,21 @@ export type IconProps = {
   className?: string;
 };
 
+export const XIcon = ({ size = 24, color = "#fff", className }: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    style={{ display: "block", margin: "0 auto" }}
+  >
+    <path d="M18 6L6 18" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <path d="M6 6L18 18" stroke={color} strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
 export const Spike = ({
   size = 24,
   color = "#ff4444",
@@ -352,17 +367,34 @@ export const ResetIcon = ({
     xmlns="http://www.w3.org/2000/svg"
     className={className}
     style={{ display: "block", margin: "0 auto" }}
+    strokeLinecap="round"
+    strokeLinejoin="round"
   >
-    <path
-      d="M3 12C3 12 5 8 12 8C19 8 21 10 21 12C21 14 19 16 12 16C5 16 3 14 3 12Z"
-      stroke={color}
-      strokeWidth="2"
-    />
-    <path d="M12 2V6" stroke={color} strokeWidth="2" strokeLinecap="round" />
-    <path d="M12 18V22" stroke={color} strokeWidth="2" strokeLinecap="round" />
-    <path d="M22 12H18" stroke={color} strokeWidth="2" strokeLinecap="round" />
-    <path d="M2 12H6" stroke={color} strokeWidth="2" strokeLinecap="round" />
-    <circle cx="12" cy="12" r="2" fill={color} />
+    {/* Flèche circulaire (recommencer). */}
+    <path d="M20 12a8 8 0 1 1-2.34-5.66" stroke={color} strokeWidth="2" />
+    <path d="M20 3v4h-4" stroke={color} strokeWidth="2" />
+  </svg>
+);
+
+export const GridIcon = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    style={{ display: "block", margin: "0 auto" }}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    {/* Grille 3×3 (mode d'affichage du plateau). */}
+    <rect x="3" y="3" width="18" height="18" rx="2" stroke={color} strokeWidth="2" />
+    <path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke={color} strokeWidth="2" />
   </svg>
 );
 
@@ -379,27 +411,12 @@ export const Maximize = ({
     xmlns="http://www.w3.org/2000/svg"
     className={className}
     style={{ display: "block", margin: "0 auto" }}
+    strokeLinecap="round"
   >
-    <rect
-      x="2"
-      y="2"
-      width="20"
-      height="20"
-      rx="2"
-      stroke={color}
-      strokeWidth="2"
-    />
-    <path d="M12 2V22" stroke={color} strokeWidth="2" />
-    <path d="M2 12H22" stroke={color} strokeWidth="2" />
-    <path d="M6 6L4 4" stroke={color} strokeWidth="2" strokeLinecap="round" />
-    <path
-      d="M18 18L20 20"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <path d="M6 18L4 20" stroke={color} strokeWidth="2" strokeLinecap="round" />
-    <path d="M18 6L20 4" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <path d="M8 3H5a2 2 0 0 0-2 2v3" stroke={color} strokeWidth="2" />
+    <path d="M16 3h3a2 2 0 0 1 2 2v3" stroke={color} strokeWidth="2" />
+    <path d="M21 16v3a2 2 0 0 1-2 2h-3" stroke={color} strokeWidth="2" />
+    <path d="M8 21H5a2 2 0 0 1-2-2v-3" stroke={color} strokeWidth="2" />
   </svg>
 );
 
@@ -416,27 +433,12 @@ export const Minimize = ({
     xmlns="http://www.w3.org/2000/svg"
     className={className}
     style={{ display: "block", margin: "0 auto" }}
+    strokeLinecap="round"
   >
-    <rect
-      x="4"
-      y="4"
-      width="16"
-      height="16"
-      rx="2"
-      stroke={color}
-      strokeWidth="2"
-    />
-    <path d="M10 10L14 14M14 10L10 14" stroke={color} strokeWidth="2" />
-    <rect
-      x="5"
-      y="5"
-      width="14"
-      height="14"
-      rx="1"
-      stroke={color}
-      strokeWidth="1"
-      opacity={0.3}
-    />
+    <path d="M8 3v3a2 2 0 0 1-2 2H3" stroke={color} strokeWidth="2" />
+    <path d="M16 3v3a2 2 0 0 0 2 2h3" stroke={color} strokeWidth="2" />
+    <path d="M8 21v-3a2 2 0 0 0-2-2H3" stroke={color} strokeWidth="2" />
+    <path d="M16 21v-3a2 2 0 0 1 2-2h3" stroke={color} strokeWidth="2" />
   </svg>
 );
 
@@ -449,17 +451,15 @@ export const Help = ({ size = 24, color = "#fff", className }: IconProps) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
     style={{ display: "block", margin: "0 auto" }}
+    strokeLinecap="round"
   >
     <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="2" />
-    <path d="M12 16V12" stroke={color} strokeWidth="2" />
-    <path d="M12 8H12.01" stroke={color} strokeWidth="2" />
-    <circle cx="12" cy="12" r="1" fill={color} />
     <path
-      d="M12 18C12 18 8 16 8 14C8 10 12 10 12 14C12 14 16 16 16 14C16 10 12 10 12 14Z"
-      fill="none"
+      d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
       stroke={color}
-      strokeWidth="1.5"
+      strokeWidth="2"
     />
+    <path d="M12 17h.01" stroke={color} strokeWidth="2" />
   </svg>
 );
 
@@ -476,37 +476,17 @@ export const ThemeIcon = ({
     xmlns="http://www.w3.org/2000/svg"
     className={className}
     style={{ display: "block", margin: "0 auto" }}
+    strokeLinecap="round"
   >
-    <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="2" />
-    <circle cx="12" cy="12" r="3" fill={color} />
-    <path d="M12 2V4" stroke={color} strokeWidth="2" strokeLinecap="round" />
-    <path d="M12 20V22" stroke={color} strokeWidth="2" strokeLinecap="round" />
-    <path d="M2 12H4" stroke={color} strokeWidth="2" strokeLinecap="round" />
-    <path d="M20 12H22" stroke={color} strokeWidth="2" strokeLinecap="round" />
-    <path
-      d="M4.93 4.93L6.36 6.36"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <path
-      d="M17.64 17.64L19.07 19.07"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <path
-      d="M4.93 19.07L6.36 17.64"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <path
-      d="M17.64 6.36L19.07 4.93"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
+    <circle cx="12" cy="12" r="4" stroke={color} strokeWidth="2" />
+    <path d="M12 2v2" stroke={color} strokeWidth="2" />
+    <path d="M12 20v2" stroke={color} strokeWidth="2" />
+    <path d="M4.93 4.93l1.41 1.41" stroke={color} strokeWidth="2" />
+    <path d="M17.66 17.66l1.41 1.41" stroke={color} strokeWidth="2" />
+    <path d="M2 12h2" stroke={color} strokeWidth="2" />
+    <path d="M20 12h2" stroke={color} strokeWidth="2" />
+    <path d="M6.34 17.66l-1.41 1.41" stroke={color} strokeWidth="2" />
+    <path d="M19.07 4.93l-1.41 1.41" stroke={color} strokeWidth="2" />
   </svg>
 );
 
@@ -519,12 +499,9 @@ export const Skin = ({ size = 24, color = "#fff", className }: IconProps) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
     style={{ display: "block", margin: "0 auto" }}
+    strokeLinecap="round"
   >
     <circle cx="12" cy="8" r="4" stroke={color} strokeWidth="2" />
-    <path d="M8 16H16" stroke={color} strokeWidth="2" />
-    <path d="M12 16V20" stroke={color} strokeWidth="2" />
-    <circle cx="10" cy="7" r="1" fill={color} />
-    <circle cx="14" cy="7" r="1" fill={color} />
-    <path d="M10 9C10 9 12 11 14 9" stroke={color} strokeWidth="1.5" />
+    <path d="M4 21a8 8 0 0 1 16 0" stroke={color} strokeWidth="2" />
   </svg>
 );
