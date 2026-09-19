@@ -1,131 +1,284 @@
-import { useState, type CSSProperties } from "react";
-import { useNavigate } from "react-router";
-import { XIcon, ThemeIcon as Theme, Skin, Help } from "./components/Icons";
-import { Button } from "./components/Button";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
+import { AudioSettings } from "./AudioSettings";
+import {
+  cycleControlsMode,
+  controlsModeLabels,
+  getControlsMode,
+  installControlsStyles,
+  syncControlsMode,
+  type ControlsMode,
+} from "./controls";
+import {
+  getAvailableSkinPreferences,
+  getSkinPreference,
+  normalizeSkinPreference,
+  setSkinPreference,
+  skinLabels,
+  type SkinPreference,
+} from "./skins";
+import { cycleTheme, getTheme } from "./theme";
+import {
+  Help as HelpIcon,
+  Maximize,
+  Minimize,
+  Skin,
+  ThemeIcon as Theme,
+  XIcon,
+} from "./components/Icons";
 
-export function BurgerMenu() {
-  const [open, setOpen] = useState(false);
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+};
+
+/**
+ * Module-level capture of the install prompt: it survives dismissing any
+ * banner, so INSTALLER stays available from this menu at any time.
+ */
+let deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
+
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event as BeforeInstallPromptEvent;
+  });
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+  });
+}
+
+const isDevEnabled = import.meta.env.VITE_ENABLE_LEVEL_LAB === "true";
+
+type BurgerMenuProps = {
+  open: boolean;
+  updateSW: (reloadPage?: boolean) => Promise<void>;
+  onThemeChange: () => void;
+  onClose: () => void;
+};
+
+function isStandaloneDisplay(): boolean {
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.matchMedia("(display-mode: fullscreen)").matches ||
+    (navigator as Navigator & { standalone?: boolean }).standalone === true
+  );
+}
+
+export function BurgerMenu({
+  open,
+  updateSW,
+  onThemeChange,
+  onClose,
+}: BurgerMenuProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [fullscreen, setFullscreen] = useState(() =>
+    Boolean(document.fullscreenElement),
+  );
+  const [installPrompt, setInstallPrompt] =
+    useState<BeforeInstallPromptEvent | null>(deferredInstallPrompt);
+  const [isStandalone, setIsStandalone] = useState(isStandaloneDisplay);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [controlsMode, setControlsMode] =
+    useState<ControlsMode>(getControlsMode);
+  const [skin, setSkinState] = useState<SkinPreference>(() =>
+    normalizeSkinPreference(getSkinPreference()),
+  );
+  const availableSkins = getAvailableSkinPreferences();
 
-  const toggleMenu = () => setOpen(!open);
-  const closeMenu = () => setOpen(false);
+  useEffect(() => {
+    installControlsStyles();
+    syncControlsMode(controlsMode);
+  }, [controlsMode]);
 
-  const navigateTo = (path: string) => {
-    navigate(path);
-    closeMenu();
+  useEffect(() => {
+    const syncFullscreen = () =>
+      setFullscreen(Boolean(document.fullscreenElement));
+    const onBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      const prompt = event as BeforeInstallPromptEvent;
+      deferredInstallPrompt = prompt;
+      setInstallPrompt(prompt);
+    };
+    const onAppInstalled = () => {
+      deferredInstallPrompt = null;
+      setInstallPrompt(null);
+      setIsStandalone(true);
+    };
+    const onDisplayModeChange = () => setIsStandalone(isStandaloneDisplay());
+    const onUpdate = () => setUpdateAvailable(true);
+    const displayModeQuery = window.matchMedia("(display-mode: standalone)");
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    window.addEventListener("appinstalled", onAppInstalled);
+    displayModeQuery.addEventListener("change", onDisplayModeChange);
+    window.addEventListener("duality:pwa-update", onUpdate);
+    return () => {
+      document.removeEventListener("fullscreenchange", syncFullscreen);
+      window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", onAppInstalled);
+      displayModeQuery.removeEventListener("change", onDisplayModeChange);
+      window.removeEventListener("duality:pwa-update", onUpdate);
+    };
+  }, []);
+
+  const go = (to: string) => navigate(to);
+
+  const toggleFullscreen = async () => {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
   };
 
-  const menuStyle: CSSProperties = {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.9)",
-    zIndex: 1000,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "16px",
-    padding: "20px",
+  const cycleSkin = () => {
+    const index = availableSkins.indexOf(normalizeSkinPreference(skin));
+    const next = availableSkins[(index + 1) % availableSkins.length] ?? "auto";
+    setSkinPreference(next);
+    setSkinState(next);
+    onThemeChange();
   };
 
-  const buttonStyle: CSSProperties = {
-    width: "100%",
-    maxWidth: "300px",
-    padding: "12px 20px",
-    fontSize: "16px",
+  const install = async () => {
+    if (!installPrompt) return;
+    await installPrompt.prompt();
+    const choice = await installPrompt.userChoice;
+    if (choice.outcome === "accepted") {
+      deferredInstallPrompt = null;
+      setInstallPrompt(null);
+    }
   };
+
+  const canInstall = Boolean(installPrompt) && !isStandalone;
 
   return (
-    <>
-      <Button
-        icon={<>
-          <svg
-            viewBox="0 0 24 24"
-            width={20}
-            height={20}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            style={{ userSelect: "none" }}
-          >
-            <path d="M3 12H21" />
-            <path d="M3 6H21" />
-            <path d="M3 18H21" />
-          </svg>
-        </>}
-        label="MENU"
-        onClick={toggleMenu}
-        variant="secondary"
-        className="burger-button"
-        aria-label="Ouvrir le menu"
-        aria-expanded={open}
-      />
+    <div
+      id="app-menu"
+      className={`menu-panel ${open ? "open" : ""}`}
+      aria-hidden={!open}
+    >
+      <div className="menu-panel-header">
+        <button
+          type="button"
+          className="menu-close"
+          aria-label="Fermer le menu"
+          onClick={onClose}
+        >
+          <XIcon size={24} />
+        </button>
+      </div>
 
-      {open && (
-        <div className="burger-overlay" style={menuStyle} onClick={closeMenu}>
-          <div
-            className="burger-menu-content"
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-              width: "100%",
-              maxWidth: "300px",
+      <div className="menu-panel-body">
+        <div className="menu-group">
+          <div className="menu-group-title">JEU</div>
+          <button
+            type="button"
+            className={`menu-item ${
+              location.pathname.startsWith("/help") ? "active" : ""
+            }`}
+            onClick={() => go("/help")}
+          >
+            <HelpIcon size={18} />
+            <span>AIDE</span>
+          </button>
+        </div>
+
+        <div className="menu-group">
+          <div className="menu-group-title">AFFICHAGE</div>
+          <button
+            type="button"
+            className="menu-item"
+            onClick={() => void toggleFullscreen()}
+          >
+            {fullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+            <span>{fullscreen ? "FENETRE" : "PLEIN ECRAN"}</span>
+          </button>
+          <button
+            type="button"
+            className="menu-item"
+            onClick={() => {
+              cycleTheme();
+              onThemeChange();
             }}
           >
-            <button
-              className="close-button"
-              onClick={closeMenu}
-              style={{
-                alignSelf: "flex-end",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: "8px",
-                userSelect: "none",
-              }}
-              aria-label="Fermer"
-            >
-              <XIcon size={24} />
-            </button>
-
-            <Button
-              icon={<Theme size={18} />}
-              label="THEME"
-              onClick={() => navigateTo("/config")}
-              variant="secondary"
-              style={buttonStyle}
-            />
-
-            <Button
-              icon={<Skin size={18} />}
-              label="SKIN"
-              onClick={() => navigateTo("/config")}
-              variant="secondary"
-              style={buttonStyle}
-            />
-
-            <Button
-              icon={<Help size={18} />}
-              label="AIDE"
-              onClick={() => navigateTo("/help")}
-              variant="secondary"
-              style={buttonStyle}
-            />
-
-            <Button
-              label="MONDES"
-              onClick={() => navigateTo("/menu")}
-              variant="secondary"
-              style={buttonStyle}
-            />
-          </div>
+            <Theme size={18} />
+            <span>THEME {getTheme().name.toUpperCase()}</span>
+          </button>
+          <button type="button" className="menu-item" onClick={cycleSkin}>
+            <Skin size={18} />
+            <span>SKIN {skinLabels[skin].toUpperCase()}</span>
+          </button>
+          <button
+            type="button"
+            className="menu-item"
+            onClick={() => setControlsMode(cycleControlsMode())}
+          >
+            <span aria-hidden="true">🎮</span>
+            <span>
+              COMMANDES {controlsModeLabels[controlsMode].toUpperCase()}
+            </span>
+          </button>
         </div>
-      )}
-    </>
+
+        <div className="menu-group">
+          <AudioSettings />
+        </div>
+
+        {(canInstall || updateAvailable) && (
+          <div className="menu-group">
+            <div className="menu-group-title">APPLICATION</div>
+            {canInstall && (
+              <button
+                type="button"
+                className="menu-item"
+                onClick={() => void install()}
+              >
+                <span aria-hidden="true">📱</span>
+                <span>INSTALLER</span>
+              </button>
+            )}
+            {updateAvailable && (
+              <button
+                type="button"
+                className="menu-item"
+                onClick={() => void updateSW(true)}
+              >
+                <span aria-hidden="true">🔄</span>
+                <span>METTRE A JOUR</span>
+              </button>
+            )}
+          </div>
+        )}
+
+        {isDevEnabled && (
+          <div className="menu-group dev-group">
+            <div className="menu-group-title">DEVELOPPEMENT</div>
+            <button
+              type="button"
+              className="menu-item dev-item"
+              onClick={() => go("/dev/levels")}
+            >
+              <span aria-hidden="true">🧪</span>
+              <span>LEVEL LAB</span>
+            </button>
+            <button
+              type="button"
+              className="menu-item dev-item"
+              onClick={() => go("/dev/generator")}
+            >
+              <span aria-hidden="true">🧬</span>
+              <span>GENERATEUR</span>
+            </button>
+            <button
+              type="button"
+              className="menu-item dev-item"
+              onClick={() => go("/dev/editor")}
+            >
+              <span aria-hidden="true">✏️</span>
+              <span>EDITEUR</span>
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
