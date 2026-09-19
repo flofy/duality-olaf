@@ -46,19 +46,3 @@
   font: 800 12px monospace;
   cursor: pointer;
 }
-
-.pwa-dismiss {
-  position: static;
-  flex: none;
-  border: 0;
-  padding: 6px;
-  background: transparent;
-  color: var(--muted);
-  font: 700 20px/1 sans-serif;
-  cursor: pointer;
-}
-
-.pwa-dismiss:hover,
-.pwa-dismiss:focus-visible {
-  color: var(--text);
-}

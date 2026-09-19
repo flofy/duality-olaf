@@ -1,60 +1,42 @@
-import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import {
   createBrowserRouter,
   Navigate,
   Outlet,
+  useLocation,
   useNavigate,
   useParams,
 } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { type Level } from "@duality/level-format";
-import { campaign, worlds, levelLabel } from "./levels/campaign";
+import { campaign, worlds } from "./levels/campaign";
 import {
-  completeLevel,
   getCompletedCount,
+  getNextWorld,
   isLevelCompleted,
+  isWorldCompleted,
+  isWorldUnlocked,
 } from "./progression";
-import { cycleTheme, getActiveThemeName, getTheme, hexToCss } from "./theme";
-import {
-  getAvailableSkinPreferences,
-  getSkinPreference,
-  normalizeSkinPreference,
-  resolveLevelSkin,
-  setSkinPreference,
-  skinLabels,
-  type SkinPreference,
-} from "./skins";
+import { getTheme, hexToCss } from "./theme";
 import { LevelCatalogue, LevelPlayground } from "./LevelLab";
-import { GameBoard } from "./GameBoard";
 import { LevelEditor } from "./LevelEditor";
 import { LevelGenerator } from "./LevelGenerator";
-import { interpretGesture, type Direction } from "./input/GestureInterpreter";
-import { useLevelGameplay, type GameplayDirection } from "./useLevelGameplay";
-import {
-  formatDebugCommands,
-  type DebugCommand,
-  type DebugDirection,
-} from "./debug/CommandRecorder";
-import { InstallButton } from "./InstallButton";
+import { Game } from "./GameScreen";
+import { Button } from "./components/Button";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { BurgerMenu } from "./BurgerMenu";
+import { ArrowLeft, ArrowRight, Help as HelpIcon } from "./components/Icons";
 
 import "./style.css";
 
 const isLevelLabEnabled = import.meta.env.VITE_ENABLE_LEVEL_LAB === "true";
-const isDevtoolsEnabled = import.meta.env.VITE_ENABLE_DEVTOOLS === "true";
-
-type BeforeInstallPromptEvent = Event & {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-};
-
-const gestureDirections: Record<Direction, GameplayDirection> = {
-  left: { x: -1, y: 0 },
-  right: { x: 1, y: 0 },
-  up: { x: 0, y: -1 },
-  down: { x: 0, y: 1 },
-};
 
 function vars(): CSSProperties {
   const theme = getTheme();
@@ -65,120 +47,68 @@ function vars(): CSSProperties {
   ) as CSSProperties;
 }
 
-function PwaControls({
-  updateSW,
-}: {
-  updateSW: (reloadPage?: boolean) => Promise<void>;
-}) {
-  const [installPrompt, setInstallPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-
-  useEffect(() => {
-    const onBeforeInstall = (event: Event) => {
-      event.preventDefault();
-      setInstallPrompt(event as BeforeInstallPromptEvent);
-      setDismissed(false);
-    };
-    const onInstalled = () => setInstallPrompt(null);
-    window.addEventListener("beforeinstallprompt", onBeforeInstall);
-    window.addEventListener("appinstalled", onInstalled);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onBeforeInstall);
-      window.removeEventListener("appinstalled", onInstalled);
-    };
-  }, []);
-
-  useEffect(() => {
-    const onUpdate = () => {
-      setUpdateAvailable(true);
-      setDismissed(false);
-    };
-    window.addEventListener("duality:pwa-update", onUpdate);
-    return () => window.removeEventListener("duality:pwa-update", onUpdate);
-  }, []);
-
-  if (dismissed || (!updateAvailable && !installPrompt)) return null;
-
-  return (
-    <div className="pwa-controls" role="status" aria-live="polite">
-      <span>
-        {updateAvailable
-          ? "✨ Nouvelle version disponible"
-          : "📱 Installe Duality pour jouer en plein écran"}
-      </span>
-      <div className="pwa-actions">
-        <button
-          className="pwa-action"
-          onClick={
-            updateAvailable
-              ? () => updateSW(true)
-              : async () => {
-                  if (!installPrompt) return;
-                  await installPrompt.prompt();
-                  await installPrompt.userChoice;
-                  setInstallPrompt(null);
-                }
-          }
-        >
-          {updateAvailable ? "METTRE À JOUR" : "INSTALLER"}
-        </button>
-        <button
-          className="pwa-dismiss"
-          type="button"
-          aria-label="Fermer"
-          onClick={() => setDismissed(true)}
-        >
-          ×
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function FullscreenButton() {
-  const [fullscreen, setFullscreen] = useState(() =>
-    Boolean(document.fullscreenElement),
-  );
-
-  useEffect(() => {
-    const sync = () => setFullscreen(Boolean(document.fullscreenElement));
-    document.addEventListener("fullscreenchange", sync);
-    return () => document.removeEventListener("fullscreenchange", sync);
-  }, []);
-
-  if (!document.fullscreenEnabled) return null;
-
-  const toggle = async () => {
-    if (document.fullscreenElement) await document.exitFullscreen();
-    else await document.documentElement.requestFullscreen();
-  };
-
-  return (
-    <button
-      className="action fullscreen-toggle"
-      type="button"
-      onClick={toggle}
-      aria-label={
-        fullscreen ? "Quitter le plein écran" : "Passer en plein écran"
-      }
-    >
-      {fullscreen ? "↙ FENÊTRÉ" : "⛶ PLEIN ÉCRAN"}
-    </button>
-  );
-}
-
 function AppLayout() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [, setTick] = useState(0);
+  // Le burger est l'unique contrôle ouvert/fermé du menu : on le référence pour
+  // lui rendre le focus à la fermeture (le panneau le prend à l'ouverture).
+  const burgerRef = useRef<HTMLButtonElement>(null);
+  const wasMenuOpen = useRef(false);
+  const location = useLocation();
+
+  // Close the menu whenever the route changes.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  // Close the menu with the Escape key.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
+  // Le focus entre dans le panneau à l'ouverture (cf. BurgerMenu) et revient au
+  // burger à la fermeture, pour ne jamais le laisser dans le vide.
+  useEffect(() => {
+    if (!menuOpen && wasMenuOpen.current) burgerRef.current?.focus();
+    wasMenuOpen.current = menuOpen;
+  }, [menuOpen]);
+
   return (
     <main className="app" style={vars()}>
-      <div className="shell app-enter">
-        <div className="utility-bar">
-          <PwaControls updateSW={updateSW} />
-          <FullscreenButton />
-        </div>
-        <Outlet />
+      {/* inert : menu ouvert, la page derrière n'est ni cliquable ni focusable.
+          Le burger reste atteignable : il vit à côté, pas dans .shell. */}
+      <div className="shell app-enter" inert={menuOpen}>
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </div>
+      {/* Barre utilitaire hors de .shell, à côté du panneau : elle passe au-dessus
+          de lui (z-index, cf. layout.css) et le burger devient l'unique bouton
+          ouvert/fermé — plus de croix dupliquée à superposer. */}
+      <div className="utility-bar">
+        <button
+          ref={burgerRef}
+          type="button"
+          className={`burger-toggle ${menuOpen ? "open" : ""}`}
+          aria-expanded={menuOpen}
+          aria-controls="app-menu"
+          aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span aria-hidden="true" />
+        </button>
+      </div>
+      <BurgerMenu
+        open={menuOpen}
+        updateSW={updateSW}
+        onThemeChange={() => setTick((tick) => tick + 1)}
+        onClose={() => setMenuOpen(false)}
+      />
     </main>
   );
 }
@@ -227,16 +157,16 @@ function Intro() {
         </div>
         <span className="intro-switch">● ⇄ ■</span>
       </div>
-      <button
-        className="action intro-start"
-        type="button"
+      <Button
+        icon={<ArrowRight size={20} />}
+        label="JOUER"
         onClick={(event) => {
           event.stopPropagation();
           continueIntro();
         }}
-      >
-        JOUER ▶
-      </button>
+        className="intro-start"
+        variant="primary"
+      />
       <span className="intro-hint">ENTRÉE · ESPACE · CLIQUER</span>
     </section>
   );
@@ -244,12 +174,6 @@ function Intro() {
 
 function Menu() {
   const navigate = useNavigate();
-  const [skinPreference, setSkinPreferenceState] = useState<SkinPreference>(
-    () => normalizeSkinPreference(getSkinPreference()),
-  );
-  const [tick, setTick] = useState(0);
-  const availableSkins = getAvailableSkinPreferences();
-  const skin = normalizeSkinPreference(skinPreference);
 
   return (
     <section className="menu">
@@ -260,20 +184,29 @@ function Menu() {
           const done = world.levels.filter((level) =>
             isLevelCompleted(level.id),
           ).length;
+          // Un monde ne s'ouvre qu'une fois le précédent entièrement terminé.
+          const unlocked =
+            world.status === "available" && isWorldUnlocked(world.id);
+          const meta =
+            world.status !== "available"
+              ? `${world.subtitle} • BIENTÔT`
+              : !unlocked
+                ? `${world.subtitle} • 🔒 FINIS LE MONDE ${world.id - 1}`
+                : done === world.levels.length
+                  ? `${world.subtitle} • ✓ TERMINÉ`
+                  : `${world.subtitle} • ${done}/${world.levels.length}`;
           return (
-            <button
-              className="world-button"
-              disabled={world.status !== "available"}
-              onClick={() => navigate(`/world/${world.id}`)}
-              key={world.id}
-            >
-              🌍 MONDE {world.id} — {world.name.toUpperCase()}
-              <span className="world-meta">
-                {world.status === "available"
-                  ? `${world.subtitle} · ${done}/${world.levels.length}`
-                  : `${world.subtitle} · BIENTÔT`}
-              </span>
-            </button>
+            <div key={world.id} style={{ position: "relative" }}>
+              <Button
+                icon={<ArrowRight size={20} />}
+                label={`MONDE ${world.id} — ${world.name.toUpperCase()}`}
+                onClick={() => navigate(`/world/${world.id}`)}
+                disabled={!unlocked}
+                variant="primary"
+                className="world-button"
+              />
+              <div className="world-meta">{meta}</div>
+            </div>
           );
         })}
       </div>
@@ -281,31 +214,12 @@ function Menu() {
         {getCompletedCount()} terminé(s) · {campaign.length} jouables
       </p>
       <div className="modal-actions">
-        <InstallButton />
-        <button className="action" onClick={() => navigate("/help")}>
-          ? AIDE
-        </button>
-        <button
-          className="action"
-          onClick={() => {
-            cycleTheme();
-            setTick(tick + 1);
-          }}
-        >
-          🎨 THÈME
-        </button>
-        <button
-          className="action"
-          onClick={() => {
-            const index = availableSkins.indexOf(skin);
-            const next =
-              availableSkins[(index + 1) % availableSkins.length] ?? "auto";
-            setSkinPreference(next);
-            setSkinPreferenceState(next);
-          }}
-        >
-          ✨ {skinLabels[skin]}
-        </button>
+        <Button
+          icon={<HelpIcon size={18} />}
+          label="AIDE"
+          onClick={() => navigate("/help")}
+          variant="secondary"
+        />
         {isLevelLabEnabled && (
           <button
             className="action dev-entry"
@@ -326,13 +240,21 @@ function WorldLevels() {
   const world = worlds.find((item) => item.id === id);
 
   if (!world) return <Navigate to="/menu" replace />;
+  if (world.status !== "available") return <Navigate to="/menu" replace />;
+  if (!isWorldUnlocked(world.id)) return <Navigate to="/menu" replace />;
+
+  const completed = isWorldCompleted(world.id);
+  const nextWorld = completed ? getNextWorld(world.id) : null;
 
   return (
     <section className="menu">
       <div className="topbar">
-        <button className="action" onClick={() => navigate("/menu")}>
-          ← MONDES
-        </button>
+        <Button
+          icon={<ArrowLeft size={18} />}
+          label="MONDES"
+          onClick={() => navigate("/menu")}
+          variant="secondary"
+        />
         <b>MONDE {world.id}</b>
       </div>
       <h2 className="subtitle">{world.name.toUpperCase()}</h2>
@@ -357,6 +279,16 @@ function WorldLevels() {
           );
         })}
       </div>
+      {/* Le passage au monde suivant apparaît dès que celui-ci est terminé. */}
+      {nextWorld && (
+        <Button
+          icon={<ArrowRight size={18} />}
+          label={`MONDE ${nextWorld.id} · ${nextWorld.name.toUpperCase()}`}
+          onClick={() => navigate(`/world/${nextWorld.id}`)}
+          variant="primary"
+          className="world-next"
+        />
+      )}
     </section>
   );
 }
@@ -372,7 +304,7 @@ function Help() {
     ["BLOQUER", "La boule et le carré peuvent se servir mutuellement de mur."],
     [
       "PORTES",
-      "Une porte bloque le passage tant qu’un interrupteur lié ne l’a pas ouverte.",
+      "Une porte bloque le passage tant qu'un interrupteur lié ne l'a pas ouverte.",
     ],
     [
       "TÉLÉPORTER",
@@ -384,9 +316,12 @@ function Help() {
 
   return (
     <section className="help">
-      <button className="action" onClick={() => navigate("/menu")}>
-        ← RETOUR
-      </button>
+      <Button
+        icon={<ArrowLeft size={18} />}
+        label="RETOUR"
+        onClick={() => navigate("/menu")}
+        variant="secondary"
+      />
       <h1 className="title">COMMENT JOUER ?</h1>
       {rules.map(([title, text]) => (
         <section key={title}>
@@ -405,256 +340,15 @@ function ProtectedLevel() {
     world?.levels.findIndex((level) => level.id === levelId) ?? -1;
 
   if (!world || levelIndex < 0) return <Navigate to="/menu" replace />;
+  // Les mondes sont séquentiels : pas d'accès direct à un monde verrouillé.
+  if (world.status !== "available" || !isWorldUnlocked(world.id)) {
+    return <Navigate to="/menu" replace />;
+  }
   if (levelIndex > 0 && !isLevelCompleted(world.levels[levelIndex - 1].id)) {
     return <Navigate to={`/world/${world.id}`} replace />;
   }
 
   return <Game level={world.levels[levelIndex]} worldId={world.id} />;
-}
-
-function Game({ level, worldId }: { level: Level; worldId: number }) {
-  const navigate = useNavigate();
-  const world = worlds.find((item) => item.id === worldId)!;
-  const worldIndex = world.levels.findIndex((item) => item.id === level.id);
-  const seasonalTheme = resolveLevelSkin(level.id);
-  const [commands, setCommands] = useState<DebugCommand[]>([]);
-  const [start, setStart] = useState<{
-    x: number;
-    y: number;
-    interactive: boolean;
-  } | null>(null);
-
-  const nextLevel = useCallback(() => {
-    if (worldIndex < world.levels.length - 1) {
-      navigate(`/world/${world.id}/level/${world.levels[worldIndex + 1].id}`);
-    } else {
-      navigate(`/world/${world.id}`);
-    }
-  }, [navigate, world, worldIndex]);
-
-  const { state, move, reset, switchForm } = useLevelGameplay(
-    level,
-    () => navigate(`/world/${world.id}`),
-    (direction, moved) => {
-      if (!moved || !isDevtoolsEnabled) return;
-      const debugDirection: DebugDirection =
-        direction.x === 1
-          ? "RIGHT"
-          : direction.x === -1
-            ? "LEFT"
-            : direction.y === 1
-              ? "DOWN"
-              : "UP";
-      setCommands((current) => [
-        ...current,
-        { type: "move", direction: debugDirection },
-      ]);
-    },
-    () => {
-      if (isDevtoolsEnabled)
-        setCommands((current) => [...current, { type: "switch" }]);
-    },
-    () => {
-      if (isDevtoolsEnabled) setCommands([]);
-    },
-  );
-
-  useEffect(() => {
-    if (state.completed) completeLevel(level.id);
-  }, [level.id, state.completed]);
-
-  useEffect(() => {
-    const handler = (event: KeyboardEvent) => {
-      if (event.key === "Enter" && state.completed) {
-        event.preventDefault();
-        nextLevel();
-        return;
-      }
-      if (event.key === "d" || event.key === "D") {
-        if (!isDevtoolsEnabled || commands.length === 0) return;
-        event.preventDefault();
-        void navigator.clipboard?.writeText(formatDebugCommands(commands));
-        return;
-      }
-      if (event.key === "c" || event.key === "C") {
-        if (!isDevtoolsEnabled) return;
-        setCommands([]);
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [commands, nextLevel, state.completed]);
-
-  return (
-    <section
-      className="game"
-      onPointerDown={(event) => {
-        const target = event.target as HTMLElement;
-        const interactive = Boolean(
-          target.closest('button, a, input, textarea, select, [role="dialog"]'),
-        );
-        setStart({ x: event.clientX, y: event.clientY, interactive });
-      }}
-      onPointerUp={(event) => {
-        if (!start) return;
-        const result = interpretGesture(
-          start,
-          { x: event.clientX, y: event.clientY },
-          24,
-        );
-        const wasInteractive = start.interactive;
-        setStart(null);
-        if (!wasInteractive && result.type === "swipe" && result.direction) {
-          move(gestureDirections[result.direction]);
-        }
-      }}
-    >
-      <div className="topbar">
-        <button
-          className="action"
-          onClick={() => navigate(`/world/${world.id}`)}
-        >
-          ← NIVEAUX
-        </button>
-        <b>
-          {levelLabel(worldIndex)} · MONDE {world.id}
-        </b>
-        <button className="action" onClick={reset}>
-          ↻
-        </button>
-      </div>
-      <div className="board-wrap">
-        <GameBoard
-          level={level}
-          state={state}
-          skin={seasonalTheme ?? "default"}
-          themeName={getActiveThemeName()}
-        />
-      </div>
-      <div className="hud">
-        <b>{state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
-        <br />
-        <span className="muted">
-          ★ {level.stars.length - state.stars.length}/{level.stars.length} ·{" "}
-          {state.moves} COUPS · swipe ou flèches
-        </span>
-      </div>
-      <div className="controls">
-        <div className="dpad">
-          <button className="up" onClick={() => move(gestureDirections.up)}>
-            ▲
-          </button>
-          <button onClick={() => move(gestureDirections.left)}>◀</button>
-          <button onClick={() => move(gestureDirections.down)}>▼</button>
-          <button onClick={() => move(gestureDirections.right)}>▶</button>
-        </div>
-        {level.square && (
-          <button className="action switch" onClick={switchForm}>
-            ● ⇄ ■<br />
-            CHANGER
-          </button>
-        )}
-      </div>
-      {isDevtoolsEnabled && (
-        <aside className="dev-entry" aria-label="Outils de développement">
-          <strong>🐛 DEBUG</strong>
-          <span>{level.id}</span>
-          <span>
-            ● {state.ball.x},{state.ball.y}
-            {level.square
-              ? ` · ■ ${state.square.x},${state.square.y}`
-              : " · ■ absent"}
-          </span>
-          <span>
-            {state.activeForm} · ★ {state.stars.length} · {commands.length}{" "}
-            commandes
-          </span>
-          <span className="muted">
-            {commands
-              .slice(-8)
-              .map((command) =>
-                command.type === "switch"
-                  ? "↔"
-                  : command.direction === "RIGHT"
-                    ? "→"
-                    : command.direction === "LEFT"
-                      ? "←"
-                      : command.direction === "DOWN"
-                        ? "↓"
-                        : "↑",
-              )
-              .join(" ") || "—"}
-          </span>
-          <div className="modal-actions">
-            <button
-              className="action"
-              type="button"
-              disabled={commands.length === 0}
-              onClick={() =>
-                void navigator.clipboard?.writeText(
-                  formatDebugCommands(commands),
-                )
-              }
-            >
-              COPIER
-            </button>
-            <button
-              className="action"
-              type="button"
-              onClick={() => setCommands([])}
-            >
-              EFFACER
-            </button>
-          </div>
-        </aside>
-      )}
-      {state.completed && (
-        <div className="overlay">
-          <div
-            className="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="completion-title"
-          >
-            <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
-            <p>{state.moves} coups</p>
-            <div className="modal-actions">
-              <button className="action" onClick={reset}>
-                REJOUER
-              </button>
-              <button className="action" onClick={nextLevel}>
-                {worldIndex < world.levels.length - 1 ? "SUIVANT ▶" : "NIVEAUX"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {state.gameOver && (
-        <div className="overlay">
-          <div
-            className="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="gameover-title"
-          >
-            <h2 id="gameover-title">✗ GAME OVER</h2>
-            <p>Une forme est sortie du niveau…</p>
-            <div className="modal-actions">
-              <button className="action" onClick={reset}>
-                REJOUER
-              </button>
-              <button
-                className="action"
-                onClick={() => navigate(`/world/${world.id}`)}
-              >
-                ← NIVEAUX
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </section>
-  );
 }
 
 function DevGuard() {
@@ -716,7 +410,11 @@ const updateSW = registerSW({
 });
 
 export function RouterApp() {
-  return <RouterProvider router={router} />;
+  return (
+    <ErrorBoundary>
+      <RouterProvider router={router} />
+    </ErrorBoundary>
+  );
 }
 
 createRoot(document.getElementById("app")!).render(<RouterApp />);

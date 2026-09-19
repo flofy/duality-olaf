@@ -1,0 +1,254 @@
+/* Animations pour les piques (effet de danger) */
+@keyframes spikePulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.spike-pulse {
+  animation: spikePulse 1.5s infinite ease-in-out;
+  transform-origin: center;
+}
+
+/* Animation pour les étoiles */
+@keyframes sparkle {
+  0% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.1) rotate(90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+.sparkle {
+  animation: sparkle 2s infinite ease-in-out;
+  transform-origin: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.app-enter {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes pieceMove {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.piece-moving {
+  animation: pieceMove 0.3s ease;
+}
+
+@keyframes doorOpen {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.door-open {
+  animation: doorOpen 0.3s ease;
+}
+
+@keyframes buttonHover {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  }
+  100% {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  }
+}
+
+button {
+  transition: all 0.2s ease;
+}
+button:hover:not(:disabled) {
+  animation: buttonHover 0.2s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.world-button,
+.level-button {
+  animation: slideIn 0.3s ease forwards;
+}
+.world-button:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.world-button:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.world-button:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.world-button:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.world-button:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+@keyframes teleporterPulse {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+}
+
+.teleporter-pulse {
+  animation: teleporterPulse 2s infinite ease-in-out;
+}
+
+@keyframes switchPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.switch-tile:active {
+  animation: switchPress 0.2s ease;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.overlay {
+  animation: overlayFadeIn 0.3s ease forwards;
+}
+
+@keyframes starCollect {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.star.collected {
+  animation: starCollect 0.5s ease forwards;
+}
+
+@keyframes dpadButtonPress {
+  0% {
+    transform: scale(1);
+    background: rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.dpad-button:active {
+  animation: dpadButtonPress 0.2s ease;
+}
+.center-dpad-button:active {
+  animation: dpadButtonPress 0.2s ease;
+}
+
+@keyframes switchFormPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.switch-toggle {
+  transition: transform 120ms ease;
+}
+
+.switch-toggle:active {
+  animation: switchFormPulse 0.3s ease;
+}

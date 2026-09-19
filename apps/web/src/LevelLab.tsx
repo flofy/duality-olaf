@@ -213,9 +213,6 @@ export function LevelCatalogue() {
   const navigate = useNavigate();
   const groups = useMemo(() => buildCatalogueGroups(), []);
   const [open, setOpen] = useState<Set<string>>(() => new Set());
-  const goMenu = () => {
-    navigate("/menu");
-  };
   const toggle = (label: string) => {
     setOpen((prev) => {
       const next = new Set(prev);
@@ -228,9 +225,6 @@ export function LevelCatalogue() {
   return (
     <section className="dev-catalogue">
       <div className="topbar">
-        <button className="action" onClick={goMenu}>
-          ← MENU
-        </button>
         <b>LEVEL LAB</b>
         <div className="dev-catalogue-actions">
           <button className="action" onClick={() => navigate("/dev/generator")}>

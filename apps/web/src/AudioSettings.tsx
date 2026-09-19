@@ -18,11 +18,19 @@ export function AudioSettings() {
   const [volume, setVolume] = useState(getMasterVolume);
   const [ambientEnabled, setAmbientEnabledState] = useState(getAmbientEnabled);
   const [hapticEnabled, setHapticEnabledState] = useState(getHapticEnabled);
+  const [testsOpen, setTestsOpen] = useState(false);
   const hapticSupported = isHapticSupported();
 
   const updateSound = (enabled: boolean) => {
     setSoundEnabled(enabled);
     setSoundEnabledState(enabled);
+    // Couper le son coupe aussi tout ce qui en dépend.
+    if (!enabled) {
+      setAmbientEnabled(false);
+      setAmbientEnabledState(false);
+      setHapticEnabled(false);
+      setHapticEnabledState(false);
+    }
   };
 
   const updateVolume = (value: number) => {
@@ -41,11 +49,7 @@ export function AudioSettings() {
   };
 
   return (
-    <section
-      className="audio-settings"
-      aria-label="Réglages audio et vibrations"
-    >
-      <div className="audio-settings-title">🔊 AUDIO & VIBRATIONS</div>
+    <div className="audio-settings">
       <div className="audio-setting-row">
         <button
           className="action audio-toggle"
@@ -92,31 +96,36 @@ export function AudioSettings() {
             : "📳 VIBRATION INDISPONIBLE"}
         </button>
       </div>
-      <div className="audio-setting-tests">
-        <div className="audio-test">
-          <span className="audio-test-label">SON</span>
+      {/* Sous-menu repliable : les tests ne sont utiles qu'occasionnellement. */}
+      <button
+        className="action audio-toggle audio-tests-toggle"
+        type="button"
+        aria-expanded={testsOpen}
+        onClick={() => setTestsOpen(!testsOpen)}
+      >
+        {testsOpen ? "▾ TESTS" : "▸ TESTS"}
+      </button>
+      {testsOpen && (
+        <div className="audio-setting-tests">
           <button
             className="action audio-test-button"
             type="button"
             onClick={() => void testSound()}
           >
-            🔊 TESTER
+            🔊 TESTER LE SON
           </button>
-        </div>
-        <div className="audio-test">
-          <span className="audio-test-label">
-            VIBRATION · {hapticSupported ? "DISPONIBLE" : "INDISPONIBLE"}
-          </span>
           <button
             className="action audio-test-button"
             type="button"
             disabled={!hapticSupported}
             onClick={testHaptic}
           >
-            📳 TESTER
+            {hapticSupported
+              ? "📳 TESTER VIBRATION"
+              : "📳 VIBRATION INDISPONIBLE"}
           </button>
         </div>
-      </div>
-    </section>
+      )}
+    </div>
   );
 }

@@ -1,11 +1,8 @@
-.intro-app {
-  padding: 0;
-}
-
 .intro {
   position: relative;
   width: 100%;
-  min-height: 100dvh;
+  height: 100%;
+  min-height: 0;
   display: grid;
   place-items: center;
   align-content: center;

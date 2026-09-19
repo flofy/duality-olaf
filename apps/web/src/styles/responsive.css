@@ -12,8 +12,8 @@
     width: 100%;
     height: 100%;
     min-height: 0;
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
   }
 
   .utility-bar {
@@ -21,14 +21,6 @@
     padding: max(8px, env(safe-area-inset-top))
       max(8px, env(safe-area-inset-right)) 8px
       max(8px, env(safe-area-inset-left));
-  }
-
-  .utility-bar .pwa-controls {
-    width: 100%;
-  }
-
-  .fullscreen-toggle {
-    display: none;
   }
 
   .menu,
@@ -52,14 +44,14 @@
     align-items: center;
   }
 
+  /* Le jeu occupe toute la hauteur de l'écran : le plateau se cale dans l'espace
+     restant et les contrôles — dont RECOMMENCER — restent au bas de l'écran. */
+  .game {
+    height: 100dvh;
+  }
+
   .levels {
     grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-}
-
-@media (display-mode: standalone), (display-mode: fullscreen) {
-  .fullscreen-toggle {
-    display: none;
   }
 }
 

@@ -48,3 +48,33 @@ export function cycleControlsMode(): ControlsMode {
   setControlsMode(next);
   return next;
 }
+
+const CONTROLS_STYLE_ID = "duality-controls-preference-style";
+
+/** Inject the CSS rules driven by the data-controls-mode attribute. */
+export function installControlsStyles(): void {
+  if (document.getElementById(CONTROLS_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = CONTROLS_STYLE_ID;
+  style.textContent = `
+    .game { touch-action: none; }
+    .game button { touch-action: manipulation; }
+    html[data-controls-mode="hidden"] .game .controls { display: none; }
+    html[data-controls-mode="visible"] .game .controls { display: flex; }
+    @media (min-width: 601px) {
+      html:not([data-controls-mode="visible"]) .game .controls { display: none; }
+    }
+    @media (max-width: 600px) {
+      .game .controls { display: flex; justify-content: flex-start; }
+      .game .controls .switch { display: block; }
+      .game .controls .dpad { display: none; }
+      html[data-controls-mode="visible"] .game .dpad { display: grid; }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+/** Reflect the current mode on the root element for the injected CSS. */
+export function syncControlsMode(mode: ControlsMode): void {
+  document.documentElement.dataset.controlsMode = mode;
+}

@@ -1,6 +1,15 @@
 .shell {
+  display: flex;
+  flex-direction: column;
   width: min(100%, 1200px);
+  max-height: 100%;
   min-height: 0;
+}
+
+/* Route jeu : le shell prend toute la hauteur pour que .game (height: 100%)
+   remplisse l'écran. */
+.shell:has(> .game) {
+  height: 100%;
 }
 
 :fullscreen .shell,
@@ -10,23 +19,20 @@
   padding: 0 clamp(8px, 1.5vw, 24px);
 }
 
+/* Barre utilitaire (hors de .shell) : ancrée au coin haut-droit du viewport.
+   z-index 3003 > panneau de menu (3002) : le burger reste visible et cliquable
+   quand le menu est ouvert, c'est lui qui le referme. */
 .utility-bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3003;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
   min-height: 0;
-  margin-bottom: 10px;
-}
-
-.utility-bar .pwa-controls {
-  flex: 1;
-  margin: 0;
-  max-width: none;
-}
-
-.fullscreen-toggle {
-  white-space: nowrap;
+  padding: 8px;
 }
 
 .menu,
@@ -44,6 +50,30 @@
 }
 
 .game {
-  max-height: calc(100dvh - 20px);
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: none;
+  overflow: hidden;
+}
+
+/* Route jeu plein écran sur desktop aussi (cf. responsive.css pour mobile) :
+   la carte flottante laisse place à un écran bord à bord, le fond couvre
+   toute la surface. */
+.app:has(.game) {
+  padding: 0;
+  place-items: stretch;
+}
+
+.shell:has(> .game) {
+  width: 100%;
+  max-width: none;
+}
+
+.game {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--background);
+  backdrop-filter: none;
 }
