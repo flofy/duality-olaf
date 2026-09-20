@@ -42,7 +42,7 @@ describe("LevelRunner: continuous movement through teleporters", () => {
       makeTeleporterLevel({
         teleporters: [
           { id: "a", position: { x: 4, y: 2 }, targetId: "b" },
-          { id: "b", position: { x: 8, y: 2 }, targetId: "a" },
+          { id: "b", position: { x: 7, y: 2 }, targetId: "a" },
         ],
         innerWalls: [{ x: 10, y: 2 }],
       }),
@@ -51,12 +51,12 @@ describe("LevelRunner: continuous movement through teleporters", () => {
     runner.move(RIGHT);
     const state = runner.getState();
 
-    // 2 -> 4, teleport to 8, then keep sliding to 9 before the wall at 10.
+    // 2 -> 4, teleport to 7, then keep sliding to 9 before the wall at 10.
     expect(state.ball).toEqual({ x: 9, y: 2 });
     expect(state.moves).toBe(1);
     expect(state.lastTeleport).toEqual({
       from: { x: 4, y: 2 },
-      to: { x: 8, y: 2 },
+      to: { x: 7, y: 2 },
     });
   });
 
