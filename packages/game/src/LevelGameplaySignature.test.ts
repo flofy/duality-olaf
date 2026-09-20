@@ -3,12 +3,8 @@ import { gameplaySignature } from "./LevelGameplaySignature";
 
 describe("gameplaySignature", () => {
   it("ignores continuous slide distance", () => {
-    const short = [
-      { type: "move" as const, direction: { x: 1, y: 0 } },
-    ];
-    const long = [
-      { type: "move" as const, direction: { x: 1, y: 0 } },
-    ];
+    const short = [{ type: "move" as const, direction: { x: 1, y: 0 } }];
+    const long = [{ type: "move" as const, direction: { x: 1, y: 0 } }];
 
     expect(gameplaySignature(short)).toBe(gameplaySignature(long));
   });
@@ -55,9 +51,9 @@ describe("gameplaySignature", () => {
       { type: "move" as const, direction: { x: 0, y: 1 } },
     ];
 
-    expect(
-      gameplaySignature(original, { includeReflections: false }),
-    ).not.toBe(gameplaySignature(mirrored, { includeReflections: false }));
+    expect(gameplaySignature(original, { includeReflections: false })).not.toBe(
+      gameplaySignature(mirrored, { includeReflections: false }),
+    );
   });
 
   it("keeps different decision structures distinct", () => {
@@ -74,6 +70,8 @@ describe("gameplaySignature", () => {
       { type: "move" as const, direction: { x: -1, y: 0 } },
     ];
 
-    expect(gameplaySignature(oneSwitch)).not.toBe(gameplaySignature(twoSwitches));
+    expect(gameplaySignature(oneSwitch)).not.toBe(
+      gameplaySignature(twoSwitches),
+    );
   });
 });
