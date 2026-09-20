@@ -52,7 +52,7 @@ export function AudioSettings() {
     <div className="audio-settings">
       <div className="audio-setting-row">
         <button
-          className="action audio-toggle"
+          className="audio-toggle"
           type="button"
           aria-pressed={soundEnabled}
           onClick={() => updateSound(!soundEnabled)}
@@ -75,7 +75,7 @@ export function AudioSettings() {
       </div>
       <div className="audio-setting-row audio-setting-secondary">
         <button
-          className="action audio-toggle"
+          className="audio-toggle"
           type="button"
           aria-pressed={ambientEnabled}
           onClick={() => updateAmbient(!ambientEnabled)}
@@ -83,7 +83,7 @@ export function AudioSettings() {
           {ambientEnabled ? "♪ AMBIANCE ON" : "♪ AMBIANCE OFF"}
         </button>
         <button
-          className="action audio-toggle"
+          className="audio-toggle"
           type="button"
           aria-pressed={hapticEnabled}
           disabled={!hapticSupported}
@@ -98,7 +98,7 @@ export function AudioSettings() {
       </div>
       {/* Sous-menu repliable : les tests ne sont utiles qu'occasionnellement. */}
       <button
-        className="action audio-toggle audio-tests-toggle"
+        className="audio-toggle audio-tests-toggle"
         type="button"
         aria-expanded={testsOpen}
         onClick={() => setTestsOpen(!testsOpen)}
@@ -108,14 +108,14 @@ export function AudioSettings() {
       {testsOpen && (
         <div className="audio-setting-tests">
           <button
-            className="action audio-test-button"
+            className="audio-test-button"
             type="button"
             onClick={() => void testSound()}
           >
             🔊 TESTER LE SON
           </button>
           <button
-            className="action audio-test-button"
+            className="audio-test-button"
             type="button"
             disabled={!hapticSupported}
             onClick={testHaptic}

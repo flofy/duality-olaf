@@ -273,6 +273,50 @@
 .dev-board {
   width: min(100%, 720px);
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Adaptatif : le board du lab se dimensionne comme l'écran de jeu — les
+   cellules restent carrées et remplissent l'espace de .board-wrap (container
+   query). --board-zoom (0.5 → 2) agrandit/réduit ensuite la grille. */
+.dev-board .board-wrap {
+  flex: 1 1 auto;
+  width: 100%;
+  height: min(60dvh, 520px);
+  overflow: auto;
+}
+
+.dev-board .board {
+  --tile: calc(
+    min(72px, calc(100cqw / var(--cols)), calc(100cqh / var(--rows))) *
+      var(--board-zoom, 1)
+  );
+  width: calc(var(--tile) * var(--cols));
+  height: calc(var(--tile) * var(--rows));
+  grid-template-columns: repeat(var(--cols), var(--tile));
+  grid-template-rows: repeat(var(--rows), var(--tile));
+}
+
+.dev-zoom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font: 700 11px monospace;
+}
+
+.dev-zoom-btn {
+  padding: 4px 12px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.dev-zoom-value {
+  min-width: 46px;
+  text-align: center;
+  color: var(--textMuted);
 }
 
 .dev-controls {
