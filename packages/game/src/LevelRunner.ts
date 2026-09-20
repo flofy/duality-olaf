@@ -27,16 +27,11 @@ export class LevelRunner {
   private state: GameState;
 
   constructor(level: Level) {
-    // createState clones the level before any mutation, so sharing the
-    // caller's object here is safe (and avoids a double tile-grid copy).
     this.initialLevel = level;
     this.state = this.createState(level);
   }
 
   static fromState(state: GameState): LevelRunner {
-    // Built without the constructor so the level grid is *shared*, not
-    // cloned: the runner never mutates the level (only positions, stars,
-    // doors and form), letting the solver explore without copying tiles.
     const runner = Object.create(LevelRunner.prototype) as LevelRunner;
     (runner as { initialLevel: Level }).initialLevel = state.level;
     runner.state = {
@@ -99,6 +94,7 @@ export class LevelRunner {
 
     for (;;) {
       if (this.state.teleportsThisMove >= 3) break;
+
       const next: Position = { ...current };
       next[axis] += sign;
       if (!isInside(this.state.level, next)) {
@@ -108,19 +104,23 @@ export class LevelRunner {
         return this.getState();
       }
       if (!this.isFree(next, other)) break;
+
       current.x = next.x;
       current.y = next.y;
       moved += 1;
       swept.push({ x: current.x, y: current.y });
-      // Spikes are lethal wherever they are placed: sliding onto one — even
-      // while passing over — ends the run immediately.
+
       if (isSpike(this.state.level, current)) {
         this.state.gameOver = true;
         return this.getState();
       }
+
       if (this.tryTeleport(current, other)) {
         this.state.teleportsThisMove += 1;
-        break;
+        // Keep sliding in the same direction from the teleporter exit. The
+        // exit is not added to `swept` here because it was not traversed by
+        // the piece; the next loop iteration starts with the cell after it.
+        continue;
       }
     }
 
