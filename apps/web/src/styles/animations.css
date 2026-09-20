@@ -1,22 +1,12 @@
-/* Animations pour les piques (effet de danger) */
-@keyframes spikePulse {
-  0% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.1);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* Animation des tuiles feu */
+@keyframes firePulse {
+  0%, 100% { transform: scale(0.94); filter: drop-shadow(0 0 3px #ff7a1877); }
+  50% { transform: scale(1.06); filter: drop-shadow(0 0 9px #ff7a18cc); }
 }
 
-.spike-pulse {
-  animation: spikePulse 1.5s infinite ease-in-out;
-  transform-origin: center;
+.fire-pulse {
+  animation: firePulse 900ms ease-in-out infinite;
+  transform-origin: center bottom;
 }
 
 /* Animation pour les étoiles */
