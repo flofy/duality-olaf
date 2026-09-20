@@ -285,7 +285,8 @@
   flex: 1 1 auto;
   width: 100%;
   height: min(60dvh, 520px);
-  overflow: auto;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 .dev-board .board {
