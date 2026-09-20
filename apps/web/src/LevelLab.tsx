@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import type { Level } from "@duality/level-format";
 import {
   doorSwitchTutorials,
@@ -23,6 +23,14 @@ import {
   type SkinPreference,
 } from "./skins";
 import { useLevelGameplay, type GameplayDirection } from "./useLevelGameplay";
+import {
+  DEFAULT_BOARD_ZOOM,
+  getBoardZoom,
+  resetBoardZoom,
+  zoomInBoard,
+  zoomOutBoard,
+} from "./boardZoom";
+import type { BoardZoom } from "./boardZoom";
 
 export type GameOverOverlayProps = {
   type: "completed" | "gameOver" | null;
@@ -426,6 +434,7 @@ export function LabGame({
     y: number;
     interactive: boolean;
   } | null>(null);
+  const [zoom, setZoom] = useState<BoardZoom>(() => getBoardZoom());
   const { state, reset, move, switchForm } = useLevelGameplay(level, () => {
     navigate("/dev/levels");
   });
@@ -437,6 +446,7 @@ export function LabGame({
   return (
     <div
       className="dev-board"
+      style={{ "--board-zoom": zoom } as CSSProperties}
       onPointerDown={(event) => {
         const target = event.target as HTMLElement;
         const interactive = Boolean(
@@ -458,17 +468,54 @@ export function LabGame({
         }
       }}
     >
-      <GameBoard level={level} state={state} skin={skin} themeName={themeName}>
-        <GameOverOverlay
-          type={
-            state.completed ? "completed" : state.gameOver ? "gameOver" : null
-          }
-          moves={state.moves}
-          optimalMoves={optimalMoves}
-          onReset={reset}
-          onBackToGenerator={onBackToGenerator}
+      <div className="board-wrap">
+        <GameBoard
+          level={level}
+          state={state}
+          skin={skin}
+          themeName={themeName}
         />
-      </GameBoard>
+      </div>
+      {/* Popin hors de la grille (comme GameScreen) : la fin de partie
+          n'appartient pas au plateau. */}
+      <GameOverOverlay
+        type={
+          state.completed ? "completed" : state.gameOver ? "gameOver" : null
+        }
+        moves={state.moves}
+        optimalMoves={optimalMoves}
+        onReset={reset}
+        onBackToGenerator={onBackToGenerator}
+      />
+      <div className="dev-zoom">
+        <button
+          type="button"
+          className="action dev-zoom-btn"
+          aria-label="Zoom arrière"
+          onClick={() => setZoom(zoomOutBoard())}
+        >
+          −
+        </button>
+        <span className="dev-zoom-value">{Math.round(zoom * 100)}%</span>
+        <button
+          type="button"
+          className="action dev-zoom-btn"
+          aria-label="Zoom avant"
+          onClick={() => setZoom(zoomInBoard())}
+        >
+          ＋
+        </button>
+        {zoom !== DEFAULT_BOARD_ZOOM && (
+          <button
+            type="button"
+            className="action dev-zoom-btn"
+            aria-label="Réinitialiser le zoom"
+            onClick={() => setZoom(resetBoardZoom())}
+          >
+            ↺
+          </button>
+        )}
+      </div>
       <div className="hud">
         <b>{state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
         <br />

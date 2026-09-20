@@ -70,6 +70,41 @@
   min-width: 150px;
 }
 
+/* Boutons audio : même rendu que .menu-item (pwa.css) — sans bordure, pour
+   rester homogène avec le reste du burger menu. */
+.audio-toggle,
+.audio-test-button {
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #0003;
+  color: var(--text);
+  font: 700 14px monospace;
+  letter-spacing: 1px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.audio-toggle:hover:not(:disabled),
+.audio-test-button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  transform: translateX(2px);
+}
+
+.audio-toggle:focus-visible,
+.audio-test-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.audio-toggle:active:not(:disabled),
+.audio-test-button:active:not(:disabled) {
+  transform: none;
+}
+
 .audio-volume {
   display: grid;
   grid-template-columns: auto minmax(120px, 1fr) auto;
