@@ -1,5 +1,8 @@
 import { useEffect } from "react";
-import { formatDebugCommands, type DebugCommand } from "../debug/CommandRecorder";
+import {
+  formatDebugCommands,
+  type DebugCommand,
+} from "../debug/CommandRecorder";
 
 const isDevtoolsEnabled = import.meta.env.VITE_ENABLE_DEVTOOLS === "true";
 

@@ -9,9 +9,7 @@ export const gestureDirections: Record<Direction, GameplayDirection> = {
   down: { x: 0, y: 1 },
 };
 
-export function toDebugDirection(
-  direction: GameplayDirection,
-): DebugDirection {
+export function toDebugDirection(direction: GameplayDirection): DebugDirection {
   return direction.x === 1
     ? "RIGHT"
     : direction.x === -1
