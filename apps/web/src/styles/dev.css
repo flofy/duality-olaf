@@ -448,6 +448,10 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
+  max-height: min(60dvh, 620px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2px 4px 12px 2px;
 }
 
 .generator-card {
