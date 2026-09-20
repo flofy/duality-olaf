@@ -1,7 +1,14 @@
 /* Animation des tuiles feu */
 @keyframes firePulse {
-  0%, 100% { transform: scale(0.94); filter: drop-shadow(0 0 3px #ff7a1877); }
-  50% { transform: scale(1.06); filter: drop-shadow(0 0 9px #ff7a18cc); }
+  0%,
+  100% {
+    transform: scale(0.94);
+    filter: drop-shadow(0 0 3px #ff7a1877);
+  }
+  50% {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 9px #ff7a18cc);
+  }
 }
 
 .fire-pulse {

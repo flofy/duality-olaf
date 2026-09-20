@@ -24,7 +24,10 @@ export function GameOverOverlay({
         aria-labelledby="gameover-title"
       >
         <h2 id="gameover-title">🔥 OUPS… AUX ENFERS !</h2>
-        <p>Cette forme a disparu dans les enfers. Elle a clairement pris le mauvais chemin…</p>
+        <p>
+          Cette forme a disparu dans les enfers. Elle a clairement pris le
+          mauvais chemin…
+        </p>
         <div className="modal-actions">
           <Button
             icon={<Reset size={18} />}
