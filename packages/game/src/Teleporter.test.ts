@@ -7,7 +7,13 @@ describe("teleporters", () => {
   it("teleports the active form when it lands on an entry", () => {
     const runner = new LevelRunner(teleporterTutorials[0]!);
     runner.move({ x: 1, y: 0 });
-    expect(runner.getState().ball).toEqual({ x: 9, y: 8 });
+    // Slides over pad A at (5,4), warps onto pad B at (9,8), then keeps
+    // sliding until the border wall stops it at (11,8).
+    expect(runner.getState().ball).toEqual({ x: 11, y: 8 });
+    expect(runner.getState().lastTeleport).toEqual({
+      from: { x: 5, y: 4 },
+      to: { x: 9, y: 8 },
+    });
   });
 
   it("collects a star at the teleporter exit", () => {
@@ -48,11 +54,11 @@ describe("teleporters", () => {
     };
 
     // Nothing blocks row 2 after the pad: under stop-only semantics the ball
-    // would glide to (11,2). Passing over pad A must warp it onto pad B and
-    // end the slide there.
+    // would glide to (11,2). Passing over pad A warps it onto pad B and the
+    // slide continues along row 7 until the border wall stops it at (11,7).
     const runner = new LevelRunner(level);
     runner.move({ x: 1, y: 0 });
-    expect(runner.getState().ball).toEqual({ x: 9, y: 7 });
+    expect(runner.getState().ball).toEqual({ x: 11, y: 7 });
     expect(runner.getState().lastTeleport).toEqual({
       from: { x: 5, y: 2 },
       to: { x: 9, y: 7 },

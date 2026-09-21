@@ -689,6 +689,135 @@ function replayOnLevel(
 }
 
 export function solveLevel(level: Level, options?: SolveOptions): SolverResult {
+  const result = solveLevelSearch(level, options);
+
+  // Campaign contract (World 5): the reported optimal solution should go
+  // through a teleporter whenever one exists at the same optimal length.
+  // The relaxed shortcut can otherwise return a warp-free route of equal
+  // cost, hiding the mechanic the level was designed around.
+  if (
+    result.solvable &&
+    (level.teleporters?.length ?? 0) > 0 &&
+    !replayWarps(level, result.commands)
+  ) {
+    const warping = findWarpingSolution(
+      level,
+      result.moves,
+      options?.maxExploredStates ?? DEFAULT_MAX_EXPLORED_STATES,
+    );
+    if (warping) {
+      return {
+        ...warping,
+        exploredStates: result.exploredStates + warping.exploredStates,
+      };
+    }
+  }
+
+  return result;
+}
+
+/** Does replaying the commands warp through a teleporter at least once? */
+function replayWarps(
+  level: Level,
+  commands: readonly SolverCommand[],
+): boolean {
+  const runner = new LevelRunner(level);
+  for (const command of commands) {
+    const state =
+      command.type === "move"
+        ? runner.move(command.direction)
+        : runner.switchForm();
+    if (state.lastTeleport) return true;
+  }
+  return false;
+}
+
+type WarpSearchNode = SearchNode & { warped: boolean };
+
+/**
+ * Bounded BFS over (state × warped) pairs looking for a solution that both
+ * completes within `maxDepth` moves and warps through a teleporter. Because
+ * nodes are explored in depth order, the first warping completion found is a
+ * shortest warping solution. Returns null when none exists or the
+ * exploration budget runs out — the caller then keeps the original solution.
+ */
+function findWarpingSolution(
+  level: Level,
+  maxDepth: number,
+  maxExplored: number,
+): SolverResult | null {
+  const initial = new LevelRunner(level).getState();
+  if (initial.completed) return null;
+
+  const baseKey = createBaseKey(level);
+  const starIndex = starIndexMap(level);
+  const visited = new Set<string>([
+    `${baseKey(initial)}|${remainingMask(starIndex, initial)}|0`,
+  ]);
+  const nodes: WarpSearchNode[] = [
+    { state: initial, parent: null, command: null, depth: 0, warped: false },
+  ];
+  const candidates: readonly SolverCommand[] = [
+    ...DIRECTIONS.map((direction) => ({ type: "move" as const, direction })),
+    { type: "switch" as const },
+  ];
+
+  let cursor = 0;
+  let exploredStates = 0;
+  while (cursor < nodes.length) {
+    const nodeIndex = cursor++;
+    const node = nodes[nodeIndex]!;
+    exploredStates += 1;
+    if (exploredStates > maxExplored) return null;
+    if (node.depth >= maxDepth) continue;
+
+    for (const command of candidates) {
+      const runner = LevelRunner.fromState(node.state);
+      const after =
+        command.type === "move"
+          ? runner.move(command.direction)
+          : runner.switchForm();
+      if (after.gameOver) continue;
+      const warped = node.warped || after.lastTeleport !== null;
+      if (after.completed) {
+        // A warp-free completion is not what this search is for; keep going.
+        if (!warped) continue;
+        const childIndex = nodes.length;
+        nodes.push({
+          state: after,
+          parent: nodeIndex,
+          command,
+          depth: node.depth + 1,
+          warped,
+        });
+        const commands = reconstruct(nodes, childIndex);
+        return {
+          solvable: true,
+          moves: commands.length,
+          commands,
+          exploredStates,
+        };
+      }
+
+      const key = `${baseKey(after)}|${remainingMask(starIndex, after)}|${
+        warped ? 1 : 0
+      }`;
+      if (visited.has(key)) continue;
+      visited.add(key);
+      nodes.push({
+        state: after,
+        parent: nodeIndex,
+        command,
+        depth: node.depth + 1,
+        warped,
+      });
+    }
+  }
+
+  return null;
+}
+
+function solveLevelSearch(level: Level, options?: SolveOptions): SolverResult {
   const hasAdvancedMechanics =
     (level.doors?.length ?? 0) > 0 || (level.teleporters?.length ?? 0) > 0;
 
