@@ -21,7 +21,7 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: `pnpm dev --port ${PORT} --strictPort`,
+        command: `pnpm dev --port ${PORT} --strictPort --host 127.0.0.1`,
     url: `http://127.0.0.1:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

@@ -1,8 +1,8 @@
 {
   "$schema": "./node_modules/knip/schema.json",
-  // `include` *replaces* knip's default issue types, and it is the only way to add `cycles`
-  // (circular dependencies), which is not part of the defaults. The list below therefore keeps
-  // every default issue type and appends `cycles`.
+  // `include` makes a type *reported*; the exit code depends on `rules`.
+  // `cycles` is not part of knip's defaults, so it must be listed here to be
+  // detected — it replaces the external `madge --circular` tool.
   "include": [
     "files",
     "dependencies",
@@ -22,13 +22,13 @@
     "catalogReferences",
     "cycles",
   ],
-  // `include` only makes a type *reported*; the exit code depends on `rules` (default for `cycles`
-  // is `warn`, which never fails the command). Promoting it to `error` makes `pnpm knip` a real CI
-  // gate for cycles, replacing `madge --circular`.
+  // The default for `cycles` is `warn` (which never fails the command).
+  // Promoting it to `error` makes `pnpm knip` a real CI gate for cycles,
+  // replacing `madge --circular`.
   "rules": {
     "cycles": "error",
   },
-  "workspaces": {
+    "workspaces": {
     "apps/web": {
       "entry": ["index.html"],
       "project": ["src/**/*.{ts,tsx}"],
