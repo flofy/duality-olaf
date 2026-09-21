@@ -1,41 +1,26 @@
 /* Animation des tuiles feu */
-@keyframes firePulse { 0%,100% { transform: scale(.94); filter: drop-shadow(0 0 3px #ff7a1877); } 50% { transform: scale(1.06); filter: drop-shadow(0 0 9px #ff7a18cc); } }
-.fire-pulse { animation: firePulse 900ms ease-in-out infinite; transform-origin: center bottom; }
-
+@keyframes firePulse { 0%,100% { transform:scale(.94);filter:drop-shadow(0 0 3px #ff7a1877); } 50% { transform:scale(1.06);filter:drop-shadow(0 0 9px #ff7a18cc); } }
+.fire-pulse { animation:firePulse 900ms ease-in-out infinite;transform-origin:center bottom; }
 /* Étoile : scintillement uniquement — aucune rotation. */
-@keyframes sparkle { 0%,100% { opacity:.88; transform:scale(.96); } 45% { opacity:1; transform:scale(1.05); } 70% { opacity:.94; transform:scale(1); } }
-.sparkle { animation:sparkle 1.7s ease-in-out infinite; transform-origin:center; }
-
-@keyframes starCollect { 0% { transform:scale(1);opacity:1; } 50% { transform:scale(1.5);opacity:.8; } 100% { transform:scale(1);opacity:0; } }
-.star.collected { animation:starCollect .5s ease forwards; }
-
-/* Personnages : petite respiration et squash/stretch arcade. */
-@keyframes characterIdle { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-1px) scale(1.025); } }
-.piece .svg-icon--ball,.piece .svg-icon--square { animation:characterIdle 1.7s ease-in-out infinite; transform-origin:center bottom; }
-
-@keyframes pieceMove { 0% { transform:scale(1,1); } 20% { transform:scale(1.10,.90); } 55% { transform:scale(.94,1.07); } 100% { transform:scale(1,1); } }
-.piece-moving { animation:pieceMove .28s cubic-bezier(.22,.8,.3,1); transform-origin:center bottom; }
-
-@keyframes fadeIn { from { opacity:0;transform:translateY(20px); } to { opacity:1;transform:translateY(0); } }
-.app-enter { animation:fadeIn .5s ease forwards; }
-@keyframes doorOpen { 0% { transform:scale(1);opacity:1; } 50% { transform:scale(1.1);opacity:.9; } 100% { transform:scale(1);opacity:1; } }
-.door-open { animation:doorOpen .3s ease; }
-@keyframes buttonHover { 0% { transform:scale(1); } 100% { transform:scale(1.05); } }
-button { transition:all .2s ease; } button:hover:not(:disabled) { animation:buttonHover .2s ease; }
-@keyframes slideIn { from { opacity:0;transform:translateX(-20px); } to { opacity:1;transform:translateX(0); } }
-.world-button,.level-button { animation:slideIn .3s ease forwards; }
-.world-button:nth-child(1){animation-delay:.1s}.world-button:nth-child(2){animation-delay:.2s}.world-button:nth-child(3){animation-delay:.3s}.world-button:nth-child(4){animation-delay:.4s}.world-button:nth-child(5){animation-delay:.5s}
-@keyframes teleporterPulse { 0%,100% { opacity:.8;transform:scale(1); } 50% { opacity:1;transform:scale(1.1); } }
-.teleporter-pulse { animation:teleporterPulse 2s infinite ease-in-out; }
-@keyframes switchPress { 0%{transform:scale(1)}50%{transform:scale(.95)}100%{transform:scale(1)} }
-.switch-tile:active { animation:switchPress .2s ease; }
-@keyframes overlayFadeIn { from { opacity:0;transform:scale(.9); } to { opacity:1;transform:scale(1); } }
-.overlay { animation:overlayFadeIn .3s ease forwards; }
-@keyframes dpadButtonPress { 0%{transform:scale(1)}50%{transform:scale(.95)}100%{transform:scale(1)} }
-.dpad-button:active,.center-dpad-button:active { animation:dpadButtonPress .2s ease; }
-@keyframes switchFormPulse { 0%,100%{transform:scale(1)}50%{transform:scale(1.1)} }
-.switch-toggle { transition:transform 120ms ease; } .switch-toggle:active { animation:switchFormPulse .3s ease; }
-
-@media (prefers-reduced-motion: reduce) {
-  .sparkle,.piece .svg-icon--ball,.piece .svg-icon--square,.fire-pulse,.piece-moving { animation:none; }
-}
+@keyframes sparkle { 0%,100% { opacity:.88;transform:scale(.96); } 45% { opacity:1;transform:scale(1.06); } 70% { opacity:.94;transform:scale(1); } }
+.sparkle { animation:sparkle 1.7s ease-in-out infinite;transform-origin:center; }
+@keyframes starCollect { 0%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.8}100%{transform:scale(1);opacity:0} }.star.collected{animation:starCollect .5s ease forwards}
+/* Personnages manga : yeux stylisés et petite bouche, sans modifier la hitbox. */
+.piece{isolation:isolate}
+.piece::after{content:"";position:absolute;z-index:4;pointer-events:none;width:42%;height:25%;left:29%;top:29%;background:radial-gradient(ellipse at 22% 50%,#172033 0 18%,transparent 20%),radial-gradient(ellipse at 78% 50%,#172033 0 18%,transparent 20%)}
+.piece::before{content:"";position:absolute;z-index:4;pointer-events:none;left:38%;width:24%;top:59%;height:9%;border-bottom:2px solid #172033;border-radius:0 0 50% 50%}
+.piece.square::after{width:40%;left:30%;top:28%;background:radial-gradient(ellipse at 22% 50%,#172033 0 16%,transparent 18%),radial-gradient(ellipse at 78% 50%,#172033 0 16%,transparent 18%)}
+.piece.square::before{left:37%;width:26%;top:58%}.piece.inactive::after,.piece.inactive::before{opacity:.55}
+@keyframes characterIdle{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.025)}}
+.piece .svg-icon--ball,.piece .svg-icon--square{animation:characterIdle 1.7s ease-in-out infinite;transform-origin:center bottom}
+@keyframes pieceMove{0%{transform:scale(1,1)}20%{transform:scale(1.10,.90)}55%{transform:scale(.94,1.07)}100%{transform:scale(1,1)}}.piece-moving{animation:pieceMove .28s cubic-bezier(.22,.8,.3,1);transform-origin:center bottom}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.app-enter{animation:fadeIn .5s ease forwards}
+@keyframes doorOpen{0%{transform:scale(1);opacity:1}50%{transform:scale(1.1);opacity:.9}100%{transform:scale(1);opacity:1}}.door-open{animation:doorOpen .3s ease}
+@keyframes buttonHover{0%{transform:scale(1)}100%{transform:scale(1.05)}}button{transition:all .2s ease}button:hover:not(:disabled){animation:buttonHover .2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}.world-button,.level-button{animation:slideIn .3s ease forwards}.world-button:nth-child(1){animation-delay:.1s}.world-button:nth-child(2){animation-delay:.2s}.world-button:nth-child(3){animation-delay:.3s}.world-button:nth-child(4){animation-delay:.4s}.world-button:nth-child(5){animation-delay:.5s}
+@keyframes teleporterPulse{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}.teleporter-pulse{animation:teleporterPulse 2s infinite ease-in-out}
+@keyframes switchPress{0%{transform:scale(1)}50%{transform:scale(.95)}100%{transform:scale(1)}}.switch-tile:active{animation:switchPress .2s ease}
+@keyframes overlayFadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}.overlay{animation:overlayFadeIn .3s ease forwards}
+@keyframes dpadButtonPress{0%{transform:scale(1)}50%{transform:scale(.95)}100%{transform:scale(1)}}.dpad-button:active,.center-dpad-button:active{animation:dpadButtonPress .2s ease}
+@keyframes switchFormPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}.switch-toggle{transition:transform 120ms ease}.switch-toggle:active{animation:switchFormPulse .3s ease}
+@media(prefers-reduced-motion:reduce){.sparkle,.piece .svg-icon--ball,.piece .svg-icon--square,.fire-pulse,.piece-moving{animation:none}}
