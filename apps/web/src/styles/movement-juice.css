@@ -1,0 +1,46 @@
+/* Continuous movement juice: anticipation + squash/stretch + wave. */
+@keyframes pieceMoveWave {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1, 1);
+  }
+  18% {
+    transform: translate3d(-1px, 1px, 0) scale(1.08, 0.92);
+  }
+  42% {
+    transform: translate3d(1px, -1px, 0) scale(0.96, 1.06);
+  }
+  68% {
+    transform: translate3d(-0.5px, 0, 0) scale(1.03, 0.98);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1, 1);
+  }
+}
+.piece-moving {
+  animation: pieceMoveWave 0.32s cubic-bezier(0.22, 0.8, 0.32, 1);
+  transform-origin: center bottom;
+}
+
+/* Star: breathe, never spin. */
+@keyframes starBreathe {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: scale(0.97);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+.sparkle {
+  animation: starBreathe 1.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piece-moving,
+  .sparkle {
+    animation: none;
+  }
+}
