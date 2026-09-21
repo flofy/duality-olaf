@@ -86,10 +86,7 @@ test("level-lab: le catalogue /dev/levels scrolle sur desktop", async ({
   }
   await expect
     .poll(
-      async () =>
-        shell.evaluate(
-          (el) => el.scrollHeight - el.clientHeight,
-        ),
+      async () => shell.evaluate((el) => el.scrollHeight - el.clientHeight),
       { timeout: 5_000 },
     )
     .toBeGreaterThan(40);

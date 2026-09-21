@@ -453,7 +453,9 @@ export function LabGame({
         onPointerDown={(event) => {
           const target = event.target as HTMLElement;
           const interactive = Boolean(
-            target.closest('button, a, input, textarea, select, [role="dialog"]'),
+            target.closest(
+              'button, a, input, textarea, select, [role="dialog"]',
+            ),
           );
           setGestureStart({ x: event.clientX, y: event.clientY, interactive });
         }}
