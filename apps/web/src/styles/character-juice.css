@@ -1,0 +1,6 @@
+/* Character presentation: arcade-style personality without changing gameplay. */
+.ball .svg-icon--ball,.square .svg-icon--square { filter:drop-shadow(0 3px 3px #0005); }
+.ball::after,.square::after { content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-42%);width:42%;height:18%;pointer-events:none; }
+.ball::after { border-radius:50%;background:radial-gradient(circle at 30% 50%,#fff 0 14%,#1b3555 16% 25%,transparent 27%),radial-gradient(circle at 70% 50%,#fff 0 14%,#1b3555 16% 25%,transparent 27%); }
+.square::after { border-radius:4px;background:radial-gradient(circle at 30% 50%,#fff 0 14%,#5a4310 16% 25%,transparent 27%),radial-gradient(circle at 70% 50%,#fff 0 14%,#5a4310 16% 25%,transparent 27%); }
+.star-container .svg-icon--star { filter:drop-shadow(0 0 5px color-mix(in srgb,var(--star) 70%,transparent)); }
