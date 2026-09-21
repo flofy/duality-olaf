@@ -9,6 +9,14 @@ export {
   formatCampaignReport,
 } from "./LevelValidator";
 export type { LevelValidation, CampaignValidation } from "./LevelValidator";
+export {
+  analyzeLevelGameplay,
+  gameplaySignature,
+} from "./LevelGameplaySignature";
+export type {
+  GameplaySignatureOptions,
+  LevelGameplayAnalysis,
+} from "./LevelGameplaySignature";
 
 export { generateChallenge } from "./ChallengeGenerator";
 export type {

@@ -1,4 +1,5 @@
 import type { Level, Position } from "@duality/level-format";
+import { analyzeLevelGameplay } from "@duality/game";
 
 export type GeneratorOptions = {
   seed: number;
@@ -119,27 +120,46 @@ export function generateLevel(options: GeneratorOptions): GeneratedLevel {
   };
 }
 
+/**
+ * Generate a batch of solvable candidates with distinct gameplay structures.
+ *
+ * Raw grid geometry is intentionally not used as the only deduplication key:
+ * continuous movement means that an arbitrarily long empty corridor is still
+ * one movement decision. The solver's command sequence therefore provides the
+ * useful diversity signal, with rotations/reflections canonicalized by the
+ * gameplay signature.
+ */
 export function generateCandidates(
   options: GeneratorOptions,
   count = 8,
 ): GeneratedLevel[] {
   const candidates: GeneratedLevel[] = [];
-  const seen = new Set<string>();
+  const seenGeometry = new Set<string>();
+  const seenGameplay = new Set<string>();
   let seed = options.seed | 0;
   let attempts = 0;
+  const maxAttempts = count * 120;
 
-  while (candidates.length < count && attempts < count * 80) {
+  while (candidates.length < count && attempts < maxAttempts) {
     const level = generateLevel({ ...options, seed });
-    const signature = JSON.stringify([
+    const geometrySignature = JSON.stringify([
       level.tiles,
       level.ball,
       level.square,
       level.stars,
     ]);
-    if (!seen.has(signature)) {
-      seen.add(signature);
-      candidates.push(level);
+
+    if (!seenGeometry.has(geometrySignature)) {
+      seenGeometry.add(geometrySignature);
+      const analysis = analyzeLevelGameplay(level);
+      if (analysis.solvable && analysis.signature) {
+        if (!seenGameplay.has(analysis.signature)) {
+          seenGameplay.add(analysis.signature);
+          candidates.push(level);
+        }
+      }
     }
+
     seed = (seed + 0x6d2b79f5) | 0;
     attempts += 1;
   }
