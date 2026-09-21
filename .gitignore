@@ -1,18 +1,42 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
 build/
-coverage/
-.cache/
-.vite/
-.DS_Store
-*.log
 *.tsbuildinfo
 
-# Local environment overrides (keep .env committed; ignore local overrides)
+# Test coverage
+coverage/
+
+# End-to-end (Playwright) artifacts
+playwright-report/
+test-results/
+blob-report/
+
+# Knip
+.knip/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
 .env.local
 .env.*.local
 
-# Local historical binaries / extracted reference material
-reference/**/*.nds
-reference/**/*.bin
-data/extracted/
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Cache
+.cache/
+.pnpm-store/

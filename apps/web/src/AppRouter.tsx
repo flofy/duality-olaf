@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type ReactNode,
-} from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import {
@@ -16,23 +10,19 @@ import {
   useParams,
 } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { campaign, worlds } from "./levels/campaign";
-import {
-  getCompletedCount,
-  getNextWorld,
-  isLevelCompleted,
-  isWorldCompleted,
-  isWorldUnlocked,
-} from "./progression";
+import { worlds } from "./levels/campaign";
+import { isLevelCompleted, isWorldUnlocked } from "./progression";
 import { getTheme, hexToCss } from "./theme";
 import { LevelCatalogue, LevelPlayground } from "./LevelLab";
 import { LevelEditor } from "./LevelEditor";
 import { LevelGenerator } from "./LevelGenerator";
 import { Game } from "./GameScreen";
-import { Button } from "./components/Button";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { BurgerMenu } from "./BurgerMenu";
-import { ArrowLeft, ArrowRight, Help as HelpIcon } from "./components/Icons";
+import { Intro } from "./components/Intro";
+import { Menu } from "./components/Menu";
+import { WorldLevels } from "./components/WorldLevels";
+import { Help } from "./components/Help";
 
 import "./style.css";
 
@@ -110,226 +100,6 @@ function AppLayout() {
         onClose={() => setMenuOpen(false)}
       />
     </main>
-  );
-}
-
-function Intro() {
-  const navigate = useNavigate();
-  const [leaving, setLeaving] = useState(false);
-
-  const continueIntro = () => {
-    if (leaving) return;
-    setLeaving(true);
-    window.setTimeout(() => navigate("/menu"), 420);
-  };
-
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        continueIntro();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  });
-
-  return (
-    <section
-      className={`intro ${leaving ? "intro-leaving" : ""}`}
-      onClick={continueIntro}
-      role="button"
-      tabIndex={0}
-      aria-label="Entrer dans Duality"
-    >
-      <div className="intro-grid" />
-      <div className="intro-logo">
-        <span className="intro-ball">●</span>
-        <span>DUALITY</span>
-        <span className="intro-square">■</span>
-      </div>
-      <p className="intro-tagline">DEUX FORMES · UN SEUL CHEMIN</p>
-      <div className="intro-demo">
-        <div className="intro-track">
-          <span className="intro-demo-ball">●</span>
-          <span className="intro-star">★</span>
-          <span className="intro-demo-square">■</span>
-        </div>
-        <span className="intro-switch">● ⇄ ■</span>
-      </div>
-      <Button
-        icon={<ArrowRight size={20} />}
-        label="JOUER"
-        onClick={(event) => {
-          event.stopPropagation();
-          continueIntro();
-        }}
-        className="intro-start"
-        variant="primary"
-      />
-      <span className="intro-hint">ENTRÉE · ESPACE · CLIQUER</span>
-    </section>
-  );
-}
-
-function Menu() {
-  const navigate = useNavigate();
-
-  return (
-    <section className="menu">
-      <h1 className="title">DUALITY</h1>
-      <div className="subtitle">CHOISIS TON MONDE</div>
-      <div className="world-list">
-        {worlds.map((world) => {
-          const done = world.levels.filter((level) =>
-            isLevelCompleted(level.id),
-          ).length;
-          // Un monde ne s'ouvre qu'une fois le précédent entièrement terminé.
-          const unlocked =
-            world.status === "available" && isWorldUnlocked(world.id);
-          const meta =
-            world.status !== "available"
-              ? `${world.subtitle} • BIENTÔT`
-              : !unlocked
-                ? `${world.subtitle} • 🔒 FINIS LE MONDE ${world.id - 1}`
-                : done === world.levels.length
-                  ? `${world.subtitle} • ✓ TERMINÉ`
-                  : `${world.subtitle} • ${done}/${world.levels.length}`;
-          return (
-            <div key={world.id} style={{ position: "relative" }}>
-              <Button
-                icon={<ArrowRight size={20} />}
-                label={`MONDE ${world.id} — ${world.name.toUpperCase()}`}
-                onClick={() => navigate(`/world/${world.id}`)}
-                disabled={!unlocked}
-                variant="primary"
-                className="world-button"
-              />
-              <div className="world-meta">{meta}</div>
-            </div>
-          );
-        })}
-      </div>
-      <p className="muted">
-        {getCompletedCount()} terminé(s) · {campaign.length} jouables
-      </p>
-      <div className="modal-actions">
-        <Button
-          icon={<HelpIcon size={18} />}
-          label="AIDE"
-          onClick={() => navigate("/help")}
-          variant="secondary"
-        />
-        {isLevelLabEnabled && (
-          <button
-            className="action dev-entry"
-            onClick={() => navigate("/dev/levels")}
-          >
-            🧪 LEVEL LAB
-          </button>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function WorldLevels() {
-  const navigate = useNavigate();
-  const { worldId } = useParams();
-  const id = Number(worldId);
-  const world = worlds.find((item) => item.id === id);
-
-  if (!world) return <Navigate to="/menu" replace />;
-  if (world.status !== "available") return <Navigate to="/menu" replace />;
-  if (!isWorldUnlocked(world.id)) return <Navigate to="/menu" replace />;
-
-  const completed = isWorldCompleted(world.id);
-  const nextWorld = completed ? getNextWorld(world.id) : null;
-
-  return (
-    <section className="menu">
-      <div className="topbar">
-        <Button
-          icon={<ArrowLeft size={18} />}
-          label="MONDES"
-          onClick={() => navigate("/menu")}
-          variant="secondary"
-        />
-        <b>MONDE {world.id}</b>
-      </div>
-      <h2 className="subtitle">{world.name.toUpperCase()}</h2>
-      <div className="levels">
-        {world.levels.map((level, index) => {
-          const unlocked =
-            index === 0 || isLevelCompleted(world.levels[index - 1].id);
-          const done = isLevelCompleted(level.id);
-          return (
-            <button
-              className="level-button"
-              disabled={!unlocked}
-              onClick={() => navigate(`/world/${world.id}/level/${level.id}`)}
-              key={level.id}
-            >
-              {done
-                ? "✓"
-                : unlocked
-                  ? String(index + 1).padStart(2, "0")
-                  : "🔒"}
-            </button>
-          );
-        })}
-      </div>
-      {/* Le passage au monde suivant apparaît dès que celui-ci est terminé. */}
-      {nextWorld && (
-        <Button
-          icon={<ArrowRight size={18} />}
-          label={`MONDE ${nextWorld.id} · ${nextWorld.name.toUpperCase()}`}
-          onClick={() => navigate(`/world/${nextWorld.id}`)}
-          variant="primary"
-          className="world-next"
-        />
-      )}
-    </section>
-  );
-}
-
-function Help() {
-  const navigate = useNavigate();
-  const rules: [string, string][] = [
-    [
-      "SE DÉPLACER",
-      "La forme active glisse jusqu'à rencontrer un mur ou l'autre forme.",
-    ],
-    ["CHANGER", "ESPACE ou ● ⇄ ■ choisit la forme active."],
-    ["BLOQUER", "La boule et le carré peuvent se servir mutuellement de mur."],
-    [
-      "PORTES",
-      "Une porte bloque le passage tant qu'un interrupteur lié ne l'a pas ouverte.",
-    ],
-    [
-      "TÉLÉPORTER",
-      "Atterris sur un portail pour ressortir par son portail associé.",
-    ],
-    ["OBJECTIF", "Ramasse toutes les étoiles ★ pour terminer."],
-    ["RACCOURCIS", "R recommence · ÉCHAP menu · ENTRÉE suivant."],
-  ];
-
-  return (
-    <section className="help">
-      <Button
-        icon={<ArrowLeft size={18} />}
-        label="RETOUR"
-        onClick={() => navigate("/menu")}
-        variant="secondary"
-      />
-      <h1 className="title">COMMENT JOUER ?</h1>
-      {rules.map(([title, text]) => (
-        <section key={title}>
-          <b className="subtitle">{title}</b>
-          <p>{text}</p>
-        </section>
-      ))}
-    </section>
   );
 }
 

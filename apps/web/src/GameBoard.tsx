@@ -18,7 +18,7 @@ export function switchGlyph(form: Switch["form"]): string {
   return "⌁";
 }
 
-export type GameBoardProps = {
+type GameBoardProps = {
   level: Level;
   state: GameState;
   skin: string;

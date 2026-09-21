@@ -4,7 +4,7 @@ import {
   type SeasonalTheme,
 } from "@duality/level-format";
 
-export type LevelSkin = "default" | SeasonalTheme;
+type LevelSkin = "default" | SeasonalTheme;
 export type SkinPreference = "auto" | LevelSkin;
 
 const STORAGE_KEY = "duality.skin.v1";
@@ -39,7 +39,7 @@ export function setSkinPreference(preference: SkinPreference): void {
 }
 
 /** Seasonal overrides are only selectable while their event is active. */
-export function isSkinAvailable(skin: LevelSkin, date = new Date()): boolean {
+function isSkinAvailable(skin: LevelSkin, date = new Date()): boolean {
   if (skin === "default") return true;
   const event = seasonalEvents.find((item) => item.theme === skin);
   return event ? isSeasonalEventAvailable(event, date) : false;
@@ -64,14 +64,14 @@ export function normalizeSkinPreference(
     : "auto";
 }
 
-export function getExplicitLevelSkin(levelId: string): LevelSkin | null {
+function getExplicitLevelSkin(levelId: string): LevelSkin | null {
   const event = seasonalEvents.find((item) =>
     item.levels.some((level) => level.id === levelId),
   );
   return event?.theme ?? null;
 }
 
-export function getSeasonalSkin(date = new Date()): LevelSkin {
+function getSeasonalSkin(date = new Date()): LevelSkin {
   const event = seasonalEvents.find((item) =>
     isSeasonalEventAvailable(item, date),
   );

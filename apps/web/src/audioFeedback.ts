@@ -127,7 +127,7 @@ function noise(duration: number, volume = 0.06) {
   source.start(start);
 }
 
-export type SoundEffect =
+type SoundEffect =
   | "move"
   | "wall"
   | "switch"
@@ -267,7 +267,7 @@ export function setAmbientEnabled(enabled: boolean) {
   }
 }
 
-export function toggleAmbient() {
+function toggleAmbient() {
   const enabled = !isAmbientEnabled();
   setAmbientEnabled(enabled);
   return enabled;
@@ -281,13 +281,13 @@ export function setHapticEnabled(enabled: boolean) {
   writeValue(HAPTIC_KEY, String(enabled));
 }
 
-export function toggleHaptic() {
+function toggleHaptic() {
   const enabled = !isHapticEnabled();
   setHapticEnabled(enabled);
   return enabled;
 }
 
-export function stopAudio() {
+function stopAudio() {
   if (musicTimer !== null) {
     window.clearInterval(musicTimer);
     musicTimer = null;

@@ -15,7 +15,7 @@ type LevelEditorToolDefinition = {
   glyph: string;
 };
 
-export const levelEditorTools: LevelEditorToolDefinition[] = [
+const levelEditorTools: LevelEditorToolDefinition[] = [
   { id: "empty", label: "Case vide", glyph: "·" },
   { id: "wall", label: "Mur", glyph: "■" },
   { id: "spike", label: "Feu", glyph: "🔥" },

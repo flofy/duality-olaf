@@ -27,7 +27,7 @@ export type SolverResult =
       budgetExhausted?: boolean;
     };
 
-export type SolveOptions = {
+type SolveOptions = {
   /** Maximum solution length (inclusive). */
   maxDepth?: number;
   /**

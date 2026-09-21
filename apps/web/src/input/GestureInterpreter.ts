@@ -1,11 +1,11 @@
 export type Direction = "left" | "right" | "up" | "down";
 
-export interface Point {
+interface Point {
   x: number;
   y: number;
 }
 
-export interface GestureResult {
+interface GestureResult {
   type: "swipe" | "tap";
   direction?: Direction;
 }

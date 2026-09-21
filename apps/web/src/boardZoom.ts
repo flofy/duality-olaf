@@ -4,9 +4,9 @@ export type BoardZoom = number;
 
 const STORAGE_KEY = "duality.board-zoom.v1";
 export const DEFAULT_BOARD_ZOOM: BoardZoom = 1;
-export const BOARD_ZOOM_MIN: BoardZoom = 0.5;
-export const BOARD_ZOOM_MAX: BoardZoom = 2;
-export const BOARD_ZOOM_STEP: BoardZoom = 0.25;
+const BOARD_ZOOM_MIN: BoardZoom = 0.5;
+const BOARD_ZOOM_MAX: BoardZoom = 2;
+const BOARD_ZOOM_STEP: BoardZoom = 0.25;
 
 function clampZoom(value: BoardZoom): BoardZoom {
   return Math.min(
@@ -33,7 +33,7 @@ export function getBoardZoom(): BoardZoom {
   return readStoredZoom();
 }
 
-export function setBoardZoom(zoom: BoardZoom): void {
+function setBoardZoom(zoom: BoardZoom): void {
   try {
     localStorage.setItem(STORAGE_KEY, String(clampZoom(zoom)));
   } catch {
@@ -42,7 +42,7 @@ export function setBoardZoom(zoom: BoardZoom): void {
 }
 
 /** Multiply the current zoom by a factor, keeping it in bounds. */
-export function scaleBoardZoom(factor: number): BoardZoom {
+function scaleBoardZoom(factor: number): BoardZoom {
   const next = clampZoom(readStoredZoom() * factor);
   setBoardZoom(next);
   return next;

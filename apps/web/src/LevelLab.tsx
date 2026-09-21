@@ -32,7 +32,7 @@ import {
 } from "./boardZoom";
 import type { BoardZoom } from "./boardZoom";
 
-export type GameOverOverlayProps = {
+type GameOverOverlayProps = {
   type: "completed" | "gameOver" | null;
   moves?: number;
   optimalMoves?: number;
@@ -40,7 +40,7 @@ export type GameOverOverlayProps = {
   onBackToGenerator?: () => void;
 };
 
-export function GameOverOverlay({
+function GameOverOverlay({
   type,
   moves,
   optimalMoves,
@@ -77,18 +77,18 @@ export function GameOverOverlay({
   );
 }
 
-export type CatalogueEntry = {
+type CatalogueEntry = {
   id: string;
   label: string;
   level: Level;
 };
 
-export type CatalogueGroup = {
+type CatalogueGroup = {
   label: string;
   entries: CatalogueEntry[];
 };
 
-export const allDevLevels: readonly Level[] = [
+const allDevLevels: readonly Level[] = [
   ...campaign,
   ...doorSwitchTutorials,
   ...teleporterTutorials,
@@ -100,7 +100,7 @@ export const devLevelById: ReadonlyMap<string, Level> = new Map(
   allDevLevels.map((level) => [level.id, level]),
 );
 
-export function levelDisplayLabel(level: Level): string {
+function levelDisplayLabel(level: Level): string {
   for (const world of worlds) {
     const index = world.levels.findIndex((l) => l.id === level.id);
     if (index >= 0)
@@ -444,31 +444,35 @@ export function LabGame({
   }, [onCompletionChange, state.completed, state.moves]);
 
   return (
-    <div
-      className="dev-board"
+    <section
+      className="dev-playground-board"
       style={{ "--board-zoom": zoom } as CSSProperties}
-      onPointerDown={(event) => {
-        const target = event.target as HTMLElement;
-        const interactive = Boolean(
-          target.closest('button, a, input, textarea, select, [role="dialog"]'),
-        );
-        setGestureStart({ x: event.clientX, y: event.clientY, interactive });
-      }}
-      onPointerUp={(event) => {
-        if (!gestureStart) return;
-        const result = interpretGesture(
-          gestureStart,
-          { x: event.clientX, y: event.clientY },
-          24,
-        );
-        const wasInteractive = gestureStart.interactive;
-        setGestureStart(null);
-        if (!wasInteractive && result.type === "swipe" && result.direction) {
-          move(gestureDirections[result.direction]);
-        }
-      }}
     >
-      <div className="board-wrap">
+      <div
+        className="board-wrap"
+        onPointerDown={(event) => {
+          const target = event.target as HTMLElement;
+          const interactive = Boolean(
+            target.closest(
+              'button, a, input, textarea, select, [role="dialog"]',
+            ),
+          );
+          setGestureStart({ x: event.clientX, y: event.clientY, interactive });
+        }}
+        onPointerUp={(event) => {
+          if (!gestureStart) return;
+          const result = interpretGesture(
+            gestureStart,
+            { x: event.clientX, y: event.clientY },
+            24,
+          );
+          const wasInteractive = gestureStart.interactive;
+          setGestureStart(null);
+          if (!wasInteractive && result.type === "swipe" && result.direction) {
+            move(gestureDirections[result.direction]);
+          }
+        }}
+      >
         <GameBoard
           level={level}
           state={state}
@@ -538,6 +542,6 @@ export function LabGame({
           CHANGER
         </button>
       </div>
-    </div>
+    </section>
   );
 }

@@ -1,7 +1,7 @@
 import type { Level } from "@duality/level-format";
 import { solveLevel, type SolverResult } from "./LevelSolver";
 
-export type DifficultyMetrics = {
+type DifficultyMetrics = {
   moves: number;
   exploredStates: number;
   score: number;

@@ -98,6 +98,23 @@
 
 /* ── Miniatures ───────────────────────────────────────────────── */
 
+.gen-board .board-wrap {
+  /* La vue generator (miniatures des niveaux générés) ne doit pas
+     introduire de scrollbar quand on survole. */
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* ── Playground (/dev/levels/:levelId) ───────────────────────── */
+
+/* La grille peut être zoomée et dépasser du viewport, on autorise le
+   scroll confiné au board-wrap. `overscroll-behavior: contain` empêche
+   le scroll de "fuir" vers le document parent. */
+.dev-playground-board .board-wrap {
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
 .dev-catalogue-thumb-wrap {
   position: relative;
 }

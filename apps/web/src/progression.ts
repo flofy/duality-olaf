@@ -38,7 +38,7 @@ export function completeLevel(levelId: string): void {
   }
 }
 
-export function resetProgress(): void {
+function resetProgress(): void {
   localStorage.removeItem(STORAGE_KEY);
 }
 
