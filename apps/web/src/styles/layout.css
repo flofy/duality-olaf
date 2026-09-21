@@ -67,6 +67,20 @@
   max-width: none;
 }
 
+/* Level Lab (routes /dev/*) : pages documentaires longues, scroll de page
+   nécessaire sur desktop aussi (le mobile est couvert par responsive.css).
+   Sans ça, .app (overflow: hidden, height: 100dvh) + .shell (max-height: 100%
+   sans overflow) clippent le contenu qui dépasse du viewport. Ciblé aux pages
+   dev pour ne pas changer le comportement du jeu (plein écran, overflow
+   hidden voulu). */
+.shell:has(> .dev-catalogue),
+.shell:has(> .dev-generator),
+.shell:has(> .dev-playground),
+.shell:has(> .dev-editor) {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .game {
   border: 0;
   border-radius: 0;

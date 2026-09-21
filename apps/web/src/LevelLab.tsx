@@ -444,31 +444,33 @@ export function LabGame({
   }, [onCompletionChange, state.completed, state.moves]);
 
   return (
-    <div
-      className="dev-board"
+    <section
+      className="dev-playground-board"
       style={{ "--board-zoom": zoom } as CSSProperties}
-      onPointerDown={(event) => {
-        const target = event.target as HTMLElement;
-        const interactive = Boolean(
-          target.closest('button, a, input, textarea, select, [role="dialog"]'),
-        );
-        setGestureStart({ x: event.clientX, y: event.clientY, interactive });
-      }}
-      onPointerUp={(event) => {
-        if (!gestureStart) return;
-        const result = interpretGesture(
-          gestureStart,
-          { x: event.clientX, y: event.clientY },
-          24,
-        );
-        const wasInteractive = gestureStart.interactive;
-        setGestureStart(null);
-        if (!wasInteractive && result.type === "swipe" && result.direction) {
-          move(gestureDirections[result.direction]);
-        }
-      }}
     >
-      <div className="board-wrap">
+      <div
+        className="board-wrap"
+        onPointerDown={(event) => {
+          const target = event.target as HTMLElement;
+          const interactive = Boolean(
+            target.closest('button, a, input, textarea, select, [role="dialog"]'),
+          );
+          setGestureStart({ x: event.clientX, y: event.clientY, interactive });
+        }}
+        onPointerUp={(event) => {
+          if (!gestureStart) return;
+          const result = interpretGesture(
+            gestureStart,
+            { x: event.clientX, y: event.clientY },
+            24,
+          );
+          const wasInteractive = gestureStart.interactive;
+          setGestureStart(null);
+          if (!wasInteractive && result.type === "swipe" && result.direction) {
+            move(gestureDirections[result.direction]);
+          }
+        }}
+      >
         <GameBoard
           level={level}
           state={state}
@@ -538,6 +540,6 @@ export function LabGame({
           CHANGER
         </button>
       </div>
-    </div>
+    </section>
   );
 }

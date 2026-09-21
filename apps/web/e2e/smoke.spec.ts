@@ -62,3 +62,58 @@ test("smoke: navigate from intro to level 1 and complete it", async ({
   await expect(page).toHaveURL(/\/world\/1$/);
   await expect(page.locator(".level-button").first()).toHaveText("✓");
 });
+
+test("level-lab: le catalogue /dev/levels scrolle sur desktop", async ({
+  page,
+}) => {
+  // Régression desktop : .app est en overflow:hidden + height:100dvh et .shell
+  // en max-height:100% sans overflow → le contenu long du catalogue était
+  // clippé, sans aucun scroll possible. Le correctif (layout.css) ajoute
+  // overflow-y:auto sur .shell pour les routes /dev/*. On vérifie ici qu'un
+  // scroll vertical existe vraiment (scrollHeight > clientHeight) et que le
+  // scrollTop bouge.
+  await page.goto("/dev/levels");
+  const shell = page.locator(".shell");
+  await expect(shell).toBeVisible();
+
+  // Le catalogue est replié par défaut : on déplie un groupe pour que le
+  // contenu dépasse du viewport desktop (1280x720), condition nécessaire
+  // pour exercer le scroll.
+  const firstGroup = page.locator(".dev-catalogue-group").first();
+  await expect(firstGroup).toBeVisible();
+  if ((await firstGroup.getAttribute("aria-expanded")) !== "true") {
+    await firstGroup.click();
+  }
+  await expect
+    .poll(
+      async () =>
+        shell.evaluate(
+          (el) => el.scrollHeight - el.clientHeight,
+        ),
+      { timeout: 5_000 },
+    )
+    .toBeGreaterThan(40);
+
+  const scrollable = await shell.evaluate((el) => {
+    const style = getComputedStyle(el);
+    const canScrollY =
+      (style.overflowY === "auto" || style.overflowY === "scroll") &&
+      el.scrollHeight - el.clientHeight > 40;
+    return {
+      overflowY: style.overflowY,
+      scrollHeight: el.scrollHeight,
+      clientHeight: el.clientHeight,
+      canScrollY,
+    };
+  });
+  expect(
+    scrollable,
+    `le catalogue devrait scroller (overflowY=${scrollable.overflowY}, scrollH=${scrollable.scrollHeight}, clientH=${scrollable.clientHeight})`,
+  ).toMatchObject({ canScrollY: true });
+
+  // Le scroll fonctionne réellement : scrollTop augmente après scrollTo bas.
+  const topBefore = await shell.evaluate((el) => el.scrollTop);
+  await shell.evaluate((el) => el.scrollTo(0, el.scrollHeight));
+  const topAfter = await shell.evaluate((el) => el.scrollTop);
+  expect(topAfter).toBeGreaterThan(topBefore);
+});
