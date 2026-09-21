@@ -28,7 +28,7 @@
   "rules": {
     "cycles": "error",
   },
-    "workspaces": {
+  "workspaces": {
     "apps/web": {
       "entry": ["index.html"],
       "project": ["src/**/*.{ts,tsx}"],

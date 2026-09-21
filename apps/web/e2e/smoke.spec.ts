@@ -53,7 +53,9 @@ test("smoke: navigate from intro to level 1 and complete it", async ({
   // --- Victoire ---
   // L'overlay de complétion apparaît.
   await expect(page.locator(".overlay")).toBeVisible({ timeout: 2_000 });
-  await expect(page.locator(".overlay")).toContainText(/félicitations|terminé|réussi/i);
+  await expect(page.locator(".overlay")).toContainText(
+    /félicitations|terminé|réussi/i,
+  );
 
   // La progression est enregistrée : le niveau apparaît comme terminé (✓) en revenant.
   await page.keyboard.press("Escape");

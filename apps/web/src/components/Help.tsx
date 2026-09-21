@@ -3,10 +3,7 @@ import { ArrowLeft } from "./Icons";
 import { Button } from "./Button";
 
 const rules: [string, string][] = [
-  [
-    "BALLE",
-    "Déplace la balle avec les flèches ou en glissant sur mobile.",
-  ],
+  ["BALLE", "Déplace la balle avec les flèches ou en glissant sur mobile."],
   [
     "FORME",
     "Appuie sur ENTRÉE (ou le bouton carré) pour changer de forme entre balle et carré.",

@@ -11,10 +11,7 @@ import {
 } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { worlds } from "./levels/campaign";
-import {
-  isLevelCompleted,
-  isWorldUnlocked,
-} from "./progression";
+import { isLevelCompleted, isWorldUnlocked } from "./progression";
 import { getTheme, hexToCss } from "./theme";
 import { LevelCatalogue, LevelPlayground } from "./LevelLab";
 import { LevelEditor } from "./LevelEditor";
@@ -105,7 +102,6 @@ function AppLayout() {
     </main>
   );
 }
-
 
 function ProtectedLevel() {
   const { worldId, levelId } = useParams();
