@@ -73,23 +73,20 @@ html[data-board-display="fill"] .game .board {
   z-index: 1;
 }
 
-.spike {
+.fire-container {
   width: var(--tile);
   height: var(--tile);
   display: grid;
   place-items: center;
-  color: var(--accent);
-  font-size: calc(var(--tile) * 0.58);
-  line-height: 1;
-  text-shadow: 0 2px 3px #0008;
   z-index: 1;
   pointer-events: none;
+  background: radial-gradient(circle, #ff7a1833 0 35%, transparent 70%);
 }
 
-.spike::before {
-  content: "▲▲▲";
-  transform: translateY(4%);
-  letter-spacing: calc(var(--tile) * -0.12);
+.fire-container svg {
+  width: 72%;
+  height: 72%;
+  filter: drop-shadow(0 0 5px #ff7a18aa);
 }
 
 .star {

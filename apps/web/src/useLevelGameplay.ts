@@ -69,6 +69,10 @@ export function useLevelGameplay(
           void playSound("teleport");
           vibrate([8, 20, 8]);
         }
+        if (next.gameOver) {
+          void playSound("burn");
+          vibrate([30, 45, 70]);
+        }
         if (next.completed) {
           void playSound("complete");
           vibrate([18, 30, 45]);

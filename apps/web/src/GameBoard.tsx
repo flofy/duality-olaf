@@ -3,7 +3,7 @@ import { isInside, type Level, type Switch } from "@duality/level-format";
 import type { CSSProperties, ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
 import {
-  Spike,
+  Fire,
   Ball,
   Square,
   Star,
@@ -57,14 +57,14 @@ export function GameBoard({
             />
           ) : tile === "spike" ? (
             <div
-              className="spike-container"
+              className="fire-container"
               style={{ gridColumn: x + 1, gridRow: y + 1 }}
-              key={`spike-${x}-${y}`}
+              key={`fire-${x}-${y}`}
             >
-              <Spike
-                size={20}
-                color={hexToCss(themes[themeName].wall)}
-                className="svg-icon svg-icon--spike spike-pulse"
+              <Fire
+                size={24}
+                color="#ff7a18"
+                className="svg-icon svg-icon--fire fire-pulse"
               />
             </div>
           ) : (

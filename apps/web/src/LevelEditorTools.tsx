@@ -18,7 +18,7 @@ type LevelEditorToolDefinition = {
 export const levelEditorTools: LevelEditorToolDefinition[] = [
   { id: "empty", label: "Case vide", glyph: "·" },
   { id: "wall", label: "Mur", glyph: "■" },
-  { id: "spike", label: "Piques", glyph: "▲" },
+  { id: "spike", label: "Feu", glyph: "🔥" },
   { id: "star", label: "Étoile", glyph: "★" },
   { id: "ball", label: "Balle", glyph: "●" },
   { id: "square", label: "Carré (re-clic pour retirer)", glyph: "■" },

@@ -135,7 +135,8 @@ export type SoundEffect =
   | "door"
   | "teleport"
   | "complete"
-  | "reset";
+  | "reset"
+  | "burn";
 
 export async function startAudio() {
   if (!isEnabled()) return;
@@ -191,6 +192,11 @@ export async function playSound(effect: SoundEffect) {
     case "reset":
       tone(392, 0.08, "sine", 0.035);
       tone(261.63, 0.1, "sine", 0.03, 0.05);
+      break;
+    case "burn":
+      tone(180, 0.18, "sawtooth", 0.06);
+      tone(110, 0.28, "triangle", 0.07, 0.08);
+      noise(0.24, 0.045);
       break;
   }
 }

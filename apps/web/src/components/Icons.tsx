@@ -21,9 +21,9 @@ export const XIcon = ({ size = 24, color = "#fff", className }: IconProps) => (
   </svg>
 );
 
-export const Spike = ({
+export const Fire = ({
   size = 24,
-  color = "#ff4444",
+  color = "#ff7a18",
   className,
 }: IconProps) => (
   <svg
@@ -36,14 +36,13 @@ export const Spike = ({
     style={{ display: "block", margin: "0 auto" }}
   >
     <path
-      d="M12 2L14 8H20L16 12L18 18L12 14L6 18L8 12L4 8H10L12 2Z"
+      d="M12.4 2.5c.9 3.2-.8 4.9-2.4 6.5-1.5 1.5-2.8 3-2.8 5.5A5.8 5.8 0 0 0 13 20.2c3.7-.4 5.9-3.1 5.9-6.5 0-2.7-1.5-5.2-3.8-7.7.1 2.1-.6 3.3-1.8 4.1.3-2.8-.1-5.1-.9-7.6Z"
       fill={color}
     />
     <path
-      d="M12 4L13 7H19L17 9L18 13L12 11L6 13L8 9L4 7H9L12 4Z"
-      fill="#cc0000"
+      d="M12.4 11.2c.7 1.3.5 2.2-.1 3.1-.5.7-.8 1.4-.8 2.2 0 1.5 1 2.5 2.5 2.5 1.6 0 2.6-1.1 2.6-2.7 0-1.3-.7-2.5-1.8-3.6.1 1-.2 1.6-.8 2-.1-1.3-.5-2.3-1.6-3.5Z"
+      fill="#ffe08a"
     />
-    <path d="M12 2L12 4" stroke="#880000" strokeWidth="1.5" />
   </svg>
 );
 

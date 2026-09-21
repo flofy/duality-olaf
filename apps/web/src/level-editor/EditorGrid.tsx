@@ -87,7 +87,7 @@ export function EditorGrid({ level, tool, onPaint }: EditorGridProps) {
               )}
               {tp && <span className="editor-entity teleporter">◎</span>}
               {tile === "spike" && (
-                <span className="editor-entity spike">▲</span>
+                <span className="editor-entity spike">🔥</span>
               )}
             </button>
           );

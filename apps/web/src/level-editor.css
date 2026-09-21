@@ -240,7 +240,8 @@
 }
 
 .editor-entity.spike {
-  font-size: 60%;
+  font-size: 72%;
+  filter: drop-shadow(0 0 3px #ff8a2a88);
 }
 
 .editor-hint,
