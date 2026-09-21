@@ -42,8 +42,5 @@ test("probe imports node", () => {
   }
   console.log("gameOverLevels:", gameOverLevels.slice(0, 8).join(" | "));
   console.log("gameOverTotal:", gameOverLevels.length);
-  console.log(
-    "campaignOrder:",
-    all.map((level) => level.id).join(","),
-  );
+  console.log("campaignOrder:", all.map((level) => level.id).join(","));
 });
