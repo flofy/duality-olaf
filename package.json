@@ -1,28 +1,29 @@
 {
   "name": "duality-olaf",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "pnpm -r dev",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "test:coverage": "pnpm -r test:coverage",
+    "typecheck": "pnpm -r typecheck",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "level:serve": "node tools/level-serve.mjs",
     "knip": "knip",
-    "madge": "madge --circular .",
     "snyk": "snyk test",
     "inspect": "pnpm -r inspect"
   },
   "devDependencies": {
-    "knip": "^4.0.0",
-    "madge": "^6.0.0",
+    "knip": "^6.37.0",
+    "oxfmt": "^0.66.0",
     "snyk": "^1.1235.0",
-    "vite-plugin-inspect": "^0.7.40"
+    "typescript": "^5.9.2"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "tools/*"
-  ],
-  "packageManager": "pnpm@8.15.0"
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "packageManager": "pnpm@10.15.0"
 }

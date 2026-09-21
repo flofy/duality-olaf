@@ -2,7 +2,7 @@ import type { Form, Level, Position } from "@duality/level-format";
 import { cloneLevel, isInside, isSpike, isWall } from "@duality/level-format";
 
 export type Direction = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
-export type DoorState = Record<string, boolean>;
+type DoorState = Record<string, boolean>;
 
 const HIDDEN_POSITION: Position = { x: -1, y: -1 };
 

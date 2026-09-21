@@ -32,7 +32,7 @@ import {
 } from "./boardZoom";
 import type { BoardZoom } from "./boardZoom";
 
-export type GameOverOverlayProps = {
+type GameOverOverlayProps = {
   type: "completed" | "gameOver" | null;
   moves?: number;
   optimalMoves?: number;
@@ -40,7 +40,7 @@ export type GameOverOverlayProps = {
   onBackToGenerator?: () => void;
 };
 
-export function GameOverOverlay({
+function GameOverOverlay({
   type,
   moves,
   optimalMoves,
@@ -77,18 +77,18 @@ export function GameOverOverlay({
   );
 }
 
-export type CatalogueEntry = {
+type CatalogueEntry = {
   id: string;
   label: string;
   level: Level;
 };
 
-export type CatalogueGroup = {
+type CatalogueGroup = {
   label: string;
   entries: CatalogueEntry[];
 };
 
-export const allDevLevels: readonly Level[] = [
+const allDevLevels: readonly Level[] = [
   ...campaign,
   ...doorSwitchTutorials,
   ...teleporterTutorials,
@@ -100,7 +100,7 @@ export const devLevelById: ReadonlyMap<string, Level> = new Map(
   allDevLevels.map((level) => [level.id, level]),
 );
 
-export function levelDisplayLabel(level: Level): string {
+function levelDisplayLabel(level: Level): string {
   for (const world of worlds) {
     const index = world.levels.findIndex((l) => l.id === level.id);
     if (index >= 0)

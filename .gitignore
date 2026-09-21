@@ -4,9 +4,15 @@ node_modules/
 # Build output
 dist/
 build/
+*.tsbuildinfo
 
 # Test coverage
 coverage/
+
+# End-to-end (Playwright) artifacts
+playwright-report/
+test-results/
+blob-report/
 
 # Knip
 .knip/

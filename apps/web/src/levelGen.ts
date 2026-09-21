@@ -59,7 +59,7 @@ function randomFreePosition(
 }
 
 /** Generate one deterministic candidate. Validation/solvability is intentionally done by the caller. */
-export function generateLevel(options: GeneratorOptions): GeneratedLevel {
+function generateLevel(options: GeneratorOptions): GeneratedLevel {
   const rng = new Rng(options.seed);
   const tiles = emptyTiles(options.width, options.height);
   const occupied: Position[] = [];

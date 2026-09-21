@@ -2,8 +2,8 @@
 export type ControlsMode = "auto" | "visible" | "hidden";
 
 const STORAGE_KEY = "duality.controls.v1";
-export const DEFAULT_CONTROLS_MODE: ControlsMode = "auto";
-export const controlsModeOrder: ControlsMode[] = ["auto", "visible", "hidden"];
+const DEFAULT_CONTROLS_MODE: ControlsMode = "auto";
+const controlsModeOrder: ControlsMode[] = ["auto", "visible", "hidden"];
 
 export const controlsModeLabels: Record<ControlsMode, string> = {
   auto: "Automatique",
@@ -32,7 +32,7 @@ export function getControlsMode(): ControlsMode {
   return readStoredControlsMode();
 }
 
-export function setControlsMode(mode: ControlsMode): void {
+function setControlsMode(mode: ControlsMode): void {
   try {
     localStorage.setItem(STORAGE_KEY, mode);
   } catch {

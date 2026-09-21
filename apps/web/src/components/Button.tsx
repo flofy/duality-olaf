@@ -1,7 +1,7 @@
 import React, { type MouseEventHandler, type ReactNode } from "react";
 import { type IconProps } from "./Icons";
 
-export type ButtonProps = {
+type ButtonProps = {
   icon?: ReactNode;
   label?: string;
   onClick: MouseEventHandler<HTMLButtonElement>;
@@ -103,7 +103,7 @@ export const Button = ({
   );
 };
 
-export type DPadButtonProps = {
+type DPadButtonProps = {
   icon: ReactNode;
   onClick: MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
@@ -160,7 +160,7 @@ export const DPadButton = ({
   );
 };
 
-export type CenterDPadButtonProps = {
+type CenterDPadButtonProps = {
   icon: ReactNode;
   label: string;
   onClick: MouseEventHandler<HTMLButtonElement>;

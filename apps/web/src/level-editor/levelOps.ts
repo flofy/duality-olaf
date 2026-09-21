@@ -8,7 +8,7 @@ import {
 import type { LevelEditorTool } from "../LevelEditorTools";
 
 /** Extra context some tools need (e.g. which form a new switch reacts to). */
-export type ToolOptions = {
+type ToolOptions = {
   switchForm?: Switch["form"];
 };
 

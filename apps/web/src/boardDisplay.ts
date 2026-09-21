@@ -2,8 +2,8 @@
 export type BoardDisplayMode = "square" | "fill";
 
 const STORAGE_KEY = "duality.board-display.v1";
-export const DEFAULT_BOARD_DISPLAY_MODE: BoardDisplayMode = "square";
-export const boardDisplayModeOrder: BoardDisplayMode[] = ["square", "fill"];
+const DEFAULT_BOARD_DISPLAY_MODE: BoardDisplayMode = "square";
+const boardDisplayModeOrder: BoardDisplayMode[] = ["square", "fill"];
 
 export const boardDisplayModeLabels: Record<BoardDisplayMode, string> = {
   square: "Carré",
@@ -31,7 +31,7 @@ export function getBoardDisplayMode(): BoardDisplayMode {
   return readStoredBoardDisplayMode();
 }
 
-export function setBoardDisplayMode(mode: BoardDisplayMode): void {
+function setBoardDisplayMode(mode: BoardDisplayMode): void {
   try {
     localStorage.setItem(STORAGE_KEY, mode);
   } catch {

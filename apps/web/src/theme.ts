@@ -7,7 +7,7 @@
 export type ThemeName = "retro" | "sunset" | "ocean";
 
 /** Semantic colors in Phaser numerical hex (0xRRGGBB). */
-export interface Theme {
+interface Theme {
   name: string;
   background: number;
   board: number;
@@ -98,7 +98,7 @@ export const themeOrder: ThemeName[] = ["retro", "sunset", "ocean"];
 
 const STORAGE_KEY = "duality.theme.v1";
 
-export const DEFAULT_THEME: ThemeName = "retro";
+const DEFAULT_THEME: ThemeName = "retro";
 
 function isValidThemeName(value: unknown): value is ThemeName {
   return typeof value === "string" && (themeOrder as string[]).includes(value);
