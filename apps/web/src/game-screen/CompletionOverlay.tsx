@@ -33,9 +33,17 @@ export function CompletionOverlay({
       >
         {changingWorld ? (
           <div className="overlay-character-pair" aria-hidden="true">
-            <BallCharacter size={76} expression="happy" className="celebration-character" />
+            <BallCharacter
+              size={76}
+              expression="happy"
+              className="celebration-character"
+            />
             <span className="celebration-arrow">→</span>
-            <SquareCharacter size={76} expression="happy" className="celebration-character" />
+            <SquareCharacter
+              size={76}
+              expression="happy"
+              className="celebration-character"
+            />
           </div>
         ) : (
           <div className="overlay-character" aria-hidden="true">

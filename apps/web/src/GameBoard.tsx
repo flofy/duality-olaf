@@ -2,13 +2,7 @@ import type { GameState } from "@duality/game";
 import { isInside, type Level, type Switch } from "@duality/level-format";
 import type { CSSProperties, ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
-import {
-  Fire,
-  Star,
-  Door,
-  Teleporter,
-  SwitchIcon,
-} from "./components/Icons";
+import { Fire, Star, Door, Teleporter, SwitchIcon } from "./components/Icons";
 import { BallCharacter, SquareCharacter } from "./components/Characters";
 
 export function switchGlyph(form: Switch["form"]): string {
@@ -146,7 +140,13 @@ export function GameBoard({
           <BallCharacter
             size={30}
             color={hexToCss(themes[themeName].ball)}
-            expression={state.gameOver ? "defeated" : state.completed ? "happy" : "neutral"}
+            expression={
+              state.gameOver
+                ? "defeated"
+                : state.completed
+                  ? "happy"
+                  : "neutral"
+            }
             className="character character-ball"
           />
         </div>
@@ -163,7 +163,13 @@ export function GameBoard({
           <SquareCharacter
             size={30}
             color={hexToCss(themes[themeName].square)}
-            expression={state.gameOver ? "defeated" : state.completed ? "happy" : "neutral"}
+            expression={
+              state.gameOver
+                ? "defeated"
+                : state.completed
+                  ? "happy"
+                  : "neutral"
+            }
             className="character character-square"
           />
         </div>
