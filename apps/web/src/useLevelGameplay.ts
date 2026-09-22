@@ -8,6 +8,11 @@ export type GameplayDirection = {
   y: -1 | 0 | 1;
 };
 
+export type MovementFeedback = {
+  from: { x: number; y: number };
+  direction: GameplayDirection;
+} | null;
+
 const keyboardDirections: Record<string, GameplayDirection> = {
   ArrowLeft: { x: -1, y: 0 },
   ArrowRight: { x: 1, y: 0 },
@@ -28,9 +33,11 @@ export function useLevelGameplay(
 ) {
   const runner = useMemo(() => new LevelRunner(level), [level]);
   const [state, setState] = useState(() => runner.getState());
+  const [movement, setMovement] = useState<MovementFeedback>(null);
 
   useEffect(() => {
     setState(runner.reset());
+    setMovement(null);
   }, [runner]);
 
   const move = useCallback(
@@ -52,6 +59,18 @@ export function useLevelGameplay(
           Math.abs(activeAfter.x - activeBefore.x) +
             Math.abs(activeAfter.y - activeBefore.y) >
           1;
+
+        if (moved && !teleported) {
+          setMovement({
+            from: {
+              x: activeAfter.x - direction.x,
+              y: activeAfter.y - direction.y,
+            },
+            direction,
+          });
+        } else {
+          setMovement(null);
+        }
 
         void startAudio();
         if (!moved) {
@@ -87,6 +106,7 @@ export function useLevelGameplay(
 
   const reset = useCallback(() => {
     setState(runner.reset());
+    setMovement(null);
     void startAudio();
     void playSound("reset");
     onReset?.();
@@ -96,6 +116,7 @@ export function useLevelGameplay(
     setState((current) => {
       if (current.completed || current.gameOver) return current;
       const next = runner.switchForm();
+      setMovement(null);
       void startAudio();
       void playSound("switch");
       vibrate([10, 25, 10]);
@@ -134,5 +155,5 @@ export function useLevelGameplay(
     return () => window.removeEventListener("keydown", handler);
   }, [move, onEscape, reset, switchForm]);
 
-  return { runner, state, move, reset, switchForm };
+  return { runner, state, movement, move, reset, switchForm };
 }
