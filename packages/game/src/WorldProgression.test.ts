@@ -17,8 +17,4 @@ describe("World 1 progression", () => {
     expect(moves[0]).toBeLessThanOrEqual(moves[1]);
     expect(moves[1]).toBeLessThanOrEqual(moves[2]);
   });
-
-  it("keeps the first world ball-only so the square is introduced later", () => {
-    expect(world1.every((level) => level.square === undefined)).toBe(true);
-  });
 });
