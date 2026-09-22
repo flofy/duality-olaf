@@ -33,7 +33,6 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
     if (worldIndex < world.levels.length - 1) {
       navigate(`/world/${world.id}/level/${world.levels[worldIndex + 1].id}`);
     } else if (nextWorld) {
-      // Dernier niveau du monde : enchaîner sur le premier du monde suivant.
       navigate(`/world/${nextWorld.id}/level/${nextWorld.levels[0].id}`);
     } else {
       navigate(`/world/${world.id}`);
@@ -63,7 +62,6 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
     if (state.completed) completeLevel(level.id);
   }, [level.id, state.completed]);
 
-  // Le burger menu peut demander un reset (menu JEU → RECOMMENCER).
   useEffect(() => {
     const onGameReset = () => reset();
     window.addEventListener("duality:game-reset", onGameReset);
@@ -101,9 +99,6 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
         onMove={move}
         onSwitch={switchForm}
       />
-      {/* Mobile : RECOMMENCER quitte la barre supérieure pour le bas de l'écran
-          (rangée hors .controls, donc insensible à la préférence d'affichage
-          des contrôles : on peut toujours relancer le niveau). */}
       <div className="mobile-restart">
         <Button
           icon={<Reset size={18} />}
@@ -133,6 +128,7 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
       <GameOverOverlay
         worldId={world.id}
         gameOver={state.gameOver}
+        activeForm={state.activeForm}
         onReset={reset}
       />
     </section>
