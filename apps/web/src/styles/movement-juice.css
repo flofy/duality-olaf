@@ -6,16 +6,16 @@
   }
   22% {
     transform: translate3d(
-        calc(var(--move-x) * 0.72),
-        calc(var(--move-y) * 0.72),
+        var(--move-x-72),
+        var(--move-y-72),
         0
       )
       scale(1.08, 0.92);
   }
   62% {
     transform: translate3d(
-        calc(var(--move-x) * 0.18),
-        calc(var(--move-y) * 0.18),
+        var(--move-x-18),
+        var(--move-y-18),
         0
       )
       scale(0.98, 1.04);
