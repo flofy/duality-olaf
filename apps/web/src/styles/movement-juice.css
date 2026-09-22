@@ -1,24 +1,96 @@
-/* Continuous movement juice: anticipation + squash/stretch + wave. */
+/* Movement feedback: slower, readable motion with a directional streak. */
 @keyframes pieceMoveWave {
   0% {
-    transform: translate3d(0, 0, 0) scale(1, 1);
+    transform: translate3d(
+        calc(var(--move-x) * var(--tile)),
+        calc(var(--move-y) * var(--tile)),
+        0
+      )
+      scale(0.94, 1.04);
+    filter: brightness(1.08);
   }
-  18% {
-    transform: translate3d(-1px, 1px, 0) scale(1.08, 0.92);
-  }
-  42% {
-    transform: translate3d(1px, -1px, 0) scale(0.96, 1.06);
-  }
-  68% {
-    transform: translate3d(-0.5px, 0, 0) scale(1.03, 0.98);
+  55% {
+    transform: translate3d(
+        calc(var(--move-x) * var(--tile) * 0.12),
+        calc(var(--move-y) * var(--tile) * 0.12),
+        0
+      )
+      scale(1.03, 0.97);
+    filter: brightness(1.02);
   }
   100% {
     transform: translate3d(0, 0, 0) scale(1, 1);
+    filter: brightness(1);
   }
 }
-.piece-moving {
-  animation: pieceMoveWave 0.32s cubic-bezier(0.22, 0.8, 0.32, 1);
+
+.piece-moving--active {
+  animation: pieceMoveWave 480ms cubic-bezier(0.2, 0.75, 0.28, 1);
   transform-origin: center bottom;
+  will-change: transform, filter;
+  z-index: 5;
+}
+
+.piece-trail {
+  width: var(--tile);
+  height: var(--tile);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  animation: pieceTrailFade 420ms ease-out forwards;
+  background: var(--trail-color, #ffffff);
+  filter: blur(1px);
+  mix-blend-mode: screen;
+}
+
+.piece-trail::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, #fff8 0 16%, transparent 62%);
+  opacity: 0.7;
+}
+
+.piece-trail--right,
+.piece-trail--left {
+  --trail-color: var(--ball);
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    color-mix(in srgb, var(--trail-color) 12%, transparent) 25%,
+    color-mix(in srgb, var(--trail-color) 48%, transparent) 100%
+  );
+}
+
+.piece-trail--left {
+  transform: scaleX(-1);
+}
+
+.piece-trail--down,
+.piece-trail--up {
+  --trail-color: var(--ball);
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--trail-color) 12%, transparent) 25%,
+    color-mix(in srgb, var(--trail-color) 48%, transparent) 100%
+  );
+}
+
+.piece-trail--up {
+  transform: scaleY(-1);
+}
+
+@keyframes pieceTrailFade {
+  0% {
+    opacity: 0.72;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.52);
+  }
 }
 
 /* Little manga run: the ball's feet alternate while the body bobs. */
@@ -45,11 +117,11 @@
   transform-box: fill-box;
   transform-origin: top center;
 }
-.piece-moving.is-moving .ball-character-leg-left {
-  animation: ballLegLeft 0.22s ease-in-out 2;
+.piece-moving--active.is-moving .ball-character-leg-left {
+  animation: ballLegLeft 0.24s ease-in-out 2;
 }
-.piece-moving.is-moving .ball-character-leg-right {
-  animation: ballLegRight 0.22s ease-in-out 2;
+.piece-moving--active.is-moving .ball-character-leg-right {
+  animation: ballLegRight 0.24s ease-in-out 2;
 }
 
 /* Star: breathe, never spin. */
@@ -70,10 +142,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .piece-moving,
+  .piece-moving--active,
+  .piece-trail,
   .sparkle,
-  .piece-moving .ball-character-leg-left,
-  .piece-moving .ball-character-leg-right {
+  .piece-moving--active .ball-character-leg-left,
+  .piece-moving--active .ball-character-leg-right {
     animation: none;
   }
 }
