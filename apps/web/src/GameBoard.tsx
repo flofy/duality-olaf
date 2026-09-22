@@ -3,6 +3,7 @@ import { isInside, type Level, type Switch } from "@duality/level-format";
 import type { CSSProperties, ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
 import { Fire, Star, Door, Teleporter, SwitchIcon } from "./components/Icons";
+import { BallCharacter, SquareCharacter } from "./components/Characters";
 import type { MovementFeedback } from "./useLevelGameplay";
 
 export function switchGlyph(form: Switch["form"]): string {
