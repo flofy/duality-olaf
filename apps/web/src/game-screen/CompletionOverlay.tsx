@@ -24,12 +24,11 @@ export function CompletionOverlay({
 
   const changingWorld = worldIndex === worldLength - 1 && hasNextWorld;
   const [activeIndex, setActiveIndex] = useState(1);
-  const actionRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  useEffect(() => {
+    useEffect(() => {
     if (!completed) return;
-    actionRefs.current[1]?.focus();
+    document.querySelector<HTMLButtonElement>(".modal-actions button:nth-child(2)")?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Enter") { event.preventDefault(); actionRefs.current[activeIndex]?.click(); }
+      if (event.key === "Enter") { event.preventDefault(); document.querySelectorAll<HTMLButtonElement>(".modal-actions button")[activeIndex]?.click(); }
       if (event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === "Tab") {
         event.preventDefault();
         setActiveIndex((index) => (index + (event.key === "ArrowLeft" ? -1 : 1) + 2) % 2);
@@ -74,13 +73,13 @@ export function CompletionOverlay({
           </p>
         )}
         <div className="modal-actions">
-          <Button ref={(el) => { actionRefs.current[0] = el; }}
+          <Button
             icon={<Reset size={18} />}
             label="REJOUER"
             onClick={onReset}
             variant="primary"
           />
-          <Button ref={(el) => { actionRefs.current[1] = el; }}
+          <Button
             icon={<ArrowRight size={18} />}
             label={
               worldIndex < worldLength - 1
