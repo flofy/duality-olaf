@@ -4,25 +4,38 @@ import type { CSSProperties, ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
 import { Fire, Star, Door, Teleporter, SwitchIcon } from "./components/Icons";
 import { BallCharacter, SquareCharacter } from "./components/Characters";
+import type { MovementFeedback } from "./useLevelGameplay";
+
 export function switchGlyph(form: Switch["form"]): string {
   if (form === "ball") return "●";
   if (form === "square") return "■";
   return "⌁";
 }
+
 type GameBoardProps = {
   level: Level;
   state: GameState;
   skin: string;
   themeName: ThemeName;
+  movement?: MovementFeedback;
   children?: ReactNode;
 };
+
 export function GameBoard({
   level,
   state,
   skin,
   themeName,
+  movement,
   children,
 }: GameBoardProps) {
+  const movementClass = movement
+    ? `piece-trail piece-trail--${movement.direction.x > 0 ? "right" : movement.direction.x < 0 ? "left" : movement.direction.y > 0 ? "down" : "up"}`
+    : null;
+  const activePieceClass = movement
+    ? "piece-moving piece-moving--active"
+    : "piece-moving";
+
   return (
     <div
       className={`board ${skin !== "default" ? `seasonal theme-${skin}` : ""}`}
@@ -129,10 +142,27 @@ export function GameBoard({
           />
         </div>
       ))}
+      {movement && (
+        <div
+          className={movementClass ?? "piece-trail"}
+          style={{
+            gridColumn: movement.from.x + 1,
+            gridRow: movement.from.y + 1,
+          }}
+          aria-hidden="true"
+        />
+      )}
       {isInside(level, state.ball) && (
         <div
-          className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"} piece-moving`}
-          style={{ gridColumn: state.ball.x + 1, gridRow: state.ball.y + 1 }}
+          className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"} ${state.activeForm === "ball" ? activePieceClass : ""}`}
+          style={
+            {
+              gridColumn: state.ball.x + 1,
+              gridRow: state.ball.y + 1,
+              "--move-x": movement?.direction.x ?? 0,
+              "--move-y": movement?.direction.y ?? 0,
+            } as CSSProperties
+          }
           key={`ball-${state.ball.x}-${state.ball.y}`}
         >
           <BallCharacter
@@ -151,11 +181,15 @@ export function GameBoard({
       )}
       {level.square && isInside(level, state.square) && (
         <div
-          className={`piece square ${state.activeForm === "square" ? "" : "inactive"} piece-moving`}
-          style={{
-            gridColumn: state.square.x + 1,
-            gridRow: state.square.y + 1,
-          }}
+          className={`piece square ${state.activeForm === "square" ? "" : "inactive"} ${state.activeForm === "square" ? activePieceClass : ""}`}
+          style={
+            {
+              gridColumn: state.square.x + 1,
+              gridRow: state.square.y + 1,
+              "--move-x": movement?.direction.x ?? 0,
+              "--move-y": movement?.direction.y ?? 0,
+            } as CSSProperties
+          }
           key={`square-${state.square.x}-${state.square.y}`}
         >
           <SquareCharacter
