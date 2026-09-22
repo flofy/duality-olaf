@@ -40,11 +40,7 @@
 }
 
 .editor-board {
-  --tile: min(
-    64px,
-    calc(100cqw / var(--cols)),
-    calc(100cqh / var(--rows))
-  );
+  --tile: min(64px, calc(100cqw / var(--cols)), calc(100cqh / var(--rows)));
   width: calc(var(--tile) * var(--cols));
   height: calc(var(--tile) * var(--rows));
   grid-template-columns: repeat(var(--cols), var(--tile));

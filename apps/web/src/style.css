@@ -14,10 +14,37 @@
 @import "./styles/character-layout.css";
 
 /* Character SVGs fully replace the legacy pseudo-shapes. */
-.piece::before { content: none !important; }
-.character { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
+.piece::before {
+  content: none !important;
+}
+.character {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
 
 /* Level Lab / test playground uses .dev-playground-board, not .dev-board. */
-.dev-playground-board .board-wrap { flex:1 1 auto; width:100%; height:min(60dvh,520px); overflow:hidden; overscroll-behavior:none; }
-.dev-playground-board .board { --tile:calc(min(72px,calc(100cqw / var(--cols)),calc(100cqh / var(--rows))) * var(--board-zoom,1)); width:calc(var(--tile) * var(--cols)); height:calc(var(--tile) * var(--rows)); grid-template-columns:repeat(var(--cols),var(--tile)); grid-template-rows:repeat(var(--rows),var(--tile)); }
-@media (prefers-reduced-motion: reduce) { .character,.piece-moving { animation:none !important; } }
+.dev-playground-board .board-wrap {
+  flex: 1 1 auto;
+  width: 100%;
+  height: min(60dvh, 520px);
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+.dev-playground-board .board {
+  --tile: calc(
+    min(72px, calc(100cqw / var(--cols)), calc(100cqh / var(--rows))) *
+      var(--board-zoom, 1)
+  );
+  width: calc(var(--tile) * var(--cols));
+  height: calc(var(--tile) * var(--rows));
+  grid-template-columns: repeat(var(--cols), var(--tile));
+  grid-template-rows: repeat(var(--rows), var(--tile));
+}
+@media (prefers-reduced-motion: reduce) {
+  .character,
+  .piece-moving {
+    animation: none !important;
+  }
+}
