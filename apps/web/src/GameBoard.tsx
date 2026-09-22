@@ -4,13 +4,12 @@ import type { CSSProperties, ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
 import {
   Fire,
-  Ball,
-  Square,
   Star,
   Door,
   Teleporter,
   SwitchIcon,
 } from "./components/Icons";
+import { BallCharacter, SquareCharacter } from "./components/Characters";
 
 export function switchGlyph(form: Switch["form"]): string {
   if (form === "ball") return "●";
@@ -144,10 +143,11 @@ export function GameBoard({
           style={{ gridColumn: state.ball.x + 1, gridRow: state.ball.y + 1 }}
           key={`ball-${state.ball.x}-${state.ball.y}`}
         >
-          <Ball
-            size={24}
+          <BallCharacter
+            size={30}
             color={hexToCss(themes[themeName].ball)}
-            className={`svg-icon svg-icon--ball ${state.activeForm === "ball" ? "svg-icon--active" : "svg-icon--disabled"}`}
+            expression={state.gameOver ? "defeated" : state.completed ? "happy" : "neutral"}
+            className="character character-ball"
           />
         </div>
       )}
@@ -160,10 +160,11 @@ export function GameBoard({
           }}
           key={`square-${state.square.x}-${state.square.y}`}
         >
-          <Square
-            size={24}
+          <SquareCharacter
+            size={30}
             color={hexToCss(themes[themeName].square)}
-            className={`svg-icon svg-icon--square ${state.activeForm === "square" ? "svg-icon--active" : "svg-icon--disabled"}`}
+            expression={state.gameOver ? "defeated" : state.completed ? "happy" : "neutral"}
+            className="character character-square"
           />
         </div>
       )}
