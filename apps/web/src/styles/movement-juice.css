@@ -46,10 +46,10 @@
   transform-origin: top center;
 }
 .piece-moving.is-moving .ball-character-leg-left {
-  animation: ballLegLeft 0.22s ease-in-out infinite;
+  animation: ballLegLeft 0.22s ease-in-out 2;
 }
 .piece-moving.is-moving .ball-character-leg-right {
-  animation: ballLegRight 0.22s ease-in-out infinite;
+  animation: ballLegRight 0.22s ease-in-out 2;
 }
 
 /* Star: breathe, never spin. */
