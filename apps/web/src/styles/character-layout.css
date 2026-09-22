@@ -33,6 +33,24 @@
   transform-origin: center;
 }
 
+/* The editor uses the shell as a container so the whole level is visible.
+   Cell size is derived from both available width and height. */
+.editor-board-shell {
+  container-type: size;
+}
+
+.editor-board {
+  --tile: min(
+    64px,
+    calc(100cqw / var(--cols)),
+    calc(100cqh / var(--rows))
+  );
+  width: calc(var(--tile) * var(--cols));
+  height: calc(var(--tile) * var(--rows));
+  grid-template-columns: repeat(var(--cols), var(--tile));
+  grid-template-rows: repeat(var(--rows), var(--tile));
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sparkle {
     animation: none;
