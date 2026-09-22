@@ -1,5 +1,6 @@
 import { Button } from "../components/Button";
 import { ArrowRight, ResetIcon as Reset } from "../components/Icons";
+import { BallCharacter, SquareCharacter } from "../components/Characters";
 
 export function CompletionOverlay({
   worldIndex,
@@ -20,6 +21,8 @@ export function CompletionOverlay({
 }) {
   if (!completed) return null;
 
+  const changingWorld = worldIndex === worldLength - 1 && hasNextWorld;
+
   return (
     <div className="overlay">
       <div
@@ -28,8 +31,24 @@ export function CompletionOverlay({
         aria-modal="true"
         aria-labelledby="completion-title"
       >
+        {changingWorld ? (
+          <div className="overlay-character-pair" aria-hidden="true">
+            <BallCharacter size={76} expression="happy" className="celebration-character" />
+            <span className="celebration-arrow">→</span>
+            <SquareCharacter size={76} expression="happy" className="celebration-character" />
+          </div>
+        ) : (
+          <div className="overlay-character" aria-hidden="true">
+            <BallCharacter size={76} expression="happy" />
+          </div>
+        )}
         <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
         <p>{moves} coups</p>
+        {changingWorld && (
+          <p className="world-transition-message">
+            Bravo ! On change de monde… et notre deuxième héros arrive !
+          </p>
+        )}
         <div className="modal-actions">
           <Button
             icon={<Reset size={18} />}
