@@ -1,6 +1,7 @@
 import { Button } from "../components/Button";
 import { ArrowRight, ResetIcon as Reset } from "../components/Icons";
 import { BallCharacter, SquareCharacter } from "../components/Characters";
+import { useEffect, useRef, useState } from "react";
 
 export function CompletionOverlay({
   worldIndex,
@@ -22,6 +23,21 @@ export function CompletionOverlay({
   if (!completed) return null;
 
   const changingWorld = worldIndex === worldLength - 1 && hasNextWorld;
+  const [activeIndex, setActiveIndex] = useState(1);
+  const actionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  useEffect(() => {
+    if (!completed) return;
+    actionRefs.current[1]?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") { event.preventDefault(); actionRefs.current[activeIndex]?.click(); }
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === "Tab") {
+        event.preventDefault();
+        setActiveIndex((index) => (index + (event.key === "ArrowLeft" ? -1 : 1) + 2) % 2);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [completed, activeIndex]);
 
   return (
     <div className="overlay">
@@ -58,13 +74,13 @@ export function CompletionOverlay({
           </p>
         )}
         <div className="modal-actions">
-          <Button
+          <Button ref={(el) => { actionRefs.current[0] = el; }}
             icon={<Reset size={18} />}
             label="REJOUER"
             onClick={onReset}
             variant="primary"
           />
-          <Button
+          <Button ref={(el) => { actionRefs.current[1] = el; }}
             icon={<ArrowRight size={18} />}
             label={
               worldIndex < worldLength - 1
