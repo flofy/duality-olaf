@@ -45,10 +45,10 @@
   transform-box: fill-box;
   transform-origin: top center;
 }
-.piece-moving .ball-character-leg-left {
+.piece-moving.is-moving .ball-character-leg-left {
   animation: ballLegLeft 0.22s ease-in-out infinite;
 }
-.piece-moving .ball-character-leg-right {
+.piece-moving.is-moving .ball-character-leg-right {
   animation: ballLegRight 0.22s ease-in-out infinite;
 }
 
