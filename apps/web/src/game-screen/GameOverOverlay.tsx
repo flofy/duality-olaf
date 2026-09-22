@@ -17,12 +17,11 @@ export function GameOverOverlay({
 }) {
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
-  const actionRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  useEffect(() => {
+    useEffect(() => {
     if (!gameOver) return;
-    actionRefs.current[0]?.focus();
+    document.querySelector<HTMLButtonElement>(".modal-actions button")?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Enter") { event.preventDefault(); actionRefs.current[activeIndex]?.click(); }
+      if (event.key === "Enter") { event.preventDefault(); document.querySelectorAll<HTMLButtonElement>(".modal-actions button")[activeIndex]?.click(); }
       if (event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === "Tab") {
         event.preventDefault();
         setActiveIndex((index) => (index + (event.key === "ArrowLeft" ? 1 : -1) + 2) % 2);
@@ -55,13 +54,13 @@ export function GameOverOverlay({
           mauvais chemin…
         </p>
         <div className="modal-actions">
-          <Button ref={(el) => { actionRefs.current[0] = el; }}
+          <Button
             icon={<Reset size={18} />}
             label="REJOUER"
             onClick={onReset}
             variant="primary"
           />
-          <Button ref={(el) => { actionRefs.current[1] = el; }}
+          <Button
             icon={<ArrowLeft size={18} />}
             label="NIVEAUX"
             onClick={() => navigate(`/world/${worldId}`)}
