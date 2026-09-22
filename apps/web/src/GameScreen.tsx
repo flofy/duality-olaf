@@ -41,7 +41,7 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
 
   const { commands, recordMove, recordSwitch, clear } = useDebugCommands();
 
-  const { state, move, reset, switchForm } = useLevelGameplay(
+  const { state, movement, move, reset, switchForm } = useLevelGameplay(
     level,
     () => navigate(`/world/${world.id}`),
     recordMove,
@@ -86,6 +86,7 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
           state={state}
           skin={seasonalTheme ?? "default"}
           themeName={getActiveThemeName()}
+          movement={movement}
         />
       </div>
       <GameHud
