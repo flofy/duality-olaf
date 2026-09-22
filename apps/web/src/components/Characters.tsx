@@ -1,6 +1,6 @@
 import type { IconProps } from "./Icons";
 
-export type CharacterExpression =
+type CharacterExpression =
   | "happy"
   | "neutral"
   | "surprised"

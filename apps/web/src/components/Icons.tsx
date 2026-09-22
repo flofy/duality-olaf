@@ -242,3 +242,90 @@ export const GridIcon = ({
     />
   </svg>
 );
+
+export const Maximize = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    style={{ display: "block", margin: "0 auto" }}
+    strokeLinecap="round"
+  >
+    <path d="M8 3H5a2 2 0 0 0-2 2v3" stroke={color} strokeWidth="2" />
+    <path d="M16 3h3a2 2 0 0 1 2 2v3" stroke={color} strokeWidth="2" />
+    <path d="M21 16v3a2 2 0 0 1-2 2h-3" stroke={color} strokeWidth="2" />
+    <path d="M8 21H5a2 2 0 0 1-2-2v-3" stroke={color} strokeWidth="2" />
+  </svg>
+);
+
+export const Minimize = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    style={{ display: "block", margin: "0 auto" }}
+    strokeLinecap="round"
+  >
+    <path d="M8 3v3a2 2 0 0 1-2 2H3" stroke={color} strokeWidth="2" />
+    <path d="M16 3v3a2 2 0 0 0 2 2h3" stroke={color} strokeWidth="2" />
+    <path d="M8 21v-3a2 2 0 0 0-2-2H3" stroke={color} strokeWidth="2" />
+    <path d="M16 21v-3a2 2 0 0 1 2-2h3" stroke={color} strokeWidth="2" />
+  </svg>
+);
+
+export const ThemeIcon = ({
+  size = 24,
+  color = "#fff",
+  className,
+}: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    style={{ display: "block", margin: "0 auto" }}
+    strokeLinecap="round"
+  >
+    <circle cx="12" cy="12" r="4" stroke={color} strokeWidth="2" />
+    <path d="M12 2v2" stroke={color} strokeWidth="2" />
+    <path d="M12 20v2" stroke={color} strokeWidth="2" />
+    <path d="M4.93 4.93l1.41 1.41" stroke={color} strokeWidth="2" />
+    <path d="M17.66 17.66l1.41 1.41" stroke={color} strokeWidth="2" />
+    <path d="M2 12h2" stroke={color} strokeWidth="2" />
+    <path d="M20 12h2" stroke={color} strokeWidth="2" />
+    <path d="M6.34 17.66l-1.41 1.41" stroke={color} strokeWidth="2" />
+    <path d="M19.07 4.93l-1.41 1.41" stroke={color} strokeWidth="2" />
+  </svg>
+);
+
+export const Skin = ({ size = 24, color = "#fff", className }: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    style={{ display: "block", margin: "0 auto" }}
+    strokeLinecap="round"
+  >
+    <circle cx="12" cy="8" r="4" stroke={color} strokeWidth="2" />
+    <path d="M4 21a8 8 0 0 1 16 0" stroke={color} strokeWidth="2" />
+  </svg>
+);
