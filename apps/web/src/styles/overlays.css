@@ -2,22 +2,73 @@
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: #0009;
   display: grid;
   place-items: center;
   padding: 20px;
+  background:
+    linear-gradient(#070a1488, #070a14cc),
+    radial-gradient(circle at 50% 35%, #26345f55 0, transparent 58%);
+  backdrop-filter: blur(3px);
 }
 
 .modal {
   position: relative;
   z-index: 101;
-  max-width: min(90vw, 420px);
-  background: var(--background);
-  border: 2px solid var(--accent);
-  border-radius: 18px;
-  padding: clamp(20px, 5vw, 28px);
+  width: min(90vw, 440px);
+  max-height: min(88dvh, 680px);
+  overflow: auto;
+  padding: clamp(22px, 5vw, 32px);
   text-align: center;
-  box-shadow: 0 20px 70px #0008;
+  color: var(--text);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--buttonBg) 92%, #fff 8%), var(--background));
+  border: 2px solid color-mix(in srgb, var(--accent) 88%, #fff 12%);
+  border-radius: 14px;
+  box-shadow:
+    0 22px 55px #000b,
+    inset 0 0 0 1px #fff1,
+    inset 0 -10px 0 #0003;
+  isolation: isolate;
+}
+
+.modal::before,
+.modal::after {
+  content: "";
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.modal::before {
+  left: 8px;
+  top: 8px;
+  border-left: 3px solid var(--accent);
+  border-top: 3px solid var(--accent);
+}
+
+.modal::after {
+  right: 8px;
+  bottom: 8px;
+  border-right: 3px solid var(--accent);
+  border-bottom: 3px solid var(--accent);
+}
+
+.modal h2 {
+  margin: 8px 0 10px;
+  font-size: clamp(19px, 5vw, 25px);
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 #0008;
+}
+
+.modal > p {
+  margin: 8px auto;
+  max-width: 34rem;
+  color: color-mix(in srgb, var(--text) 86%, var(--muted));
+  line-height: 1.5;
 }
 
 .modal-actions {
@@ -25,9 +76,88 @@
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.modal-actions .modern-button {
+  min-width: 132px;
+  border: 2px solid color-mix(in srgb, var(--accent) 78%, #fff 22%) !important;
+  border-radius: 10px !important;
+  box-shadow:
+    inset 0 -3px 0 #0004,
+    0 4px 0 #0005 !important;
+  transform: none !important;
+}
+
+.modal-actions .modern-button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+.overlay-character,
+.overlay-character-pair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 92px;
+  margin: 0 auto 8px;
+}
+
+.overlay-character-pair {
+  gap: 14px;
+}
+
+.celebration-arrow {
+  color: var(--accent);
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.overlay-character--defeated {
+  min-height: 108px;
+}
+
+.world-transition-message {
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+  background: #0003;
+  text-align: left;
 }
 
 .help section {
   margin: 18px 0;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  border-radius: 10px;
+  background: #0003;
+}
+
+@media (max-width: 520px) {
+  .overlay {
+    padding: 12px;
+  }
+
+  .modal {
+    width: min(94vw, 440px);
+    padding: 20px 16px 18px;
+    border-radius: 12px;
+  }
+
+  .modal-actions {
+    gap: 8px;
+  }
+
+  .modal-actions .modern-button {
+    flex: 1 1 130px;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal,
+  .overlay {
+    animation: none;
+  }
 }
