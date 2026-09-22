@@ -24,14 +24,27 @@ export function CompletionOverlay({
 
   const changingWorld = worldIndex === worldLength - 1 && hasNextWorld;
   const [activeIndex, setActiveIndex] = useState(1);
-    useEffect(() => {
+  useEffect(() => {
     if (!completed) return;
-    document.querySelector<HTMLButtonElement>(".modal-actions button:nth-child(2)")?.focus();
+    document
+      .querySelector<HTMLButtonElement>(".modal-actions button:nth-child(2)")
+      ?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Enter") { event.preventDefault(); document.querySelectorAll<HTMLButtonElement>(".modal-actions button")[activeIndex]?.click(); }
-      if (event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === "Tab") {
+      if (event.key === "Enter") {
         event.preventDefault();
-        setActiveIndex((index) => (index + (event.key === "ArrowLeft" ? -1 : 1) + 2) % 2);
+        document
+          .querySelectorAll<HTMLButtonElement>(".modal-actions button")
+          [activeIndex]?.click();
+      }
+      if (
+        event.key === "ArrowLeft" ||
+        event.key === "ArrowRight" ||
+        event.key === "Tab"
+      ) {
+        event.preventDefault();
+        setActiveIndex(
+          (index) => (index + (event.key === "ArrowLeft" ? -1 : 1) + 2) % 2,
+        );
       }
     };
     window.addEventListener("keydown", onKeyDown);

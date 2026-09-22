@@ -17,14 +17,25 @@ export function GameOverOverlay({
 }) {
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
-    useEffect(() => {
+  useEffect(() => {
     if (!gameOver) return;
     document.querySelector<HTMLButtonElement>(".modal-actions button")?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Enter") { event.preventDefault(); document.querySelectorAll<HTMLButtonElement>(".modal-actions button")[activeIndex]?.click(); }
-      if (event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === "Tab") {
+      if (event.key === "Enter") {
         event.preventDefault();
-        setActiveIndex((index) => (index + (event.key === "ArrowLeft" ? 1 : -1) + 2) % 2);
+        document
+          .querySelectorAll<HTMLButtonElement>(".modal-actions button")
+          [activeIndex]?.click();
+      }
+      if (
+        event.key === "ArrowLeft" ||
+        event.key === "ArrowRight" ||
+        event.key === "Tab"
+      ) {
+        event.preventDefault();
+        setActiveIndex(
+          (index) => (index + (event.key === "ArrowLeft" ? 1 : -1) + 2) % 2,
+        );
       }
     };
     window.addEventListener("keydown", onKeyDown);
