@@ -3,7 +3,6 @@ import { isInside, type Level, type Switch } from "@duality/level-format";
 import type { CSSProperties, ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
 import { Fire, Star, Door, Teleporter, SwitchIcon } from "./components/Icons";
-import { BallCharacter, SquareCharacter } from "./components/Characters";
 import type { MovementFeedback } from "./useLevelGameplay";
 
 export function switchGlyph(form: Switch["form"]): string {
@@ -35,6 +34,18 @@ export function GameBoard({
   const activePieceClass = movement
     ? "piece-moving piece-moving--active"
     : "piece-moving";
+  const moveX =
+    movement?.direction.x === 1
+      ? "100%"
+      : movement?.direction.x === -1
+        ? "-100%"
+        : "0%";
+  const moveY =
+    movement?.direction.y === 1
+      ? "100%"
+      : movement?.direction.y === -1
+        ? "-100%"
+        : "0%";
 
   return (
     <div
@@ -159,8 +170,8 @@ export function GameBoard({
             {
               gridColumn: state.ball.x + 1,
               gridRow: state.ball.y + 1,
-              "--move-x": movement?.direction.x ?? 0,
-              "--move-y": movement?.direction.y ?? 0,
+              "--move-x": moveX,
+              "--move-y": moveY,
             } as CSSProperties
           }
           key={`ball-${state.ball.x}-${state.ball.y}`}
@@ -186,8 +197,8 @@ export function GameBoard({
             {
               gridColumn: state.square.x + 1,
               gridRow: state.square.y + 1,
-              "--move-x": movement?.direction.x ?? 0,
-              "--move-y": movement?.direction.y ?? 0,
+              "--move-x": moveX,
+              "--move-y": moveY,
             } as CSSProperties
           }
           key={`square-${state.square.x}-${state.square.y}`}
