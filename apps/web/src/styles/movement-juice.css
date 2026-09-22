@@ -21,6 +21,37 @@
   transform-origin: center bottom;
 }
 
+/* Little manga run: the ball's feet alternate while the body bobs. */
+@keyframes ballLegLeft {
+  0%,
+  100% {
+    transform: rotate(13deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-18deg) translateY(-1px);
+  }
+}
+@keyframes ballLegRight {
+  0%,
+  100% {
+    transform: rotate(-18deg) translateY(-1px);
+  }
+  50% {
+    transform: rotate(13deg) translateY(0);
+  }
+}
+.ball-character-leg-left,
+.ball-character-leg-right {
+  transform-box: fill-box;
+  transform-origin: top center;
+}
+.piece-moving.is-moving .ball-character-leg-left {
+  animation: ballLegLeft 0.22s ease-in-out 2;
+}
+.piece-moving.is-moving .ball-character-leg-right {
+  animation: ballLegRight 0.22s ease-in-out 2;
+}
+
 /* Star: breathe, never spin. */
 @keyframes starBreathe {
   0%,
@@ -40,7 +71,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .piece-moving,
-  .sparkle {
+  .sparkle,
+  .piece-moving .ball-character-leg-left,
+  .piece-moving .ball-character-leg-right {
     animation: none;
   }
 }
