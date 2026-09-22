@@ -1,0 +1,40 @@
+/* Character visuals follow the actual cell size instead of a fixed SVG size. */
+.piece > .character {
+  position: absolute;
+  inset: 6%;
+  width: 88%;
+  height: 88%;
+  max-width: 88%;
+  max-height: 88%;
+  display: block;
+}
+
+/* The old geometric pseudo-element is no longer the character. */
+.piece::before {
+  display: none;
+}
+
+/* Stars breathe, but never rotate. This intentionally overrides the legacy
+   sparkle animation imported earlier. */
+@keyframes starPulseNoRotate {
+  0%,
+  100% {
+    opacity: 0.92;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.sparkle {
+  animation: starPulseNoRotate 1.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sparkle {
+    animation: none;
+  }
+}
