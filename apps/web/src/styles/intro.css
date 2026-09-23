@@ -51,7 +51,8 @@
 
 .intro-ball {
   color: var(--ball);
-  animation: intro-float calc(1.8s * var(--animation-scale)) ease-in-out infinite;
+  animation: intro-float calc(1.8s * var(--animation-scale)) ease-in-out
+    infinite;
 }
 
 .intro-square {

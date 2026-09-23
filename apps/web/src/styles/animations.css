@@ -152,7 +152,8 @@ button:hover:not(:disabled) {
 }
 
 .teleporter-pulse {
-  animation: teleporterPulse calc(2s * var(--animation-scale)) infinite ease-in-out;
+  animation: teleporterPulse calc(2s * var(--animation-scale)) infinite
+    ease-in-out;
 }
 
 @keyframes switchPress {

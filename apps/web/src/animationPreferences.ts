@@ -10,7 +10,11 @@ export const animationSpeedLabels: Record<AnimationSpeed, string> = {
   slow: "Lente",
 };
 
-const animationSpeedOrder: readonly AnimationSpeed[] = ["fast", "normal", "slow"];
+const animationSpeedOrder: readonly AnimationSpeed[] = [
+  "fast",
+  "normal",
+  "slow",
+];
 
 export const animationSpeedMultipliers: Record<AnimationSpeed, number> = {
   fast: 0.65,
@@ -19,7 +23,10 @@ export const animationSpeedMultipliers: Record<AnimationSpeed, number> = {
 };
 
 function isAnimationSpeed(value: unknown): value is AnimationSpeed {
-  return typeof value === "string" && animationSpeedOrder.includes(value as AnimationSpeed);
+  return (
+    typeof value === "string" &&
+    animationSpeedOrder.includes(value as AnimationSpeed)
+  );
 }
 
 export function getAnimationSpeed(): AnimationSpeed {
@@ -47,7 +54,10 @@ export function cycleAnimationSpeed(): AnimationSpeed {
   return next;
 }
 
-export function getAnimationDuration(baseMs: number, speed = getAnimationSpeed()): number {
+export function getAnimationDuration(
+  baseMs: number,
+  speed = getAnimationSpeed(),
+): number {
   return Math.round(baseMs * animationSpeedMultipliers[speed]);
 }
 

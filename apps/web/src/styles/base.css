@@ -85,7 +85,8 @@ body {
 }
 
 .app-enter {
-  animation: app-enter calc(520ms * var(--animation-scale)) cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: app-enter calc(520ms * var(--animation-scale))
+    cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes app-enter {

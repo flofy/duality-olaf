@@ -44,7 +44,9 @@ export function useLevelGameplay(
   const [movement, setMovement] = useState<MovementFeedback>(null);
   const [startedAt, setStartedAt] = useState(() => Date.now());
   const [elapsedMs, setElapsedMs] = useState(0);
-  const timerPauseReasonsRef = useRef<Set<"visibility" | "animation">>(new Set());
+  const timerPauseReasonsRef = useRef<Set<"visibility" | "animation">>(
+    new Set(),
+  );
   const timerPausedAtRef = useRef<number | null>(null);
   const animationPauseTimeoutRef = useRef<number | null>(null);
 

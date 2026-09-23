@@ -321,7 +321,10 @@ export function BurgerMenu({
             </div>
           </section>
 
-          <section className="menu-group" aria-labelledby="menu-group-animation">
+          <section
+            className="menu-group"
+            aria-labelledby="menu-group-animation"
+          >
             <h3 id="menu-group-animation" className="menu-group-title">
               ANIMATIONS
             </h3>
