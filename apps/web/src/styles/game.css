@@ -252,6 +252,10 @@ html[data-board-display="fill"] .game .board {
   box-shadow: none;
 }
 
+.switch-toggle {
+  margin-left: auto;
+}
+
 .dpad {
   display: grid;
   grid-template-columns: repeat(3, clamp(46px, 12vw, 58px));
