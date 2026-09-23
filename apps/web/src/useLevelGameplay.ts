@@ -60,10 +60,41 @@ export function useLevelGameplay(
     }
   }, [runner]);
 
+  const pauseTimer = useCallback((reason: "visibility" | "animation") => {
+    if (timerPauseReasonsRef.current.has(reason)) return;
+    if (timerPauseReasonsRef.current.size === 0) {
+      timerPausedAtRef.current = Date.now();
+    }
+    timerPauseReasonsRef.current.add(reason);
+  }, []);
+
+  const resumeTimer = useCallback((reason: "visibility" | "animation") => {
+    if (!timerPauseReasonsRef.current.delete(reason)) return;
+    if (timerPauseReasonsRef.current.size > 0) return;
+    const pausedAt = timerPausedAtRef.current;
+    if (pausedAt === null) return;
+    setStartedAt((current) => current + (Date.now() - pausedAt));
+    timerPausedAtRef.current = null;
+  }, []);
+
+  const pauseForAnimation = useCallback(
+    (baseDurationMs: number) => {
+      pauseTimer("animation");
+      if (animationPauseTimeoutRef.current !== null) {
+        window.clearTimeout(animationPauseTimeoutRef.current);
+      }
+      animationPauseTimeoutRef.current = window.setTimeout(() => {
+        animationPauseTimeoutRef.current = null;
+        resumeTimer("animation");
+      }, getAnimationDuration(baseDurationMs));
+    },
+    [pauseTimer, resumeTimer],
+  );
+
   useEffect(() => {
     if (state.completed || state.gameOver) return;
     const interval = window.setInterval(() => {
-      if (pauseStartedAtRef.current !== null) return;
+      if (timerPauseReasonsRef.current.size > 0) return;
       setElapsedMs(Date.now() - startedAt);
     }, 100);
     return () => window.clearInterval(interval);
