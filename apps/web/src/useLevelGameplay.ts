@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LevelRunner } from "@duality/game";
 import type { Level } from "@duality/level-format";
+import { getAnimationDuration } from "./animationPreferences";
 import {
   playSound,
   setAmbientMuted,
