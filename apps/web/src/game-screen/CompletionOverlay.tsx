@@ -1,7 +1,7 @@
 import { Button } from "../components/Button";
 import { ArrowRight, ResetIcon as Reset } from "../components/Icons";
-import { BallCharacter, SquareCharacter } from "../components/Characters";
-import { useEffect, useRef, useState } from "react";
+import { OverlayIllustration } from "../components/OverlayIllustration";
+import { useEffect, useState } from "react";
 
 export function CompletionOverlay({
   worldIndex,
@@ -59,25 +59,9 @@ export function CompletionOverlay({
         aria-modal="true"
         aria-labelledby="completion-title"
       >
-        {changingWorld ? (
-          <div className="overlay-character-pair" aria-hidden="true">
-            <BallCharacter
-              size={76}
-              expression="happy"
-              className="celebration-character"
-            />
-            <span className="celebration-arrow">→</span>
-            <SquareCharacter
-              size={76}
-              expression="happy"
-              className="celebration-character"
-            />
-          </div>
-        ) : (
-          <div className="overlay-character" aria-hidden="true">
-            <BallCharacter size={76} expression="happy" />
-          </div>
-        )}
+        <OverlayIllustration
+          variant={changingWorld ? "world-transition" : "victory"}
+        />
         <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
         <p>{moves} coups</p>
         {changingWorld && (
