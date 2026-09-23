@@ -41,8 +41,11 @@ export function WorldLevels() {
           {world.levels.length} NIVEAUX
         </span>
         <span>
-          {world.levels.reduce((total, level) => total + (getLevelResult(level.id)?.stars ?? 0), 0)}/
-          {world.levels.length * 3} ★
+          {world.levels.reduce(
+            (total, level) => total + (getLevelResult(level.id)?.stars ?? 0),
+            0,
+          )}
+          /{world.levels.length * 3} ★
         </span>
       </div>
       <div className="levels">
@@ -60,7 +63,10 @@ export function WorldLevels() {
               {done ? (
                 <>
                   <span>{String(index + 1).padStart(2, "0")}</span>
-                  <span className="level-stars" aria-label={`${getLevelResult(level.id)?.stars ?? 1} étoiles`}>
+                  <span
+                    className="level-stars"
+                    aria-label={`${getLevelResult(level.id)?.stars ?? 1} étoiles`}
+                  >
                     {"★".repeat(getLevelResult(level.id)?.stars ?? 1)}
                   </span>
                 </>

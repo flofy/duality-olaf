@@ -83,7 +83,10 @@ export function CompletionOverlay({
         <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
 
         {stars !== null && (
-          <div className="completion-stars" aria-label={`${stars} étoiles sur 3`}>
+          <div
+            className="completion-stars"
+            aria-label={`${stars} étoiles sur 3`}
+          >
             {Array.from({ length: 3 }, (_, index) => (
               <span key={index} className={index < stars ? "earned" : ""}>
                 ★
@@ -111,7 +114,10 @@ export function CompletionOverlay({
         </div>
 
         {optimalMoves !== null && (
-          <div className="completion-progress" aria-label="Efficacité des coups">
+          <div
+            className="completion-progress"
+            aria-label="Efficacité des coups"
+          >
             <div
               className="completion-progress-bar"
               style={{

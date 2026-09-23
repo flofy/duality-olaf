@@ -23,7 +23,9 @@ function readProgress(): Progress {
       const parsed = JSON.parse(raw) as Partial<Progress>;
       return {
         completed: Array.isArray(parsed.completed)
-          ? parsed.completed.filter((id): id is string => typeof id === "string")
+          ? parsed.completed.filter(
+              (id): id is string => typeof id === "string",
+            )
           : [],
         results:
           parsed.results && typeof parsed.results === "object"

@@ -4,7 +4,11 @@ import { useNavigate } from "react-router";
 import { GameBoard } from "./GameBoard";
 import { getActiveThemeName } from "./theme";
 import { resolveLevelSkin } from "./skins";
-import { calculateLevelResult, completeLevel, getNextWorld } from "./progression";
+import {
+  calculateLevelResult,
+  completeLevel,
+  getNextWorld,
+} from "./progression";
 import { worlds } from "./levels/campaign";
 import { useLevelGameplay } from "./useLevelGameplay";
 import { solveLevel } from "@duality/game";
@@ -42,13 +46,14 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
 
   const { commands, recordMove, recordSwitch, clear } = useDebugCommands();
 
-  const { state, movement, move, reset, switchForm, elapsedMs } = useLevelGameplay(
-    level,
-    () => navigate(`/world/${world.id}`),
-    recordMove,
-    recordSwitch,
-    clear,
-  );
+  const { state, movement, move, reset, switchForm, elapsedMs } =
+    useLevelGameplay(
+      level,
+      () => navigate(`/world/${world.id}`),
+      recordMove,
+      recordSwitch,
+      clear,
+    );
 
   useDebugShortcuts({
     commands,
@@ -62,7 +67,10 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
   const completionResult = useMemo(() => {
     if (!state.completed) return null;
     const solution = solveLevel(level);
-    const optimalMoves = solution.solvable && solution.moves !== null ? solution.moves : state.moves;
+    const optimalMoves =
+      solution.solvable && solution.moves !== null
+        ? solution.moves
+        : state.moves;
     return calculateLevelResult(state.moves, optimalMoves, elapsedMs);
   }, [elapsedMs, level, state.completed, state.moves]);
 

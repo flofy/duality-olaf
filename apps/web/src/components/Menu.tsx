@@ -55,12 +55,22 @@ export function Menu() {
           <span>PROGRESSION</span>
           <strong>{progress.percentage}%</strong>
         </div>
-        <div className="campaign-progress-track" aria-label={`${progress.percentage}% de complétion`}>
-          <div className="campaign-progress-fill" style={{ width: `${progress.percentage}%` }} />
+        <div
+          className="campaign-progress-track"
+          aria-label={`${progress.percentage}% de complétion`}
+        >
+          <div
+            className="campaign-progress-fill"
+            style={{ width: `${progress.percentage}%` }}
+          />
         </div>
         <div className="campaign-progress-meta">
-          <span>{progress.completed}/{progress.total} niveaux</span>
-          <span>{progress.stars}/{progress.totalStars} ★</span>
+          <span>
+            {progress.completed}/{progress.total} niveaux
+          </span>
+          <span>
+            {progress.stars}/{progress.totalStars} ★
+          </span>
         </div>
       </div>
       <p className="muted">
