@@ -20,7 +20,7 @@ import {
   skinOrder,
   type SkinPreference,
 } from "./skins";
-import { useLevelGameplay } from "./useLevelGameplay";
+import { useLevelGameplay, type GameplaySkin } from "./useLevelGameplay";
 import {
   DEFAULT_BOARD_ZOOM,
   getBoardZoom,
@@ -414,7 +414,7 @@ export function LabGame({
   onBackToGenerator,
 }: {
   level: Level;
-  skin: string;
+  skin: GameplaySkin;
   themeName: ThemeName;
   onCompletionChange: (completion: { moves: number } | null) => void;
   optimalMoves?: number;
