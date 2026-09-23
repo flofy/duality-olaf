@@ -27,60 +27,112 @@
 }
 
 .piece-trail {
+  position: relative;
   width: var(--tile);
   height: var(--tile);
-  z-index: 2;
+  z-index: 4;
   pointer-events: none;
   opacity: 0;
-  animation: pieceTrailFade 500ms ease-out forwards;
-  background: var(--trail-color, #ffffff);
-  filter: blur(1px);
+  animation: pieceTrailPulse 560ms ease-out forwards;
   mix-blend-mode: screen;
+}
+
+.piece-trail::before {
+  content: "";
+  position: absolute;
+  width: 180%;
+  height: 34%;
+  top: 33%;
+  left: 25%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--trail-color) 28%, transparent) 25%,
+    var(--trail-color) 62%,
+    transparent 100%
+  );
+  filter: blur(2px);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--trail-color) 55%, transparent);
 }
 
 .piece-trail::after {
   content: "";
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, #fff8 0 16%, transparent 62%);
-  opacity: 0.7;
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--trail-color) 72%, white 28%) 0 12%, transparent 68%);
+  filter: blur(1px);
 }
 
 .piece-trail--right,
 .piece-trail--left {
-  --trail-color: var(--ball);
+  --trail-color: var(--piece-color, var(--ball));
+}
+
+.piece-trail--left::before {
+  left: -105%;
   background: linear-gradient(
-    to right,
+    270deg,
     transparent 0%,
-    color-mix(in srgb, var(--trail-color) 12%, transparent) 25%,
-    color-mix(in srgb, var(--trail-color) 48%, transparent) 100%
+    color-mix(in srgb, var(--trail-color) 28%, transparent) 25%,
+    var(--trail-color) 62%,
+    transparent 100%
   );
 }
 
 .piece-trail--down,
 .piece-trail--up {
-  --trail-color: var(--ball);
+  --trail-color: var(--piece-color, var(--ball));
+}
+
+.piece-trail--down::before {
+  width: 34%;
+  height: 180%;
+  left: 33%;
+  top: 25%;
   background: linear-gradient(
-    to bottom,
+    180deg,
     transparent 0%,
-    color-mix(in srgb, var(--trail-color) 12%, transparent) 25%,
-    color-mix(in srgb, var(--trail-color) 48%, transparent) 100%
+    color-mix(in srgb, var(--trail-color) 28%, transparent) 25%,
+    var(--trail-color) 62%,
+    transparent 100%
   );
 }
 
-@keyframes pieceTrailFade {
+.piece-trail--up::before {
+  width: 34%;
+  height: 180%;
+  left: 33%;
+  top: -105%;
+  background: linear-gradient(
+    0deg,
+    transparent 0%,
+    color-mix(in srgb, var(--trail-color) 28%, transparent) 25%,
+    var(--trail-color) 62%,
+    transparent 100%
+  );
+}
+
+@keyframes pieceTrailPulse {
   0% {
-    opacity: 0.78;
-    scale: 1;
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  18% {
+    opacity: 0.95;
+    transform: scale(1.08);
+  }
+  68% {
+    opacity: 0.52;
+    transform: scale(0.94);
   }
   100% {
     opacity: 0;
-    scale: 0.38;
+    transform: scale(0.72);
   }
 }
 
-/* Little manga run: the ball's feet alternate while the body bobs. */
 @keyframes ballLegLeft {
   0%,
   100% {
