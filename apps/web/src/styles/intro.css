@@ -27,7 +27,7 @@
   background-size: 40px 40px;
   transform: perspective(500px) rotateX(55deg) translateY(20%);
   transform-origin: center bottom;
-  animation: grid-drift 7s linear infinite;
+  animation: grid-drift calc(7s * var(--animation-scale)) linear infinite;
   pointer-events: none;
 }
 
@@ -51,7 +51,7 @@
 
 .intro-ball {
   color: var(--ball);
-  animation: intro-float 1.8s ease-in-out infinite;
+  animation: intro-float calc(1.8s * var(--animation-scale)) ease-in-out infinite;
 }
 
 .intro-square {
