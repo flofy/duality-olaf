@@ -265,32 +265,10 @@ html[data-board-display="fill"] .game .board {
   border-radius: 8px !important;
 }
 
-.switch-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
+.switch-toggle .switch-form-label {
   font-size: 10px;
-  font-weight: 700;
-}
-
-.switch-label > span {
-  transition:
-    opacity 120ms ease,
-    transform 120ms ease,
-    text-shadow 120ms ease;
-}
-
-.switch-form-active {
-  color: var(--accent);
-  text-shadow: 0 0 6px color-mix(in srgb, var(--accent) 55%, transparent);
-  transform: scale(1.05);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .switch-label > span {
-    transition: none;
-  }
+  font-weight: 800;
+  letter-spacing: 0.5px;
 }
 
 .dpad {
