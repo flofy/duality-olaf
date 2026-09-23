@@ -185,7 +185,7 @@ export const ArrowDown = ({
 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <path
-      d="M12 5v14m-7-7 7 7"
+      d="M12 5v14m-5-7 5 7 5-7"
       stroke={color}
       strokeWidth="2.4"
       strokeLinecap="round"
@@ -201,7 +201,7 @@ export const ArrowLeft = ({
 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <path
-      d="M19 12H5m7-7-7 7"
+      d="M19 12H5m7-5-7 5 7 5"
       stroke={color}
       strokeWidth="2.4"
       strokeLinecap="round"
@@ -217,7 +217,7 @@ export const ArrowRight = ({
 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
     <path
-      d="M5 12h14m-7-7 7 7"
+      d="M5 12h14m-7-5 7 5-7 5"
       stroke={color}
       strokeWidth="2.4"
       strokeLinecap="round"
