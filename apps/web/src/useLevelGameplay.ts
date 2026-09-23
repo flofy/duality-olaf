@@ -204,6 +204,12 @@ export function useLevelGameplay(
     setMovement(null);
     setStartedAt(Date.now());
     setElapsedMs(0);
+    timerPauseReasonsRef.current.clear();
+    timerPausedAtRef.current = null;
+    if (animationPauseTimeoutRef.current !== null) {
+      window.clearTimeout(animationPauseTimeoutRef.current);
+      animationPauseTimeoutRef.current = null;
+    }
     void startAudio();
     void playSound("reset");
     onReset?.();
