@@ -32,9 +32,7 @@ export function GameBoard({
   const movementDirectionClass = movement
     ? `piece-moving--${movement.direction.x > 0 ? "right" : movement.direction.x < 0 ? "left" : movement.direction.y > 0 ? "down" : "up"}`
     : "";
-  const activePieceClass = movement
-    ? "piece--movement-hidden"
-    : "";
+  const activePieceClass = movement ? "piece--movement-hidden" : "";
   const movementDistance = movement?.distance ?? 0;
   const moveX =
     movement?.direction.x === 1
