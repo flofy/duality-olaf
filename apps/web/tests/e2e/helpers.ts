@@ -3,7 +3,7 @@ import type { SolverCommand } from "@duality/game";
 import type { Level } from "@duality/level-format";
 
 /** Progress storage key, mirroring src/progression.ts. */
-export const PROGRESS_KEY = "duality.progress.v1";
+export const PROGRESS_KEY = "duality.progress.v2";
 
 /** Le plateau de jeu d'une partie (par opposition au playground dev). */
 export const board = (page: Page): Locator => page.locator(".game .board");
