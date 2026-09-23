@@ -5,6 +5,7 @@ import {
   isLevelCompleted,
   isWorldUnlocked,
   getNextWorld,
+  getLevelResult,
 } from "../progression";
 import { ArrowLeft, ArrowRight } from "./Icons";
 import { Button } from "./Button";
@@ -34,6 +35,16 @@ export function WorldLevels() {
         <b>MONDE {world.id}</b>
       </div>
       <h2 className="subtitle">{world.name.toUpperCase()}</h2>
+      <div className="world-progress-summary">
+        <span>
+          {world.levels.filter((level) => isLevelCompleted(level.id)).length}/
+          {world.levels.length} NIVEAUX
+        </span>
+        <span>
+          {world.levels.reduce((total, level) => total + (getLevelResult(level.id)?.stars ?? 0), 0)}/
+          {world.levels.length * 3} ★
+        </span>
+      </div>
       <div className="levels">
         {world.levels.map((level, index) => {
           const unlocked =
@@ -46,11 +57,18 @@ export function WorldLevels() {
               onClick={() => navigate(`/world/${world.id}/level/${level.id}`)}
               key={level.id}
             >
-              {done
-                ? "✓"
-                : unlocked
-                  ? String(index + 1).padStart(2, "0")
-                  : "🔒"}
+              {done ? (
+                <>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <span className="level-stars" aria-label={`${getLevelResult(level.id)?.stars ?? 1} étoiles`}>
+                    {"★".repeat(getLevelResult(level.id)?.stars ?? 1)}
+                  </span>
+                </>
+              ) : unlocked ? (
+                String(index + 1).padStart(2, "0")
+              ) : (
+                "🔒"
+              )}
             </button>
           );
         })}
