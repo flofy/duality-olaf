@@ -23,6 +23,7 @@ import { Intro } from "./components/Intro";
 import { Menu } from "./components/Menu";
 import { WorldLevels } from "./components/WorldLevels";
 import { Help } from "./components/Help";
+import { UpdateBanner } from "./components/UpdateBanner";
 
 import "./style.css";
 
@@ -70,6 +71,7 @@ function AppLayout() {
 
   return (
     <main className="app" style={vars()}>
+      <UpdateBanner updateSW={updateSW} />
       {/* inert : menu ouvert, la page derrière n'est ni cliquable ni focusable.
           Le burger reste atteignable : il vit à côté, pas dans .shell. */}
       <div className="shell app-enter" inert={menuOpen}>
