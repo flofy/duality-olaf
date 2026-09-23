@@ -207,22 +207,36 @@ export const SwitchForm = ({
   size = 24,
   color = "#fff",
   className,
-  form = "either",
-}: IconProps & { form?: "ball" | "square" | "either" }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
-    {form === "ball" ? (
-      <circle cx="12" cy="12" r="6" fill={color} />
-    ) : form === "square" ? (
-      <rect x="6" y="6" width="12" height="12" rx="2" fill={color} />
-    ) : (
-      <>
-        <circle cx="8" cy="12" r="4" fill={color} />
-        <rect x="13" y="10" width="6" height="6" rx="1" fill={color} />
-        <path d="M10 12h3" stroke={color} strokeWidth="2" />
-      </>
-    )}
-  </svg>
-);
+  activeForm = "either",
+}: IconProps & { activeForm?: "ball" | "square" | "either" }) => {
+  const ballColor =
+    activeForm === "ball" ? "var(--ball, #fff)" : "color-mix(in srgb, var(--ball, #fff) 38%, var(--muted, #888))";
+  const squareColor =
+    activeForm === "square" ? "var(--square, #fff)" : "color-mix(in srgb, var(--square, #fff) 38%, var(--muted, #888))";
+  const switchColor = activeForm === "either" ? color : "var(--accent, #ffd447)";
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
+      <circle cx="6.5" cy="12" r="3.5" fill={ballColor} />
+      <rect
+        x="14"
+        y="8.5"
+        width="7"
+        height="7"
+        rx="1.2"
+        fill={squareColor}
+      />
+      <path
+        d="M10 9.5 13.5 12 10 14.5M13.5 12H9.5"
+        stroke={switchColor}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </svg>
+  );
+};
 export const ResetIcon = ({
   size = 24,
   color = "#fff",
