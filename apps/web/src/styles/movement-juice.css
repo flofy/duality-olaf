@@ -1,16 +1,25 @@
 /* Movement feedback: smooth continuous travel with a restrained directional streak. */
 @keyframes pieceMove {
   from {
-    transform: translate3d(var(--move-x), var(--move-y), 0);
-  }
-  to {
     transform: translate3d(0, 0, 0);
   }
+  to {
+    transform: translate3d(var(--move-x), var(--move-y), 0);
+  }
+}
+
+.piece--movement-hidden {
+  opacity: 0;
+}
+
+.movement-overlay {
+  z-index: 5;
+  pointer-events: none;
 }
 
 .piece-moving--active {
   animation: pieceMove
-    calc(var(--move-duration, 320ms) * var(--animation-scale)) linear;
+    calc(var(--move-duration, 320ms) * var(--animation-scale)) linear forwards;
   transform-origin: center center;
   will-change: transform;
   z-index: 5;
