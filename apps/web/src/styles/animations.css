@@ -12,7 +12,7 @@
 }
 
 .fire-pulse {
-  animation: firePulse 900ms ease-in-out infinite;
+  animation: firePulse calc(900ms * var(--animation-scale)) ease-in-out infinite;
   transform-origin: center bottom;
 }
 
@@ -33,7 +33,7 @@
 }
 
 .sparkle {
-  animation: sparkle 2s infinite ease-in-out;
+  animation: sparkle calc(2s * var(--animation-scale)) infinite ease-in-out;
   transform-origin: center;
 }
 
@@ -49,7 +49,7 @@
 }
 
 .app-enter {
-  animation: fadeIn 0.5s ease forwards;
+  animation: fadeIn calc(0.5s * var(--animation-scale)) ease forwards;
 }
 
 @keyframes pieceMove {
@@ -65,7 +65,7 @@
 }
 
 .piece-moving {
-  animation: pieceMove 0.3s ease;
+  animation: pieceMove calc(0.3s * var(--animation-scale)) ease;
 }
 
 @keyframes doorOpen {
@@ -84,7 +84,7 @@
 }
 
 .door-open {
-  animation: doorOpen 0.3s ease;
+  animation: doorOpen calc(0.3s * var(--animation-scale)) ease;
 }
 
 @keyframes buttonHover {
@@ -99,10 +99,10 @@
 }
 
 button {
-  transition: all 0.2s ease;
+  transition: all calc(0.2s * var(--animation-scale)) ease;
 }
 button:hover:not(:disabled) {
-  animation: buttonHover 0.2s ease;
+  animation: buttonHover calc(0.2s * var(--animation-scale)) ease;
 }
 
 @keyframes slideIn {
