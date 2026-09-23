@@ -172,7 +172,7 @@ const AMBIENT_TRACKS = [
 
 function getAmbientTrack(levelId: string | undefined) {
   if (!levelId) return AMBIENT_TRACKS[0];
-  const match = /world-(\\d+)-level-(\\d+)/.exec(levelId);
+  const match = /world-(\d+)-level-(\d+)/.exec(levelId);
   const world = Number(match?.[1] ?? 1);
   const level = Number(match?.[2] ?? 1);
   return AMBIENT_TRACKS[(world * 3 + level - 4) % AMBIENT_TRACKS.length] ?? AMBIENT_TRACKS[0];
