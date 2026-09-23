@@ -256,13 +256,41 @@ html[data-board-display="fill"] .game .board {
   margin-left: auto;
 }
 
-/* The toggle silhouette previews the form it will switch to. */
+/* The toggle silhouette reflects the currently active form. */
 .switch-toggle-ball {
   border-radius: 50% !important;
 }
 
 .switch-toggle-square {
   border-radius: 8px !important;
+}
+
+.switch-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.switch-label > span {
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease,
+    text-shadow 120ms ease;
+}
+
+.switch-form-active {
+  color: var(--accent);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--accent) 55%, transparent);
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .switch-label > span {
+    transition: none;
+  }
 }
 
 .dpad {
