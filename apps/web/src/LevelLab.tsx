@@ -427,6 +427,10 @@ export function LabGame({
     () => {
       navigate("/dev/levels");
     },
+    undefined,
+    undefined,
+    undefined,
+    skin,
   );
 
   useEffect(() => {
