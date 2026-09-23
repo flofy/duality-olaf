@@ -207,11 +207,20 @@ export const SwitchForm = ({
   size = 24,
   color = "#fff",
   className,
-}: IconProps) => (
+  form = "either",
+}: IconProps & { form?: "ball" | "square" | "either" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
-    <circle cx="8" cy="12" r="4" fill={color} />
-    <rect x="13" y="10" width="6" height="6" rx="1" fill={color} />
-    <path d="M10 12h3" stroke={color} strokeWidth="2" />
+    {form === "ball" ? (
+      <circle cx="12" cy="12" r="6" fill={color} />
+    ) : form === "square" ? (
+      <rect x="6" y="6" width="12" height="12" rx="2" fill={color} />
+    ) : (
+      <>
+        <circle cx="8" cy="12" r="4" fill={color} />
+        <rect x="13" y="10" width="6" height="6" rx="1" fill={color} />
+        <path d="M10 12h3" stroke={color} strokeWidth="2" />
+      </>
+    )}
   </svg>
 );
 export const ResetIcon = ({
