@@ -187,6 +187,7 @@ export function GameBoard({
             {
               gridColumn: movement.from.x + 1,
               gridRow: movement.from.y + 1,
+              "--trail-length": trailLength,
               "--piece-color":
                 state.activeForm === "ball"
                   ? hexToCss(themes[themeName].ball)
