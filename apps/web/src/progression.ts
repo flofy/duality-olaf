@@ -129,10 +129,6 @@ export function completeLevel(
   return progress.results[levelId] ?? null;
 }
 
-function resetProgress(): void {
-  localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem("duality.progress.v1");
-}
 
 export function getCompletedCount(): number {
   return readProgress().completed.length;
