@@ -80,6 +80,7 @@ export function useLevelGameplay(
 
   const pauseForAnimation = useCallback(
     (baseDurationMs: number) => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       pauseTimer("animation");
       if (animationPauseTimeoutRef.current !== null) {
         window.clearTimeout(animationPauseTimeoutRef.current);
