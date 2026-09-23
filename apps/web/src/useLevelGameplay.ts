@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LevelRunner } from "@duality/game";
 import type { Level } from "@duality/level-format";
-import { getAnimationDuration } from "./animationPreferences";
 import {
   playSound,
   setAmbientMuted,
@@ -27,6 +26,12 @@ const keyboardDirections: Record<string, GameplayDirection> = {
   ArrowUp: { x: 0, y: -1 },
   ArrowDown: { x: 0, y: 1 },
 };
+
+const FAST_ANIMATION_SCALE = 0.65;
+
+function getAnimationDuration(baseMs: number) {
+  return Math.round(baseMs * FAST_ANIMATION_SCALE);
+}
 
 function countOpenDoors(doors: Record<string, boolean>) {
   return Object.values(doors).filter(Boolean).length;
@@ -89,6 +94,7 @@ export function useLevelGameplay(
       }
       animationPauseTimeoutRef.current = window.setTimeout(() => {
         animationPauseTimeoutRef.current = null;
+        setMovement(null);
         resumeTimer("animation");
       }, getAnimationDuration(baseDurationMs));
     },
