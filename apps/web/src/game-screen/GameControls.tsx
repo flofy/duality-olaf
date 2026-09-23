@@ -45,6 +45,14 @@ export function GameControls({
           icon={<SwitchForm size={24} activeForm={activeForm} />}
           label="SWITCH"
           onClick={onSwitch}
+          onPointerDown={(event) => {
+            event.stopPropagation();
+          }}
+          onPointerUp={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onSwitch();
+          }}
           className={`switch-toggle switch-toggle-${activeForm}`}
         />
       )}
