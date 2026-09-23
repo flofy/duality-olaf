@@ -51,7 +51,15 @@ export const Button = ({
   return (
     <button
       className={`modern-button ${className}`}
-      onClick={onClick}
+      onClick={(event) => {
+        // Pointer activation is handled directly on pointerup when supplied.
+        // Keep click for keyboard/assistive activation (detail === 0) without
+        // firing a second time after a touch/mouse pointerup.
+        if (onPointerUp && event.detail !== 0) return;
+        onClick(event);
+      }}
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
       disabled={disabled}
       aria-label={ariaLabel}
       style={{
@@ -164,6 +172,8 @@ type CenterDPadButtonProps = {
   icon: ReactNode;
   label: ReactNode;
   onClick: MouseEventHandler<HTMLButtonElement>;
+  onPointerDown?: React.PointerEventHandler<HTMLButtonElement>;
+  onPointerUp?: React.PointerEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   className?: string;
 };
@@ -171,6 +181,8 @@ export const CenterDPadButton = ({
   icon,
   label,
   onClick,
+  onPointerDown,
+  onPointerUp,
   disabled = false,
   className = "",
 }: CenterDPadButtonProps) => {
