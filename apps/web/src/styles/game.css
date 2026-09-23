@@ -30,6 +30,8 @@
      Sélecteur .game .board : nécessaire pour l'emporter sur svg-styles.css
      (importé après, mêmes propriétés en width/height 100%). */
   --tile: min(72px, calc(100cqw / var(--cols)), calc(100cqh / var(--rows)));
+  --cell-width: calc(100% / var(--cols));
+  --cell-height: calc(100% / var(--rows));
   background: var(--board);
   box-shadow: 0 12px 35px #0008;
   border-radius: 3px;
