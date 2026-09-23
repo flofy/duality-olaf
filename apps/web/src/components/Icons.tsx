@@ -210,22 +210,20 @@ export const SwitchForm = ({
   activeForm = "either",
 }: IconProps & { activeForm?: "ball" | "square" | "either" }) => {
   const ballColor =
-    activeForm === "ball" ? "var(--ball, #fff)" : "color-mix(in srgb, var(--ball, #fff) 38%, var(--muted, #888))";
+    activeForm === "ball"
+      ? "var(--ball, #fff)"
+      : "color-mix(in srgb, var(--ball, #fff) 38%, var(--muted, #888))";
   const squareColor =
-    activeForm === "square" ? "var(--square, #fff)" : "color-mix(in srgb, var(--square, #fff) 38%, var(--muted, #888))";
-  const switchColor = activeForm === "either" ? color : "var(--accent, #ffd447)";
+    activeForm === "square"
+      ? "var(--square, #fff)"
+      : "color-mix(in srgb, var(--square, #fff) 38%, var(--muted, #888))";
+  const switchColor =
+    activeForm === "either" ? color : "var(--accent, #ffd447)";
 
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
       <circle cx="6.5" cy="12" r="3.5" fill={ballColor} />
-      <rect
-        x="14"
-        y="8.5"
-        width="7"
-        height="7"
-        rx="1.2"
-        fill={squareColor}
-      />
+      <rect x="14" y="8.5" width="7" height="7" rx="1.2" fill={squareColor} />
       <path
         d="M10 9.5 13.5 12 10 14.5M13.5 12H9.5"
         stroke={switchColor}
