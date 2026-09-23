@@ -242,6 +242,14 @@ html[data-board-display="fill"] .game .board {
   user-select: none;
   -webkit-touch-callout: none;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.controls button:focus,
+.controls button:focus-visible,
+.controls button:active {
+  outline: none;
+  box-shadow: none;
 }
 
 .dpad {
