@@ -20,8 +20,11 @@
   padding: clamp(22px, 5vw, 32px);
   text-align: center;
   color: var(--text);
-  background:
-    linear-gradient(145deg, color-mix(in srgb, var(--buttonBg) 92%, #fff 8%), var(--background));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--buttonBg) 92%, #fff 8%),
+    var(--background)
+  );
   border: 2px solid color-mix(in srgb, var(--accent) 88%, #fff 12%);
   border-radius: 14px;
   box-shadow:
@@ -54,7 +57,29 @@
   border-top: 3px solid var(--accent);
   border-right: 1px solid #fff3;
   border-bottom: 1px solid #fff2;
-  clip-path: polygon(0 0, 18% 0, 18% 2px, 2px 2px, 2px 18%, 0 18%, 0 82%, 2px 82%, 2px 98%, 18% 98%, 18% 100%, 82% 100%, 82% 98%, 98% 98%, 98% 82%, 100% 82%, 100% 18%, 98% 18%, 98% 2px, 82% 2px, 82% 0);
+  clip-path: polygon(
+    0 0,
+    18% 0,
+    18% 2px,
+    2px 2px,
+    2px 18%,
+    0 18%,
+    0 82%,
+    2px 82%,
+    2px 98%,
+    18% 98%,
+    18% 100%,
+    82% 100%,
+    82% 98%,
+    98% 98%,
+    98% 82%,
+    100% 82%,
+    100% 18%,
+    98% 18%,
+    98% 2px,
+    82% 2px,
+    82% 0
+  );
 }
 
 .modal h2 {
