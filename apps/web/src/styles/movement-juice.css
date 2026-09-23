@@ -108,7 +108,7 @@
   width: 34%;
   height: var(--trail-length, 180%);
   left: 33%;
-  top: calc(var(--trail-length, 180%) * -0.5833);
+  top: calc(75% - var(--trail-length, 180%));
   background: linear-gradient(
     0deg,
     transparent 0%,
