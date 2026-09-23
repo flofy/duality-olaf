@@ -29,7 +29,8 @@
 }
 
 .sparkle {
-  animation: starPulseNoRotate 1.8s ease-in-out infinite;
+  animation: starPulseNoRotate calc(1.8s * var(--animation-scale)) ease-in-out
+    infinite;
   transform-origin: center;
 }
 
