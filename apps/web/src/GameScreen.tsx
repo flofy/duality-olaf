@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react";
 import type { Level } from "@duality/level-format";
 import { useNavigate } from "react-router";
-import { GameBoard } from "./GameBoard";
 import { getActiveThemeName } from "./theme";
 import { resolveLevelSkin } from "./skins";
 import {
@@ -12,20 +11,16 @@ import {
 import { worlds } from "./levels/campaign";
 import { useLevelGameplay } from "./useLevelGameplay";
 import { solveLevel } from "@duality/game";
-import { Button } from "./components/Button";
-import { ResetIcon as Reset } from "./components/Icons";
 import { CompletionOverlay } from "./game-screen/CompletionOverlay";
 import { DebugPanel } from "./game-screen/DebugPanel";
-import { GameControls } from "./game-screen/GameControls";
-import { GameHud } from "./game-screen/GameHud";
 import { GameOverOverlay } from "./game-screen/GameOverOverlay";
+import { LevelGameplayView } from "./game-screen/LevelGameplayView";
 import { GameTopbar } from "./game-screen/GameTopbar";
 import {
   isDevtoolsEnabled,
   useDebugCommands,
 } from "./game-screen/useDebugCommands";
 import { useDebugShortcuts } from "./game-screen/useDebugShortcuts";
-import { useSwipeControls } from "./game-screen/useSwipeControls";
 
 export function Game({ level, worldId }: { level: Level; worldId: number }) {
   const navigate = useNavigate();
@@ -62,8 +57,6 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
     onClear: clear,
   });
 
-  const { onPointerDown, onPointerUp } = useSwipeControls(move);
-
   const completionResult = useMemo(() => {
     if (!state.completed) return null;
     const solution = solveLevel(level);
@@ -87,47 +80,23 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
   }, [reset]);
 
   return (
-    <section
-      className="game"
-      onPointerDown={onPointerDown}
-      onPointerUp={onPointerUp}
-    >
+    <section className="game">
       <GameTopbar
         worldId={world.id}
         worldIndex={worldIndex}
         onBack={() => navigate(`/world/${world.id}`)}
         onReset={reset}
       />
-      <div className="board-wrap">
-        <GameBoard
-          level={level}
-          state={state}
-          skin={seasonalTheme ?? "default"}
-          themeName={getActiveThemeName()}
-          movement={movement}
-        />
-      </div>
-      <GameHud
+      <LevelGameplayView
         level={level}
-        activeForm={state.activeForm}
-        starsRemaining={state.stars.length}
-        moves={state.moves}
+        state={state}
+        movement={movement}
+        skin={seasonalTheme ?? "default"}
+        themeName={getActiveThemeName()}
+        move={move}
+        switchForm={switchForm}
+        onReset={reset}
       />
-      <GameControls
-        hasSquare={Boolean(level.square)}
-        activeForm={state.activeForm}
-        onMove={move}
-        onSwitch={switchForm}
-      />
-      <div className="mobile-restart">
-        <Button
-          icon={<Reset size={18} />}
-          label="RECOMMENCER"
-          onClick={reset}
-          variant="secondary"
-          className="restart-button"
-        />
-      </div>
       {isDevtoolsEnabled && (
         <DebugPanel
           level={level}
