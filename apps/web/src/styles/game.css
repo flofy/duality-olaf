@@ -256,6 +256,15 @@ html[data-board-display="fill"] .game .board {
   margin-left: auto;
 }
 
+/* The toggle silhouette previews the form it will switch to. */
+.switch-toggle-ball {
+  border-radius: 50% !important;
+}
+
+.switch-toggle-square {
+  border-radius: 8px !important;
+}
+
 .dpad {
   display: grid;
   grid-template-columns: repeat(3, clamp(46px, 12vw, 58px));
