@@ -242,6 +242,11 @@ export function GameBoard({
               gridRow: state.square.y + 1,
               "--move-x": moveX,
               "--move-y": moveY,
+              "--move-x-72": moveX72,
+              "--move-y-72": moveY72,
+              "--move-x-18": moveX18,
+              "--move-y-18": moveY18,
+              "--move-duration": `${moveDuration}ms`,
             } as CSSProperties
           }
           key={`square-${state.square.x}-${state.square.y}`}
