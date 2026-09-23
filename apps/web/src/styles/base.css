@@ -1,4 +1,5 @@
 :root {
+  --animation-scale: 0.65;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   color: #fff;
   background: #080b18;
@@ -84,7 +85,7 @@ body {
 }
 
 .app-enter {
-  animation: app-enter 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: app-enter calc(520ms * var(--animation-scale)) cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes app-enter {
