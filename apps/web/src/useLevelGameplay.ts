@@ -1,7 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LevelRunner } from "@duality/game";
 import type { Level } from "@duality/level-format";
-import { playSound, startAudio, toggleSound, vibrate } from "./audioFeedback";
+import {
+  playSound,
+  setAmbientMuted,
+  startAudio,
+  toggleSound,
+  vibrate,
+} from "./audioFeedback";
 
 export type GameplayDirection = {
   x: -1 | 0 | 1;
@@ -37,21 +43,60 @@ export function useLevelGameplay(
   const [movement, setMovement] = useState<MovementFeedback>(null);
   const [startedAt, setStartedAt] = useState(() => Date.now());
   const [elapsedMs, setElapsedMs] = useState(0);
+  const pauseStartedAtRef = useRef<number | null>(null);
 
   useEffect(() => {
     setState(runner.reset());
     setMovement(null);
     setStartedAt(Date.now());
     setElapsedMs(0);
+    pauseStartedAtRef.current = null;
   }, [runner]);
 
   useEffect(() => {
     if (state.completed || state.gameOver) return;
     const interval = window.setInterval(() => {
+      if (pauseStartedAtRef.current !== null) return;
       setElapsedMs(Date.now() - startedAt);
     }, 100);
     return () => window.clearInterval(interval);
   }, [startedAt, state.completed, state.gameOver]);
+
+  useEffect(() => {
+    const pause = () => {
+      if (pauseStartedAtRef.current !== null) return;
+      pauseStartedAtRef.current = Date.now();
+      setAmbientMuted(true);
+    };
+
+    const resume = () => {
+      const pausedAt = pauseStartedAtRef.current;
+      if (pausedAt === null) return;
+      const now = Date.now();
+      setStartedAt((current) => current + (now - pausedAt));
+      pauseStartedAtRef.current = null;
+      setAmbientMuted(false);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") pause();
+      else resume();
+    };
+
+    const handleBlur = () => pause();
+    const handleFocus = () => resume();
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("blur", handleBlur);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("blur", handleBlur);
+      window.removeEventListener("focus", handleFocus);
+      setAmbientMuted(false);
+    };
+  }, []);
 
   const move = useCallback(
     (direction: GameplayDirection) => {
