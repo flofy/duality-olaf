@@ -162,7 +162,7 @@ export const DPadButton = ({
 
 type CenterDPadButtonProps = {
   icon: ReactNode;
-  label: string;
+  label: ReactNode;
   onClick: MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   className?: string;
