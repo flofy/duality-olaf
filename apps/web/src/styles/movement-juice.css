@@ -1,20 +1,15 @@
-/* Movement feedback: visible continuous motion with anticipation, squash/stretch and a directional streak. */
-@keyframes pieceMoveWave {
-  0% {
-    transform: translate3d(var(--move-x), var(--move-y), 0) scale(0.96, 1.04);
+/* Movement feedback: smooth continuous travel with a restrained directional streak. */
+@keyframes pieceMove {
+  from {
+    transform: translate3d(var(--move-x), var(--move-y), 0);
   }
-  72% {
-    transform: translate3d(var(--move-x-18), var(--move-y-18), 0)
-      scale(1.015, 0.985);
-  }
-  100% {
-    transform: translate3d(0, 0, 0) scale(1, 1);
+  to {
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .piece-moving--active {
-  animation: pieceMoveWave var(--move-duration, 320ms)
-    cubic-bezier(0.16, 1, 0.3, 1);
+  animation: pieceMove var(--move-duration, 320ms) linear;
   transform-origin: center center;
   will-change: transform;
   z-index: 5;
@@ -35,29 +30,29 @@
   content: "";
   position: absolute;
   width: var(--trail-length, 180%);
-  height: 34%;
-  top: 33%;
+  height: 30%;
+  top: 35%;
   left: 25%;
   border-radius: 999px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in srgb, var(--trail-color) 28%, transparent) 25%,
+    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
     var(--trail-color) 62%,
     transparent 100%
   );
   filter: blur(1.5px);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--trail-color) 45%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--trail-color) 40%, transparent);
 }
 
 .piece-trail::after {
   content: "";
   position: absolute;
-  inset: 18%;
+  inset: 24%;
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--trail-color) 72%, white 28%) 0 12%,
+    color-mix(in srgb, var(--trail-color) 62%, white 38%) 0 12%,
     transparent 68%
   );
   filter: blur(1px);
@@ -73,7 +68,7 @@
   background: linear-gradient(
     270deg,
     transparent 0%,
-    color-mix(in srgb, var(--trail-color) 28%, transparent) 25%,
+    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
     var(--trail-color) 62%,
     transparent 100%
   );
@@ -85,28 +80,28 @@
 }
 
 .piece-trail--down::before {
-  width: 34%;
+  width: 30%;
   height: var(--trail-length, 180%);
-  left: 33%;
+  left: 35%;
   top: 25%;
   background: linear-gradient(
     180deg,
     transparent 0%,
-    color-mix(in srgb, var(--trail-color) 28%, transparent) 25%,
+    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
     var(--trail-color) 62%,
     transparent 100%
   );
 }
 
 .piece-trail--up::before {
-  width: 34%;
+  width: 30%;
   height: var(--trail-length, 180%);
-  left: 33%;
+  left: 35%;
   top: calc(75% - var(--trail-length, 180%));
   background: linear-gradient(
     0deg,
     transparent 0%,
-    color-mix(in srgb, var(--trail-color) 28%, transparent) 25%,
+    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
     var(--trail-color) 62%,
     transparent 100%
   );
@@ -115,19 +110,12 @@
 @keyframes pieceTrailPulse {
   0% {
     opacity: 0;
-    transform: scale(0.72);
   }
   18% {
-    opacity: 0.95;
-    transform: scale(1.08);
-  }
-  68% {
-    opacity: 0.52;
-    transform: scale(0.94);
+    opacity: 0.78;
   }
   100% {
     opacity: 0;
-    transform: scale(0.72);
   }
 }
 
