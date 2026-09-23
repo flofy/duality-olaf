@@ -13,6 +13,8 @@ let ambientGain: GainNode | null = null;
 let musicTimer: number | null = null;
 let ambientMuted = false;
 let ambientLevelId: string | null = null;
+let ambientSkin: "default" | "halloween" | "christmas" = "default";
+let ambientTrackKey: string | null = null;
 
 function readBoolean(key: string, fallback = true) {
   try {
@@ -173,7 +175,7 @@ export async function startAmbient(
 
   const track = getAmbientTrack(ambientLevelId ?? undefined, ambientSkin);
   let index = 0;
-  const stepMs = 60_000 / track.bpm / 2;
+  const stepMs = (60_000 / track.bpm) / 2;
 
   const playNote = () => {
     if (!isEnabled() || !isAmbientEnabled() || ambientMuted) return;
