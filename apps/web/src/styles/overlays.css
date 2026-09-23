@@ -20,11 +20,8 @@
   padding: clamp(22px, 5vw, 32px);
   text-align: center;
   color: var(--text);
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--buttonBg) 92%, #fff 8%),
-    var(--background)
-  );
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--buttonBg) 92%, #fff 8%), var(--background));
   border: 2px solid color-mix(in srgb, var(--accent) 88%, #fff 12%);
   border-radius: 14px;
   box-shadow:
@@ -34,28 +31,30 @@
   isolation: isolate;
 }
 
-.modal::before,
-.modal::after {
+/* A crisp glass-like highlight: visible at the edge, but deliberately subtler than a neon glow. */
+.modal::before {
   content: "";
   position: absolute;
-  width: 26px;
-  height: 26px;
+  inset: 3px;
+  height: 42%;
+  border-radius: 10px 10px 42% 42%;
+  background: linear-gradient(180deg, #fff3, transparent 72%);
+  border-top: 1px solid #fff8;
   pointer-events: none;
   z-index: -1;
 }
 
-.modal::before {
-  left: 8px;
-  top: 8px;
+.modal::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  pointer-events: none;
+  z-index: -1;
   border-left: 3px solid var(--accent);
   border-top: 3px solid var(--accent);
-}
-
-.modal::after {
-  right: 8px;
-  bottom: 8px;
-  border-right: 3px solid var(--accent);
-  border-bottom: 3px solid var(--accent);
+  border-right: 1px solid #fff3;
+  border-bottom: 1px solid #fff2;
+  clip-path: polygon(0 0, 18% 0, 18% 2px, 2px 2px, 2px 18%, 0 18%, 0 82%, 2px 82%, 2px 98%, 18% 98%, 18% 100%, 82% 100%, 82% 98%, 98% 98%, 98% 82%, 100% 82%, 100% 18%, 98% 18%, 98% 2px, 82% 2px, 82% 0);
 }
 
 .modal h2 {
@@ -89,9 +88,15 @@
   border: 2px solid color-mix(in srgb, var(--accent) 78%, #fff 22%) !important;
   border-radius: 10px !important;
   box-shadow:
+    inset 0 2px 0 #fff6,
     inset 0 -3px 0 #0004,
     0 4px 0 #0005 !important;
+  background-image: linear-gradient(180deg, #fff3, transparent 48%);
   transform: none !important;
+}
+
+.modal-actions .modern-button:hover {
+  filter: brightness(1.08);
 }
 
 .modal-actions .modern-button:focus-visible {
@@ -99,13 +104,17 @@
   outline-offset: 3px;
 }
 
+/* Reserve a predictable illustration slot so future artwork never competes with the copy. */
 .overlay-character,
 .overlay-character-pair {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 92px;
+  width: 100%;
+  min-height: 132px;
   margin: 0 auto 8px;
+  padding: 6px 12px;
+  box-sizing: border-box;
 }
 
 .overlay-character-pair {
@@ -116,10 +125,11 @@
   color: var(--accent);
   font-size: 28px;
   font-weight: 900;
+  text-shadow: 0 2px 0 #0008;
 }
 
 .overlay-character--defeated {
-  min-height: 108px;
+  min-height: 144px;
 }
 
 .world-transition-message {
@@ -146,6 +156,15 @@
     width: min(94vw, 440px);
     padding: 20px 16px 18px;
     border-radius: 12px;
+  }
+
+  .overlay-character,
+  .overlay-character-pair {
+    min-height: 112px;
+  }
+
+  .overlay-character--defeated {
+    min-height: 124px;
   }
 
   .modal-actions {
