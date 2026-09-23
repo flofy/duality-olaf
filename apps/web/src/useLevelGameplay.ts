@@ -4,7 +4,7 @@ import type { Level } from "@duality/level-format";
 import {
   playSound,
   setAmbientMuted,
-  startAudio,
+  startAmbient,
   toggleSound,
   vibrate,
 } from "./audioFeedback";
@@ -51,7 +51,7 @@ export function useLevelGameplay(
     setStartedAt(Date.now());
     setElapsedMs(0);
     pauseStartedAtRef.current = null;
-    void startAudio(level.id);
+    void startAmbient(level.id);
   }, [level.id, runner]);
 
   useEffect(() => {
@@ -129,7 +129,7 @@ export function useLevelGameplay(
           setMovement(null);
         }
 
-        void startAudio();
+        void startAmbient();
         if (!moved) {
           void playSound("wall");
           vibrate(22);
@@ -167,7 +167,7 @@ export function useLevelGameplay(
     setMovement(null);
     setStartedAt(Date.now());
     setElapsedMs(0);
-    void startAudio();
+    void startAmbient();
     void playSound("reset");
     onReset?.();
   }, [onReset, runner]);
@@ -177,7 +177,7 @@ export function useLevelGameplay(
       if (current.completed || current.gameOver) return current;
       const next = runner.switchForm();
       setMovement(null);
-      void startAudio();
+      void startAmbient();
       void playSound("switch");
       vibrate([10, 25, 10]);
       onSwitch?.();
