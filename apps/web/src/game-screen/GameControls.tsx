@@ -45,14 +45,14 @@ export function GameControls({
           icon={<SwitchForm size={24} color="var(--text)" />}
           label={
             <span className={`switch-label switch-label-${activeForm}`}>
-              <span className={activeForm === "ball" ? "switch-form-active" : ""}>
+              <span
+                className={activeForm === "ball" ? "switch-form-active" : ""}
+              >
                 BOULE
               </span>
               <span aria-hidden="true">↔</span>
               <span
-                className={
-                  activeForm === "square" ? "switch-form-active" : ""
-                }
+                className={activeForm === "square" ? "switch-form-active" : ""}
               >
                 CARRÉ
               </span>
