@@ -5,6 +5,7 @@
 @import "./styles/game.css";
 @import "./styles/overlays.css";
 @import "./styles/pwa.css";
+@import "./styles/pwa-update.css";
 @import "./styles/intro.css";
 @import "./styles/responsive.css";
 @import "./styles/dev.css";
