@@ -42,22 +42,8 @@ export function GameControls({
       </div>
       {hasSquare && (
         <CenterDPadButton
-          icon={<SwitchForm size={24} color="var(--text)" />}
-          label={
-            <span className={`switch-label switch-label-${activeForm}`}>
-              <span
-                className={activeForm === "ball" ? "switch-form-active" : ""}
-              >
-                BOULE
-              </span>
-              <span aria-hidden="true">↔</span>
-              <span
-                className={activeForm === "square" ? "switch-form-active" : ""}
-              >
-                CARRÉ
-              </span>
-            </span>
-          }
+          icon={<SwitchForm size={24} activeForm={activeForm} />}
+          label="SWITCH"
           onClick={onSwitch}
           className={`switch-toggle switch-toggle-${activeForm}`}
         />
