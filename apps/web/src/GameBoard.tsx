@@ -4,25 +4,57 @@ import type { CSSProperties, ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
 import { Fire, Star, Door, Teleporter, SwitchIcon } from "./components/Icons";
 import { BallCharacter, SquareCharacter } from "./components/Characters";
+import type { MovementFeedback } from "./useLevelGameplay";
+
 export function switchGlyph(form: Switch["form"]): string {
   if (form === "ball") return "●";
   if (form === "square") return "■";
   return "⌁";
 }
+
 type GameBoardProps = {
   level: Level;
   state: GameState;
   skin: string;
   themeName: ThemeName;
+  movement?: MovementFeedback;
   children?: ReactNode;
 };
+
 export function GameBoard({
   level,
   state,
   skin,
   themeName,
+  movement,
   children,
 }: GameBoardProps) {
+  const movementDirectionClass = movement
+    ? `piece-moving--${movement.direction.x > 0 ? "right" : movement.direction.x < 0 ? "left" : movement.direction.y > 0 ? "down" : "up"}`
+    : "";
+  const activePieceClass = movement
+    ? `piece-moving piece-moving--active ${movementDirectionClass}`
+    : "piece-moving";
+  const movementDistance = movement?.distance ?? 0;
+  // The piece is rendered at its final cell, so the animation starts exactly
+  // `distance` cells back and converges to the final position.
+  const moveX =
+    movement?.direction.x === 1
+      ? `-${movementDistance * 100}%`
+      : movement?.direction.x === -1
+        ? `${movementDistance * 100}%`
+        : "0%";
+  const moveY =
+    movement?.direction.y === 1
+      ? `-${movementDistance * 100}%`
+      : movement?.direction.y === -1
+        ? `${movementDistance * 100}%`
+        : "0%";
+  // Keep travel speed consistent: long moves take proportionally longer instead of
+  // compressing several cells into the same short animation.
+  const moveDuration = Math.min(520, 160 + movementDistance * 90);
+  const trailLength = `${movementDistance * 100}%`;
+
   return (
     <div
       className={`board ${skin !== "default" ? `seasonal theme-${skin}` : ""}`}
@@ -131,8 +163,18 @@ export function GameBoard({
       ))}
       {isInside(level, state.ball) && (
         <div
-          className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"} piece-moving`}
-          style={{ gridColumn: state.ball.x + 1, gridRow: state.ball.y + 1 }}
+          className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"} ${state.activeForm === "ball" ? activePieceClass : ""}`}
+          style={
+            {
+              gridColumn: state.ball.x + 1,
+              gridRow: state.ball.y + 1,
+              "--move-x": moveX,
+              "--move-y": moveY,
+              "--move-duration": `${moveDuration}ms`,
+              "--trail-length": trailLength,
+              "--piece-color": hexToCss(themes[themeName].ball),
+            } as CSSProperties
+          }
           key={`ball-${state.ball.x}-${state.ball.y}`}
         >
           <BallCharacter
@@ -151,11 +193,18 @@ export function GameBoard({
       )}
       {level.square && isInside(level, state.square) && (
         <div
-          className={`piece square ${state.activeForm === "square" ? "" : "inactive"} piece-moving`}
-          style={{
-            gridColumn: state.square.x + 1,
-            gridRow: state.square.y + 1,
-          }}
+          className={`piece square ${state.activeForm === "square" ? "" : "inactive"} ${state.activeForm === "square" ? activePieceClass : ""}`}
+          style={
+            {
+              gridColumn: state.square.x + 1,
+              gridRow: state.square.y + 1,
+              "--move-x": moveX,
+              "--move-y": moveY,
+              "--move-duration": `${moveDuration}ms`,
+              "--trail-length": trailLength,
+              "--piece-color": hexToCss(themes[themeName].square),
+            } as CSSProperties
+          }
           key={`square-${state.square.x}-${state.square.y}`}
         >
           <SquareCharacter

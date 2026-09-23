@@ -1,27 +1,113 @@
-/* Continuous movement juice: anticipation + squash/stretch + wave. */
-@keyframes pieceMoveWave {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1, 1);
+/* Movement feedback: smooth continuous travel with a restrained directional streak. */
+@keyframes pieceMove {
+  from {
+    transform: translate3d(var(--move-x), var(--move-y), 0);
   }
-  18% {
-    transform: translate3d(-1px, 1px, 0) scale(1.08, 0.92);
+  to {
+    transform: translate3d(0, 0, 0);
   }
-  42% {
-    transform: translate3d(1px, -1px, 0) scale(0.96, 1.06);
-  }
-  68% {
-    transform: translate3d(-0.5px, 0, 0) scale(1.03, 0.98);
-  }
-  100% {
-    transform: translate3d(0, 0, 0) scale(1, 1);
-  }
-}
-.piece-moving {
-  animation: pieceMoveWave 0.32s cubic-bezier(0.22, 0.8, 0.32, 1);
-  transform-origin: center bottom;
 }
 
-/* Little manga run: the ball's feet alternate while the body bobs. */
+.piece-moving--active {
+  animation: pieceMove var(--move-duration, 320ms) linear;
+  transform-origin: center center;
+  will-change: transform;
+  z-index: 5;
+}
+
+.piece-moving--active::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 999px;
+  opacity: 0;
+  animation: pieceTrailPulse var(--move-duration, 320ms) linear forwards;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
+    var(--trail-color) 72%,
+    transparent 100%
+  );
+  filter: blur(1.5px);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--trail-color) 40%, transparent);
+}
+
+.piece-moving--right {
+  --trail-color: var(--piece-color, var(--ball));
+}
+
+.piece-moving--right::after {
+  width: var(--trail-length, 100%);
+  height: 30%;
+  right: 92%;
+  top: 35%;
+}
+
+.piece-moving--left {
+  --trail-color: var(--piece-color, var(--ball));
+}
+
+.piece-moving--left::after {
+  width: var(--trail-length, 100%);
+  height: 30%;
+  left: 92%;
+  top: 35%;
+  background: linear-gradient(
+    270deg,
+    transparent 0%,
+    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
+    var(--trail-color) 72%,
+    transparent 100%
+  );
+}
+
+.piece-moving--down,
+.piece-moving--up {
+  --trail-color: var(--piece-color, var(--ball));
+}
+
+.piece-moving--down::after {
+  width: 30%;
+  height: var(--trail-length, 100%);
+  left: 35%;
+  bottom: 92%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
+    var(--trail-color) 72%,
+    transparent 100%
+  );
+}
+
+.piece-moving--up::after {
+  width: 30%;
+  height: var(--trail-length, 100%);
+  left: 35%;
+  top: 92%;
+  background: linear-gradient(
+    0deg,
+    transparent 0%,
+    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
+    var(--trail-color) 72%,
+    transparent 100%
+  );
+}
+
+@keyframes pieceTrailPulse {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.78;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes ballLegLeft {
   0%,
   100% {
@@ -45,11 +131,11 @@
   transform-box: fill-box;
   transform-origin: top center;
 }
-.piece-moving.is-moving .ball-character-leg-left {
-  animation: ballLegLeft 0.22s ease-in-out 2;
+.piece-moving--active.is-moving .ball-character-leg-left {
+  animation: ballLegLeft 0.28s ease-in-out 2;
 }
-.piece-moving.is-moving .ball-character-leg-right {
-  animation: ballLegRight 0.22s ease-in-out 2;
+.piece-moving--active.is-moving .ball-character-leg-right {
+  animation: ballLegRight 0.28s ease-in-out 2;
 }
 
 /* Star: breathe, never spin. */
@@ -70,10 +156,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .piece-moving,
+  .piece-moving--active,
   .sparkle,
-  .piece-moving .ball-character-leg-left,
-  .piece-moving .ball-character-leg-right {
+  .piece-moving--active .ball-character-leg-left,
+  .piece-moving--active .ball-character-leg-right {
     animation: none;
   }
 }
