@@ -51,7 +51,7 @@ export function GameControls({
           }
           label={activeForm === "ball" ? "CARRÉ" : "BOULE"}
           onClick={onSwitch}
-          className="switch-toggle"
+          className={`switch-toggle switch-toggle-${activeForm === "ball" ? "square" : "ball"}`}
         />
       )}
     </div>
