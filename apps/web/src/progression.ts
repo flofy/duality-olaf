@@ -133,17 +133,6 @@ export function getCompletedCount(): number {
   return readProgress().completed.length;
 }
 
-export function getCompletedStars(): number {
-  return Object.values(readProgress().results).reduce(
-    (total, result) => total + result.stars,
-    0,
-  );
-}
-
-export function getTotalStars(): number {
-  return worlds.reduce((total, world) => total + world.levels.length * 3, 0);
-}
-
 export function getCampaignProgress(): {
   completed: number;
   total: number;
