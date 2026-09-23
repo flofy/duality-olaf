@@ -50,32 +50,7 @@ export function GameBoard({
       : movement?.direction.y === -1
         ? `${movementDistance * 100}%`
         : "0%";
-  const moveX72 =
-    movement?.direction.x === 1
-      ? `-${movementDistance * 72}%`
-      : movement?.direction.x === -1
-        ? `${movementDistance * 72}%`
-        : "0%";
-  const moveY72 =
-    movement?.direction.y === 1
-      ? `-${movementDistance * 72}%`
-      : movement?.direction.y === -1
-        ? `${movementDistance * 72}%`
-        : "0%";
-  const moveX18 =
-    movement?.direction.x === 1
-      ? `-${movementDistance * 18}%`
-      : movement?.direction.x === -1
-        ? `${movementDistance * 18}%`
-        : "0%";
-  const moveY18 =
-    movement?.direction.y === 1
-      ? `-${movementDistance * 18}%`
-      : movement?.direction.y === -1
-        ? `${movementDistance * 18}%`
-        : "0%";
-  const moveDuration = Math.min(420, 260 + movementDistance * 45);
-  const trailLength = `${movementDistance * 100}%`;
+  // Keep travel speed consistent: long moves take proportionally longer instead of\n  // compressing several cells into the same short animation.\n  const moveDuration = Math.min(520, 160 + movementDistance * 90);\n  const trailLength = `${movementDistance * 100}%`;
 
   return (
     <div
@@ -210,10 +185,6 @@ export function GameBoard({
               gridRow: state.ball.y + 1,
               "--move-x": moveX,
               "--move-y": moveY,
-              "--move-x-72": moveX72,
-              "--move-y-72": moveY72,
-              "--move-x-18": moveX18,
-              "--move-y-18": moveY18,
               "--move-duration": `${moveDuration}ms`,
             } as CSSProperties
           }
@@ -242,10 +213,6 @@ export function GameBoard({
               gridRow: state.square.y + 1,
               "--move-x": moveX,
               "--move-y": moveY,
-              "--move-x-72": moveX72,
-              "--move-y-72": moveY72,
-              "--move-x-18": moveX18,
-              "--move-y-18": moveY18,
               "--move-duration": `${moveDuration}ms`,
             } as CSSProperties
           }
