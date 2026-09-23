@@ -52,7 +52,7 @@ export function GameOverOverlay({
         aria-modal="true"
         aria-labelledby="gameover-title"
       >
-        <OverlayIllustration variant="game-over" />
+        <OverlayIllustration variant="game-over" activeForm={activeForm} />
         <h2 id="gameover-title">🔥 OUPS… AUX ENFERS !</h2>
         <p>
           Cette forme a disparu dans les enfers. Elle a clairement pris le
