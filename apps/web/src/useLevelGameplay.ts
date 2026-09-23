@@ -102,17 +102,12 @@ export function useLevelGameplay(
 
   useEffect(() => {
     const pause = () => {
-      if (pauseStartedAtRef.current !== null) return;
-      pauseStartedAtRef.current = Date.now();
+      pauseTimer("visibility");
       setAmbientMuted(true);
     };
 
     const resume = () => {
-      const pausedAt = pauseStartedAtRef.current;
-      if (pausedAt === null) return;
-      const now = Date.now();
-      setStartedAt((current) => current + (now - pausedAt));
-      pauseStartedAtRef.current = null;
+      resumeTimer("visibility");
       setAmbientMuted(false);
     };
 
@@ -134,7 +129,7 @@ export function useLevelGameplay(
       window.removeEventListener("focus", handleFocus);
       setAmbientMuted(false);
     };
-  }, []);
+  }, [pauseTimer, resumeTimer]);
 
   const move = useCallback(
     (direction: GameplayDirection) => {
