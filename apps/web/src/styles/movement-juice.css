@@ -15,97 +15,83 @@
   z-index: 5;
 }
 
-.piece-trail {
-  position: relative;
-  width: var(--tile);
-  height: var(--tile);
-  z-index: 4;
-  pointer-events: none;
-  opacity: 0;
-  animation: pieceTrailPulse var(--move-duration, 320ms) ease-out forwards;
-  mix-blend-mode: screen;
-}
-
-.piece-trail::before {
+.piece-moving--active::after {
   content: "";
   position: absolute;
-  width: var(--trail-length, 100%);
-  height: 30%;
-  top: 35%;
-  left: 0;
+  pointer-events: none;
+  z-index: -1;
   border-radius: 999px;
+  opacity: 0;
+  animation: pieceTrailPulse var(--move-duration, 320ms) linear forwards;
   background: linear-gradient(
     90deg,
     transparent 0%,
     color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
-    var(--trail-color) 62%,
+    var(--trail-color) 72%,
     transparent 100%
   );
   filter: blur(1.5px);
   box-shadow: 0 0 10px color-mix(in srgb, var(--trail-color) 40%, transparent);
 }
 
-.piece-trail::after {
-  content: "";
-  position: absolute;
-  inset: 24%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--trail-color) 62%, white 38%) 0 12%,
-    transparent 68%
-  );
-  filter: blur(1px);
-}
-
-.piece-trail--right {
+.piece-moving--right {
   --trail-color: var(--piece-color, var(--ball));
 }
 
-.piece-trail--left {
+.piece-moving--right::after {
+  width: var(--trail-length, 100%);
+  height: 30%;
+  right: 92%;
+  top: 35%;
+}
+
+.piece-moving--left {
   --trail-color: var(--piece-color, var(--ball));
 }
 
-.piece-trail--left::before {
-  left: calc(100% - var(--trail-length, 100%));
+.piece-moving--left::after {
+  width: var(--trail-length, 100%);
+  height: 30%;
+  left: 92%;
+  top: 35%;
   background: linear-gradient(
     270deg,
     transparent 0%,
     color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
-    var(--trail-color) 62%,
+    var(--trail-color) 72%,
     transparent 100%
   );
 }
 
-.piece-trail--down,
-.piece-trail--up {
+.piece-moving--down,
+.piece-moving--up {
   --trail-color: var(--piece-color, var(--ball));
 }
 
-.piece-trail--down::before {
+.piece-moving--down::after {
   width: 30%;
   height: var(--trail-length, 100%);
   left: 35%;
-  top: 0;
+  bottom: 92%;
   background: linear-gradient(
     180deg,
     transparent 0%,
     color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
-    var(--trail-color) 62%,
+    var(--trail-color) 72%,
     transparent 100%
   );
 }
 
-.piece-trail--up::before {
+.piece-moving--up::after {
   width: 30%;
   height: var(--trail-length, 100%);
   left: 35%;
-  top: calc(100% - var(--trail-length, 100%));
+  top: 92%;
   background: linear-gradient(
     0deg,
     transparent 0%,
     color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
-    var(--trail-color) 62%,
+    var(--trail-color) 72%,
     transparent 100%
   );
 }
@@ -171,7 +157,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .piece-moving--active,
-  .piece-trail,
   .sparkle,
   .piece-moving--active .ball-character-leg-left,
   .piece-moving--active .ball-character-leg-right {
