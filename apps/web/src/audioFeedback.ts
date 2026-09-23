@@ -149,7 +149,7 @@ type SoundEffect =
   | "reset"
   | "burn";
 
-export async function startAudio(levelId?: string) {
+export async function startAmbient(levelId?: string) {
   if (!isEnabled()) return;
   if (levelId && levelId !== ambientLevelId) {
     stopAudio();
@@ -260,7 +260,7 @@ export function isSoundEnabled() {
 export function toggleSound() {
   const enabled = !isEnabled();
   setSoundEnabled(enabled);
-  if (enabled) void startAudio();
+  if (enabled) void startAmbient();
   return enabled;
 }
 
@@ -285,7 +285,7 @@ export function setAmbientEnabled(enabled: boolean) {
   if (!enabled) {
     stopAudio();
   } else if (isEnabled() && !ambientMuted) {
-    void startAudio();
+    void startAmbient();
   }
 }
 
@@ -297,7 +297,7 @@ export function setAmbientMuted(muted: boolean) {
   if (muted) {
     stopAudio();
   } else if (isEnabled() && isAmbientEnabled()) {
-    void startAudio();
+    void startAmbient();
   }
 }
 
