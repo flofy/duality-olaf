@@ -129,7 +129,6 @@ export function completeLevel(
   return progress.results[levelId] ?? null;
 }
 
-
 export function getCompletedCount(): number {
   return readProgress().completed.length;
 }
