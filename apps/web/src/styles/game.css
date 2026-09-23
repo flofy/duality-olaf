@@ -236,6 +236,12 @@ html[data-board-display="fill"] .game .board {
   align-items: center;
   gap: 16px;
   margin-top: 14px;
+
+  /* Controls are direct-touch UI, never part of the swipe surface. */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
 }
 
 .dpad {
