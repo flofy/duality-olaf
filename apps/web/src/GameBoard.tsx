@@ -227,7 +227,9 @@ export function GameBoard({
               "--move-duration": `${moveDuration}ms`,
               "--trail-length": trailLength,
               "--piece-color": hexToCss(
-                themes[themeName][state.activeForm],
+                state.activeForm === "ball"
+                  ? themes[themeName].ball
+                  : themes[themeName].square,
               ),
             } as CSSProperties
           }
