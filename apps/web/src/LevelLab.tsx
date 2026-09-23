@@ -422,9 +422,12 @@ export function LabGame({
 }) {
   const navigate = useNavigate();
   const [zoom, setZoom] = useState<BoardZoom>(() => getBoardZoom());
-  const { state, movement, reset, move, switchForm } = useLevelGameplay(level, () => {
-    navigate("/dev/levels");
-  });
+  const { state, movement, reset, move, switchForm } = useLevelGameplay(
+    level,
+    () => {
+      navigate("/dev/levels");
+    },
+  );
 
   useEffect(() => {
     onCompletionChange(state.completed ? { moves: state.moves } : null);
