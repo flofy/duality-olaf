@@ -34,18 +34,21 @@ export function GameBoard({
     : "";
   const activePieceClass = movement ? "piece--movement-hidden" : "";
   const movementDistance = movement?.distance ?? 0;
+  // Translate by actual board-cell dimensions, not by the piece's own width/height.
+  // CSS transform percentages are relative to the transformed element, which made
+  // multi-cell moves visibly stop short of the destination.
   const moveX =
     movement?.direction.x === 1
-      ? `${movementDistance * 100}%`
+      ? `calc(var(--cell-width) * ${movementDistance})`
       : movement?.direction.x === -1
-        ? `-${movementDistance * 100}%`
-        : "0%";
+        ? `calc(var(--cell-width) * -${movementDistance})`
+        : "0px";
   const moveY =
     movement?.direction.y === 1
-      ? `${movementDistance * 100}%`
+      ? `calc(var(--cell-height) * ${movementDistance})`
       : movement?.direction.y === -1
-        ? `-${movementDistance * 100}%`
-        : "0%";
+        ? `calc(var(--cell-height) * -${movementDistance})`
+        : "0px";
   // Keep travel speed consistent: long moves take proportionally longer instead of
   // compressing several cells into the same short animation.
   const moveDuration = Math.min(520, 160 + movementDistance * 90);
