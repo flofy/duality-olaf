@@ -160,6 +160,9 @@ export function useLevelGameplay(
         } else {
           setMovement(null);
         }
+        if (moved && !teleported && !next.gameOver) {
+          pauseForAnimation(Math.min(520, 160 + distance * 90));
+        }
 
         void startAudio();
         if (!moved) {
@@ -182,7 +185,9 @@ export function useLevelGameplay(
           vibrate([30, 45, 70]);
         }
         if (next.completed) {
-          setElapsedMs(Date.now() - startedAt);
+          const pausedAt = timerPausedAtRef.current;
+          const pausedDuration = pausedAt === null ? 0 : Date.now() - pausedAt;
+          setElapsedMs(Math.max(0, Date.now() - startedAt - pausedDuration));
           void playSound("complete");
           vibrate([18, 30, 45]);
         }
@@ -191,7 +196,7 @@ export function useLevelGameplay(
         return next;
       });
     },
-    [onMove, runner, startedAt],
+    [onMove, pauseForAnimation, runner, startedAt],
   );
 
   const reset = useCallback(() => {
