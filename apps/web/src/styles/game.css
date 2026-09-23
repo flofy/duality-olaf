@@ -197,7 +197,7 @@ html[data-board-display="fill"] .game .board {
 }
 
 .piece.moving {
-  animation: piece-arrival 130ms ease-out;
+  animation: piece-arrival calc(130ms * var(--animation-scale)) ease-out;
 }
 
 @keyframes piece-arrival {
