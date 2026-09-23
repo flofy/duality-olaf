@@ -36,10 +36,10 @@ function countOpenDoors(doors: Record<string, boolean>) {
 export function useLevelGameplay(
   level: Level,
   onEscape?: () => void,
-  ambientSkin: GameplaySkin = "default",
   onMove?: (direction: GameplayDirection, moved: boolean) => void,
   onSwitch?: () => void,
   onReset?: () => void,
+  ambientSkin: GameplaySkin = "default",
 ) {
   const runner = useMemo(() => new LevelRunner(level), [level]);
   const [state, setState] = useState(() => runner.getState());
