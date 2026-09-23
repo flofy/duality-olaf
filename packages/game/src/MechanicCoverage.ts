@@ -78,6 +78,53 @@ export function existsSolutionUsingBothPads(
   return false;
 }
 
+/**
+ * Does ANY solution complete the level while the square keeps its starting
+ * cell? Whenever the square is the active form, only form switches are
+ * explored (moves are suppressed), so a completion found here proves the
+ * puzzle can be finished without repositioning the square. Levels without a
+ * square are trivially accepted.
+ */
+export function existsSolutionWithoutMovingSquare(
+  level: Level,
+  maxStates = 250_000,
+): boolean {
+  if (!level.square) return true;
+  const initial = new LevelRunner(level).getState();
+  const nodes: GameState[] = [initial];
+  const visited = new Set<string>([stateKey(initial)]);
+  let cursor = 0;
+  while (cursor < nodes.length) {
+    const state = nodes[cursor++]!;
+    if (state.completed) return true;
+    if (cursor > maxStates || nodes.length >= maxStates) return false;
+    const commands: SolverCommand[] =
+      state.activeForm === "square"
+        ? [{ type: "switch" }]
+        : [
+            ...DIRECTIONS.map((direction) => ({
+              type: "move" as const,
+              direction,
+            })),
+            { type: "switch" as const },
+          ];
+    for (const command of commands) {
+      const runner = LevelRunner.fromState(state);
+      const after =
+        command.type === "move"
+          ? runner.move(command.direction)
+          : runner.switchForm();
+      if (after.gameOver) continue;
+      const key = stateKey(after);
+      if (visited.has(key)) continue;
+      visited.add(key);
+      if (after.completed) return true;
+      nodes.push(after);
+    }
+  }
+  return false;
+}
+
 /** Does the given command list toggle a door at any point? */
 export function commandsToggleDoor(
   level: Level,

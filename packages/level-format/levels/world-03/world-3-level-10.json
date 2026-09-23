@@ -36,43 +36,13 @@
     [
       "wall",
       "empty",
-      "wall",
       "empty",
       "empty",
+      "spike",
       "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
+      "spike",
       "empty",
       "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
       "empty",
       "empty",
       "empty",
@@ -87,10 +57,10 @@
       "empty",
       "empty",
       "empty",
-      "empty",
-      "empty",
       "wall",
-      "empty",
+      "wall",
+      "wall",
+      "wall",
       "wall"
     ],
     [
@@ -102,9 +72,9 @@
       "empty",
       "empty",
       "empty",
-      "empty",
-      "empty",
       "wall",
+      "empty",
+      "empty",
       "empty",
       "wall"
     ],
@@ -114,12 +84,12 @@
       "empty",
       "empty",
       "empty",
-      "empty",
-      "empty",
-      "empty",
+      "wall",
       "empty",
       "empty",
       "wall",
+      "empty",
+      "empty",
       "empty",
       "wall"
     ],
@@ -128,7 +98,37 @@
       "empty",
       "empty",
       "empty",
+      "wall",
+      "wall",
       "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
       "empty",
       "empty",
       "empty",
@@ -155,29 +155,29 @@
     ]
   ],
   "ball": {
-    "x": 11,
-    "y": 8
+    "x": 10,
+    "y": 5
   },
   "square": {
-    "x": 11,
-    "y": 1
+    "x": 8,
+    "y": 8
   },
   "stars": [
     {
-      "x": 1,
-      "y": 8
-    },
-    {
-      "x": 1,
-      "y": 1
-    },
-    {
-      "x": 6,
+      "x": 3,
       "y": 2
     },
     {
-      "x": 6,
-      "y": 7
+      "x": 5,
+      "y": 1
+    },
+    {
+      "x": 8,
+      "y": 6
+    },
+    {
+      "x": 11,
+      "y": 6
     }
   ]
 }

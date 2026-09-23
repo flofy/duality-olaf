@@ -1,5 +1,9 @@
 # Campagne 2026-09-13 — reconstruction de la progression
 
+> **Remplacé** par [`campaign-plan-2026-09-23.md`](./campaign-plan-2026-09-23.md)
+> : mondes 4/5 réorganisés (téléporteurs en 4, portes en 5) et contraintes de
+> progression renforcées. Ce document reste historique.
+
 ## Méthode
 
 La campagne a été reconstruite à partir de trois pools de candidats :

@@ -26,7 +26,7 @@
       "wall",
       "wall",
       "empty",
-      "empty",
+      "wall",
       "wall",
       "wall",
       "wall",
@@ -39,40 +39,10 @@
       "wall",
       "wall",
       "wall",
-      "wall",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
       "empty",
       "empty",
       "empty",
       "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
       "wall",
       "wall",
       "wall",
@@ -89,8 +59,23 @@
       "empty",
       "empty",
       "empty",
+      "wall",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
       "wall"
     ],
     [
@@ -100,7 +85,7 @@
       "empty",
       "empty",
       "empty",
-      "special",
+      "empty",
       "empty",
       "empty",
       "empty",
@@ -110,6 +95,9 @@
     ],
     [
       "wall",
+      "wall",
+      "wall",
+      "wall",
       "empty",
       "empty",
       "empty",
@@ -117,14 +105,15 @@
       "empty",
       "wall",
       "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
+      "wall",
       "wall"
     ],
     [
       "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
       "empty",
       "empty",
       "empty",
@@ -132,10 +121,21 @@
       "wall",
       "wall",
       "wall",
+      "wall"
+    ],
+    [
       "wall",
-      "empty",
-      "empty",
-      "empty",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
       "wall"
     ],
     [
@@ -158,17 +158,21 @@
     "x": 6,
     "y": 1
   },
+  "square": {
+    "x": 5,
+    "y": 4
+  },
   "stars": [
     {
-      "x": 11,
-      "y": 7
+      "x": 9,
+      "y": 4
     },
     {
-      "x": 5,
-      "y": 6
+      "x": 3,
+      "y": 3
     },
     {
-      "x": 8,
+      "x": 6,
       "y": 4
     }
   ]
