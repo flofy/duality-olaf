@@ -9,6 +9,8 @@ import {
   vibrate,
 } from "./audioFeedback";
 
+export type GameplaySkin = "default" | "halloween" | "christmas";
+
 export type GameplayDirection = {
   x: -1 | 0 | 1;
   y: -1 | 0 | 1;
@@ -34,6 +36,7 @@ function countOpenDoors(doors: Record<string, boolean>) {
 export function useLevelGameplay(
   level: Level,
   onEscape?: () => void,
+  ambientSkin: GameplaySkin = "default",
   onMove?: (direction: GameplayDirection, moved: boolean) => void,
   onSwitch?: () => void,
   onReset?: () => void,
@@ -51,8 +54,8 @@ export function useLevelGameplay(
     setStartedAt(Date.now());
     setElapsedMs(0);
     pauseStartedAtRef.current = null;
-    void startAmbient(level.id);
-  }, [level.id, runner]);
+    void startAmbient(level.id, ambientSkin);
+  }, [level.id, runner, ambientSkin]);
 
   useEffect(() => {
     if (state.completed || state.gameOver) return;
