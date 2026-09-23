@@ -71,6 +71,14 @@ function getWorldNumber(levelId?: string) {
   return Number(match?.[1] ?? 1);
 }
 
+export function getAmbientTrackKey(
+  levelId?: string,
+  skin: "default" | "halloween" | "christmas" = "default",
+) {
+  if (skin !== "default") return `skin:${skin}`;
+  return `world:${getWorldNumber(levelId)}`;
+}
+
 /** Resolve one stable musical identity for a world/theme. */
 export function getAmbientTrack(
   levelId?: string,
