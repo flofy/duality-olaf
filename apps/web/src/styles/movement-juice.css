@@ -1,15 +1,25 @@
 /* Movement feedback: smooth continuous travel with a restrained directional streak. */
 @keyframes pieceMove {
   from {
-    transform: translate3d(var(--move-x), var(--move-y), 0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(var(--move-x), var(--move-y), 0);
   }
 }
 
+.piece--movement-hidden {
+  opacity: 0;
+}
+
+.movement-overlay {
+  z-index: 5;
+  pointer-events: none;
+}
+
 .piece-moving--active {
-  animation: pieceMove var(--move-duration, 320ms) linear;
+  animation: pieceMove
+    calc(var(--move-duration, 320ms) * var(--animation-scale)) linear forwards;
   transform-origin: center center;
   will-change: transform;
   z-index: 5;
@@ -22,7 +32,8 @@
   z-index: 0;
   border-radius: 999px;
   opacity: 0;
-  animation: pieceTrailPulse var(--move-duration, 320ms) linear forwards;
+  animation: pieceTrailPulse
+    calc(var(--move-duration, 320ms) * var(--animation-scale)) linear forwards;
   background: linear-gradient(
     90deg,
     transparent 0%,
@@ -132,10 +143,10 @@
   transform-origin: top center;
 }
 .piece-moving--active.is-moving .ball-character-leg-left {
-  animation: ballLegLeft 0.28s ease-in-out 2;
+  animation: ballLegLeft calc(0.28s * var(--animation-scale)) ease-in-out 2;
 }
 .piece-moving--active.is-moving .ball-character-leg-right {
-  animation: ballLegRight 0.28s ease-in-out 2;
+  animation: ballLegRight calc(0.28s * var(--animation-scale)) ease-in-out 2;
 }
 
 /* Star: breathe, never spin. */
@@ -151,7 +162,8 @@
   }
 }
 .sparkle {
-  animation: starBreathe 1.8s ease-in-out infinite;
+  animation: starBreathe calc(1.8s * var(--animation-scale)) ease-in-out
+    infinite;
   transform-origin: center;
 }
 

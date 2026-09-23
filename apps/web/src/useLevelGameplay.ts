@@ -27,6 +27,12 @@ const keyboardDirections: Record<string, GameplayDirection> = {
   ArrowDown: { x: 0, y: 1 },
 };
 
+const FAST_ANIMATION_SCALE = 0.65;
+
+function getAnimationDuration(baseMs: number) {
+  return Math.round(baseMs * FAST_ANIMATION_SCALE);
+}
+
 function countOpenDoors(doors: Record<string, boolean>) {
   return Object.values(doors).filter(Boolean).length;
 }
@@ -43,20 +49,62 @@ export function useLevelGameplay(
   const [movement, setMovement] = useState<MovementFeedback>(null);
   const [startedAt, setStartedAt] = useState(() => Date.now());
   const [elapsedMs, setElapsedMs] = useState(0);
-  const pauseStartedAtRef = useRef<number | null>(null);
+  const timerPauseReasonsRef = useRef<Set<"visibility" | "animation">>(
+    new Set(),
+  );
+  const timerPausedAtRef = useRef<number | null>(null);
+  const animationPauseTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     setState(runner.reset());
     setMovement(null);
     setStartedAt(Date.now());
     setElapsedMs(0);
-    pauseStartedAtRef.current = null;
+    timerPauseReasonsRef.current.clear();
+    timerPausedAtRef.current = null;
+    if (animationPauseTimeoutRef.current !== null) {
+      window.clearTimeout(animationPauseTimeoutRef.current);
+      animationPauseTimeoutRef.current = null;
+    }
   }, [runner]);
+
+  const pauseTimer = useCallback((reason: "visibility" | "animation") => {
+    if (timerPauseReasonsRef.current.has(reason)) return;
+    if (timerPauseReasonsRef.current.size === 0) {
+      timerPausedAtRef.current = Date.now();
+    }
+    timerPauseReasonsRef.current.add(reason);
+  }, []);
+
+  const resumeTimer = useCallback((reason: "visibility" | "animation") => {
+    if (!timerPauseReasonsRef.current.delete(reason)) return;
+    if (timerPauseReasonsRef.current.size > 0) return;
+    const pausedAt = timerPausedAtRef.current;
+    if (pausedAt === null) return;
+    setStartedAt((current) => current + (Date.now() - pausedAt));
+    timerPausedAtRef.current = null;
+  }, []);
+
+  const pauseForAnimation = useCallback(
+    (baseDurationMs: number) => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      pauseTimer("animation");
+      if (animationPauseTimeoutRef.current !== null) {
+        window.clearTimeout(animationPauseTimeoutRef.current);
+      }
+      animationPauseTimeoutRef.current = window.setTimeout(() => {
+        animationPauseTimeoutRef.current = null;
+        setMovement(null);
+        resumeTimer("animation");
+      }, getAnimationDuration(baseDurationMs));
+    },
+    [pauseTimer, resumeTimer],
+  );
 
   useEffect(() => {
     if (state.completed || state.gameOver) return;
     const interval = window.setInterval(() => {
-      if (pauseStartedAtRef.current !== null) return;
+      if (timerPauseReasonsRef.current.size > 0) return;
       setElapsedMs(Date.now() - startedAt);
     }, 100);
     return () => window.clearInterval(interval);
@@ -64,17 +112,12 @@ export function useLevelGameplay(
 
   useEffect(() => {
     const pause = () => {
-      if (pauseStartedAtRef.current !== null) return;
-      pauseStartedAtRef.current = Date.now();
+      pauseTimer("visibility");
       setAmbientMuted(true);
     };
 
     const resume = () => {
-      const pausedAt = pauseStartedAtRef.current;
-      if (pausedAt === null) return;
-      const now = Date.now();
-      setStartedAt((current) => current + (now - pausedAt));
-      pauseStartedAtRef.current = null;
+      resumeTimer("visibility");
       setAmbientMuted(false);
     };
 
@@ -96,7 +139,7 @@ export function useLevelGameplay(
       window.removeEventListener("focus", handleFocus);
       setAmbientMuted(false);
     };
-  }, []);
+  }, [pauseTimer, resumeTimer]);
 
   const move = useCallback(
     (direction: GameplayDirection) => {
@@ -127,6 +170,9 @@ export function useLevelGameplay(
         } else {
           setMovement(null);
         }
+        if (moved && !teleported && !next.gameOver) {
+          pauseForAnimation(Math.min(520, 160 + distance * 90));
+        }
 
         void startAudio();
         if (!moved) {
@@ -149,7 +195,9 @@ export function useLevelGameplay(
           vibrate([30, 45, 70]);
         }
         if (next.completed) {
-          setElapsedMs(Date.now() - startedAt);
+          const pausedAt = timerPausedAtRef.current;
+          const pausedDuration = pausedAt === null ? 0 : Date.now() - pausedAt;
+          setElapsedMs(Math.max(0, Date.now() - startedAt - pausedDuration));
           void playSound("complete");
           vibrate([18, 30, 45]);
         }
@@ -158,7 +206,7 @@ export function useLevelGameplay(
         return next;
       });
     },
-    [onMove, runner, startedAt],
+    [onMove, pauseForAnimation, runner, startedAt],
   );
 
   const reset = useCallback(() => {
@@ -166,6 +214,12 @@ export function useLevelGameplay(
     setMovement(null);
     setStartedAt(Date.now());
     setElapsedMs(0);
+    timerPauseReasonsRef.current.clear();
+    timerPausedAtRef.current = null;
+    if (animationPauseTimeoutRef.current !== null) {
+      window.clearTimeout(animationPauseTimeoutRef.current);
+      animationPauseTimeoutRef.current = null;
+    }
     void startAudio();
     void playSound("reset");
     onReset?.();
