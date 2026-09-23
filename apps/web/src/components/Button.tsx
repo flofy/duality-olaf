@@ -164,6 +164,8 @@ type CenterDPadButtonProps = {
   icon: ReactNode;
   label: ReactNode;
   onClick: MouseEventHandler<HTMLButtonElement>;
+  onPointerDown?: React.PointerEventHandler<HTMLButtonElement>;
+  onPointerUp?: React.PointerEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   className?: string;
 };
@@ -173,11 +175,21 @@ export const CenterDPadButton = ({
   onClick,
   disabled = false,
   className = "",
+  onPointerDown,
+  onPointerUp,
 }: CenterDPadButtonProps) => {
   return (
     <button
       className={`center-dpad-button ${className}`}
-      onClick={onClick}
+      onClick={(event) => {
+        // Pointer activation is handled directly on pointerup when supplied.
+        // Keep click for keyboard/assistive activation without firing twice
+        // after a touch or mouse pointerup.
+        if (onPointerUp && event.detail !== 0) return;
+        onClick(event);
+      }}
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
       disabled={disabled}
       style={{
         display: "flex",
