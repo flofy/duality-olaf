@@ -20,11 +20,13 @@ body,
 
 html {
   background: #080b18;
+  overscroll-behavior-y: none;
 }
 
 body {
   min-height: 100dvh;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
 }
 
 /* Contenu réservé aux lecteurs d'écran (libellé de dialogue, titre de secours).
@@ -56,6 +58,7 @@ body {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  overscroll-behavior-y: none;
 }
 
 .app::before {
