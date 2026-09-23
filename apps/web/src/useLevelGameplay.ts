@@ -11,6 +11,7 @@ export type GameplayDirection = {
 export type MovementFeedback = {
   from: { x: number; y: number };
   direction: GameplayDirection;
+  distance: number;
 } | null;
 
 const keyboardDirections: Record<string, GameplayDirection> = {
@@ -55,18 +56,16 @@ export function useLevelGameplay(
         const collected = next.stars.length < current.stars.length;
         const openedDoor =
           countOpenDoors(next.doors) > countOpenDoors(current.doors);
-        const teleported =
+        const distance =
           Math.abs(activeAfter.x - activeBefore.x) +
-            Math.abs(activeAfter.y - activeBefore.y) >
-          1;
+          Math.abs(activeAfter.y - activeBefore.y);
+        const teleported = next.lastTeleport !== null;
 
-        if (moved && !teleported) {
+        if (moved && !teleported && !next.gameOver) {
           setMovement({
-            from: {
-              x: activeAfter.x - direction.x,
-              y: activeAfter.y - direction.y,
-            },
+            from: { ...activeBefore },
             direction,
+            distance,
           });
         } else {
           setMovement(null);
