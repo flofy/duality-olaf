@@ -43,14 +43,21 @@ export function useLevelGameplay(
   const [movement, setMovement] = useState<MovementFeedback>(null);
   const [startedAt, setStartedAt] = useState(() => Date.now());
   const [elapsedMs, setElapsedMs] = useState(0);
-  const pauseStartedAtRef = useRef<number | null>(null);
+  const timerPauseReasonsRef = useRef<Set<"visibility" | "animation">>(new Set());
+  const timerPausedAtRef = useRef<number | null>(null);
+  const animationPauseTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     setState(runner.reset());
     setMovement(null);
     setStartedAt(Date.now());
     setElapsedMs(0);
-    pauseStartedAtRef.current = null;
+    timerPauseReasonsRef.current.clear();
+    timerPausedAtRef.current = null;
+    if (animationPauseTimeoutRef.current !== null) {
+      window.clearTimeout(animationPauseTimeoutRef.current);
+      animationPauseTimeoutRef.current = null;
+    }
   }, [runner]);
 
   useEffect(() => {
