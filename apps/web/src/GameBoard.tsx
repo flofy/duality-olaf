@@ -181,14 +181,16 @@ export function GameBoard({
       {movement && (
         <div
           className={movementClass ?? "piece-trail"}
-          style={{
-            gridColumn: movement.from.x + 1,
-            gridRow: movement.from.y + 1,
-            "--piece-color":
-              state.activeForm === "ball"
-                ? hexToCss(themes[themeName].ball)
-                : hexToCss(themes[themeName].square),
-          } as CSSProperties}
+          style={
+            {
+              gridColumn: movement.from.x + 1,
+              gridRow: movement.from.y + 1,
+              "--piece-color":
+                state.activeForm === "ball"
+                  ? hexToCss(themes[themeName].ball)
+                  : hexToCss(themes[themeName].square),
+            } as CSSProperties
+          }
           aria-hidden="true"
         />
       )}

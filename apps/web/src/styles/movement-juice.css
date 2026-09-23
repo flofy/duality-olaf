@@ -61,7 +61,11 @@
   position: absolute;
   inset: 18%;
   border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--trail-color) 72%, white 28%) 0 12%, transparent 68%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--trail-color) 72%, white 28%) 0 12%,
+    transparent 68%
+  );
   filter: blur(1px);
 }
 
