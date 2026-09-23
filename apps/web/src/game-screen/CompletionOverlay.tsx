@@ -38,8 +38,6 @@ export function CompletionOverlay({
   onReset: () => void;
   onNext: () => void;
 }) {
-  if (!completed) return null;
-
   const changingWorld = worldIndex === worldLength - 1 && hasNextWorld;
   const [activeIndex, setActiveIndex] = useState(1);
   useEffect(() => {
@@ -68,6 +66,8 @@ export function CompletionOverlay({
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [completed, activeIndex]);
+
+  if (!completed) return null;
 
   return (
     <div className="overlay">
