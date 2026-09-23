@@ -3,11 +3,13 @@ const VOLUME_KEY = "duality.sound.volume";
 const AMBIENT_KEY = "duality.sound.ambient";
 const HAPTIC_KEY = "duality.haptic.enabled";
 
-const DEFAULT_VOLUME = 0.16;
+const DEFAULT_VOLUME = 0.8;
 
 let context: AudioContext | null = null;
 let masterGain: GainNode | null = null;
+let ambientGain: GainNode | null = null;
 let musicTimer: number | null = null;
+let ambientMuted = false;
 
 function readBoolean(key: string, fallback = true) {
   try {
@@ -62,6 +64,11 @@ function getAudioContext() {
   masterGain = context.createGain();
   masterGain.gain.value = readVolume();
   masterGain.connect(context.destination);
+
+  ambientGain = context.createGain();
+  ambientGain.gain.value = ambientMuted ? 0 : 1;
+  ambientGain.connect(masterGain);
+
   return context;
 }
 
@@ -78,6 +85,7 @@ function tone(
   type: OscillatorType = "sine",
   volume = 0.12,
   delay = 0,
+  destination: AudioNode | null = null,
 ) {
   if (!isEnabled() || !context || !masterGain) return;
 
@@ -92,7 +100,7 @@ function tone(
   gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
 
   oscillator.connect(gain);
-  gain.connect(masterGain);
+  gain.connect(destination ?? masterGain);
   oscillator.start(start);
   oscillator.stop(start + duration + 0.02);
 }
@@ -141,13 +149,14 @@ type SoundEffect =
 export async function startAudio() {
   if (!isEnabled()) return;
   const audio = await resumeAudio();
-  if (!audio || !isAmbientEnabled() || musicTimer !== null) return;
+  if (!audio || !isAmbientEnabled() || ambientMuted || musicTimer !== null)
+    return;
 
   const notes = [220, 277.18, 329.63, 277.18, 246.94, 329.63, 369.99, 329.63];
   let index = 0;
   const playNote = () => {
-    if (!isEnabled() || !isAmbientEnabled()) return;
-    tone(notes[index % notes.length]!, 0.42, "triangle", 0.018);
+    if (!isEnabled() || !isAmbientEnabled() || ambientMuted) return;
+    tone(notes[index % notes.length]!, 0.42, "triangle", 0.018, 0, ambientGain);
     index += 1;
   };
 
@@ -262,7 +271,19 @@ export function setAmbientEnabled(enabled: boolean) {
   writeValue(AMBIENT_KEY, String(enabled));
   if (!enabled) {
     stopAudio();
-  } else if (isEnabled()) {
+  } else if (isEnabled() && !ambientMuted) {
+    void startAudio();
+  }
+}
+
+export function setAmbientMuted(muted: boolean) {
+  ambientMuted = muted;
+  if (ambientGain && context) {
+    ambientGain.gain.setTargetAtTime(muted ? 0 : 1, context.currentTime, 0.015);
+  }
+  if (muted) {
+    stopAudio();
+  } else if (isEnabled() && isAmbientEnabled()) {
     void startAudio();
   }
 }
