@@ -2,6 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { AudioSettings } from "./AudioSettings";
 import {
+  animationSpeedLabels,
+  cycleAnimationSpeed,
+  getAnimationSpeed,
+  syncAnimationSpeed,
+  type AnimationSpeed,
+} from "./animationPreferences";
+import {
   cycleControlsMode,
   controlsModeLabels,
   getControlsMode,
@@ -93,6 +100,8 @@ export function BurgerMenu({
     useState<ControlsMode>(getControlsMode);
   const [boardDisplay, setBoardDisplay] =
     useState<BoardDisplayMode>(getBoardDisplayMode);
+  const [animationSpeed, setAnimationSpeed] =
+    useState<AnimationSpeed>(getAnimationSpeed);
   const [skin, setSkinState] = useState<SkinPreference>(() =>
     normalizeSkinPreference(getSkinPreference()),
   );
@@ -105,6 +114,10 @@ export function BurgerMenu({
     installControlsStyles();
     syncControlsMode(controlsMode);
   }, [controlsMode]);
+
+  useEffect(() => {
+    syncAnimationSpeed(animationSpeed);
+  }, [animationSpeed]);
 
   // Mode d'affichage du plateau : reflété sur <html> pour les règles CSS.
   useEffect(() => {
@@ -306,6 +319,27 @@ export function BurgerMenu({
                 </span>
               </button>
             </div>
+          </section>
+
+          <section className="menu-group" aria-labelledby="menu-group-animation">
+            <h3 id="menu-group-animation" className="menu-group-title">
+              ANIMATIONS
+            </h3>
+            <button
+              type="button"
+              className="menu-item"
+              onClick={() => {
+                const next = cycleAnimationSpeed();
+                setAnimationSpeed(next);
+              }}
+            >
+              <span className="menu-item-icon" aria-hidden="true">
+                ✨
+              </span>
+              <span className="menu-item-label">
+                VITESSE · {animationSpeedLabels[animationSpeed].toUpperCase()}
+              </span>
+            </button>
           </section>
 
           <section className="menu-group" aria-labelledby="menu-group-audio">
