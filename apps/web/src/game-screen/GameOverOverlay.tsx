@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router";
 import { Button } from "../components/Button";
 import { ArrowLeft, ResetIcon as Reset } from "../components/Icons";
-import { BallCharacter, SquareCharacter } from "../components/Characters";
-import { useEffect, useRef, useState } from "react";
+import { OverlayIllustration } from "../components/OverlayIllustration";
+import { useEffect, useState } from "react";
 
 export function GameOverOverlay({
   worldId,
@@ -52,13 +52,7 @@ export function GameOverOverlay({
         aria-modal="true"
         aria-labelledby="gameover-title"
       >
-        <div className="overlay-character overlay-character--defeated">
-          {activeForm === "ball" ? (
-            <BallCharacter size={92} expression="defeated" />
-          ) : (
-            <SquareCharacter size={92} expression="defeated" />
-          )}
-        </div>
+        <OverlayIllustration variant="game-over" activeForm={activeForm} />
         <h2 id="gameover-title">🔥 OUPS… AUX ENFERS !</h2>
         <p>
           Cette forme a disparu dans les enfers. Elle a clairement pris le
