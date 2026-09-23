@@ -40,7 +40,7 @@
 .piece-trail::before {
   content: "";
   position: absolute;
-  width: 180%;
+  width: var(--trail-length, 180%);
   height: 34%;
   top: 33%;
   left: 25%;
@@ -92,7 +92,7 @@
 
 .piece-trail--down::before {
   width: 34%;
-  height: 180%;
+  height: var(--trail-length, 180%);
   left: 33%;
   top: 25%;
   background: linear-gradient(
@@ -106,9 +106,9 @@
 
 .piece-trail--up::before {
   width: 34%;
-  height: 180%;
+  height: var(--trail-length, 180%);
   left: 33%;
-  top: -105%;
+  top: calc(var(--trail-length, 180%) * -0.5833);
   background: linear-gradient(
     0deg,
     transparent 0%,
