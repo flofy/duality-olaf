@@ -4,10 +4,12 @@ import type { Level } from "@duality/level-format";
 import {
   playSound,
   setAmbientMuted,
-  startAudio,
+  startAmbient,
   toggleSound,
   vibrate,
 } from "./audioFeedback";
+
+export type GameplaySkin = "default" | "halloween" | "christmas";
 
 export type GameplayDirection = {
   x: -1 | 0 | 1;
@@ -43,6 +45,7 @@ export function useLevelGameplay(
   onMove?: (direction: GameplayDirection, moved: boolean) => void,
   onSwitch?: () => void,
   onReset?: () => void,
+  ambientSkin: GameplaySkin = "default",
 ) {
   const runner = useMemo(() => new LevelRunner(level), [level]);
   const [state, setState] = useState(() => runner.getState());
@@ -66,7 +69,8 @@ export function useLevelGameplay(
       window.clearTimeout(animationPauseTimeoutRef.current);
       animationPauseTimeoutRef.current = null;
     }
-  }, [runner]);
+    void startAmbient(level.id, ambientSkin);
+  }, [level.id, runner, ambientSkin]);
 
   const pauseTimer = useCallback((reason: "visibility" | "animation") => {
     if (timerPauseReasonsRef.current.has(reason)) return;
@@ -174,7 +178,6 @@ export function useLevelGameplay(
           pauseForAnimation(Math.min(520, 160 + distance * 90));
         }
 
-        void startAudio();
         if (!moved) {
           void playSound("wall");
           vibrate(22);
@@ -220,7 +223,6 @@ export function useLevelGameplay(
       window.clearTimeout(animationPauseTimeoutRef.current);
       animationPauseTimeoutRef.current = null;
     }
-    void startAudio();
     void playSound("reset");
     onReset?.();
   }, [onReset, runner]);
@@ -230,7 +232,6 @@ export function useLevelGameplay(
       if (current.completed || current.gameOver) return current;
       const next = runner.switchForm();
       setMovement(null);
-      void startAudio();
       void playSound("switch");
       vibrate([10, 25, 10]);
       onSwitch?.();
