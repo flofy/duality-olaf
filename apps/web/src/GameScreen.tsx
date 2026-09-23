@@ -1,12 +1,17 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import type { Level } from "@duality/level-format";
 import { useNavigate } from "react-router";
 import { GameBoard } from "./GameBoard";
 import { getActiveThemeName } from "./theme";
 import { resolveLevelSkin } from "./skins";
-import { completeLevel, getNextWorld } from "./progression";
+import {
+  calculateLevelResult,
+  completeLevel,
+  getNextWorld,
+} from "./progression";
 import { worlds } from "./levels/campaign";
 import { useLevelGameplay } from "./useLevelGameplay";
+import { solveLevel } from "@duality/game";
 import { Button } from "./components/Button";
 import { ResetIcon as Reset } from "./components/Icons";
 import { CompletionOverlay } from "./game-screen/CompletionOverlay";
@@ -41,13 +46,14 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
 
   const { commands, recordMove, recordSwitch, clear } = useDebugCommands();
 
-  const { state, movement, move, reset, switchForm } = useLevelGameplay(
-    level,
-    () => navigate(`/world/${world.id}`),
-    recordMove,
-    recordSwitch,
-    clear,
-  );
+  const { state, movement, move, reset, switchForm, elapsedMs } =
+    useLevelGameplay(
+      level,
+      () => navigate(`/world/${world.id}`),
+      recordMove,
+      recordSwitch,
+      clear,
+    );
 
   useDebugShortcuts({
     commands,
@@ -58,9 +64,21 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
 
   const { onPointerDown, onPointerUp } = useSwipeControls(move);
 
+  const completionResult = useMemo(() => {
+    if (!state.completed) return null;
+    const solution = solveLevel(level);
+    const optimalMoves =
+      solution.solvable && solution.moves !== null
+        ? solution.moves
+        : state.moves;
+    return calculateLevelResult(state.moves, optimalMoves, elapsedMs);
+  }, [elapsedMs, level, state.completed, state.moves]);
+
   useEffect(() => {
-    if (state.completed) completeLevel(level.id);
-  }, [level.id, state.completed]);
+    if (completionResult) {
+      completeLevel(level.id, completionResult);
+    }
+  }, [completionResult, level.id]);
 
   useEffect(() => {
     const onGameReset = () => reset();
@@ -124,6 +142,10 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
         hasNextWorld={Boolean(nextWorld)}
         completed={state.completed}
         moves={state.moves}
+        elapsedMs={elapsedMs}
+        optimalMoves={completionResult?.optimalMoves ?? null}
+        stars={completionResult?.stars ?? null}
+        score={completionResult?.score ?? null}
         onReset={reset}
         onNext={nextLevel}
       />

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { worlds, campaign } from "../levels/campaign";
 import {
+  getCampaignProgress,
   getCompletedCount,
   isLevelCompleted,
   isWorldUnlocked,
@@ -12,6 +13,7 @@ const isLevelLabEnabled = import.meta.env.VITE_ENABLE_LEVEL_LAB === "true";
 
 export function Menu() {
   const navigate = useNavigate();
+  const progress = getCampaignProgress();
 
   return (
     <section className="menu">
@@ -47,6 +49,29 @@ export function Menu() {
             </div>
           );
         })}
+      </div>
+      <div className="campaign-progress">
+        <div className="campaign-progress-header">
+          <span>PROGRESSION</span>
+          <strong>{progress.percentage}%</strong>
+        </div>
+        <div
+          className="campaign-progress-track"
+          aria-label={`${progress.percentage}% de complétion`}
+        >
+          <div
+            className="campaign-progress-fill"
+            style={{ width: `${progress.percentage}%` }}
+          />
+        </div>
+        <div className="campaign-progress-meta">
+          <span>
+            {progress.completed}/{progress.total} niveaux
+          </span>
+          <span>
+            {progress.stars}/{progress.totalStars} ★
+          </span>
+        </div>
       </div>
       <p className="muted">
         {getCompletedCount()} terminé(s) · {campaign.length} jouables

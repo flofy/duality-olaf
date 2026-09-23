@@ -35,11 +35,23 @@ export function useLevelGameplay(
   const runner = useMemo(() => new LevelRunner(level), [level]);
   const [state, setState] = useState(() => runner.getState());
   const [movement, setMovement] = useState<MovementFeedback>(null);
+  const [startedAt, setStartedAt] = useState(() => Date.now());
+  const [elapsedMs, setElapsedMs] = useState(0);
 
   useEffect(() => {
     setState(runner.reset());
     setMovement(null);
+    setStartedAt(Date.now());
+    setElapsedMs(0);
   }, [runner]);
+
+  useEffect(() => {
+    if (state.completed || state.gameOver) return;
+    const interval = window.setInterval(() => {
+      setElapsedMs(Date.now() - startedAt);
+    }, 100);
+    return () => window.clearInterval(interval);
+  }, [startedAt, state.completed, state.gameOver]);
 
   const move = useCallback(
     (direction: GameplayDirection) => {
@@ -92,6 +104,7 @@ export function useLevelGameplay(
           vibrate([30, 45, 70]);
         }
         if (next.completed) {
+          setElapsedMs(Date.now() - startedAt);
           void playSound("complete");
           vibrate([18, 30, 45]);
         }
@@ -100,12 +113,14 @@ export function useLevelGameplay(
         return next;
       });
     },
-    [onMove, runner],
+    [onMove, runner, startedAt],
   );
 
   const reset = useCallback(() => {
     setState(runner.reset());
     setMovement(null);
+    setStartedAt(Date.now());
+    setElapsedMs(0);
     void startAudio();
     void playSound("reset");
     onReset?.();
@@ -154,5 +169,5 @@ export function useLevelGameplay(
     return () => window.removeEventListener("keydown", handler);
   }, [move, onEscape, reset, switchForm]);
 
-  return { runner, state, movement, move, reset, switchForm };
+  return { runner, state, movement, move, reset, switchForm, elapsedMs };
 }
