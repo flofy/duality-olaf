@@ -20,7 +20,7 @@ import {
   skinOrder,
   type SkinPreference,
 } from "./skins";
-import { useLevelGameplay, type GameplaySkin } from "./useLevelGameplay";
+import { useLevelGameplay } from "./useLevelGameplay";
 import {
   DEFAULT_BOARD_ZOOM,
   getBoardZoom,
@@ -397,7 +397,7 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
       </div>
       <LabGame
         level={level}
-        skin={skin}
+        skin={gameplaySkin}
         themeName={themeName}
         onCompletionChange={setCompletion}
       />
@@ -414,7 +414,7 @@ export function LabGame({
   onBackToGenerator,
 }: {
   level: Level;
-  skin: GameplaySkin;
+  skin: SkinPreference;
   themeName: ThemeName;
   onCompletionChange: (completion: { moves: number } | null) => void;
   optimalMoves?: number;
@@ -422,6 +422,7 @@ export function LabGame({
 }) {
   const navigate = useNavigate();
   const [zoom, setZoom] = useState<BoardZoom>(() => getBoardZoom());
+  const gameplaySkin = resolveLevelSkin(level.id, skin);
   const { state, movement, reset, move, switchForm } = useLevelGameplay(
     level,
     () => {
@@ -430,7 +431,7 @@ export function LabGame({
     undefined,
     undefined,
     undefined,
-    skin,
+    gameplaySkin,
   );
 
   useEffect(() => {
