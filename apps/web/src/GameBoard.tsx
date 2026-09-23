@@ -29,11 +29,11 @@ export function GameBoard({
   movement,
   children,
 }: GameBoardProps) {
-  const movementClass = movement
-    ? `piece-trail piece-trail--${movement.direction.x > 0 ? "right" : movement.direction.x < 0 ? "left" : movement.direction.y > 0 ? "down" : "up"}`
-    : null;
+  const movementDirectionClass = movement
+    ? `piece-moving--${movement.direction.x > 0 ? "right" : movement.direction.x < 0 ? "left" : movement.direction.y > 0 ? "down" : "up"}`
+    : "";
   const activePieceClass = movement
-    ? "piece-moving piece-moving--active"
+    ? `piece-moving piece-moving--active ${movementDirectionClass}`
     : "piece-moving";
   const movementDistance = movement?.distance ?? 0;
   // The piece is rendered at its final cell, so the animation starts exactly
@@ -161,24 +161,6 @@ export function GameBoard({
           />
         </div>
       ))}
-      {movement && (
-        <div
-          className={movementClass ?? "piece-trail"}
-          style={
-            {
-              gridColumn: movement.from.x + 1,
-              gridRow: movement.from.y + 1,
-              "--trail-length": trailLength,
-              "--move-duration": `${moveDuration}ms`,
-              "--piece-color":
-                state.activeForm === "ball"
-                  ? hexToCss(themes[themeName].ball)
-                  : hexToCss(themes[themeName].square),
-            } as CSSProperties
-          }
-          aria-hidden="true"
-        />
-      )}
       {isInside(level, state.ball) && (
         <div
           className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"} ${state.activeForm === "ball" ? activePieceClass : ""}`}
@@ -189,6 +171,8 @@ export function GameBoard({
               "--move-x": moveX,
               "--move-y": moveY,
               "--move-duration": `${moveDuration}ms`,
+              "--trail-length": trailLength,
+              "--piece-color": hexToCss(themes[themeName].ball),
             } as CSSProperties
           }
           key={`ball-${state.ball.x}-${state.ball.y}`}
@@ -217,6 +201,8 @@ export function GameBoard({
               "--move-x": moveX,
               "--move-y": moveY,
               "--move-duration": `${moveDuration}ms`,
+              "--trail-length": trailLength,
+              "--piece-color": hexToCss(themes[themeName].square),
             } as CSSProperties
           }
           key={`square-${state.square.x}-${state.square.y}`}
