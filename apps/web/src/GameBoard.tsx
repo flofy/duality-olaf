@@ -2,7 +2,6 @@ import type { GameState } from "@duality/game";
 import { isInside, type Level, type Switch } from "@duality/level-format";
 import type { CSSProperties, ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
-import { getAnimationDuration } from "./animationPreferences";
 import { Fire, Star, Door, Teleporter, SwitchIcon } from "./components/Icons";
 import { BallCharacter, SquareCharacter } from "./components/Characters";
 import type { MovementFeedback } from "./useLevelGameplay";
