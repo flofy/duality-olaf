@@ -171,7 +171,9 @@ export const ArrowUp = ({
     <path
       d="M12 19V5M5 12l7-7 7 7"
       stroke={color}
-      strokeWidth="2"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     />
   </svg>
@@ -182,7 +184,14 @@ export const ArrowDown = ({
   className,
 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
-    <path d="M12 5v14m-7-7 7 7" stroke={color} strokeWidth="2" fill="none" />
+    <path
+      d="M12 5v14m-7-7 7 7"
+      stroke={color}
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
   </svg>
 );
 export const ArrowLeft = ({
@@ -191,7 +200,14 @@ export const ArrowLeft = ({
   className,
 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
-    <path d="M19 12H5m7-7-7 7" stroke={color} strokeWidth="2" fill="none" />
+    <path
+      d="M19 12H5m7-7-7 7"
+      stroke={color}
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
   </svg>
 );
 export const ArrowRight = ({
@@ -200,7 +216,14 @@ export const ArrowRight = ({
   className,
 }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
-    <path d="M5 12h14m-7-7 7 7" stroke={color} strokeWidth="2" fill="none" />
+    <path
+      d="M5 12h14m-7-7 7 7"
+      stroke={color}
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
   </svg>
 );
 export const SwitchForm = ({
