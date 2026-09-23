@@ -48,6 +48,7 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
       recordMove,
       recordSwitch,
       clear,
+      seasonalTheme,
     );
 
   useDebugShortcuts({
