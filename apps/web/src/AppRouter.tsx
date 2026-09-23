@@ -23,6 +23,7 @@ import { Intro } from "./components/Intro";
 import { Menu } from "./components/Menu";
 import { WorldLevels } from "./components/WorldLevels";
 import { Help } from "./components/Help";
+import { UpdateBanner } from "./components/UpdateBanner";
 
 import "./style.css";
 
@@ -40,18 +41,14 @@ function vars(): CSSProperties {
 function AppLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [, setTick] = useState(0);
-  // Le burger est l'unique contrôle ouvert/fermé du menu : on le référence pour
-  // lui rendre le focus à la fermeture (le panneau le prend à l'ouverture).
   const burgerRef = useRef<HTMLButtonElement>(null);
   const wasMenuOpen = useRef(false);
   const location = useLocation();
 
-  // Close the menu whenever the route changes.
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname]);
 
-  // Close the menu with the Escape key.
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (event: KeyboardEvent) => {
@@ -61,8 +58,6 @@ function AppLayout() {
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  // Le focus entre dans le panneau à l'ouverture (cf. BurgerMenu) et revient au
-  // burger à la fermeture, pour ne jamais le laisser dans le vide.
   useEffect(() => {
     if (!menuOpen && wasMenuOpen.current) burgerRef.current?.focus();
     wasMenuOpen.current = menuOpen;
@@ -70,16 +65,12 @@ function AppLayout() {
 
   return (
     <main className="app" style={vars()}>
-      {/* inert : menu ouvert, la page derrière n'est ni cliquable ni focusable.
-          Le burger reste atteignable : il vit à côté, pas dans .shell. */}
+      <UpdateBanner updateSW={updateSW} />
       <div className="shell app-enter" inert={menuOpen}>
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>
       </div>
-      {/* Barre utilitaire hors de .shell, à côté du panneau : elle passe au-dessus
-          de lui (z-index, cf. layout.css) et le burger devient l'unique bouton
-          ouvert/fermé — plus de croix dupliquée à superposer. */}
       <div className="utility-bar">
         <button
           ref={burgerRef}
@@ -110,7 +101,6 @@ function ProtectedLevel() {
     world?.levels.findIndex((level) => level.id === levelId) ?? -1;
 
   if (!world || levelIndex < 0) return <Navigate to="/menu" replace />;
-  // Les mondes sont séquentiels : pas d'accès direct à un monde verrouillé.
   if (world.status !== "available" || !isWorldUnlocked(world.id)) {
     return <Navigate to="/menu" replace />;
   }
