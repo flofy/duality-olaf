@@ -108,7 +108,12 @@ function tone(
   oscillator.stop(start + duration + 0.02);
 }
 
-function noise(duration: number, volume = 0.06) {
+function noise(
+  duration: number,
+  volume = 0.06,
+  delay = 0,
+  destination: AudioNode | null = null,
+) {
   if (!isEnabled() || !context || !masterGain) return;
 
   const buffer = context.createBuffer(
@@ -124,7 +129,7 @@ function noise(duration: number, volume = 0.06) {
   const source = context.createBufferSource();
   const filter = context.createBiquadFilter();
   const gain = context.createGain();
-  const start = context.currentTime;
+  const start = context.currentTime + delay;
 
   filter.type = "highpass";
   filter.frequency.value = 900;
@@ -134,7 +139,7 @@ function noise(duration: number, volume = 0.06) {
   source.buffer = buffer;
   source.connect(filter);
   filter.connect(gain);
-  gain.connect(masterGain);
+  gain.connect(destination ?? masterGain);
   source.start(start);
 }
 
@@ -149,32 +154,59 @@ type SoundEffect =
   | "reset"
   | "burn";
 
-export async function startAmbient(levelId?: string) {
+export async function startAmbient(
+  levelId?: string,
+  skin: "default" | "halloween" | "christmas" = "default",
+) {
   if (!isEnabled()) return;
-  if (levelId && levelId !== ambientLevelId) {
+  if (levelId !== ambientLevelId || skin !== ambientSkin) {
     stopAudio();
-    ambientLevelId = levelId;
+    ambientLevelId = levelId ?? ambientLevelId;
+    ambientSkin = skin;
   }
 
   const audio = await resumeAudio();
   if (!audio || !isAmbientEnabled() || ambientMuted || musicTimer !== null)
     return;
 
-  const track = getAmbientTrack(ambientLevelId ?? undefined);
+  const track = getAmbientTrack(ambientLevelId ?? undefined, ambientSkin);
   let index = 0;
+  const stepMs = (60_000 / track.bpm) / 2;
+
   const playNote = () => {
     if (!isEnabled() || !isAmbientEnabled() || ambientMuted) return;
-    const melody = track.melody[index % track.melody.length]!;
-    const bass = track.bass[index % track.bass.length]!;
-    tone(melody, 0.25, "square", 0.055, 0, ambientGain);
-    if (index % 2 === 0) {
-      tone(bass, 0.38, "triangle", 0.035, 0, ambientGain);
+
+    const slot = index % 8;
+    const melody = track.melody[slot]!;
+    const bass = track.bass[slot]!;
+    const arp = track.arp[slot]!;
+    const drum = track.drums[slot];
+
+    // Lead: bright arcade square wave.
+    tone(melody, stepMs / 1000 * 0.82, "square", 0.045, 0, ambientGain);
+
+    // Bass: slower triangle layer gives the loop some weight.
+    if (slot % 2 === 0) {
+      tone(bass, stepMs / 1000 * 1.7, "triangle", 0.045, 0, ambientGain);
     }
+
+    // Fast arpeggio: the main shoot-'em-up flavour.
+    tone(arp, stepMs / 1000 * 0.42, "square", 0.018, 0, ambientGain);
+
+    // Minimal chip percussion keeps the loop moving without becoming a drum track.
+    if (drum === "kick") {
+      tone(bass / 2, 0.09, "sine", 0.028, 0, ambientGain);
+    } else if (drum === "snare") {
+      noise(0.065, 0.018, 0, ambientGain);
+    } else if (drum === "hat") {
+      noise(0.025, 0.008, 0, ambientGain);
+    }
+
     index += 1;
   };
 
   playNote();
-  musicTimer = window.setInterval(playNote, 300);
+  musicTimer = window.setInterval(playNote, stepMs);
 }
 
 export async function playSound(effect: SoundEffect) {
