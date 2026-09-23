@@ -79,6 +79,7 @@ export function CompletionOverlay({
       >
         <OverlayIllustration
           variant={changingWorld ? "world-transition" : "victory"}
+          showSquare={worldIndex > 0}
         />
         <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
 
