@@ -50,7 +50,10 @@ export function GameBoard({
       : movement?.direction.y === -1
         ? `${movementDistance * 100}%`
         : "0%";
-  // Keep travel speed consistent: long moves take proportionally longer instead of\n  // compressing several cells into the same short animation.\n  const moveDuration = Math.min(520, 160 + movementDistance * 90);\n  const trailLength = `${movementDistance * 100}%`;
+  // Keep travel speed consistent: long moves take proportionally longer instead of
+  // compressing several cells into the same short animation.
+  const moveDuration = Math.min(520, 160 + movementDistance * 90);
+  const trailLength = `${movementDistance * 100}%`;
 
   return (
     <div
