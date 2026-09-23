@@ -9,6 +9,8 @@ import {
 import { useNavigate } from "react-router";
 import { interpretGesture, type Direction } from "./input/GestureInterpreter";
 import { GameBoard } from "./GameBoard";
+import { GameControls } from "./game-screen/GameControls";
+import { GameHud } from "./game-screen/GameHud";
 import { campaign, worlds } from "./levels/campaign";
 import {
   getActiveThemeName,
@@ -520,28 +522,18 @@ export function LabGame({
           </button>
         )}
       </div>
-      <div className="hud">
-        <b>{state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
-        <br />
-        <span className="muted">
-          ★ {level.stars.length - state.stars.length}/{level.stars.length} ·{" "}
-          {state.moves} COUPS · swipe ou flèches
-        </span>
-      </div>
-      <div className="controls dev-controls">
-        <div className="dpad">
-          <button className="up" onClick={() => move(gestureDirections.up)}>
-            ▲
-          </button>
-          <button onClick={() => move(gestureDirections.left)}>◀</button>
-          <button onClick={() => move(gestureDirections.down)}>▼</button>
-          <button onClick={() => move(gestureDirections.right)}>▶</button>
-        </div>
-        <button className="action switch" onClick={switchForm}>
-          ● ⇄ ■<br />
-          CHANGER
-        </button>
-      </div>
+      <GameHud
+        level={level}
+        activeForm={state.activeForm}
+        starsRemaining={state.stars.length}
+        moves={state.moves}
+      />
+      <GameControls
+        hasSquare={Boolean(level.square)}
+        activeForm={state.activeForm}
+        onMove={move}
+        onSwitch={switchForm}
+      />
     </section>
   );
 }
