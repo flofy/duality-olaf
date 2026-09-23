@@ -129,7 +129,6 @@ export function useLevelGameplay(
           setMovement(null);
         }
 
-        void startAmbient();
         if (!moved) {
           void playSound("wall");
           vibrate(22);
@@ -167,7 +166,6 @@ export function useLevelGameplay(
     setMovement(null);
     setStartedAt(Date.now());
     setElapsedMs(0);
-    void startAmbient();
     void playSound("reset");
     onReset?.();
   }, [onReset, runner]);
@@ -177,7 +175,6 @@ export function useLevelGameplay(
       if (current.completed || current.gameOver) return current;
       const next = runner.switchForm();
       setMovement(null);
-      void startAmbient();
       void playSound("switch");
       vibrate([10, 25, 10]);
       onSwitch?.();
