@@ -17,6 +17,7 @@
 
 .dev-catalogue .topbar {
   grid-template-columns: auto minmax(0, 1fr) auto;
+  padding-right: 60px;
 }
 
 .dev-catalogue-actions {
@@ -248,6 +249,10 @@
 
 .dev-playground {
   width: min(1180px, 100%);
+}
+
+.dev-playground > .topbar {
+  padding-right: 60px;
 }
 
 .dev-playground-body {

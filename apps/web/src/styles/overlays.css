@@ -157,8 +157,7 @@
   pointer-events: none;
   background: linear-gradient(115deg, #fff0 20%, #fff2 44%, #fff0 58%);
   transform: translateX(-55%);
-  animation: illustrationGloss calc(4.5s * var(--animation-scale)) ease-in-out
-    infinite;
+  animation: illustrationGloss 4.5s ease-in-out infinite;
 }
 
 .modal-illustration__character {
@@ -249,8 +248,7 @@
   border: 2px dashed color-mix(in srgb, var(--accent) 55%, transparent);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  animation: illustrationBurst calc(2.4s * var(--animation-scale)) ease-out
-    infinite;
+  animation: illustrationBurst 2.4s ease-out infinite;
 }
 
 .illustration-portal {

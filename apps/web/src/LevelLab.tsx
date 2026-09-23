@@ -7,8 +7,6 @@ import {
   challengeLevels,
 } from "@duality/level-format";
 import { useNavigate } from "react-router";
-import { interpretGesture, type Direction } from "./input/GestureInterpreter";
-import { GameBoard } from "./GameBoard";
 import { campaign, worlds } from "./levels/campaign";
 import {
   getActiveThemeName,
@@ -22,7 +20,7 @@ import {
   skinOrder,
   type SkinPreference,
 } from "./skins";
-import { useLevelGameplay, type GameplayDirection } from "./useLevelGameplay";
+import { useLevelGameplay } from "./useLevelGameplay";
 import {
   DEFAULT_BOARD_ZOOM,
   getBoardZoom,
@@ -31,6 +29,7 @@ import {
   zoomOutBoard,
 } from "./boardZoom";
 import type { BoardZoom } from "./boardZoom";
+import { LevelGameplayView } from "./game-screen/LevelGameplayView";
 
 type GameOverOverlayProps = {
   type: "completed" | "gameOver" | null;
@@ -398,20 +397,13 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
       </div>
       <LabGame
         level={level}
-        skin={skin}
+        skin={gameplaySkin}
         themeName={themeName}
         onCompletionChange={setCompletion}
       />
     </section>
   );
 }
-
-const gestureDirections: Record<Direction, GameplayDirection> = {
-  left: { x: -1, y: 0 },
-  right: { x: 1, y: 0 },
-  up: { x: 0, y: -1 },
-  down: { x: 0, y: 1 },
-};
 
 export function LabGame({
   level,
@@ -422,22 +414,25 @@ export function LabGame({
   onBackToGenerator,
 }: {
   level: Level;
-  skin: string;
+  skin: SkinPreference;
   themeName: ThemeName;
   onCompletionChange: (completion: { moves: number } | null) => void;
   optimalMoves?: number;
   onBackToGenerator?: () => void;
 }) {
   const navigate = useNavigate();
-  const [gestureStart, setGestureStart] = useState<{
-    x: number;
-    y: number;
-    interactive: boolean;
-  } | null>(null);
   const [zoom, setZoom] = useState<BoardZoom>(() => getBoardZoom());
-  const { state, reset, move, switchForm } = useLevelGameplay(level, () => {
-    navigate("/dev/levels");
-  });
+  const gameplaySkin = resolveLevelSkin(level.id, skin);
+  const { state, movement, reset, move, switchForm } = useLevelGameplay(
+    level,
+    () => {
+      navigate("/dev/levels");
+    },
+    undefined,
+    undefined,
+    undefined,
+    gameplaySkin,
+  );
 
   useEffect(() => {
     onCompletionChange(state.completed ? { moves: state.moves } : null);
@@ -448,38 +443,16 @@ export function LabGame({
       className="dev-playground-board"
       style={{ "--board-zoom": zoom } as CSSProperties}
     >
-      <div
-        className="board-wrap"
-        onPointerDown={(event) => {
-          const target = event.target as HTMLElement;
-          const interactive = Boolean(
-            target.closest(
-              'button, a, input, textarea, select, [role="dialog"]',
-            ),
-          );
-          setGestureStart({ x: event.clientX, y: event.clientY, interactive });
-        }}
-        onPointerUp={(event) => {
-          if (!gestureStart) return;
-          const result = interpretGesture(
-            gestureStart,
-            { x: event.clientX, y: event.clientY },
-            24,
-          );
-          const wasInteractive = gestureStart.interactive;
-          setGestureStart(null);
-          if (!wasInteractive && result.type === "swipe" && result.direction) {
-            move(gestureDirections[result.direction]);
-          }
-        }}
-      >
-        <GameBoard
-          level={level}
-          state={state}
-          skin={skin}
-          themeName={themeName}
-        />
-      </div>
+      <LevelGameplayView
+        level={level}
+        state={state}
+        movement={movement}
+        skin={skin}
+        themeName={themeName}
+        move={move}
+        switchForm={switchForm}
+        onReset={reset}
+      />
       {/* Popin hors de la grille (comme GameScreen) : la fin de partie
           n'appartient pas au plateau. */}
       <GameOverOverlay
@@ -519,28 +492,6 @@ export function LabGame({
             ↺
           </button>
         )}
-      </div>
-      <div className="hud">
-        <b>{state.activeForm === "ball" ? "● BOULE" : "■ CARRÉ"}</b>
-        <br />
-        <span className="muted">
-          ★ {level.stars.length - state.stars.length}/{level.stars.length} ·{" "}
-          {state.moves} COUPS · swipe ou flèches
-        </span>
-      </div>
-      <div className="controls dev-controls">
-        <div className="dpad">
-          <button className="up" onClick={() => move(gestureDirections.up)}>
-            ▲
-          </button>
-          <button onClick={() => move(gestureDirections.left)}>◀</button>
-          <button onClick={() => move(gestureDirections.down)}>▼</button>
-          <button onClick={() => move(gestureDirections.right)}>▶</button>
-        </div>
-        <button className="action switch" onClick={switchForm}>
-          ● ⇄ ■<br />
-          CHANGER
-        </button>
       </div>
     </section>
   );

@@ -1,3 +1,5 @@
+import { getAmbientTrack, getAmbientTrackKey } from "./ambientTracks";
+
 const SOUND_KEY = "duality.sound.enabled";
 const VOLUME_KEY = "duality.sound.volume";
 const AMBIENT_KEY = "duality.sound.ambient";
@@ -10,6 +12,9 @@ let masterGain: GainNode | null = null;
 let ambientGain: GainNode | null = null;
 let musicTimer: number | null = null;
 let ambientMuted = false;
+let ambientLevelId: string | null = null;
+let ambientSkin: "default" | "halloween" | "christmas" = "default";
+let ambientTrackKey: string | null = null;
 
 function readBoolean(key: string, fallback = true) {
   try {
@@ -105,7 +110,12 @@ function tone(
   oscillator.stop(start + duration + 0.02);
 }
 
-function noise(duration: number, volume = 0.06) {
+function noise(
+  duration: number,
+  volume = 0.06,
+  delay = 0,
+  destination: AudioNode | null = null,
+) {
   if (!isEnabled() || !context || !masterGain) return;
 
   const buffer = context.createBuffer(
@@ -121,7 +131,7 @@ function noise(duration: number, volume = 0.06) {
   const source = context.createBufferSource();
   const filter = context.createBiquadFilter();
   const gain = context.createGain();
-  const start = context.currentTime;
+  const start = context.currentTime + delay;
 
   filter.type = "highpass";
   filter.frequency.value = 900;
@@ -131,7 +141,7 @@ function noise(duration: number, volume = 0.06) {
   source.buffer = buffer;
   source.connect(filter);
   filter.connect(gain);
-  gain.connect(masterGain);
+  gain.connect(destination ?? masterGain);
   source.start(start);
 }
 
@@ -146,22 +156,61 @@ type SoundEffect =
   | "reset"
   | "burn";
 
-export async function startAudio() {
+export async function startAmbient(
+  levelId?: string,
+  skin: "default" | "halloween" | "christmas" = "default",
+) {
   if (!isEnabled()) return;
+  const nextTrackKey = getAmbientTrackKey(levelId, skin);
+  if (nextTrackKey !== ambientTrackKey) {
+    stopAudio();
+    ambientLevelId = levelId ?? ambientLevelId;
+    ambientSkin = skin;
+    ambientTrackKey = nextTrackKey;
+  }
+
   const audio = await resumeAudio();
   if (!audio || !isAmbientEnabled() || ambientMuted || musicTimer !== null)
     return;
 
-  const notes = [220, 277.18, 329.63, 277.18, 246.94, 329.63, 369.99, 329.63];
+  const track = getAmbientTrack(ambientLevelId ?? undefined, ambientSkin);
   let index = 0;
+  const stepMs = 60_000 / track.bpm / 2;
+
   const playNote = () => {
     if (!isEnabled() || !isAmbientEnabled() || ambientMuted) return;
-    tone(notes[index % notes.length]!, 0.42, "triangle", 0.018, 0, ambientGain);
+
+    const slot = index % 8;
+    const melody = track.melody[slot]!;
+    const bass = track.bass[slot]!;
+    const arp = track.arp[slot]!;
+    const drum = track.drums[slot];
+
+    // Lead: bright arcade square wave.
+    tone(melody, (stepMs / 1000) * 0.82, "square", 0.045, 0, ambientGain);
+
+    // Bass: slower triangle layer gives the loop some weight.
+    if (slot % 2 === 0) {
+      tone(bass, (stepMs / 1000) * 1.7, "triangle", 0.045, 0, ambientGain);
+    }
+
+    // Fast arpeggio: the main shoot-'em-up flavour.
+    tone(arp, (stepMs / 1000) * 0.42, "square", 0.018, 0, ambientGain);
+
+    // Minimal chip percussion keeps the loop moving without becoming a drum track.
+    if (drum === "kick") {
+      tone(bass / 2, 0.09, "sine", 0.028, 0, ambientGain);
+    } else if (drum === "snare") {
+      noise(0.065, 0.018, 0, ambientGain);
+    } else if (drum === "hat") {
+      noise(0.025, 0.008, 0, ambientGain);
+    }
+
     index += 1;
   };
 
   playNote();
-  musicTimer = window.setInterval(playNote, 520);
+  musicTimer = window.setInterval(playNote, stepMs);
 }
 
 export async function playSound(effect: SoundEffect) {
@@ -247,7 +296,7 @@ export function isSoundEnabled() {
 export function toggleSound() {
   const enabled = !isEnabled();
   setSoundEnabled(enabled);
-  if (enabled) void startAudio();
+  if (enabled) void startAmbient();
   return enabled;
 }
 
@@ -272,7 +321,7 @@ export function setAmbientEnabled(enabled: boolean) {
   if (!enabled) {
     stopAudio();
   } else if (isEnabled() && !ambientMuted) {
-    void startAudio();
+    void startAmbient();
   }
 }
 
@@ -284,7 +333,7 @@ export function setAmbientMuted(muted: boolean) {
   if (muted) {
     stopAudio();
   } else if (isEnabled() && isAmbientEnabled()) {
-    void startAudio();
+    void startAmbient();
   }
 }
 
