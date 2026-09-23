@@ -33,5 +33,8 @@ export function getAmbientTrack(levelId?: string): AmbientTrack {
   const match = /world-(\\d+)-level-(\\d+)/.exec(levelId);
   const world = Number(match?.[1] ?? 1);
   const level = Number(match?.[2] ?? 1);
-  return AMBIENT_TRACKS[(world * 3 + level - 4) % AMBIENT_TRACKS.length] ?? AMBIENT_TRACKS[0]!;
+  return (
+    AMBIENT_TRACKS[(world * 3 + level - 4) % AMBIENT_TRACKS.length] ??
+    AMBIENT_TRACKS[0]!
+  );
 }
