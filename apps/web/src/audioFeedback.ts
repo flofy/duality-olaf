@@ -1,4 +1,4 @@
-import { getAmbientTrack } from "./ambientTracks";
+import { getAmbientTrack, getAmbientTrackKey } from "./ambientTracks";
 
 const SOUND_KEY = "duality.sound.enabled";
 const VOLUME_KEY = "duality.sound.volume";
@@ -159,10 +159,12 @@ export async function startAmbient(
   skin: "default" | "halloween" | "christmas" = "default",
 ) {
   if (!isEnabled()) return;
-  if (levelId !== ambientLevelId || skin !== ambientSkin) {
+  const nextTrackKey = getAmbientTrackKey(levelId, skin);
+  if (nextTrackKey !== ambientTrackKey) {
     stopAudio();
     ambientLevelId = levelId ?? ambientLevelId;
     ambientSkin = skin;
+    ambientTrackKey = nextTrackKey;
   }
 
   const audio = await resumeAudio();
