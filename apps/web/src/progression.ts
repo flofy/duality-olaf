@@ -39,7 +39,9 @@ function readProgress(): Progress {
     if (legacy) {
       const parsed = JSON.parse(legacy) as Partial<{ completed: unknown }>;
       const completed = Array.isArray(parsed.completed)
-        ? parsed.completed.filter((id): id is string => typeof id === "string")
+        ? parsed.completed.filter(
+            (id): id is string => typeof id === "string",
+          )
         : [];
       return { completed, results: {} };
     }
@@ -131,6 +133,17 @@ export function completeLevel(
 
 export function getCompletedCount(): number {
   return readProgress().completed.length;
+}
+
+function getCompletedStars(): number {
+  return Object.values(readProgress().results).reduce(
+    (total, result) => total + result.stars,
+    0,
+  );
+}
+
+function getTotalStars(): number {
+  return worlds.reduce((total, world) => total + world.levels.length * 3, 0);
 }
 
 export function getCampaignProgress(): {
