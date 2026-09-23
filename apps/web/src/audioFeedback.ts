@@ -173,7 +173,7 @@ export async function startAmbient(
 
   const track = getAmbientTrack(ambientLevelId ?? undefined, ambientSkin);
   let index = 0;
-  const stepMs = (60_000 / track.bpm) / 2;
+  const stepMs = 60_000 / track.bpm / 2;
 
   const playNote = () => {
     if (!isEnabled() || !isAmbientEnabled() || ambientMuted) return;
@@ -185,15 +185,15 @@ export async function startAmbient(
     const drum = track.drums[slot];
 
     // Lead: bright arcade square wave.
-    tone(melody, stepMs / 1000 * 0.82, "square", 0.045, 0, ambientGain);
+    tone(melody, (stepMs / 1000) * 0.82, "square", 0.045, 0, ambientGain);
 
     // Bass: slower triangle layer gives the loop some weight.
     if (slot % 2 === 0) {
-      tone(bass, stepMs / 1000 * 1.7, "triangle", 0.045, 0, ambientGain);
+      tone(bass, (stepMs / 1000) * 1.7, "triangle", 0.045, 0, ambientGain);
     }
 
     // Fast arpeggio: the main shoot-'em-up flavour.
-    tone(arp, stepMs / 1000 * 0.42, "square", 0.018, 0, ambientGain);
+    tone(arp, (stepMs / 1000) * 0.42, "square", 0.018, 0, ambientGain);
 
     // Minimal chip percussion keeps the loop moving without becoming a drum track.
     if (drum === "kick") {
