@@ -96,6 +96,7 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
       />
       <GameControls
         hasSquare={Boolean(level.square)}
+        activeForm={state.activeForm}
         onMove={move}
         onSwitch={switchForm}
       />
