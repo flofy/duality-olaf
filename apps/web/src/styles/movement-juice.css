@@ -9,7 +9,7 @@
 }
 
 .piece-moving--active {
-  animation: pieceMove var(--move-duration, 320ms) linear;
+  animation: pieceMove calc(var(--move-duration, 320ms) * var(--animation-scale)) linear;
   transform-origin: center center;
   will-change: transform;
   z-index: 5;
