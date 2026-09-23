@@ -29,27 +29,27 @@ export const worldDesign: Readonly<Record<number, WorldDesign>> = {
   1: {
     mechanics: ["movement"],
     difficulty: "intro",
-    goal: "Comprendre le mouvement et les trajectoires.",
+    goal: "Comprendre le mouvement, puis éviter le feu (niveau 05).",
   },
   2: {
     mechanics: ["positioning", "planning"],
-    difficulty: "medium",
-    goal: "Préparer les positions avant de s'engager.",
+    difficulty: "easy",
+    goal: "Découvrir le carré, puis composer avec le feu (niveau 05).",
   },
   3: {
     mechanics: ["coordination", "blocking"],
-    difficulty: "hard",
-    goal: "Utiliser chaque forme comme obstacle pour l'autre.",
+    difficulty: "medium",
+    goal: "Faire coopérer la balle et le carré pour finir chaque niveau.",
   },
   4: {
     mechanics: ["coordination", "blocking", "planning"],
     difficulty: "hard",
-    goal: "Enchaîner plusieurs positionnements interdépendants.",
+    goal: "Maîtriser les téléporteurs, d'abord sans le carré.",
   },
   5: {
     mechanics: ["coordination", "blocking", "planning", "precision"],
     difficulty: "expert",
-    goal: "Maîtriser les positions critiques et les séquences longues.",
+    goal: "Ouvrir les portes, puis combiner balle, carré, porte et téléporteur.",
   },
 };
 

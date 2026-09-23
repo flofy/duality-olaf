@@ -55,51 +55,6 @@
       "empty",
       "empty",
       "empty",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "special",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "special",
-      "empty",
-      "empty",
       "wall",
       "empty",
       "empty",
@@ -130,7 +85,52 @@
       "empty",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
       "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "empty",
       "empty",
       "empty",
@@ -161,23 +161,11 @@
   "stars": [
     {
       "x": 5,
-      "y": 3
-    },
-    {
-      "x": 8,
       "y": 1
     },
     {
-      "x": 2,
-      "y": 3
-    },
-    {
-      "x": 1,
-      "y": 7
-    },
-    {
-      "x": 11,
-      "y": 7
+      "x": 8,
+      "y": 8
     }
   ]
 }

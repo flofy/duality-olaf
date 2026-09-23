@@ -25,7 +25,7 @@
       "empty",
       "empty",
       "empty",
-      "wall",
+      "empty",
       "empty",
       "empty",
       "empty",
@@ -35,59 +35,29 @@
     ],
     [
       "wall",
-      "special",
+      "spike",
+      "wall",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "wall",
       "empty",
       "empty",
       "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "special",
+      "wall",
       "wall"
     ],
     [
       "wall",
       "empty",
       "empty",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "special",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "empty",
-      "wall",
-      "wall",
-      "empty",
-      "empty",
-      "special",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
       "empty",
       "wall",
       "empty",
       "empty",
       "empty",
-      "empty",
-      "empty",
+      "wall",
       "wall",
       "empty",
       "empty",
@@ -97,12 +67,12 @@
       "wall",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
       "wall",
       "empty",
       "empty",
@@ -111,11 +81,26 @@
     [
       "wall",
       "empty",
-      "special",
-      "empty",
+      "wall",
       "empty",
       "empty",
       "wall",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "spike",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "spike",
+      "empty",
+      "wall",
+      "wall",
+      "empty",
+      "empty",
       "empty",
       "empty",
       "empty",
@@ -128,9 +113,24 @@
       "empty",
       "empty",
       "empty",
+      "spike",
       "empty",
       "empty",
       "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "empty",
       "empty",
       "empty",
@@ -155,25 +155,25 @@
     ]
   ],
   "ball": {
-    "x": 1,
-    "y": 1
+    "x": 10,
+    "y": 7
   },
   "square": {
-    "x": 11,
-    "y": 8
+    "x": 6,
+    "y": 3
   },
   "stars": [
     {
-      "x": 2,
-      "y": 8
+      "x": 1,
+      "y": 3
     },
     {
-      "x": 6,
+      "x": 4,
       "y": 4
     },
     {
-      "x": 11,
-      "y": 1
+      "x": 3,
+      "y": 3
     }
   ]
 }

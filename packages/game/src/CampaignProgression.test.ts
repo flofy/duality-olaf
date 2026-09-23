@@ -25,42 +25,29 @@ describe("campaign progression", () => {
   });
 
   it(
-    "keeps every world strictly ordered from easier to harder",
+    "keeps every world ordered from easier to harder",
     { timeout: 120_000 },
     () => {
       for (let index = 0; index < worlds.length; index += 1) {
         const worldScores = scores(index);
         for (let i = 1; i < worldScores.length; i += 1) {
-          if (worldScores[i] < worldScores[i - 1]!) {
-            console.warn(
-              `World ${index} level ${i} (score ${worldScores[i]}) ` +
-                `easier than previous level ${i - 1} (score ${worldScores[i - 1]!})`,
-            );
-          }
+          // Each world must ramp up: never a step backwards. The themed worlds
+          // have overlapping global ranges (a hard positioning puzzle can
+          // outrank an easy coordination one), so this is asserted per world.
+          expect(worldScores[i]).toBeGreaterThanOrEqual(worldScores[i - 1]!);
         }
       }
     },
   );
 
-  // Reordering within each world guarantees non-decreasing scores intra-monde,
-  // but the themed worlds have inherently overlapping difficulty ranges (e.g.
-  // World 2's hardest positioning puzzles outrank World 3's easiest coordination
-  // puzzles), so a strict "next world starts harder than previous world's end"
-  // assertion can never hold. We assert the campaign ramps up overall instead,
-  // via non-decreasing per-world median difficulty.
-  it.skip("ramps up overall difficulty from world to world", () => {
-    const median = (values: number[]): number => {
-      const sorted = [...values].sort((a, b) => a - b);
-      const mid = Math.floor(sorted.length / 2);
-      return sorted.length % 2
-        ? sorted[mid]!
-        : (sorted[mid - 1]! + sorted[mid]!) / 2;
-    };
-    const worldMedians = worlds.map((_, index) => median(scores(index)));
-    for (let index = 1; index < worldMedians.length; index += 1) {
-      expect(worldMedians[index]).toBeGreaterThanOrEqual(
-        worldMedians[index - 1]!,
-      );
-    }
+  it("ramps up overall difficulty from world to world", () => {
+    // Compare the *ends* of the worlds: each world must finish harder than the
+    // previous one, even if their opening levels overlap.
+    const lastScores = worlds.map((world, index) => {
+      const worldScores = scores(index);
+      return worldScores[worldScores.length - 1]!;
+    });
+    for (let index = 1; index < lastScores.length; index += 1)
+      expect(lastScores[index]).toBeGreaterThan(lastScores[index - 1]!);
   });
 });

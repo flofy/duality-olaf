@@ -1,12 +1,12 @@
-import {
-  worlds as canonicalWorlds,
-  world3Refined,
-} from "@duality/level-format";
+import { worlds as canonicalWorlds } from "@duality/level-format";
 import type { Level, WorldDefinition } from "@duality/level-format";
 
-export const worlds: readonly WorldDefinition[] = canonicalWorlds.map(
-  (world) => (world.id === 3 ? { ...world, levels: world3Refined } : world),
-);
+/**
+ * The web app plays the exact same campaign the CI validates: every world comes
+ * straight from the JSON files in `@duality/level-format/levels`. No local
+ * override, so a level can never drift between the tests and the game.
+ */
+export const worlds: readonly WorldDefinition[] = canonicalWorlds;
 export const campaign: Level[] = worlds.flatMap((world) => world.levels);
 const worldCount = worlds.length;
 const levelsPerWorld = Math.max(...worlds.map((world) => world.levels.length));

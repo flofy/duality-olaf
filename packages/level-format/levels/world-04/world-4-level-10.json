@@ -28,36 +28,6 @@
       "empty",
       "empty",
       "empty",
-      "wall",
-      "empty",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
       "empty",
       "empty",
       "empty",
@@ -65,30 +35,30 @@
     ],
     [
       "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "wall",
       "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
       "wall",
-      "empty",
-      "empty",
-      "empty",
       "wall"
     ],
     [
       "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "wall",
       "empty",
       "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
       "empty",
       "empty",
       "wall"
@@ -105,7 +75,22 @@
       "empty",
       "empty",
       "empty",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
       "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "wall",
+      "wall",
+      "empty",
+      "empty",
+      "wall",
       "wall"
     ],
     [
@@ -118,6 +103,21 @@
       "empty",
       "empty",
       "empty",
+      "wall",
+      "empty",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
+      "empty",
+      "empty",
       "empty",
       "empty",
       "empty",
@@ -128,10 +128,10 @@
       "empty",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "empty",
       "wall",
-      "empty",
-      "empty",
-      "empty",
       "empty",
       "empty",
       "wall",
@@ -155,46 +155,47 @@
     ]
   ],
   "ball": {
-    "x": 8,
-    "y": 2
+    "x": 1,
+    "y": 8
   },
   "square": {
-    "x": 10,
-    "y": 7
+    "x": 2,
+    "y": 3
   },
   "stars": [
     {
-      "x": 9,
-      "y": 6
+      "x": 8,
+      "y": 8
     },
     {
-      "x": 10,
+      "x": 2,
+      "y": 8
+    },
+    {
+      "x": 4,
       "y": 5
     },
     {
-      "x": 9,
-      "y": 8
+      "x": 10,
+      "y": 6
     }
   ],
-  "doors": [
+  "teleporters": [
     {
-      "id": "door-1",
+      "id": "teleporter-a",
       "position": {
-        "x": 11,
-        "y": 5
+        "x": 2,
+        "y": 4
       },
-      "initiallyOpen": false
-    }
-  ],
-  "switches": [
+      "targetId": "teleporter-b"
+    },
     {
-      "id": "switch-1",
+      "id": "teleporter-b",
       "position": {
-        "x": 7,
-        "y": 7
+        "x": 4,
+        "y": 2
       },
-      "form": "ball",
-      "toggles": ["door-1"]
+      "targetId": "teleporter-a"
     }
   ]
 }

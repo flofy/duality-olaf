@@ -7,7 +7,7 @@ import type {
   Teleporter,
 } from "@duality/level-format";
 import { solveLevel } from "./LevelSolver";
-export type ChallengeMechanic = "walls" | "doors" | "teleporters";
+export type ChallengeMechanic = "walls" | "doors" | "teleporters" | "spikes";
 export type Challenge = {
   seed: number;
   level: Level;
@@ -21,14 +21,42 @@ export type ChallengeGeneratorOptions = {
   height?: number;
   stars?: number;
   wallCount?: number;
+  /** Number of lethal fire cells to scatter on free cells. */
+  spikes?: number;
+  /**
+   * When `false`, the generated level only has the ball form: no square is
+   * placed and any switch it contains is usable by the ball.
+   */
+  square?: boolean;
+  /**
+   * Force the switch's usable form instead of picking one at random. Ball-only
+   * levels (`square: false`) always fall back to `"ball"`.
+   */
+  switchForm?: Form | "either";
   mechanics?: readonly ChallengeMechanic[];
   maxAttempts?: number;
 };
+
+type NormalizedOptions = {
+  width: number;
+  height: number;
+  stars: number;
+  wallCount: number;
+  spikes: number;
+  square: boolean;
+  switchForm: Form | "either" | null;
+  mechanics: readonly ChallengeMechanic[];
+  maxAttempts: number;
+};
+
 const DEFAULTS = {
   width: 13,
   height: 10,
   stars: 3,
   wallCount: 8,
+  spikes: 0,
+  square: true,
+  switchForm: null,
   maxAttempts: 128,
 };
 const random = (s: { value: number }) => {
@@ -41,24 +69,20 @@ const random = (s: { value: number }) => {
 const pick = <T>(a: readonly T[], s: { value: number }): T =>
   a[Math.floor(random(s) * a.length)]!;
 const key = (p: Position) => `${p.x},${p.y}`;
-function candidate(
-  seed: number,
-  o: Required<Omit<ChallengeGeneratorOptions, "mechanics">> & {
-    mechanics: readonly ChallengeMechanic[];
-  },
-  attempt: number,
-): Level {
+function candidate(seed: number, o: NormalizedOptions, attempt: number): Level {
   const r = { value: (seed ^ Math.imul(attempt + 1, 0x45d9f3b)) | 0 };
   const cells: Position[] = [];
   for (let y = 1; y < o.height - 1; y++)
     for (let x = 1; x < o.width - 1; x++) cells.push({ x, y });
-  const ball = pick(cells, r),
-    square = pick(
-      cells.filter((c) => key(c) !== key(ball)),
-      r,
-    ),
-    occupied = new Set([key(ball), key(square)]),
-    walls: Position[] = [];
+  const ball = pick(cells, r);
+  const square = o.square
+    ? pick(
+        cells.filter((c) => key(c) !== key(ball)),
+        r,
+      )
+    : null;
+  const occupied = new Set(square ? [key(ball), key(square)] : [key(ball)]);
+  const walls: Position[] = [];
   if (o.mechanics.includes("walls"))
     for (let i = 0; i < o.wallCount; i++) {
       const a = cells.filter((c) => !occupied.has(key(c)));
@@ -85,7 +109,9 @@ function candidate(
   let doors: Door[] | undefined, switches: Switch[] | undefined;
   if (o.mechanics.includes("doors")) {
     const d: Door = { id: "door-1", position: free(), initiallyOpen: false };
-    const form: Form | "either" = random(r) < 0.5 ? "ball" : "square";
+    const form: Form | "either" =
+      o.switchForm ??
+      (o.square ? (random(r) < 0.5 ? "ball" : "square") : "ball");
     const sw: Switch = {
       id: "switch-1",
       position: free(),
@@ -112,13 +138,21 @@ function candidate(
     stars.push(s);
     occupied.add(key(s));
   }
+  if (o.mechanics.includes("spikes"))
+    for (let i = 0; i < o.spikes; i++) {
+      const a = cells.filter((c) => !occupied.has(key(c)));
+      if (!a.length) break;
+      const s = pick(a, r);
+      occupied.add(key(s));
+      tiles[s.y]![s.x] = "spike";
+    }
   return {
     id: `challenge-${seed}-${attempt}`,
     width: o.width,
     height: o.height,
     tiles,
     ball,
-    square,
+    ...(square ? { square } : {}),
     stars,
     doors,
     switches,
@@ -132,7 +166,9 @@ export function generateChallenge(
   const mechanics = overrides.mechanics?.length
     ? [...overrides.mechanics]
     : (["walls"] as ChallengeMechanic[]);
-  const o = { ...DEFAULTS, ...overrides, mechanics };
+  if ((overrides.spikes ?? 0) > 0 && !mechanics.includes("spikes"))
+    mechanics.push("spikes");
+  const o: NormalizedOptions = { ...DEFAULTS, ...overrides, mechanics };
   if (o.stars < 1) throw new Error("Challenge must contain at least one star");
   for (let attempt = 0; attempt < o.maxAttempts; attempt++) {
     const level = candidate(seed, o, attempt),

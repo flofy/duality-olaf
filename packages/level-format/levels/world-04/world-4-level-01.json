@@ -30,36 +30,6 @@
       "empty",
       "empty",
       "empty",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
       "empty",
       "wall"
     ],
@@ -67,22 +37,7 @@
       "wall",
       "empty",
       "empty",
-      "wall",
       "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "empty",
-      "wall",
       "empty",
       "empty",
       "empty",
@@ -126,6 +81,34 @@
     [
       "wall",
       "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
       "wall",
       "empty",
       "empty",
@@ -136,6 +119,23 @@
       "empty",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
       "wall"
     ],
     [
@@ -155,46 +155,35 @@
     ]
   ],
   "ball": {
-    "x": 9,
-    "y": 6
-  },
-  "square": {
-    "x": 11,
-    "y": 6
+    "x": 4,
+    "y": 1
   },
   "stars": [
     {
-      "x": 4,
-      "y": 8
+      "x": 10,
+      "y": 3
     },
     {
-      "x": 1,
-      "y": 7
-    },
-    {
-      "x": 2,
-      "y": 5
+      "x": 3,
+      "y": 6
     }
   ],
-  "doors": [
+  "teleporters": [
     {
-      "id": "door-1",
+      "id": "teleporter-a",
       "position": {
-        "x": 10,
-        "y": 5
-      },
-      "initiallyOpen": false
-    }
-  ],
-  "switches": [
-    {
-      "id": "switch-1",
-      "position": {
-        "x": 2,
+        "x": 5,
         "y": 7
       },
-      "form": "ball",
-      "toggles": ["door-1"]
+      "targetId": "teleporter-b"
+    },
+    {
+      "id": "teleporter-b",
+      "position": {
+        "x": 11,
+        "y": 3
+      },
+      "targetId": "teleporter-a"
     }
   ]
 }

@@ -4,7 +4,6 @@
   "height": 10,
   "tiles": [
     [
-      "empty",
       "wall",
       "wall",
       "wall",
@@ -12,114 +11,10 @@
       "wall",
       "wall",
       "wall",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "wall"
-    ],
-    [
-      "empty",
-      "empty",
-      "empty",
       "wall",
       "wall",
       "wall",
       "wall",
-      "wall",
-      "wall",
-      "empty",
-      "special",
-      "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "wall",
-      "empty",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "empty",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "empty",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "empty",
-      "wall",
-      "empty",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
       "wall",
       "wall"
     ],
@@ -129,8 +24,23 @@
       "empty",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
       "wall",
       "wall",
+      "empty",
+      "empty",
+      "empty",
       "wall",
       "wall",
       "empty",
@@ -139,6 +49,25 @@
       "wall"
     ],
     [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "spike",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
       "empty",
       "empty",
       "empty",
@@ -147,33 +76,104 @@
       "wall",
       "wall",
       "wall",
+      "wall"
+    ],
+    [
       "wall",
       "empty",
       "empty",
       "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
       "wall"
     ]
   ],
   "ball": {
-    "x": 3,
+    "x": 5,
     "y": 2
   },
   "square": {
-    "x": 8,
-    "y": 5
+    "x": 3,
+    "y": 8
   },
   "stars": [
     {
-      "x": 4,
-      "y": 5
+      "x": 8,
+      "y": 3
+    },
+    {
+      "x": 3,
+      "y": 4
     },
     {
       "x": 7,
-      "y": 2
-    },
-    {
-      "x": 6,
-      "y": 7
+      "y": 5
     }
   ]
 }
