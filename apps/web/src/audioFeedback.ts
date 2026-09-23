@@ -149,7 +149,8 @@ type SoundEffect =
 export async function startAudio() {
   if (!isEnabled()) return;
   const audio = await resumeAudio();
-  if (!audio || !isAmbientEnabled() || ambientMuted || musicTimer !== null) return;
+  if (!audio || !isAmbientEnabled() || ambientMuted || musicTimer !== null)
+    return;
 
   const notes = [220, 277.18, 329.63, 277.18, 246.94, 329.63, 369.99, 329.63];
   let index = 0;
