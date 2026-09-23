@@ -51,7 +51,8 @@ export function useLevelGameplay(
     setStartedAt(Date.now());
     setElapsedMs(0);
     pauseStartedAtRef.current = null;
-  }, [runner]);
+    void startAudio(level.id);
+  }, [level.id, runner]);
 
   useEffect(() => {
     if (state.completed || state.gameOver) return;
