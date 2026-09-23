@@ -74,7 +74,8 @@ export function GameBoard({
       : movement?.direction.y === -1
         ? `${movementDistance * 18}%`
         : "0%";
-  const trailLength = `${movementDistance * 180}%`;
+  const moveDuration = Math.min(420, 260 + movementDistance * 45);
+  const trailLength = `${movementDistance * 100}%`;
 
   return (
     <div
@@ -190,6 +191,7 @@ export function GameBoard({
               gridColumn: movement.from.x + 1,
               gridRow: movement.from.y + 1,
               "--trail-length": trailLength,
+              "--move-duration": `${moveDuration}ms`,
               "--piece-color":
                 state.activeForm === "ball"
                   ? hexToCss(themes[themeName].ball)
@@ -212,6 +214,7 @@ export function GameBoard({
               "--move-y-72": moveY72,
               "--move-x-18": moveX18,
               "--move-y-18": moveY18,
+              "--move-duration": `${moveDuration}ms`,
             } as CSSProperties
           }
           key={`ball-${state.ball.x}-${state.ball.y}`}
