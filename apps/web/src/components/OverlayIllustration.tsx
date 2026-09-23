@@ -3,12 +3,14 @@ import { BallCharacter, SquareCharacter } from "./Characters";
 type OverlayIllustrationProps = {
   variant: "game-over" | "victory" | "world-transition";
   activeForm?: "ball" | "square";
+  showSquare?: boolean;
 };
 
 /** Decorative, reusable illustration stage for modal headers. */
 export function OverlayIllustration({
   variant,
   activeForm = "ball",
+  showSquare = true,
 }: OverlayIllustrationProps) {
   if (variant === "game-over") {
     return (
@@ -53,11 +55,13 @@ export function OverlayIllustration({
           expression="happy"
           className="modal-illustration__character modal-illustration__character--ball"
         />
-        <SquareCharacter
-          size={64}
-          expression="happy"
-          className="modal-illustration__character modal-illustration__character--square"
-        />
+        {showSquare && (
+          <SquareCharacter
+            size={64}
+            expression="happy"
+            className="modal-illustration__character modal-illustration__character--square"
+          />
+        )}
       </div>
     );
   }
@@ -77,11 +81,13 @@ export function OverlayIllustration({
         expression="happy"
         className="modal-illustration__character modal-illustration__character--ball"
       />
-      <SquareCharacter
-        size={82}
-        expression="happy"
-        className="modal-illustration__character modal-illustration__character--square"
-      />
+      {showSquare && (
+        <SquareCharacter
+          size={82}
+          expression="happy"
+          className="modal-illustration__character modal-illustration__character--square"
+        />
+      )}
     </div>
   );
 }
