@@ -2,10 +2,11 @@ import { BallCharacter, SquareCharacter } from "./Characters";
 
 type OverlayIllustrationProps = {
   variant: "game-over" | "victory" | "world-transition";
+  activeForm?: "ball" | "square";
 };
 
 /** Decorative, reusable illustration stage for modal headers. */
-export function OverlayIllustration({ variant }: OverlayIllustrationProps) {
+export function OverlayIllustration({ variant, activeForm = "ball" }: OverlayIllustrationProps) {
   if (variant === "game-over") {
     return (
       <div className="modal-illustration modal-illustration--game-over" aria-hidden="true">
@@ -13,7 +14,11 @@ export function OverlayIllustration({ variant }: OverlayIllustrationProps) {
         <span className="illustration-spark illustration-spark--two">✦</span>
         <span className="illustration-crystal illustration-crystal--left" />
         <span className="illustration-crystal illustration-crystal--right" />
-        <BallCharacter size={96} expression="defeated" className="modal-illustration__character" />
+        {activeForm === "ball" ? (
+          <BallCharacter size={96} expression="defeated" className="modal-illustration__character" />
+        ) : (
+          <SquareCharacter size={96} expression="defeated" className="modal-illustration__character" />
+        )}
       </div>
     );
   }
