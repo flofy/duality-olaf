@@ -164,6 +164,8 @@ type CenterDPadButtonProps = {
   icon: ReactNode;
   label: ReactNode;
   onClick: MouseEventHandler<HTMLButtonElement>;
+  onPointerDown?: React.PointerEventHandler<HTMLButtonElement>;
+  onPointerUp?: React.PointerEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   className?: string;
 };
