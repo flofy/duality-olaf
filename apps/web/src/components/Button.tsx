@@ -173,6 +173,8 @@ export const CenterDPadButton = ({
   onClick,
   disabled = false,
   className = "",
+  onPointerDown,
+  onPointerUp,
 }: CenterDPadButtonProps) => {
   return (
     <button
