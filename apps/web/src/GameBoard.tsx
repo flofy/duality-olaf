@@ -35,42 +35,44 @@ export function GameBoard({
   const activePieceClass = movement
     ? "piece-moving piece-moving--active"
     : "piece-moving";
+  const movementDistance = movement?.distance ?? 0;
   const moveX =
     movement?.direction.x === 1
-      ? "100%"
+      ? `${movementDistance * 100}%`
       : movement?.direction.x === -1
-        ? "-100%"
+        ? `-${movementDistance * 100}%`
         : "0%";
   const moveY =
     movement?.direction.y === 1
-      ? "100%"
+      ? `${movementDistance * 100}%`
       : movement?.direction.y === -1
-        ? "-100%"
+        ? `-${movementDistance * 100}%`
         : "0%";
   const moveX72 =
     movement?.direction.x === 1
-      ? "72%"
+      ? `${movementDistance * 72}%`
       : movement?.direction.x === -1
-        ? "-72%"
+        ? `-${movementDistance * 72}%`
         : "0%";
   const moveY72 =
     movement?.direction.y === 1
-      ? "72%"
+      ? `${movementDistance * 72}%`
       : movement?.direction.y === -1
-        ? "-72%"
+        ? `-${movementDistance * 72}%`
         : "0%";
   const moveX18 =
     movement?.direction.x === 1
-      ? "18%"
+      ? `${movementDistance * 18}%`
       : movement?.direction.x === -1
-        ? "-18%"
+        ? `-${movementDistance * 18}%`
         : "0%";
   const moveY18 =
     movement?.direction.y === 1
-      ? "18%"
+      ? `${movementDistance * 18}%`
       : movement?.direction.y === -1
-        ? "-18%"
+        ? `-${movementDistance * 18}%`
         : "0%";
+  const trailLength = `${movementDistance * 180}%`;
 
   return (
     <div
