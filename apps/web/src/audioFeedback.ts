@@ -175,7 +175,7 @@ export async function startAmbient(
 
   const track = getAmbientTrack(ambientLevelId ?? undefined, ambientSkin);
   let index = 0;
-  const stepMs = (60_000 / track.bpm) / 2;
+  const stepMs = 60_000 / track.bpm / 2;
 
   const playNote = () => {
     if (!isEnabled() || !isAmbientEnabled() || ambientMuted) return;
