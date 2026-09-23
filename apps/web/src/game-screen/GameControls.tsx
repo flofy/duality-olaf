@@ -11,10 +11,12 @@ import type { GameplayDirection } from "../useLevelGameplay";
 
 export function GameControls({
   hasSquare,
+  activeForm,
   onMove,
   onSwitch,
 }: {
   hasSquare: boolean;
+  activeForm: "ball" | "square";
   onMove: (direction: GameplayDirection) => void;
   onSwitch: () => void;
 }) {
@@ -40,10 +42,10 @@ export function GameControls({
       </div>
       {hasSquare && (
         <CenterDPadButton
-          icon={<SwitchForm size={24} color="var(--text)" />}
-          label="CHANGER"
+          icon={<SwitchForm size={24} activeForm={activeForm} />}
+          label="SWITCH"
           onClick={onSwitch}
-          className="switch-toggle"
+          className={`switch-toggle switch-toggle-${activeForm}`}
         />
       )}
     </div>
