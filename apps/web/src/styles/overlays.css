@@ -34,7 +34,6 @@
   isolation: isolate;
 }
 
-/* A crisp glass-like highlight: visible at the edge, but deliberately subtler than a neon glow. */
 .modal::before {
   content: "";
   position: absolute;
@@ -58,27 +57,10 @@
   border-right: 1px solid #fff3;
   border-bottom: 1px solid #fff2;
   clip-path: polygon(
-    0 0,
-    18% 0,
-    18% 2px,
-    2px 2px,
-    2px 18%,
-    0 18%,
-    0 82%,
-    2px 82%,
-    2px 98%,
-    18% 98%,
-    18% 100%,
-    82% 100%,
-    82% 98%,
-    98% 98%,
-    98% 82%,
-    100% 82%,
-    100% 18%,
-    98% 18%,
-    98% 2px,
-    82% 2px,
-    82% 0
+    0 0, 18% 0, 18% 2px, 2px 2px, 2px 18%, 0 18%,
+    0 82%, 2px 82%, 2px 98%, 18% 98%, 18% 100%,
+    82% 100%, 82% 98%, 98% 98%, 98% 82%, 100% 82%,
+    100% 18%, 98% 18%, 98% 2px, 82% 2px, 82% 0
   );
 }
 
@@ -129,7 +111,164 @@
   outline-offset: 3px;
 }
 
-/* Reserve a predictable illustration slot so future artwork never competes with the copy. */
+/* Dedicated illustration stage: art owns this area, while text remains below it. */
+.modal-illustration {
+  position: relative;
+  width: 100%;
+  height: 132px;
+  margin: -2px auto 8px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, #ffffff0d, transparent 60%),
+    radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 65%),
+    #07142dcc;
+  box-shadow: inset 0 1px 0 #fff4, inset 0 -12px 20px #0005;
+}
+
+.modal-illustration::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, #fff0 20%, #fff2 44%, #fff0 58%);
+  transform: translateX(-55%);
+  animation: illustrationGloss 4.5s ease-in-out infinite;
+}
+
+.modal-illustration__character {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 7px 5px #0007);
+}
+
+.modal-illustration__character--ball {
+  left: 39%;
+}
+
+.modal-illustration__character--square {
+  left: 61%;
+}
+
+.illustration-spark,
+.illustration-star {
+  position: absolute;
+  z-index: 2;
+  color: var(--accent);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.illustration-spark {
+  font-size: 22px;
+}
+
+.illustration-spark--one {
+  left: 12%;
+  top: 24%;
+}
+
+.illustration-spark--two {
+  right: 13%;
+  top: 34%;
+  font-size: 16px;
+}
+
+.illustration-star {
+  font-size: 24px;
+  color: var(--star, #ffd447);
+}
+
+.illustration-star--one {
+  left: 16%;
+  top: 44%;
+}
+
+.illustration-star--two {
+  right: 16%;
+  top: 25%;
+  font-size: 18px;
+}
+
+.illustration-crystal {
+  position: absolute;
+  bottom: -18px;
+  z-index: 1;
+  width: 44px;
+  height: 62px;
+  transform: rotate(18deg);
+  border: 2px solid #5b8cffaa;
+  background: linear-gradient(135deg, #6f45c766, #258cff22);
+  box-shadow: inset 5px 0 0 #fff2, 0 8px 16px #0006;
+}
+
+.illustration-crystal--left {
+  left: 9%;
+}
+
+.illustration-crystal--right {
+  right: 9%;
+  transform: rotate(-18deg);
+}
+
+.illustration-burst {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 78px;
+  height: 78px;
+  border: 2px dashed color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: illustrationBurst 2.4s ease-out infinite;
+}
+
+.illustration-portal {
+  position: absolute;
+  left: 50%;
+  top: 53%;
+  width: 88px;
+  height: 108px;
+  border: 7px solid color-mix(in srgb, var(--accent) 75%, #fff 25%);
+  border-bottom-width: 4px;
+  border-radius: 50% 50% 28% 28%;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    inset 0 0 16px color-mix(in srgb, var(--accent) 70%, transparent),
+    0 0 18px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.illustration-portal__core {
+  position: absolute;
+  inset: 11px;
+  border-radius: inherit;
+  background: radial-gradient(circle, #ffffff55 0 8%, color-mix(in srgb, var(--accent) 42%, transparent), #0000 68%);
+}
+
+.modal-illustration--transition .modal-illustration__character--ball {
+  left: 28%;
+  top: 58%;
+}
+
+.modal-illustration--transition .modal-illustration__character--square {
+  left: 72%;
+  top: 58%;
+}
+
+@keyframes illustrationGloss {
+  0%, 58%, 100% { transform: translateX(-55%); }
+  72% { transform: translateX(55%); }
+}
+
+@keyframes illustrationBurst {
+  0%, 100% { opacity: 0.35; transform: translate(-50%, -50%) scale(0.9); }
+  50% { opacity: 0.75; transform: translate(-50%, -50%) scale(1.08); }
+}
+
+/* Keep a predictable legacy slot for simple character-only illustrations. */
 .overlay-character,
 .overlay-character-pair {
   display: flex;
@@ -142,9 +281,7 @@
   box-sizing: border-box;
 }
 
-.overlay-character-pair {
-  gap: 14px;
-}
+.overlay-character-pair { gap: 14px; }
 
 .celebration-arrow {
   color: var(--accent);
@@ -153,9 +290,7 @@
   text-shadow: 0 2px 0 #0008;
 }
 
-.overlay-character--defeated {
-  min-height: 144px;
-}
+.overlay-character--defeated { min-height: 144px; }
 
 .world-transition-message {
   padding: 10px 12px;
@@ -173,9 +308,7 @@
 }
 
 @media (max-width: 520px) {
-  .overlay {
-    padding: 12px;
-  }
+  .overlay { padding: 12px; }
 
   .modal {
     width: min(94vw, 440px);
@@ -183,18 +316,14 @@
     border-radius: 12px;
   }
 
+  .modal-illustration { height: 112px; }
+
   .overlay-character,
-  .overlay-character-pair {
-    min-height: 112px;
-  }
+  .overlay-character-pair { min-height: 112px; }
 
-  .overlay-character--defeated {
-    min-height: 124px;
-  }
+  .overlay-character--defeated { min-height: 124px; }
 
-  .modal-actions {
-    gap: 8px;
-  }
+  .modal-actions { gap: 8px; }
 
   .modal-actions .modern-button {
     flex: 1 1 130px;
@@ -204,7 +333,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .modal,
-  .overlay {
+  .overlay,
+  .modal-illustration::after,
+  .illustration-burst {
     animation: none;
   }
 }
