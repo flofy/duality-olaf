@@ -335,6 +335,8 @@ export function LevelPlayground({ levelId }: { levelId: string }) {
     );
   }
 
+  const gameplaySkin = resolveLevelSkin(level.id, skin);
+
   return (
     <section className="dev-playground">
       <div className="topbar">
