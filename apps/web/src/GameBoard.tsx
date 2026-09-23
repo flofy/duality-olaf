@@ -32,24 +32,23 @@ export function GameBoard({
   const movementDirectionClass = movement
     ? `piece-moving--${movement.direction.x > 0 ? "right" : movement.direction.x < 0 ? "left" : movement.direction.y > 0 ? "down" : "up"}`
     : "";
-  const activePieceClass = movement
-    ? `piece-moving piece-moving--active ${movementDirectionClass}`
-    : "piece-moving";
+  const activePieceClass = movement ? "piece--movement-hidden" : "";
   const movementDistance = movement?.distance ?? 0;
-  // The piece is rendered at its final cell, so the animation starts exactly
-  // `distance` cells back and converges to the final position.
+  // Translate by actual board-cell dimensions, not by the piece's own width/height.
+  // CSS transform percentages are relative to the transformed element, which made
+  // multi-cell moves visibly stop short of the destination.
   const moveX =
     movement?.direction.x === 1
-      ? `-${movementDistance * 100}%`
+      ? `calc(var(--cell-width) * ${movementDistance})`
       : movement?.direction.x === -1
-        ? `${movementDistance * 100}%`
-        : "0%";
+        ? `calc(var(--cell-width) * -${movementDistance})`
+        : "0px";
   const moveY =
     movement?.direction.y === 1
-      ? `-${movementDistance * 100}%`
+      ? `calc(var(--cell-height) * ${movementDistance})`
       : movement?.direction.y === -1
-        ? `${movementDistance * 100}%`
-        : "0%";
+        ? `calc(var(--cell-height) * -${movementDistance})`
+        : "0px";
   // Keep travel speed consistent: long moves take proportionally longer instead of
   // compressing several cells into the same short animation.
   const moveDuration = Math.min(520, 160 + movementDistance * 90);
@@ -168,8 +167,6 @@ export function GameBoard({
             {
               gridColumn: state.ball.x + 1,
               gridRow: state.ball.y + 1,
-              "--move-x": moveX,
-              "--move-y": moveY,
               "--move-duration": `${moveDuration}ms`,
               "--trail-length": trailLength,
               "--piece-color": hexToCss(themes[themeName].ball),
@@ -198,8 +195,6 @@ export function GameBoard({
             {
               gridColumn: state.square.x + 1,
               gridRow: state.square.y + 1,
-              "--move-x": moveX,
-              "--move-y": moveY,
               "--move-duration": `${moveDuration}ms`,
               "--trail-length": trailLength,
               "--piece-color": hexToCss(themes[themeName].square),
@@ -219,6 +214,42 @@ export function GameBoard({
             }
             className="character character-square"
           />
+        </div>
+      )}
+      {movement && (
+        <div
+          className={`piece movement-overlay piece-moving--active ${movementDirectionClass}`}
+          style={
+            {
+              gridColumn: movement.from.x + 1,
+              gridRow: movement.from.y + 1,
+              "--move-x": moveX,
+              "--move-y": moveY,
+              "--move-duration": `${moveDuration}ms`,
+              "--trail-length": trailLength,
+              "--piece-color": hexToCss(
+                state.activeForm === "ball"
+                  ? themes[themeName].ball
+                  : themes[themeName].square,
+              ),
+            } as CSSProperties
+          }
+        >
+          {state.activeForm === "ball" ? (
+            <BallCharacter
+              size={36}
+              color={hexToCss(themes[themeName].ball)}
+              expression="neutral"
+              className="character character-ball"
+            />
+          ) : (
+            <SquareCharacter
+              size={36}
+              color={hexToCss(themes[themeName].square)}
+              expression="neutral"
+              className="character character-square"
+            />
+          )}
         </div>
       )}
       {children}
