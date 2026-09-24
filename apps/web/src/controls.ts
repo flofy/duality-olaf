@@ -78,3 +78,31 @@ export function installControlsStyles(): void {
 export function syncControlsMode(mode: ControlsMode): void {
   document.documentElement.dataset.controlsMode = mode;
 }
+
+
+const SWIPE_STORAGE_KEY = "duality.swipe.v1";
+const DEFAULT_SWIPE_ENABLED = true;
+
+/** Whether board swipe gestures are enabled, persisted across reloads. */
+export function getSwipeEnabled(): boolean {
+  try {
+    const raw = localStorage.getItem(SWIPE_STORAGE_KEY);
+    return raw === null ? DEFAULT_SWIPE_ENABLED : raw === "true";
+  } catch {
+    return DEFAULT_SWIPE_ENABLED;
+  }
+}
+
+export function setSwipeEnabled(enabled: boolean): void {
+  try {
+    localStorage.setItem(SWIPE_STORAGE_KEY, String(enabled));
+  } catch {
+    /* persist is best-effort */
+  }
+}
+
+export function toggleSwipeEnabled(): boolean {
+  const next = !getSwipeEnabled();
+  setSwipeEnabled(next);
+  return next;
+}
