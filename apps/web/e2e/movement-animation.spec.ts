@@ -42,22 +42,23 @@ test("le sprite principal reste continu et la trace suit tout le trajet", async 
     .locator(".movement-trail-particle")
     .first()
     .evaluate((element) => {
-    const style = getComputedStyle(element);
-    const boardRect = element.parentElement!.parentElement!.getBoundingClientRect();
-    const rect = element.getBoundingClientRect();
-    return {
-      background: style.backgroundImage,
-      opacity: style.opacity,
-      width: rect.width,
-      height: rect.height,
-      x: rect.x,
-      y: rect.y,
-      boardX: boardRect.x,
-      boardY: boardRect.y,
-      boardWidth: boardRect.width,
-      boardHeight: boardRect.height,
-    };
-  });
+      const style = getComputedStyle(element);
+      const boardRect =
+        element.parentElement!.parentElement!.getBoundingClientRect();
+      const rect = element.getBoundingClientRect();
+      return {
+        background: style.backgroundImage,
+        opacity: style.opacity,
+        width: rect.width,
+        height: rect.height,
+        x: rect.x,
+        y: rect.y,
+        boardX: boardRect.x,
+        boardY: boardRect.y,
+        boardWidth: boardRect.width,
+        boardHeight: boardRect.height,
+      };
+    });
   expect(fog.background).toContain("radial-gradient");
   expect(fog.width).toBeGreaterThan(10);
   expect(fog.height).toBeGreaterThan(10);
@@ -66,7 +67,10 @@ test("le sprite principal reste continu et la trace suit tout le trajet", async 
       board
         .locator(".movement-trail-particle")
         .evaluateAll((elements) =>
-          elements.some((element) => Number.parseFloat(getComputedStyle(element).opacity) > 0.1),
+          elements.some(
+            (element) =>
+              Number.parseFloat(getComputedStyle(element).opacity) > 0.1,
+          ),
         ),
     )
     .toBe(true);

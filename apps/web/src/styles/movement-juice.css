@@ -61,7 +61,9 @@
   filter: blur(2px);
   box-shadow: 0 0 10px 3px var(--trail-color, #4aa3ff);
   opacity: 1;
-  transition: opacity 0.46s ease-out, transform 0.46s ease-out;
+  transition:
+    opacity 0.46s ease-out,
+    transform 0.46s ease-out;
   will-change: opacity, transform;
 }
 

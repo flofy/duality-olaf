@@ -52,7 +52,9 @@ export function GameBoard({
   // animation ends.
   const moveDuration = moveBaseDurationMs(movementDistance);
   const activeColor = hexToCss(
-    state.activeForm === "ball" ? themes[themeName].ball : themes[themeName].square,
+    state.activeForm === "ball"
+      ? themes[themeName].ball
+      : themes[themeName].square,
   );
 
   useEffect(() => {
