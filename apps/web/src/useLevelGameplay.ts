@@ -21,7 +21,7 @@ export type GameplayDirection = {
   y: -1 | 0 | 1;
 };
 
-export type TeleportFeedback = {
+type TeleportFeedback = {
   from: { x: number; y: number };
   to: { x: number; y: number };
   form: "ball" | "square";
