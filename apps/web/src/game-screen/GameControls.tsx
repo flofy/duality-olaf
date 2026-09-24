@@ -22,21 +22,25 @@ export function GameControls({
 }) {
   return (
     <div className="controls">
-      <div className="dpad" aria-label="Contrôles directionnels">
+      <div className="dpad" role="group" aria-label="Contrôles directionnels">
         <DPadButton
           icon={<ArrowUp size={24} color="var(--text)" />}
+          aria-label="Haut"
           onClick={() => onMove(gestureDirections.up)}
         />
         <DPadButton
           icon={<ArrowLeft size={24} color="var(--text)" />}
+          aria-label="Gauche"
           onClick={() => onMove(gestureDirections.left)}
         />
         <DPadButton
           icon={<ArrowDown size={24} color="var(--text)" />}
+          aria-label="Bas"
           onClick={() => onMove(gestureDirections.down)}
         />
         <DPadButton
           icon={<ArrowRight size={24} color="var(--text)" />}
+          aria-label="Droite"
           onClick={() => onMove(gestureDirections.right)}
         />
       </div>
