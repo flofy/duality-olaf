@@ -79,7 +79,6 @@ export function syncControlsMode(mode: ControlsMode): void {
   document.documentElement.dataset.controlsMode = mode;
 }
 
-
 const SWIPE_STORAGE_KEY = "duality.swipe.v1";
 const DEFAULT_SWIPE_ENABLED = true;
 

@@ -15,20 +15,23 @@ export function useSwipeControls(
     y: number;
   } | null>(null);
 
-  const onPointerDown = useCallback((event: React.PointerEvent) => {
-    if (!enabled) return;
-    const target = event.target as Element | null;
+  const onPointerDown = useCallback(
+    (event: React.PointerEvent) => {
+      if (!enabled) return;
+      const target = event.target as Element | null;
 
-    // UI controls own their pointer interaction. Do not let the game's
-    // swipe recognizer observe their touch sequence: otherwise mobile
-    // browsers can delay/compete with the button click.
-    if (target?.closest(INTERACTIVE_SELECTOR)) {
-      setStart(null);
-      return;
-    }
+      // UI controls own their pointer interaction. Do not let the game's
+      // swipe recognizer observe their touch sequence: otherwise mobile
+      // browsers can delay/compete with the button click.
+      if (target?.closest(INTERACTIVE_SELECTOR)) {
+        setStart(null);
+        return;
+      }
 
-    setStart({ x: event.clientX, y: event.clientY });
-  }, [enabled]);
+      setStart({ x: event.clientX, y: event.clientY });
+    },
+    [enabled],
+  );
 
   const onPointerUp = useCallback(
     (event: React.PointerEvent) => {
