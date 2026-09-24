@@ -4,6 +4,8 @@ import { AudioSettings } from "./AudioSettings";
 import {
   cycleControlsMode,
   controlsModeLabels,
+  getSwipeEnabled,
+  toggleSwipeEnabled,
   getControlsMode,
   installControlsStyles,
   syncControlsMode,
@@ -91,6 +93,7 @@ export function BurgerMenu({
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [controlsMode, setControlsMode] =
     useState<ControlsMode>(getControlsMode);
+  const [swipeEnabled, setSwipeEnabled] = useState(getSwipeEnabled);
   const [boardDisplay, setBoardDisplay] =
     useState<BoardDisplayMode>(getBoardDisplayMode);
   const [skin, setSkinState] = useState<SkinPreference>(() =>
@@ -225,6 +228,22 @@ export function BurgerMenu({
               </span>
               <span className="menu-item-label">
                 COMMANDES · {controlsModeLabels[controlsMode].toUpperCase()}
+              </span>
+            </button>
+            <button
+              type="button"
+              className="menu-item"
+              onClick={() => {
+                const enabled = toggleSwipeEnabled();
+                setSwipeEnabled(enabled);
+                window.dispatchEvent(new Event("duality:swipe-preference"));
+              }}
+            >
+              <span className="menu-item-icon" aria-hidden="true">
+                ↔
+              </span>
+              <span className="menu-item-label">
+                GESTES · {swipeEnabled ? "ACTIVÉS" : "DÉSACTIVÉS"}
               </span>
             </button>
             {/* Mode d'affichage de la grille : cases carrées (ratio conservé)
