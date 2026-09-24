@@ -11,6 +11,7 @@ import {
 import {
   moveAnimationDurationMs,
   prefersReducedMotion,
+  teleportAnimationDurationMs,
 } from "./movementTiming";
 
 export type GameplaySkin = "default" | "halloween" | "christmas";
@@ -33,6 +34,8 @@ export type MovementFeedback = {
   target: { x: number; y: number };
   direction: GameplayDirection;
   distance: number;
+  /** Identifiant stable du coup affiché, pour recréer une animation répétée. */
+  sequence: number;
   teleport?: TeleportFeedback;
 } | null;
 
@@ -98,7 +101,7 @@ export function useLevelGameplay(
   }, []);
 
   const pauseForAnimation = useCallback(
-    (distance: number) => {
+    (durationMs: number) => {
       pauseTimer("animation");
       if (animationPauseTimeoutRef.current !== null) {
         window.clearTimeout(animationPauseTimeoutRef.current);
@@ -107,7 +110,7 @@ export function useLevelGameplay(
         animationPauseTimeoutRef.current = null;
         setMovement(null);
         resumeTimer("animation");
-      }, moveAnimationDurationMs(distance));
+      }, durationMs);
     },
     [pauseTimer, resumeTimer],
   );
@@ -176,36 +179,40 @@ export function useLevelGameplay(
         const animating =
           moved && !teleported && !next.gameOver && !reducedMotion;
 
-        if (
-          teleported &&
-          next.lastTeleport &&
-          !next.gameOver &&
-          !reducedMotion
-        ) {
-          setMovement({
-            from: { ...activeBefore },
-            target: { ...activeAfter },
-            direction,
-            distance,
-            teleport: {
-              from: { ...next.lastTeleport.from },
-              to: { ...next.lastTeleport.to },
-              form: current.activeForm,
-            },
-          });
-          pauseForAnimation(440);
-        } else {
-          setMovement(
-            animating
-              ? {
-                  from: { ...activeBefore },
-                  target: { ...activeAfter },
-                  direction,
-                  distance,
-                }
-              : null,
-          );
-          if (animating) pauseForAnimation(distance);
+        if (moved) {
+          if (
+            teleported &&
+            next.lastTeleport &&
+            !next.gameOver &&
+            !reducedMotion
+          ) {
+            setMovement({
+              from: { ...activeBefore },
+              target: { ...activeAfter },
+              direction,
+              distance,
+              sequence: next.moves,
+              teleport: {
+                from: { ...next.lastTeleport.from },
+                to: { ...next.lastTeleport.to },
+                form: current.activeForm,
+              },
+            });
+            pauseForAnimation(teleportAnimationDurationMs());
+          } else {
+            setMovement(
+              animating
+                ? {
+                    from: { ...activeBefore },
+                    target: { ...activeAfter },
+                    direction,
+                    distance,
+                    sequence: next.moves,
+                  }
+                : null,
+            );
+            if (animating) pauseForAnimation(moveAnimationDurationMs(distance));
+          }
         }
 
         if (!moved) {
@@ -262,12 +269,17 @@ export function useLevelGameplay(
       if (current.completed || current.gameOver) return current;
       const next = runner.switchForm();
       setMovement(null);
+      if (animationPauseTimeoutRef.current !== null) {
+        window.clearTimeout(animationPauseTimeoutRef.current);
+        animationPauseTimeoutRef.current = null;
+        resumeTimer("animation");
+      }
       void playSound("switch");
       vibrate([10, 25, 10]);
       onSwitch?.();
       return next;
     });
-  }, [onSwitch, runner]);
+  }, [onSwitch, resumeTimer, runner]);
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {

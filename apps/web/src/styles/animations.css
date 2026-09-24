@@ -269,7 +269,8 @@ button:hover:not(:disabled) {
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: translate(var(--teleport-shift-x), var(--teleport-shift-y))
+      scale(1);
     filter: blur(0);
   }
 }
@@ -281,12 +282,28 @@ button:hover:not(:disabled) {
   pointer-events: none;
 }
 .teleport-departure {
-  animation: teleportDeparture calc(180ms * var(--animation-scale)) ease-in
+  animation: teleportDeparture
+    calc(var(--teleport-departure-duration) * var(--animation-scale)) ease-in
     forwards;
 }
 .teleport-arrival {
-  animation: teleportArrival calc(280ms * var(--animation-scale)) 140ms
+  animation: teleportArrival
+    calc(var(--teleport-arrival-duration) * var(--animation-scale))
+    calc(var(--teleport-arrival-delay) * var(--animation-scale))
     cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.teleport-effect::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -12%;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent),
+    0 0 18px 5px color-mix(in srgb, var(--accent) 55%, transparent);
+  opacity: 0.8;
+  pointer-events: none;
 }
 .teleporting-piece {
   opacity: 0;
@@ -301,7 +318,8 @@ button:hover:not(:disabled) {
   }
   .teleport-arrival {
     opacity: 1;
-    transform: scale(1);
+    transform: translate(var(--teleport-shift-x), var(--teleport-shift-y))
+      scale(1);
   }
   .teleporting-piece {
     opacity: 1;

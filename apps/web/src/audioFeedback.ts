@@ -375,13 +375,14 @@ export async function playSound(effect: SoundEffect) {
       tone(293.66, 0.22, "sine", 0.05, 0.05);
       break;
     case "teleport":
-      // Warp : on est aspiré vers le haut, puis on redescend à l'arrivée.
-      glide(1200, 220, 0.22, "sine", 0.06);
-      glide(300, 1400, 0.24, "triangle", 0.045, 0.06);
-      noise(0.2, 0.02, 0.02, null, {
+      // Zap : charge descendante, éclair montant, puis impulsion d'arrivée.
+      glide(1600, 180, 0.32, "sawtooth", 0.055);
+      glide(260, 1800, 0.36, "square", 0.038, 0.08);
+      tone(1800, 0.09, "sine", 0.055, 0.39);
+      noise(0.26, 0.018, 0.02, null, {
         filter: "bandpass",
-        frequency: 600,
-        sweepTo: 3200,
+        frequency: 900,
+        sweepTo: 4200,
       });
       break;
     case "complete":

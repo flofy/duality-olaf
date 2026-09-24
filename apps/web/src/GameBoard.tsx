@@ -4,7 +4,7 @@ import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
 import { Fire, Star, Door, Teleporter, SwitchIcon } from "./components/Icons";
 import { BallCharacter, SquareCharacter } from "./components/Characters";
-import { moveBaseDurationMs } from "./movementTiming";
+import { moveBaseDurationMs, teleportTiming } from "./movementTiming";
 import type { MovementFeedback } from "./useLevelGameplay";
 
 export function switchGlyph(form: Switch["form"]): string {
@@ -136,6 +136,9 @@ export function GameBoard({
           "--cols": level.width,
           "--rows": level.height,
           "--move-duration": `${moveDuration}ms`,
+          "--teleport-departure-duration": `${teleportTiming.departureMs}ms`,
+          "--teleport-arrival-delay": `${teleportTiming.arrivalDelayMs}ms`,
+          "--teleport-arrival-duration": `${teleportTiming.arrivalMs}ms`,
         } as CSSProperties
       }
     >
@@ -225,6 +228,8 @@ export function GameBoard({
               gridColumn: movement.teleport.from.x + 1,
               gridRow: movement.teleport.from.y + 1,
             }}
+            data-teleport-from={`${movement.teleport.from.x},${movement.teleport.from.y}`}
+            key={`teleport-departure-${movement.sequence}`}
           >
             {movement.teleport.form === "ball" ? (
               <BallCharacter
@@ -244,10 +249,16 @@ export function GameBoard({
           </div>
           <div
             className="teleport-effect teleport-arrival"
-            style={{
-              gridColumn: movement.teleport.to.x + 1,
-              gridRow: movement.teleport.to.y + 1,
-            }}
+            style={
+              {
+                gridColumn: movement.teleport.to.x + 1,
+                gridRow: movement.teleport.to.y + 1,
+                "--teleport-shift-x": `calc(var(--cell-width) * ${movement.target.x - movement.teleport.to.x})`,
+                "--teleport-shift-y": `calc(var(--cell-height) * ${movement.target.y - movement.teleport.to.y})`,
+              } as CSSProperties
+            }
+            data-teleport-to={`${movement.teleport.to.x},${movement.teleport.to.y}`}
+            key={`teleport-arrival-${movement.sequence}`}
           >
             {movement.teleport.form === "ball" ? (
               <BallCharacter
