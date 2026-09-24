@@ -8,29 +8,34 @@ const INTERACTIVE_SELECTOR =
 
 export function useSwipeControls(
   onSwipe: (direction: GameplayDirection) => void,
+  enabled = true,
 ) {
   const [start, setStart] = useState<{
     x: number;
     y: number;
   } | null>(null);
 
-  const onPointerDown = useCallback((event: React.PointerEvent) => {
-    const target = event.target as Element | null;
+  const onPointerDown = useCallback(
+    (event: React.PointerEvent) => {
+      if (!enabled) return;
+      const target = event.target as Element | null;
 
-    // UI controls own their pointer interaction. Do not let the game's
-    // swipe recognizer observe their touch sequence: otherwise mobile
-    // browsers can delay/compete with the button click.
-    if (target?.closest(INTERACTIVE_SELECTOR)) {
-      setStart(null);
-      return;
-    }
+      // UI controls own their pointer interaction. Do not let the game's
+      // swipe recognizer observe their touch sequence: otherwise mobile
+      // browsers can delay/compete with the button click.
+      if (target?.closest(INTERACTIVE_SELECTOR)) {
+        setStart(null);
+        return;
+      }
 
-    setStart({ x: event.clientX, y: event.clientY });
-  }, []);
+      setStart({ x: event.clientX, y: event.clientY });
+    },
+    [enabled],
+  );
 
   const onPointerUp = useCallback(
     (event: React.PointerEvent) => {
-      if (!start) return;
+      if (!enabled || !start) return;
 
       const result = interpretGesture(
         start,
@@ -43,7 +48,7 @@ export function useSwipeControls(
         onSwipe(gestureDirections[result.direction]);
       }
     },
-    [start, onSwipe],
+    [enabled, start, onSwipe],
   );
 
   return { onPointerDown, onPointerUp };
