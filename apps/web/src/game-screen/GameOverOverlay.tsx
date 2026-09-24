@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 import { Button } from "../components/Button";
 import { ArrowLeft, ResetIcon as Reset } from "../components/Icons";
 import { OverlayIllustration } from "../components/OverlayIllustration";
-import { useEffect, useRef, useState } from "react";
+import { useDialogButtonNavigation } from "../components/useDialogButtonNavigation";
 
 export function GameOverOverlay({
   worldId,
@@ -16,36 +16,10 @@ export function GameOverOverlay({
   onReset: () => void;
 }) {
   const navigate = useNavigate();
-  const [activeIndex, setActiveIndex] = useState(0);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const buttonsRef = useRef<Array<HTMLButtonElement | null>>([]);
-  useEffect(() => {
-    if (!gameOver) return;
-    buttonsRef.current[0]?.focus();
-    const focusButton = (index: number) => {
-      const nextIndex = (index + 2) % 2;
-      setActiveIndex(nextIndex);
-      buttonsRef.current[nextIndex]?.focus();
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (
-        event.key === "Enter" &&
-        document.activeElement instanceof HTMLButtonElement
-      ) {
-        return;
-      }
-      if (event.key === "Enter") {
-        event.preventDefault();
-        buttonsRef.current[activeIndex]?.click();
-      }
-      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-        event.preventDefault();
-        focusButton(activeIndex + (event.key === "ArrowLeft" ? 1 : -1));
-      }
-    };
-    dialogRef.current?.addEventListener("keydown", onKeyDown);
-    return () => dialogRef.current?.removeEventListener("keydown", onKeyDown);
-  }, [gameOver, activeIndex]);
+  const { dialogRef, activeIndex } = useDialogButtonNavigation({
+    active: gameOver,
+    initialIndex: 0,
+  });
 
   if (!gameOver) return null;
 
@@ -68,20 +42,16 @@ export function GameOverOverlay({
           <Button
             icon={<Reset size={18} />}
             label="REJOUER"
+            selected={activeIndex === 0}
             onClick={onReset}
             variant="primary"
-            ref={(node) => {
-              buttonsRef.current[0] = node;
-            }}
           />
           <Button
             icon={<ArrowLeft size={18} />}
             label="NIVEAUX"
+            selected={activeIndex === 1}
             onClick={() => navigate(`/world/${worldId}`)}
             variant="secondary"
-            ref={(node) => {
-              buttonsRef.current[1] = node;
-            }}
           />
         </div>
       </div>

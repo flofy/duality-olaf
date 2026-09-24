@@ -1,7 +1,7 @@
 import { Button } from "../components/Button";
 import { ArrowRight, ResetIcon as Reset } from "../components/Icons";
 import { OverlayIllustration } from "../components/OverlayIllustration";
-import { useEffect, useRef, useState } from "react";
+import { useDialogButtonNavigation } from "../components/useDialogButtonNavigation";
 
 function formatTime(elapsedMs: number): string {
   const totalSeconds = elapsedMs / 1000;
@@ -41,36 +41,10 @@ export function CompletionOverlay({
   onNext: () => void;
 }) {
   const changingWorld = worldIndex === worldLength - 1 && hasNextWorld;
-  const [activeIndex, setActiveIndex] = useState(1);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const buttonsRef = useRef<Array<HTMLButtonElement | null>>([]);
-  useEffect(() => {
-    if (!completed) return;
-    const focusButton = (index: number) => {
-      const nextIndex = (index + 2) % 2;
-      setActiveIndex(nextIndex);
-      buttonsRef.current[nextIndex]?.focus();
-    };
-    focusButton(1);
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (
-        event.key === "Enter" &&
-        document.activeElement instanceof HTMLButtonElement
-      ) {
-        return;
-      }
-      if (event.key === "Enter") {
-        event.preventDefault();
-        buttonsRef.current[activeIndex]?.click();
-      }
-      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-        event.preventDefault();
-        focusButton(activeIndex + (event.key === "ArrowLeft" ? -1 : 1));
-      }
-    };
-    dialogRef.current?.addEventListener("keydown", onKeyDown);
-    return () => dialogRef.current?.removeEventListener("keydown", onKeyDown);
-  }, [activeIndex, completed]);
+  const { dialogRef, activeIndex } = useDialogButtonNavigation({
+    active: completed,
+    initialIndex: 1,
+  });
 
   if (!completed) return null;
 
@@ -148,11 +122,9 @@ export function CompletionOverlay({
           <Button
             icon={<Reset size={18} />}
             label="REJOUER"
+            selected={activeIndex === 0}
             onClick={onReset}
             variant="primary"
-            ref={(node) => {
-              buttonsRef.current[0] = node;
-            }}
           />
           <Button
             icon={<ArrowRight size={18} />}
@@ -163,11 +135,9 @@ export function CompletionOverlay({
                   ? "MONDE SUIVANT"
                   : "NIVEAUX"
             }
+            selected={activeIndex === 1}
             onClick={onNext}
             variant="primary"
-            ref={(node) => {
-              buttonsRef.current[1] = node;
-            }}
           />
         </div>
       </div>

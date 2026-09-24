@@ -57,10 +57,23 @@ test("smoke: navigate from intro to level 1 and complete it", async ({
     /félicitations|terminé|réussi/i,
   );
 
-  // La progression est enregistrée : le niveau apparaît comme terminé (étoiles)
-  // en revenant.
-  await page.keyboard.press("Escape");
-  await expect(page).toHaveURL(/\/world\/1$/);
+  const focusedActionIndex = () =>
+    page.evaluate(() => {
+      const buttons = Array.from(
+        document.querySelectorAll<HTMLButtonElement>(".modal-actions button"),
+      );
+      return buttons.indexOf(document.activeElement as HTMLButtonElement);
+    });
+  await expect.poll(focusedActionIndex).toBe(1);
+  await page.keyboard.press("ArrowLeft");
+  await expect.poll(focusedActionIndex).toBe(0);
+  await page.keyboard.press("ArrowRight");
+  await expect.poll(focusedActionIndex).toBe(1);
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/world\/1\/level\/world-1-level-02$/);
+
+  // La progression est enregistrée : le niveau apparaît avec ses étoiles en revenant.
+  await page.goto("/world/1");
   const level1 = page.locator(".level-button").first();
   await expect(level1).toContainText("01");
   await expect(level1.locator(".level-stars")).toBeVisible();

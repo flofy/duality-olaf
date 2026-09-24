@@ -11,6 +11,8 @@ type ButtonProps = {
   "aria-label"?: string;
   children?: ReactNode;
   ref?: React.Ref<HTMLButtonElement>;
+  autoFocus?: boolean;
+  selected?: boolean;
 };
 
 const buttonVariants = {
@@ -47,6 +49,8 @@ export const Button = ({
   "aria-label": ariaLabel,
   children,
   ref,
+  autoFocus = false,
+  selected = false,
 }: ButtonProps) => {
   const { bg, text, hoverBg, disabledBg, disabledText } =
     buttonVariants[variant];
@@ -56,6 +60,8 @@ export const Button = ({
       className={`modern-button ${className}`}
       onClick={onClick}
       disabled={disabled}
+      autoFocus={autoFocus}
+      data-selected={selected ? "true" : undefined}
       aria-label={ariaLabel}
       style={{
         display: "inline-flex",
