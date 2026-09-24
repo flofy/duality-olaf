@@ -1,258 +1,106 @@
 .title {
-  text-align: center;
-  font: 800 clamp(34px, 8vw, 58px)/1 monospace;
-  letter-spacing: 0.08em;
-  margin: 10px 0 16px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  margin: var(--space-2) 0 var(--space-4);
   text-shadow: 0 4px 20px #0008;
 }
 
 .subtitle {
-  text-align: center;
-  color: var(--accent);
-  font: 700 clamp(13px, 2.2vw, 15px) monospace;
-  margin-bottom: clamp(20px, 5vw, 34px);
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  margin-bottom: clamp(20px, 5vw, 32px);
 }
 
 .world-list {
-  display: grid;
-  gap: clamp(8px, 2vw, 14px);
+  gap: var(--space-3);
 }
 
 .world-meta {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-  margin-top: 5px;
+  color: var(--text-secondary);
+  font: 600 11px var(--font-mono);
+  margin-top: var(--space-1);
 }
 
 .levels {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: clamp(7px, 2vw, 10px);
+  gap: var(--space-2);
 }
 
 .level-button {
-  text-align: center;
-  font: 700 clamp(15px, 3vw, 18px) monospace;
+  min-height: 54px;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-mono);
 }
 
-/* Passage au monde suivant : apparaît sous la grille dès que le monde courant
-   est terminé (cf. WorldLevels). */
-.world-next {
-  width: 100%;
-  margin-top: clamp(14px, 3vw, 22px);
-}
-
-/* Bloc audio : simple contenu d'une section du menu. Le titre (« AUDIO &
-   VIBRATIONS ») est celui de la section, porté par BurgerMenu. */
 .audio-settings {
-  display: grid;
-  gap: 10px;
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  background: #0003;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  border: 1px solid var(--border-subtle);
 }
 
-.audio-setting-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.audio-setting-secondary {
-  justify-content: flex-start;
-}
-
-.audio-toggle {
-  min-width: 150px;
-}
-
-/* Boutons audio : même rendu que .menu-item (pwa.css) — sans bordure, pour
-   rester homogène avec le reste du burger menu. */
 .audio-toggle,
 .audio-test-button {
-  padding: 14px 16px;
-  border: 0;
-  border-radius: 12px;
-  background: #0003;
-  color: var(--text);
-  font: 700 14px monospace;
-  letter-spacing: 1px;
-  text-align: left;
-  cursor: pointer;
+  min-height: var(--control-md);
+  padding: 0 var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  font: 700 13px var(--font-mono);
+  letter-spacing: 0.06em;
   transition:
-    background 0.15s ease,
-    transform 0.15s ease;
+    background var(--transition-standard),
+    border-color var(--transition-standard),
+    transform var(--transition-fast);
 }
 
 .audio-toggle:hover:not(:disabled),
 .audio-test-button:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  background: var(--surface-hover);
+  border-color: var(--border-subtle);
   transform: translateX(2px);
 }
 
 .audio-toggle:focus-visible,
 .audio-test-button:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
-.audio-toggle:active:not(:disabled),
-.audio-test-button:active:not(:disabled) {
-  transform: none;
-}
-
-.audio-volume {
-  display: grid;
-  grid-template-columns: auto minmax(120px, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  flex: 1 1 220px;
-  color: var(--muted);
-  font: 700 11px monospace;
-}
-
-.audio-volume input {
-  width: 100%;
-  accent-color: var(--accent);
-}
-
-.audio-volume output {
-  min-width: 38px;
-  text-align: right;
-  color: var(--text);
-}
-
-@media (max-width: 600px) {
-  .audio-setting-row {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .audio-toggle {
-    width: 100%;
-  }
-
-  .audio-volume {
-    grid-template-columns: auto 1fr auto;
-  }
-}
-
 .audio-setting-tests {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #fff2;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top-color: var(--border-subtle);
 }
 
-.audio-test-button {
-  width: 100%;
-  text-align: center;
-}
-
-.audio-test-button:disabled,
-.audio-toggle:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-/* Écoute des effets de jeu : une grille dense, un bouton par son. */
 .audio-effect-tests {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.audio-effect-tests-title {
-  grid-column: 1 / -1;
-  color: var(--muted);
-  font: 700 11px monospace;
-}
-
-.audio-effect-tests .audio-test-button {
-  padding: 10px 8px;
-  font-size: 11px;
-  letter-spacing: 0.5px;
-}
-
-@media (max-width: 600px) {
-  .audio-setting-tests {
-    grid-template-columns: 1fr;
-  }
-
-  .audio-effect-tests {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  gap: var(--space-2);
 }
 
 .world-progress-summary {
-  display: flex;
-  justify-content: center;
-  gap: 18px;
-  margin: -16px 0 18px;
-  color: var(--muted);
-  font: 700 11px monospace;
-}
-
-.level-button {
-  min-height: 54px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-
-.level-stars {
-  color: var(--star, #ffd447);
-  font-size: 9px;
-  line-height: 1;
-  letter-spacing: -1px;
+  gap: var(--space-5);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
 }
 
 .campaign-progress {
-  display: grid;
-  gap: 7px;
-  margin: 20px 0 8px;
-  padding: 12px;
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
-  border-radius: 10px;
-  background: #0003;
+  gap: var(--space-2);
+  margin: var(--space-5) 0 var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
 }
 
 .campaign-progress-header,
 .campaign-progress-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font: 700 11px monospace;
-}
-
-.campaign-progress-header strong {
-  color: var(--accent);
+  font-family: var(--font-mono);
 }
 
 .campaign-progress-track {
-  height: 8px;
-  overflow: hidden;
-  border-radius: 999px;
+  height: 7px;
   background: #0006;
   box-shadow: inset 0 1px 2px #0008;
 }
 
-.campaign-progress-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--accent), var(--star, #ffd447));
-  transition: width 240ms ease-out;
-}
-
-.campaign-progress-meta {
-  color: var(--muted);
-  font-weight: 600;
-}
