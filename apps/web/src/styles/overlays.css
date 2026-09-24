@@ -123,6 +123,11 @@
   filter: brightness(1.08);
 }
 
+.modal-actions .modern-button[data-selected="true"] {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
 .modal-actions .modern-button:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 3px;
