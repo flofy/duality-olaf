@@ -2,31 +2,51 @@
 .action,
 .level-button,
 .dpad button {
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-  background: var(--buttonBg);
-  color: var(--text);
-  border-radius: 12px;
-  padding: clamp(11px, 2vw, 14px);
+  min-height: var(--control-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface);
+  color: var(--text-primary);
+  border-radius: var(--radius-lg);
+  padding: 0 var(--space-4);
   cursor: pointer;
   text-align: left;
+  font-family: var(--font-mono);
   transition:
-    transform 120ms ease,
-    border-color 120ms ease,
-    filter 120ms ease;
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    filter var(--transition-fast);
 }
 
-.world-button:hover,
-.action:hover,
-.level-button:hover,
-.dpad button:hover {
+.world-button:hover:not(:disabled),
+.action:hover:not(:disabled),
+.level-button:hover:not(:disabled),
+.dpad button:hover:not(:disabled) {
   transform: translateY(-1px);
   border-color: var(--accent);
+  background: var(--surface-hover);
+}
+
+.world-button:active:not(:disabled),
+.action:active:not(:disabled),
+.level-button:active:not(:disabled),
+.dpad button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .world-button:disabled,
 .level-button:disabled {
   opacity: 0.45;
   transform: none;
+  cursor: not-allowed;
+}
+
+.world-button:focus-visible,
+.action:focus-visible,
+.level-button:focus-visible,
+.dpad button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .dpad button {
@@ -38,11 +58,25 @@
 .pwa-action {
   position: static;
   flex: none;
-  border: 0;
-  border-radius: 9px;
-  padding: 10px 12px;
+  min-height: var(--control-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-3);
   background: var(--accent);
   color: var(--background);
-  font: 800 12px monospace;
+  font: 800 12px var(--font-mono);
   cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    filter var(--transition-fast);
+}
+
+.pwa-action:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.pwa-action:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
