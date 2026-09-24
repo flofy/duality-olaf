@@ -1,6 +1,6 @@
 import type { GameState } from "@duality/game";
 import { isInside, type Level, type Switch } from "@duality/level-format";
-import type { CSSProperties, ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
 import { Fire, Star, Door, Teleporter, SwitchIcon } from "./components/Icons";
 import { BallCharacter, SquareCharacter } from "./components/Characters";
@@ -33,10 +33,13 @@ export function GameBoard({
   const movementDirectionClass = movement
     ? `piece-moving--${movement.direction.x > 0 ? "right" : movement.direction.x < 0 ? "left" : movement.direction.y > 0 ? "down" : "up"}`
     : "";
-  const activePieceClass = movement ? "piece-moving--active is-moving" : "";
+  const activePieceClass = movement
+    ? `piece-moving--active is-moving ${movementDirectionClass}`
+    : "";
   const movementDistance = movement?.distance ?? 0;
-  // Le point d'arrivée est la position réelle après TOUT le glissement. On ne
-  // le reconstruit donc jamais avec « from + une case ».
+  const boardRef = useRef<HTMLDivElement>(null);
+  const movingPieceRef = useRef<HTMLDivElement>(null);
+  const trailLayerRef = useRef<HTMLDivElement>(null);
   const moveX = movement
     ? `calc(var(--cell-width) * ${movement.target.x - movement.from.x})`
     : "0px";
@@ -48,41 +51,72 @@ export function GameBoard({
   // shared with the movement timer so the piece is revealed exactly when the
   // animation ends.
   const moveDuration = moveBaseDurationMs(movementDistance);
-  const hasIntermediateCells = movementDistance > 1;
-  const ghostCells =
-    movement && hasIntermediateCells
-      ? Array.from({ length: movementDistance - 1 }, (_, index) => ({
-          x: movement.from.x + movement.direction.x * (index + 1),
-          y: movement.from.y + movement.direction.y * (index + 1),
-        }))
-      : [];
-  const renderActiveCharacter = (ghost = false) =>
-    state.activeForm === "ball" ? (
-      <BallCharacter
-        size={36}
-        color={hexToCss(themes[themeName].ball)}
-        expression="neutral"
-        className={
-          ghost
-            ? "character movement-ghost-character"
-            : "character character-ball"
-        }
-      />
-    ) : (
-      <SquareCharacter
-        size={36}
-        color={hexToCss(themes[themeName].square)}
-        expression="neutral"
-        className={
-          ghost
-            ? "character movement-ghost-character"
-            : "character character-square"
-        }
-      />
-    );
+  const activeColor = hexToCss(
+    state.activeForm === "ball" ? themes[themeName].ball : themes[themeName].square,
+  );
+
+  useEffect(() => {
+    const board = boardRef.current;
+    const piece = movingPieceRef.current;
+    const layer = trailLayerRef.current;
+    if (!movement || !board || !piece || !layer) return;
+
+    const boardRect = board.getBoundingClientRect();
+    const cellWidth = boardRect.width / level.width;
+    const cellHeight = boardRect.height / level.height;
+    const startX = (movement.from.x + 0.5) * cellWidth;
+    const startY = (movement.from.y + 0.5) * cellHeight;
+    const endX = (movement.target.x + 0.5) * cellWidth;
+    const endY = (movement.target.y + 0.5) * cellHeight;
+    const startedAt = performance.now();
+    const duration = moveBaseDurationMs(movement.distance);
+    let frame = 0;
+    let lastTrailAt = -Infinity;
+
+    const leaveTrailAt = (x: number, y: number) => {
+      const particle = document.createElement("span");
+      particle.className = "movement-trail-particle";
+      particle.style.left = `${x}px`;
+      particle.style.top = `${y}px`;
+      particle.style.opacity = "1";
+      particle.style.setProperty("--trail-color", activeColor);
+      particle.style.width = "34px";
+      particle.style.height = "34px";
+      layer.append(particle);
+      const fadeOutAt = window.setTimeout(() => {
+        particle.style.opacity = "0";
+        particle.style.transform = "translate(-50%, -50%) scale(0.25)";
+      }, 240);
+      window.setTimeout(() => particle.remove(), 700);
+      particle.addEventListener(
+        "transitionend",
+        () => window.clearTimeout(fadeOutAt),
+        { once: true },
+      );
+    };
+
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const x = startX + (endX - startX) * progress;
+      const y = startY + (endY - startY) * progress;
+      piece.style.transform = `translate3d(${x - startX}px, ${y - startY}px, 0)`;
+      if (now - lastTrailAt >= 16) {
+        leaveTrailAt(x, y);
+        lastTrailAt = now;
+      }
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(frame);
+      piece.style.transform = "";
+    };
+  }, [activeColor, level.height, level.width, movement]);
 
   return (
     <div
+      ref={boardRef}
       className={`board ${skin !== "default" ? `seasonal theme-${skin}` : ""}`}
       style={
         {
@@ -93,6 +127,7 @@ export function GameBoard({
           ),
           "--cols": level.width,
           "--rows": level.height,
+          "--move-duration": `${moveDuration}ms`,
         } as CSSProperties
       }
     >
@@ -190,6 +225,7 @@ export function GameBoard({
       {isInside(level, state.ball) && (
         <div
           className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"} ${state.activeForm === "ball" ? activePieceClass : ""}`}
+          ref={state.activeForm === "ball" ? movingPieceRef : undefined}
           style={
             {
               gridColumn:
@@ -203,6 +239,9 @@ export function GameBoard({
               "--move-x": state.activeForm === "ball" ? moveX : "0px",
               "--move-y": state.activeForm === "ball" ? moveY : "0px",
               "--move-duration": `${moveDuration}ms`,
+              "--trail-cells": movementDistance,
+
+              "--trail-color": activeColor,
               "--piece-color": hexToCss(themes[themeName].ball),
             } as CSSProperties
           }
@@ -235,6 +274,7 @@ export function GameBoard({
       {level.square && isInside(level, state.square) && (
         <div
           className={`piece square ${state.activeForm === "square" ? "" : "inactive"} ${state.activeForm === "square" ? activePieceClass : ""}`}
+          ref={state.activeForm === "square" ? movingPieceRef : undefined}
           style={
             {
               gridColumn:
@@ -246,8 +286,11 @@ export function GameBoard({
                   ? movement.from.y + 1
                   : state.square.y + 1,
               "--move-x": state.activeForm === "square" ? moveX : "0px",
+              "--trail-cells": movementDistance,
+
               "--move-y": state.activeForm === "square" ? moveY : "0px",
               "--move-duration": `${moveDuration}ms`,
+              "--trail-color": activeColor,
               "--piece-color": hexToCss(themes[themeName].square),
             } as CSSProperties
           }
@@ -277,26 +320,11 @@ export function GameBoard({
           />
         </div>
       )}
-      {ghostCells.map((cell) => (
-        <div
-          className={`movement-ghost ${movementDirectionClass}`}
-          key={`ghost-${cell.x}-${cell.y}`}
-          style={
-            {
-              gridColumn: cell.x + 1,
-              gridRow: cell.y + 1,
-              "--move-duration": `${moveDuration}ms`,
-              "--piece-color": hexToCss(
-                state.activeForm === "ball"
-                  ? themes[themeName].ball
-                  : themes[themeName].square,
-              ),
-            } as CSSProperties
-          }
-        >
-          {renderActiveCharacter(true)}
-        </div>
-      ))}
+      <div
+        ref={trailLayerRef}
+        className="movement-trail-layer"
+        aria-hidden="true"
+      />
       {children}
     </div>
   );

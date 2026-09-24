@@ -44,6 +44,7 @@
 }
 
 .game .board {
+  position: relative;
   width: calc(var(--tile) * var(--cols));
   height: calc(var(--tile) * var(--rows));
   grid-template-columns: repeat(var(--cols), var(--tile));

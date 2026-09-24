@@ -10,39 +10,85 @@
   }
 }
 
+.piece {
+  position: relative;
+  overflow: visible;
+}
+
 .piece-moving--active {
-  animation: pieceMove var(--move-duration, 320ms)
-    cubic-bezier(0.22, 0.72, 0.2, 1) forwards;
   transform-origin: center center;
   will-change: transform;
   z-index: 5;
 }
 
-/* Chaque case intermédiaire porte une copie fantôme du sprite. Les clones
-   s'allument successivement : la trace est organique, sans rectangle ni halo
-   autour de la boule/carré. */
-.movement-ghost {
-  z-index: 4;
+/* Inspiré de la référence HTML : plusieurs petites brumes sont déposées sur
+   tout le trajet, puis chacune s'éteint après le passage du personnage. */
+.game .board {
+  position: relative;
+}
+
+/* La logique reste dans la grille ; la trainée visualise la position pixel
+   réelle déposée par requestAnimationFrame. */
+.movement-trail-layer {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 10;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
   pointer-events: none;
-  opacity: 0;
-  animation: ghostTrace var(--move-duration, 320ms) ease-in-out forwards;
+  overflow: hidden;
 }
 
-.movement-ghost-character {
-  opacity: 0.42;
-  filter: blur(1.2px) saturate(1.15);
+.movement-trail-particle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  pointer-events: none;
+  display: block;
+  transform: translate(-50%, -50%) scale(1);
+  background: radial-gradient(
+    circle,
+    #ffffff 0%,
+    color-mix(in srgb, var(--trail-color, #4aa3ff) 90%, white) 12%,
+    var(--trail-color, #4aa3ff) 38%,
+    color-mix(in srgb, var(--trail-color, #4aa3ff) 76%, transparent) 70%,
+    transparent 100%
+  );
+  filter: blur(2px);
+  box-shadow: 0 0 10px 3px var(--trail-color, #4aa3ff);
+  opacity: 1;
+  transition: opacity 0.46s ease-out, transform 0.46s ease-out;
+  will-change: opacity, transform;
 }
 
-@keyframes ghostTrace {
-  0%,
+.piece-moving--active {
+  z-index: 5;
+}
+
+.piece-moving--active .character {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes movementTrailParticle {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.8);
+  }
+  10% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+  72% {
+    opacity: 0.5;
+  }
   100% {
     opacity: 0;
-    transform: scale(0.82);
-  }
-  18%,
-  72% {
-    opacity: 0.55;
-    transform: scale(1);
+    transform: scale(0.6);
   }
 }
 
