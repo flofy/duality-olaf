@@ -1,6 +1,6 @@
 import type { Level } from "@duality/level-format";
 import { solveLevel } from "@duality/game";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { GameBoard } from "../GameBoard";
 import { Button } from "../components/Button";
 import { ResetIcon as Reset } from "../components/Icons";
@@ -13,6 +13,7 @@ import type {
   useLevelGameplay,
 } from "../useLevelGameplay";
 import type { ThemeName } from "../theme";
+import { getSwipeEnabled } from "../controls";
 
 type GameplayState = ReturnType<typeof useLevelGameplay>["state"];
 
@@ -35,7 +36,8 @@ export function LevelGameplayView({
   switchForm: () => void;
   onReset: () => void;
 }) {
-  const { onPointerDown, onPointerUp } = useSwipeControls(move);
+  const [swipeEnabled] = useState(getSwipeEnabled);
+  const { onPointerDown, onPointerUp } = useSwipeControls(move, swipeEnabled);
   const optimalMoves = useMemo(() => {
     const solution = solveLevel(level);
     return solution.solvable ? solution.moves : null;
