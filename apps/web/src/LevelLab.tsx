@@ -21,6 +21,7 @@ import {
   type SkinPreference,
 } from "./skins";
 import { useLevelGameplay } from "./useLevelGameplay";
+import { useDialogButtonNavigation } from "./components/useDialogButtonNavigation";
 import {
   DEFAULT_BOARD_ZOOM,
   getBoardZoom,
@@ -46,15 +47,25 @@ function GameOverOverlay({
   onReset,
   onBackToGenerator,
 }: GameOverOverlayProps) {
-  if (type === null) return null;
   const isCompleted = type === "completed";
+  const { dialogRef, activeIndex } = useDialogButtonNavigation({
+    active: type !== null,
+    initialIndex: 0,
+  });
   const ratio =
     optimalMoves && moves ? Math.round((optimalMoves / moves) * 100) : null;
+  if (type === null) return null;
   return (
     <div
       className={`game-overlay ${isCompleted ? "overlay-completed" : "overlay-gameover"}`}
     >
-      <div className="overlay-content">
+      <div
+        className="overlay-content"
+        role="dialog"
+        aria-modal="true"
+        aria-label={isCompleted ? "Résultat du test" : "Échec du test"}
+        ref={dialogRef}
+      >
         {isCompleted ? <>✓ NIVEAU RÉSOLU EN {moves} COUPS</> : <>✗ GAME OVER</>}
         {isCompleted && ratio !== null && (
           <div className="overlay-score">
@@ -62,11 +73,19 @@ function GameOverOverlay({
           </div>
         )}
         <div className="overlay-buttons">
-          <button className="action" onClick={onReset}>
+          <button
+            className="action"
+            data-selected={activeIndex === 0 ? "true" : undefined}
+            onClick={onReset}
+          >
             ↻ RESET
           </button>
           {onBackToGenerator && (
-            <button className="action" onClick={onBackToGenerator}>
+            <button
+              className="action"
+              data-selected={activeIndex === 1 ? "true" : undefined}
+              onClick={onBackToGenerator}
+            >
               ← GÉNÉRER
             </button>
           )}

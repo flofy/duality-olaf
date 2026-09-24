@@ -34,6 +34,7 @@
   overscroll-behavior: none;
 }
 .dev-playground-board .board {
+  position: relative;
   --tile: calc(
     min(72px, calc(100cqw / var(--cols)), calc(100cqh / var(--rows))) *
       var(--board-zoom, 1)

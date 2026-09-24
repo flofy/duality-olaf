@@ -586,6 +586,10 @@
   display: flex;
   gap: 8px;
 }
+.overlay-buttons .action[data-selected="true"] {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
 
 /* Difficulty tint on card borders */
 .generator-card.card-easy {
