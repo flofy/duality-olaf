@@ -92,6 +92,14 @@ export function getSwipeEnabled(): boolean {
   }
 }
 
+function setSwipeEnabled(enabled: boolean): void {
+  try {
+    localStorage.setItem(SWIPE_STORAGE_KEY, String(enabled));
+  } catch {
+    /* persist is best-effort */
+  }
+}
+
 export function toggleSwipeEnabled(): boolean {
   const next = !getSwipeEnabled();
   setSwipeEnabled(next);
