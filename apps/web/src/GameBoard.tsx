@@ -219,28 +219,50 @@ export function GameBoard({
       ))}
       {movement?.teleport && (
         <>
-          <div className="teleport-effect teleport-departure" style={{
-            gridColumn: movement.teleport.from.x + 1,
-            gridRow: movement.teleport.from.y + 1,
-          }}>
+          <div
+            className="teleport-effect teleport-departure"
+            style={{
+              gridColumn: movement.teleport.from.x + 1,
+              gridRow: movement.teleport.from.y + 1,
+            }}
+          >
             {movement.teleport.form === "ball" ? (
-              <BallCharacter size={36} color={hexToCss(themes[themeName].ball)}
-                expression="neutral" className="character character-ball" />
+              <BallCharacter
+                size={36}
+                color={hexToCss(themes[themeName].ball)}
+                expression="neutral"
+                className="character character-ball"
+              />
             ) : (
-              <SquareCharacter size={36} color={hexToCss(themes[themeName].square)}
-                expression="neutral" className="character character-square" />
+              <SquareCharacter
+                size={36}
+                color={hexToCss(themes[themeName].square)}
+                expression="neutral"
+                className="character character-square"
+              />
             )}
           </div>
-          <div className="teleport-effect teleport-arrival" style={{
-            gridColumn: movement.teleport.to.x + 1,
-            gridRow: movement.teleport.to.y + 1,
-          }}>
+          <div
+            className="teleport-effect teleport-arrival"
+            style={{
+              gridColumn: movement.teleport.to.x + 1,
+              gridRow: movement.teleport.to.y + 1,
+            }}
+          >
             {movement.teleport.form === "ball" ? (
-              <BallCharacter size={36} color={hexToCss(themes[themeName].ball)}
-                expression="surprised" className="character character-ball" />
+              <BallCharacter
+                size={36}
+                color={hexToCss(themes[themeName].ball)}
+                expression="surprised"
+                className="character character-ball"
+              />
             ) : (
-              <SquareCharacter size={36} color={hexToCss(themes[themeName].square)}
-                expression="surprised" className="character character-square" />
+              <SquareCharacter
+                size={36}
+                color={hexToCss(themes[themeName].square)}
+                expression="surprised"
+                className="character character-square"
+              />
             )}
           </div>
         </>

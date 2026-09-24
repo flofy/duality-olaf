@@ -239,16 +239,39 @@ button:hover:not(:disabled) {
   animation: switchFormPulse calc(0.3s * var(--animation-scale)) ease;
 }
 
-
 @keyframes teleportDeparture {
-  0% { opacity: 1; transform: scale(1); filter: blur(0); }
-  65% { opacity: 0.55; transform: scale(0.28); filter: blur(0.4px); }
-  100% { opacity: 0; transform: scale(0.06); filter: blur(1px); }
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  65% {
+    opacity: 0.55;
+    transform: scale(0.28);
+    filter: blur(0.4px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.06);
+    filter: blur(1px);
+  }
 }
 @keyframes teleportArrival {
-  0% { opacity: 0; transform: scale(0.06); filter: blur(1px); }
-  35% { opacity: 0.55; transform: scale(0.28); filter: blur(0.4px); }
-  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+  0% {
+    opacity: 0;
+    transform: scale(0.06);
+    filter: blur(1px);
+  }
+  35% {
+    opacity: 0.55;
+    transform: scale(0.28);
+    filter: blur(0.4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
 }
 .teleport-effect {
   position: relative;
@@ -258,15 +281,29 @@ button:hover:not(:disabled) {
   pointer-events: none;
 }
 .teleport-departure {
-  animation: teleportDeparture calc(180ms * var(--animation-scale)) ease-in forwards;
+  animation: teleportDeparture calc(180ms * var(--animation-scale)) ease-in
+    forwards;
 }
 .teleport-arrival {
-  animation: teleportArrival calc(280ms * var(--animation-scale)) 140ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: teleportArrival calc(280ms * var(--animation-scale)) 140ms
+    cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
-.teleporting-piece { opacity: 0; }
+.teleporting-piece {
+  opacity: 0;
+}
 @media (prefers-reduced-motion: reduce) {
-  .teleport-departure, .teleport-arrival { animation: none; }
-  .teleport-departure { opacity: 0; }
-  .teleport-arrival { opacity: 1; transform: scale(1); }
-  .teleporting-piece { opacity: 1; }
+  .teleport-departure,
+  .teleport-arrival {
+    animation: none;
+  }
+  .teleport-departure {
+    opacity: 0;
+  }
+  .teleport-arrival {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .teleporting-piece {
+    opacity: 1;
+  }
 }
