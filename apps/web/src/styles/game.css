@@ -269,11 +269,14 @@ html[data-board-display="fill"] .game .board {
   -webkit-tap-highlight-color: transparent;
 }
 
-.controls button:focus,
-.controls button:focus-visible,
-.controls button:active {
-  outline: none;
-  box-shadow: none;
+.controls button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.controls button:active:not(:disabled) {
+  filter: brightness(1.15);
 }
 
 .switch-toggle {
