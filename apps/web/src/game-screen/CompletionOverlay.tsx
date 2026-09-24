@@ -1,7 +1,7 @@
 import { Button } from "../components/Button";
 import { ArrowRight, ResetIcon as Reset } from "../components/Icons";
 import { OverlayIllustration } from "../components/OverlayIllustration";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function formatTime(elapsedMs: number): string {
   const totalSeconds = elapsedMs / 1000;
@@ -42,32 +42,35 @@ export function CompletionOverlay({
 }) {
   const changingWorld = worldIndex === worldLength - 1 && hasNextWorld;
   const [activeIndex, setActiveIndex] = useState(1);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const buttonsRef = useRef<Array<HTMLButtonElement | null>>([]);
   useEffect(() => {
     if (!completed) return;
-    document
-      .querySelector<HTMLButtonElement>(".modal-actions button:nth-child(2)")
-      ?.focus();
+    const focusButton = (index: number) => {
+      const nextIndex = (index + 2) % 2;
+      setActiveIndex(nextIndex);
+      buttonsRef.current[nextIndex]?.focus();
+    };
+    focusButton(1);
     const onKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.key === "Enter" &&
+        document.activeElement instanceof HTMLButtonElement
+      ) {
+        return;
+      }
       if (event.key === "Enter") {
         event.preventDefault();
-        document
-          .querySelectorAll<HTMLButtonElement>(".modal-actions button")
-          [activeIndex]?.click();
+        buttonsRef.current[activeIndex]?.click();
       }
-      if (
-        event.key === "ArrowLeft" ||
-        event.key === "ArrowRight" ||
-        event.key === "Tab"
-      ) {
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
         event.preventDefault();
-        setActiveIndex(
-          (index) => (index + (event.key === "ArrowLeft" ? -1 : 1) + 2) % 2,
-        );
+        focusButton(activeIndex + (event.key === "ArrowLeft" ? -1 : 1));
       }
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [completed, activeIndex]);
+    dialogRef.current?.addEventListener("keydown", onKeyDown);
+    return () => dialogRef.current?.removeEventListener("keydown", onKeyDown);
+  }, [activeIndex, completed]);
 
   if (!completed) return null;
 
@@ -75,6 +78,7 @@ export function CompletionOverlay({
     <div className="overlay">
       <div
         className="modal completion-modal"
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="completion-title"
@@ -146,6 +150,9 @@ export function CompletionOverlay({
             label="REJOUER"
             onClick={onReset}
             variant="primary"
+            ref={(node) => {
+              buttonsRef.current[0] = node;
+            }}
           />
           <Button
             icon={<ArrowRight size={18} />}
@@ -158,6 +165,9 @@ export function CompletionOverlay({
             }
             onClick={onNext}
             variant="primary"
+            ref={(node) => {
+              buttonsRef.current[1] = node;
+            }}
           />
         </div>
       </div>

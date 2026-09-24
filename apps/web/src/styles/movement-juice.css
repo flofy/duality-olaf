@@ -10,19 +10,6 @@
   }
 }
 
-/* La pièce réelle est masquée pendant que l'overlay anime le trajet : la
-   bascule doit être instantanée (sinon `transition: opacity` sur .piece fait
-   apparaître un fantôme à la destination pendant 120ms). */
-.piece--movement-hidden {
-  opacity: 0;
-  transition: none;
-}
-
-.movement-overlay {
-  z-index: 5;
-  pointer-events: none;
-}
-
 .piece-moving--active {
   animation: pieceMove var(--move-duration, 320ms)
     cubic-bezier(0.22, 0.72, 0.2, 1) forwards;
@@ -31,56 +18,31 @@
   z-index: 5;
 }
 
-/* Brouillard de passage : il est positionné sur les seules cases
-   intermédiaires et s'efface avant les extrémités. */
-.movement-fog {
+/* Chaque case intermédiaire porte une copie fantôme du sprite. Les clones
+   s'allument successivement : la trace est organique, sans rectangle ni halo
+   autour de la boule/carré. */
+.movement-ghost {
   z-index: 4;
   pointer-events: none;
-  background: radial-gradient(
-    ellipse at center,
-    color-mix(in srgb, var(--piece-color, var(--ball)) 42%, transparent),
-    color-mix(in srgb, var(--piece-color, var(--ball)) 12%, transparent) 62%,
-    transparent 100%
-  );
-  filter: blur(5px);
   opacity: 0;
-  animation: movementFog var(--move-duration, 320ms) ease-in-out forwards;
+  animation: ghostTrace var(--move-duration, 320ms) ease-in-out forwards;
 }
 
-.movement-fog.piece-moving--right,
-.movement-fog.piece-moving--left {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--piece-color, var(--ball)) 14%, transparent) 18%,
-    color-mix(in srgb, var(--piece-color, var(--ball)) 48%, transparent) 50%,
-    color-mix(in srgb, var(--piece-color, var(--ball)) 14%, transparent) 82%,
-    transparent 100%
-  );
-  filter: blur(4px);
+.movement-ghost-character {
+  opacity: 0.42;
+  filter: blur(1.2px) saturate(1.15);
 }
 
-.movement-fog.piece-moving--down,
-.movement-fog.piece-moving--up {
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    color-mix(in srgb, var(--piece-color, var(--ball)) 14%, transparent) 18%,
-    color-mix(in srgb, var(--piece-color, var(--ball)) 48%, transparent) 50%,
-    color-mix(in srgb, var(--piece-color, var(--ball)) 14%, transparent) 82%,
-    transparent 100%
-  );
-  filter: blur(4px);
-}
-
-@keyframes movementFog {
+@keyframes ghostTrace {
   0%,
   100% {
     opacity: 0;
+    transform: scale(0.82);
   }
   18%,
   72% {
-    opacity: 0.72;
+    opacity: 0.55;
+    transform: scale(1);
   }
 }
 

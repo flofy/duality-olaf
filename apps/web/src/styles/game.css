@@ -227,6 +227,22 @@ html[data-board-display="fill"] .game .board {
   }
 }
 
+.hud-progress {
+  width: min(100%, 280px);
+  height: 6px;
+  margin: 0 0 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ffffff22;
+}
+
+.hud-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--star));
+  transition: width 220ms ease;
+}
+
 .hud {
   margin-top: 12px;
   font: clamp(12px, 2vw, 14px) monospace;

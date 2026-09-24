@@ -240,19 +240,6 @@
   transform: rotate(-18deg);
 }
 
-.illustration-burst {
-  position: absolute;
-  left: 50%;
-  top: 52%;
-  width: 78px;
-  height: 78px;
-  border: 2px dashed color-mix(in srgb, var(--accent) 55%, transparent);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  animation: illustrationBurst calc(2.4s * var(--animation-scale)) ease-out
-    infinite;
-}
-
 .illustration-portal {
   position: absolute;
   left: 50%;
@@ -298,18 +285,6 @@
   }
   72% {
     transform: translateX(55%);
-  }
-}
-
-@keyframes illustrationBurst {
-  0%,
-  100% {
-    opacity: 0.35;
-    transform: translate(-50%, -50%) scale(0.9);
-  }
-  50% {
-    opacity: 0.75;
-    transform: translate(-50%, -50%) scale(1.08);
   }
 }
 

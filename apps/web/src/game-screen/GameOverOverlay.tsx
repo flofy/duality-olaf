@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 import { Button } from "../components/Button";
 import { ArrowLeft, ResetIcon as Reset } from "../components/Icons";
 import { OverlayIllustration } from "../components/OverlayIllustration";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function GameOverOverlay({
   worldId,
@@ -17,29 +17,34 @@ export function GameOverOverlay({
 }) {
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const buttonsRef = useRef<Array<HTMLButtonElement | null>>([]);
   useEffect(() => {
     if (!gameOver) return;
-    document.querySelector<HTMLButtonElement>(".modal-actions button")?.focus();
+    buttonsRef.current[0]?.focus();
+    const focusButton = (index: number) => {
+      const nextIndex = (index + 2) % 2;
+      setActiveIndex(nextIndex);
+      buttonsRef.current[nextIndex]?.focus();
+    };
     const onKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.key === "Enter" &&
+        document.activeElement instanceof HTMLButtonElement
+      ) {
+        return;
+      }
       if (event.key === "Enter") {
         event.preventDefault();
-        document
-          .querySelectorAll<HTMLButtonElement>(".modal-actions button")
-          [activeIndex]?.click();
+        buttonsRef.current[activeIndex]?.click();
       }
-      if (
-        event.key === "ArrowLeft" ||
-        event.key === "ArrowRight" ||
-        event.key === "Tab"
-      ) {
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
         event.preventDefault();
-        setActiveIndex(
-          (index) => (index + (event.key === "ArrowLeft" ? 1 : -1) + 2) % 2,
-        );
+        focusButton(activeIndex + (event.key === "ArrowLeft" ? 1 : -1));
       }
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    dialogRef.current?.addEventListener("keydown", onKeyDown);
+    return () => dialogRef.current?.removeEventListener("keydown", onKeyDown);
   }, [gameOver, activeIndex]);
 
   if (!gameOver) return null;
@@ -48,6 +53,7 @@ export function GameOverOverlay({
     <div className="overlay">
       <div
         className="modal"
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="gameover-title"
@@ -64,12 +70,18 @@ export function GameOverOverlay({
             label="REJOUER"
             onClick={onReset}
             variant="primary"
+            ref={(node) => {
+              buttonsRef.current[0] = node;
+            }}
           />
           <Button
             icon={<ArrowLeft size={18} />}
             label="NIVEAUX"
             onClick={() => navigate(`/world/${worldId}`)}
             variant="secondary"
+            ref={(node) => {
+              buttonsRef.current[1] = node;
+            }}
           />
         </div>
       </div>

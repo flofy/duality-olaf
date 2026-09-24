@@ -33,7 +33,7 @@ export function GameBoard({
   const movementDirectionClass = movement
     ? `piece-moving--${movement.direction.x > 0 ? "right" : movement.direction.x < 0 ? "left" : movement.direction.y > 0 ? "down" : "up"}`
     : "";
-  const activePieceClass = movement ? "piece--movement-hidden" : "";
+  const activePieceClass = movement ? "piece-moving--active is-moving" : "";
   const movementDistance = movement?.distance ?? 0;
   // Le point d'arrivée est la position réelle après TOUT le glissement. On ne
   // le reconstruit donc jamais avec « from + une case ».
@@ -45,13 +45,41 @@ export function GameBoard({
     : "0px";
   // Keep travel speed consistent: long moves take proportionally longer instead of
   // compressing several cells into the same short animation. The duration is
-  // shared with the overlay timer (cf. movementTiming) so the piece is revealed
-  // exactly when the animation ends.
+  // shared with the movement timer so the piece is revealed exactly when the
+  // animation ends.
   const moveDuration = moveBaseDurationMs(movementDistance);
-  // La trace utilise la distance réelle du glissement : elle n'est pas
-  // plafonnée arbitrairement à trois cases. Elle reste porém la direction et
-  // s'efface avant que le sprite atteigne sa target.
   const hasIntermediateCells = movementDistance > 1;
+  const ghostCells =
+    movement && hasIntermediateCells
+      ? Array.from({ length: movementDistance - 1 }, (_, index) => ({
+          x: movement.from.x + movement.direction.x * (index + 1),
+          y: movement.from.y + movement.direction.y * (index + 1),
+        }))
+      : [];
+  const renderActiveCharacter = (ghost = false) =>
+    state.activeForm === "ball" ? (
+      <BallCharacter
+        size={36}
+        color={hexToCss(themes[themeName].ball)}
+        expression="neutral"
+        className={
+          ghost
+            ? "character movement-ghost-character"
+            : "character character-ball"
+        }
+      />
+    ) : (
+      <SquareCharacter
+        size={36}
+        color={hexToCss(themes[themeName].square)}
+        expression="neutral"
+        className={
+          ghost
+            ? "character movement-ghost-character"
+            : "character character-square"
+        }
+      />
+    );
 
   return (
     <div
@@ -164,13 +192,31 @@ export function GameBoard({
           className={`piece ball ${state.activeForm === "ball" ? "" : "inactive"} ${state.activeForm === "ball" ? activePieceClass : ""}`}
           style={
             {
-              gridColumn: state.ball.x + 1,
-              gridRow: state.ball.y + 1,
+              gridColumn:
+                state.activeForm === "ball" && movement
+                  ? movement.from.x + 1
+                  : state.ball.x + 1,
+              gridRow:
+                state.activeForm === "ball" && movement
+                  ? movement.from.y + 1
+                  : state.ball.y + 1,
+              "--move-x": state.activeForm === "ball" ? moveX : "0px",
+              "--move-y": state.activeForm === "ball" ? moveY : "0px",
               "--move-duration": `${moveDuration}ms`,
               "--piece-color": hexToCss(themes[themeName].ball),
             } as CSSProperties
           }
-          key={`ball-${state.ball.x}-${state.ball.y}`}
+          data-movement-from={
+            state.activeForm === "ball" && movement
+              ? `${movement.from.x},${movement.from.y}`
+              : undefined
+          }
+          data-movement-target={
+            state.activeForm === "ball" && movement
+              ? `${movement.target.x},${movement.target.y}`
+              : undefined
+          }
+          key="ball-piece"
         >
           <BallCharacter
             size={36}
@@ -191,13 +237,31 @@ export function GameBoard({
           className={`piece square ${state.activeForm === "square" ? "" : "inactive"} ${state.activeForm === "square" ? activePieceClass : ""}`}
           style={
             {
-              gridColumn: state.square.x + 1,
-              gridRow: state.square.y + 1,
+              gridColumn:
+                state.activeForm === "square" && movement
+                  ? movement.from.x + 1
+                  : state.square.x + 1,
+              gridRow:
+                state.activeForm === "square" && movement
+                  ? movement.from.y + 1
+                  : state.square.y + 1,
+              "--move-x": state.activeForm === "square" ? moveX : "0px",
+              "--move-y": state.activeForm === "square" ? moveY : "0px",
               "--move-duration": `${moveDuration}ms`,
               "--piece-color": hexToCss(themes[themeName].square),
             } as CSSProperties
           }
-          key={`square-${state.square.x}-${state.square.y}`}
+          data-movement-from={
+            state.activeForm === "square" && movement
+              ? `${movement.from.x},${movement.from.y}`
+              : undefined
+          }
+          data-movement-target={
+            state.activeForm === "square" && movement
+              ? `${movement.target.x},${movement.target.y}`
+              : undefined
+          }
+          key="square-piece"
         >
           <SquareCharacter
             size={36}
@@ -213,45 +277,14 @@ export function GameBoard({
           />
         </div>
       )}
-      {/* Une clé par déplacement : un enchaînement rapide (touche maintenue)
-          remonte un nouvel overlay, donc une animation neuve, au lieu de
-          poursuivre une timeline périmée. */}
-      {movement && hasIntermediateCells && (
+      {ghostCells.map((cell) => (
         <div
-          className={`movement-fog ${movementDirectionClass}`}
-          key={`fog-${movement.from.x}-${movement.from.y}-${movement.target.x}-${movement.target.y}`}
+          className={`movement-ghost ${movementDirectionClass}`}
+          key={`ghost-${cell.x}-${cell.y}`}
           style={
             {
-              gridColumn:
-                movement.direction.x !== 0
-                  ? `${Math.min(movement.from.x, movement.target.x) + 2} / ${Math.max(movement.from.x, movement.target.x) + 1}`
-                  : `${movement.from.x + 1} / ${movement.from.x + 2}`,
-              gridRow:
-                movement.direction.y !== 0
-                  ? `${Math.min(movement.from.y, movement.target.y) + 2} / ${Math.max(movement.from.y, movement.target.y) + 1}`
-                  : `${movement.from.y + 1} / ${movement.from.y + 2}`,
-              "--move-duration": `${moveDuration}ms`,
-              "--piece-color": hexToCss(
-                state.activeForm === "square"
-                  ? themes[themeName].square
-                  : themes[themeName].ball,
-              ),
-            } as CSSProperties
-          }
-        />
-      )}
-      {movement && (
-        <div
-          className={`piece movement-overlay piece-moving--active is-moving ${movementDirectionClass}`}
-          key={`move-${movement.from.x}-${movement.from.y}-${movement.target.x}-${movement.target.y}`}
-          data-movement-from={`${movement.from.x},${movement.from.y}`}
-          data-movement-target={`${movement.target.x},${movement.target.y}`}
-          style={
-            {
-              gridColumn: movement.from.x + 1,
-              gridRow: movement.from.y + 1,
-              "--move-x": moveX,
-              "--move-y": moveY,
+              gridColumn: cell.x + 1,
+              gridRow: cell.y + 1,
               "--move-duration": `${moveDuration}ms`,
               "--piece-color": hexToCss(
                 state.activeForm === "ball"
@@ -261,23 +294,9 @@ export function GameBoard({
             } as CSSProperties
           }
         >
-          {state.activeForm === "ball" ? (
-            <BallCharacter
-              size={36}
-              color={hexToCss(themes[themeName].ball)}
-              expression="neutral"
-              className="character character-ball"
-            />
-          ) : (
-            <SquareCharacter
-              size={36}
-              color={hexToCss(themes[themeName].square)}
-              expression="neutral"
-              className="character character-square"
-            />
-          )}
+          {renderActiveCharacter(true)}
         </div>
-      )}
+      ))}
       {children}
     </div>
   );
