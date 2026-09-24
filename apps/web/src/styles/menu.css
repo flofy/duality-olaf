@@ -256,3 +256,87 @@
   color: var(--muted);
   font-weight: 600;
 }
+
+/* Shared UI system: keep menu-specific layout while using the same visual tokens. */
+.title {
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.subtitle {
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  margin-bottom: clamp(20px, 5vw, 32px);
+}
+
+.world-list {
+  gap: var(--space-3);
+}
+
+.world-meta {
+  color: var(--text-secondary);
+  font: 600 11px var(--font-mono);
+  margin-top: var(--space-1);
+}
+
+.levels {
+  gap: var(--space-2);
+}
+
+.level-button {
+  border-radius: var(--radius-lg);
+  font-family: var(--font-mono);
+}
+
+.audio-settings {
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.audio-toggle,
+.audio-test-button {
+  min-height: var(--control-md);
+  padding: 0 var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--surface-muted);
+  font-family: var(--font-mono);
+  transition:
+    background var(--transition-standard),
+    border-color var(--transition-standard),
+    transform var(--transition-fast);
+}
+
+.audio-toggle:hover:not(:disabled),
+.audio-test-button:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--border-subtle);
+  transform: translateX(2px);
+}
+
+.audio-toggle:focus-visible,
+.audio-test-button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.world-progress-summary {
+  gap: var(--space-5);
+  font-family: var(--font-mono);
+}
+
+.campaign-progress {
+  gap: var(--space-2);
+  margin: var(--space-5) 0 var(--space-2);
+  padding: var(--space-3);
+  border-color: var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.campaign-progress-header,
+.campaign-progress-meta {
+  font-family: var(--font-mono);
+}
