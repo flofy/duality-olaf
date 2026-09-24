@@ -8,6 +8,7 @@ const INTERACTIVE_SELECTOR =
 
 export function useSwipeControls(
   onSwipe: (direction: GameplayDirection) => void,
+  enabled = true,
 ) {
   const [start, setStart] = useState<{
     x: number;
@@ -15,6 +16,7 @@ export function useSwipeControls(
   } | null>(null);
 
   const onPointerDown = useCallback((event: React.PointerEvent) => {
+    if (!enabled) return;
     const target = event.target as Element | null;
 
     // UI controls own their pointer interaction. Do not let the game's
@@ -26,11 +28,11 @@ export function useSwipeControls(
     }
 
     setStart({ x: event.clientX, y: event.clientY });
-  }, []);
+  }, [enabled]);
 
   const onPointerUp = useCallback(
     (event: React.PointerEvent) => {
-      if (!start) return;
+      if (!enabled || !start) return;
 
       const result = interpretGesture(
         start,
@@ -43,7 +45,7 @@ export function useSwipeControls(
         onSwipe(gestureDirections[result.direction]);
       }
     },
-    [start, onSwipe],
+    [enabled, start, onSwipe],
   );
 
   return { onPointerDown, onPointerUp };
