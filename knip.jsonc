@@ -32,6 +32,7 @@
     "apps/web": {
       "entry": ["index.html"],
       "project": ["src/**/*.{ts,tsx}"],
+      "ignore": ["**/tests/e2e/helpers.ts"],
     },
   },
 }

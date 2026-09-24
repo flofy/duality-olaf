@@ -52,21 +52,9 @@
   animation: fadeIn calc(0.5s * var(--animation-scale)) ease forwards;
 }
 
-@keyframes pieceMove {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.piece-moving {
-  animation: pieceMove calc(0.3s * var(--animation-scale)) ease;
-}
+/* Le déplacement des pièces vit dans movement-juice.css (`pieceMove`) : ne pas
+   redéfinir ici un `@keyframes pieceMove`, deux définitions homonymes se
+   écrasent selon l'ordre des imports. */
 
 @keyframes doorOpen {
   0% {

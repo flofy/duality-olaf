@@ -5,10 +5,12 @@ import {
   getMasterVolume,
   isHapticSupported,
   isSoundEnabled,
+  playSound,
   setAmbientEnabled,
   setHapticEnabled,
   setMasterVolume,
   setSoundEnabled,
+  soundEffectPreviews,
   testHaptic,
   testSound,
 } from "./audioFeedback";
@@ -124,6 +126,21 @@ export function AudioSettings() {
               ? "📳 TESTER VIBRATION"
               : "📳 VIBRATION INDISPONIBLE"}
           </button>
+          {/* Écoute de chaque effet : les timbres se valident à l'oreille, sans
+              devoir provoquer la situation qui les déclenche en jeu. */}
+          <div className="audio-effect-tests">
+            <span className="audio-effect-tests-title">ÉCOUTER UN EFFET</span>
+            {soundEffectPreviews.map(({ effect, label }) => (
+              <button
+                key={effect}
+                className="audio-test-button"
+                type="button"
+                onClick={() => void playSound(effect)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

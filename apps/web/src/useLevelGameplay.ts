@@ -8,6 +8,10 @@ import {
   toggleSound,
   vibrate,
 } from "./audioFeedback";
+import {
+  moveAnimationDurationMs,
+  prefersReducedMotion,
+} from "./movementTiming";
 
 export type GameplaySkin = "default" | "halloween" | "christmas";
 
@@ -17,7 +21,10 @@ export type GameplayDirection = {
 };
 
 export type MovementFeedback = {
+  /** Position de la pièce avant le coup. */
   from: { x: number; y: number };
+  /** Position finale réelle du glissement, et non la case adjacent à `from`. */
+  target: { x: number; y: number };
   direction: GameplayDirection;
   distance: number;
 } | null;
@@ -28,12 +35,6 @@ const keyboardDirections: Record<string, GameplayDirection> = {
   ArrowUp: { x: 0, y: -1 },
   ArrowDown: { x: 0, y: 1 },
 };
-
-const FAST_ANIMATION_SCALE = 0.65;
-
-function getAnimationDuration(baseMs: number) {
-  return Math.round(baseMs * FAST_ANIMATION_SCALE);
-}
 
 function countOpenDoors(doors: Record<string, boolean>) {
   return Object.values(doors).filter(Boolean).length;
@@ -90,8 +91,7 @@ export function useLevelGameplay(
   }, []);
 
   const pauseForAnimation = useCallback(
-    (baseDurationMs: number) => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    (distance: number) => {
       pauseTimer("animation");
       if (animationPauseTimeoutRef.current !== null) {
         window.clearTimeout(animationPauseTimeoutRef.current);
@@ -100,7 +100,7 @@ export function useLevelGameplay(
         animationPauseTimeoutRef.current = null;
         setMovement(null);
         resumeTimer("animation");
-      }, getAnimationDuration(baseDurationMs));
+      }, moveAnimationDurationMs(distance));
     },
     [pauseTimer, resumeTimer],
   );
@@ -165,18 +165,24 @@ export function useLevelGameplay(
           Math.abs(activeAfter.y - activeBefore.y);
         const teleported = next.lastTeleport !== null;
 
-        if (moved && !teleported && !next.gameOver) {
-          setMovement({
-            from: { ...activeBefore },
-            direction,
-            distance,
-          });
-        } else {
-          setMovement(null);
-        }
-        if (moved && !teleported && !next.gameOver) {
-          pauseForAnimation(Math.min(520, 160 + distance * 90));
-        }
+        // Animer le trajet seulement si la pièce avance réellement, sans
+        // téléportation ni mort. En « mouvement réduit », on ne pose aucun
+        // overlay : la pièce réelle (masquée pendant l'animation) resterait
+        // sinon invisible ou décalée d'une case.
+        const animating =
+          moved && !teleported && !next.gameOver && !prefersReducedMotion();
+
+        setMovement(
+          animating
+            ? {
+                from: { ...activeBefore },
+                target: { ...activeAfter },
+                direction,
+                distance,
+              }
+            : null,
+        );
+        if (animating) pauseForAnimation(distance);
 
         if (!moved) {
           void playSound("wall");

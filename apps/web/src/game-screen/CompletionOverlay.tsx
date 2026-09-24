@@ -14,6 +14,7 @@ function formatTime(elapsedMs: number): string {
 }
 
 export function CompletionOverlay({
+  worldId,
   worldIndex,
   worldLength,
   hasNextWorld,
@@ -26,6 +27,7 @@ export function CompletionOverlay({
   onReset,
   onNext,
 }: {
+  worldId: number;
   worldIndex: number;
   worldLength: number;
   hasNextWorld: boolean;
@@ -77,9 +79,14 @@ export function CompletionOverlay({
         aria-modal="true"
         aria-labelledby="completion-title"
       >
+        {/* Le carré n'existe pas en monde 1 : aucun popin de fin de niveau du
+            monde 1 ne doit le montrer (il est introduit en monde 2) — sauf le
+            popin de passage de monde, qui est justement l'annonce de son
+            arrivée. Attention, `worldIndex` est l'index du *niveau* dans le
+            monde, pas le numéro du monde. */}
         <OverlayIllustration
           variant={changingWorld ? "world-transition" : "victory"}
-          showSquare={worldIndex > 0}
+          showSquare={changingWorld || worldId > 1}
         />
         <h2 id="completion-title">★ NIVEAU TERMINÉ ★</h2>
 

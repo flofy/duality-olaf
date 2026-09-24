@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { hexToCss, themes, type ThemeName } from "./theme";
 import { Fire, Star, Door, Teleporter, SwitchIcon } from "./components/Icons";
 import { BallCharacter, SquareCharacter } from "./components/Characters";
+import { moveBaseDurationMs } from "./movementTiming";
 import type { MovementFeedback } from "./useLevelGameplay";
 
 export function switchGlyph(form: Switch["form"]): string {
@@ -34,25 +35,23 @@ export function GameBoard({
     : "";
   const activePieceClass = movement ? "piece--movement-hidden" : "";
   const movementDistance = movement?.distance ?? 0;
-  // Translate by actual board-cell dimensions, not by the piece's own width/height.
-  // CSS transform percentages are relative to the transformed element, which made
-  // multi-cell moves visibly stop short of the destination.
-  const moveX =
-    movement?.direction.x === 1
-      ? `calc(var(--cell-width) * ${movementDistance})`
-      : movement?.direction.x === -1
-        ? `calc(var(--cell-width) * -${movementDistance})`
-        : "0px";
-  const moveY =
-    movement?.direction.y === 1
-      ? `calc(var(--cell-height) * ${movementDistance})`
-      : movement?.direction.y === -1
-        ? `calc(var(--cell-height) * -${movementDistance})`
-        : "0px";
+  // Le point d'arrivée est la position réelle après TOUT le glissement. On ne
+  // le reconstruit donc jamais avec « from + une case ».
+  const moveX = movement
+    ? `calc(var(--cell-width) * ${movement.target.x - movement.from.x})`
+    : "0px";
+  const moveY = movement
+    ? `calc(var(--cell-height) * ${movement.target.y - movement.from.y})`
+    : "0px";
   // Keep travel speed consistent: long moves take proportionally longer instead of
-  // compressing several cells into the same short animation.
-  const moveDuration = Math.min(520, 160 + movementDistance * 90);
-  const trailLength = `${movementDistance * 100}%`;
+  // compressing several cells into the same short animation. The duration is
+  // shared with the overlay timer (cf. movementTiming) so the piece is revealed
+  // exactly when the animation ends.
+  const moveDuration = moveBaseDurationMs(movementDistance);
+  // La trace utilise la distance réelle du glissement : elle n'est pas
+  // plafonnée arbitrairement à trois cases. Elle reste porém la direction et
+  // s'efface avant que le sprite atteigne sa target.
+  const hasIntermediateCells = movementDistance > 1;
 
   return (
     <div
@@ -168,7 +167,6 @@ export function GameBoard({
               gridColumn: state.ball.x + 1,
               gridRow: state.ball.y + 1,
               "--move-duration": `${moveDuration}ms`,
-              "--trail-length": trailLength,
               "--piece-color": hexToCss(themes[themeName].ball),
             } as CSSProperties
           }
@@ -196,7 +194,6 @@ export function GameBoard({
               gridColumn: state.square.x + 1,
               gridRow: state.square.y + 1,
               "--move-duration": `${moveDuration}ms`,
-              "--trail-length": trailLength,
               "--piece-color": hexToCss(themes[themeName].square),
             } as CSSProperties
           }
@@ -216,9 +213,39 @@ export function GameBoard({
           />
         </div>
       )}
+      {/* Une clé par déplacement : un enchaînement rapide (touche maintenue)
+          remonte un nouvel overlay, donc une animation neuve, au lieu de
+          poursuivre une timeline périmée. */}
+      {movement && hasIntermediateCells && (
+        <div
+          className={`movement-fog ${movementDirectionClass}`}
+          key={`fog-${movement.from.x}-${movement.from.y}-${movement.target.x}-${movement.target.y}`}
+          style={
+            {
+              gridColumn:
+                movement.direction.x !== 0
+                  ? `${Math.min(movement.from.x, movement.target.x) + 2} / ${Math.max(movement.from.x, movement.target.x) + 1}`
+                  : `${movement.from.x + 1} / ${movement.from.x + 2}`,
+              gridRow:
+                movement.direction.y !== 0
+                  ? `${Math.min(movement.from.y, movement.target.y) + 2} / ${Math.max(movement.from.y, movement.target.y) + 1}`
+                  : `${movement.from.y + 1} / ${movement.from.y + 2}`,
+              "--move-duration": `${moveDuration}ms`,
+              "--piece-color": hexToCss(
+                state.activeForm === "square"
+                  ? themes[themeName].square
+                  : themes[themeName].ball,
+              ),
+            } as CSSProperties
+          }
+        />
+      )}
       {movement && (
         <div
-          className={`piece movement-overlay piece-moving--active ${movementDirectionClass}`}
+          className={`piece movement-overlay piece-moving--active is-moving ${movementDirectionClass}`}
+          key={`move-${movement.from.x}-${movement.from.y}-${movement.target.x}-${movement.target.y}`}
+          data-movement-from={`${movement.from.x},${movement.from.y}`}
+          data-movement-target={`${movement.target.x},${movement.target.y}`}
           style={
             {
               gridColumn: movement.from.x + 1,
@@ -226,7 +253,6 @@ export function GameBoard({
               "--move-x": moveX,
               "--move-y": moveY,
               "--move-duration": `${moveDuration}ms`,
-              "--trail-length": trailLength,
               "--piece-color": hexToCss(
                 state.activeForm === "ball"
                   ? themes[themeName].ball
