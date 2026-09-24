@@ -257,7 +257,6 @@
   font-weight: 600;
 }
 
-
 /* Shared UI system: keep menu-specific layout while using the same visual tokens. */
 .title {
   font-family: var(--font-mono);

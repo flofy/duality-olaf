@@ -92,7 +92,6 @@
   }
 }
 
-
 /* Shared UI system: update prompt uses the same control language as the app. */
 .pwa-update-banner {
   border-color: var(--border-subtle);

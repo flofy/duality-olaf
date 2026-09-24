@@ -457,11 +457,13 @@
   }
 }
 
-
 /* Shared UI system: preserve the expressive overlay treatment while aligning its geometry. */
 .modal {
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg), inset 0 0 0 1px #fff1, inset 0 -10px 0 #0003;
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 0 0 1px #fff1,
+    inset 0 -10px 0 #0003;
 }
 
 .modal-actions {
