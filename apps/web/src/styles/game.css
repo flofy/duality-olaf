@@ -29,9 +29,12 @@
      ratio du niveau (les colonnes/lignes viennent du niveau via --cols/--rows).
      Sélecteur .game .board : nécessaire pour l'emporter sur svg-styles.css
      (importé après, mêmes propriétés en width/height 100%). */
+  /* La cellule suit la taille réelle des tracks du plateau. En mode carré,
+     les tracks valent --tile ; en mode « plein », les règles plus bas les
+     remplacent par les fractions de la grille. */
   --tile: min(72px, calc(100cqw / var(--cols)), calc(100cqh / var(--rows)));
-  --cell-width: calc(100% / var(--cols));
-  --cell-height: calc(100% / var(--rows));
+  --cell-width: var(--tile);
+  --cell-height: var(--tile);
   background: var(--board);
   box-shadow: 0 12px 35px #0008;
   border-radius: 3px;
@@ -41,6 +44,7 @@
 }
 
 .game .board {
+  position: relative;
   width: calc(var(--tile) * var(--cols));
   height: calc(var(--tile) * var(--rows));
   grid-template-columns: repeat(var(--cols), var(--tile));
@@ -54,6 +58,8 @@ html[data-board-display="fill"] .game .board {
   height: 100%;
   grid-template-columns: repeat(var(--cols), 1fr);
   grid-template-rows: repeat(var(--rows), 1fr);
+  --cell-width: calc(100cqw / var(--cols));
+  --cell-height: calc(100cqh / var(--rows));
 }
 
 .wall {
@@ -220,6 +226,22 @@ html[data-board-display="fill"] .game .board {
   .piece.moving {
     animation: none;
   }
+}
+
+.hud-progress {
+  width: min(100%, 280px);
+  height: 6px;
+  margin: 0 0 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ffffff22;
+}
+
+.hud-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--star));
+  transition: width 220ms ease;
 }
 
 .hud {

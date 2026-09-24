@@ -75,7 +75,6 @@ export function OverlayIllustration({
       <span className="illustration-spark illustration-spark--two">✦</span>
       <span className="illustration-star illustration-star--one">★</span>
       <span className="illustration-star illustration-star--two">★</span>
-      <span className="illustration-burst" />
       <BallCharacter
         size={82}
         expression="happy"

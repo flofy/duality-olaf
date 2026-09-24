@@ -1,110 +1,96 @@
-/* Movement feedback: smooth continuous travel with a restrained directional streak. */
+/* Le calque de voyage va de la case `from` à la case `target` fournie par le
+   runner. Le halo est sur ce même calque : il suit donc réellement le sprite
+   pendant tout le trajet, au lieu de rester sur la case de départ. */
 @keyframes pieceMove {
   from {
-    transform: translate3d(var(--move-x), var(--move-y), 0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(var(--move-x), var(--move-y), 0);
   }
 }
 
+.piece {
+  position: relative;
+  overflow: visible;
+}
+
 .piece-moving--active {
-  animation: pieceMove var(--move-duration, 320ms) linear;
   transform-origin: center center;
   will-change: transform;
   z-index: 5;
 }
 
-.piece-moving--active::after {
-  content: "";
-  position: absolute;
+/* Inspiré de la référence HTML : plusieurs petites brumes sont déposées sur
+   tout le trajet, puis chacune s'éteint après le passage du personnage. */
+.game .board {
+  position: relative;
+}
+
+/* La logique reste dans la grille ; la trainée visualise la position pixel
+   réelle déposée par requestAnimationFrame. */
+.movement-trail-layer {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 10;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
   pointer-events: none;
-  z-index: 0;
-  border-radius: 999px;
-  opacity: 0;
-  animation: pieceTrailPulse var(--move-duration, 320ms) linear forwards;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
-    var(--trail-color) 72%,
+  overflow: hidden;
+}
+
+.movement-trail-particle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  pointer-events: none;
+  display: block;
+  transform: translate(-50%, -50%) scale(1);
+  background: radial-gradient(
+    circle,
+    #ffffff 0%,
+    color-mix(in srgb, var(--trail-color, #4aa3ff) 90%, white) 12%,
+    var(--trail-color, #4aa3ff) 38%,
+    color-mix(in srgb, var(--trail-color, #4aa3ff) 76%, transparent) 70%,
     transparent 100%
   );
-  filter: blur(1.5px);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--trail-color) 40%, transparent);
+  filter: blur(2px);
+  box-shadow: 0 0 10px 3px var(--trail-color, #4aa3ff);
+  opacity: 1;
+  transition:
+    opacity 0.46s ease-out,
+    transform 0.46s ease-out;
+  will-change: opacity, transform;
 }
 
-.piece-moving--right {
-  --trail-color: var(--piece-color, var(--ball));
+.piece-moving--active {
+  z-index: 5;
 }
 
-.piece-moving--right::after {
-  width: var(--trail-length, 100%);
-  height: 30%;
-  right: 92%;
-  top: 35%;
+.piece-moving--active .character {
+  position: relative;
+  z-index: 1;
 }
 
-.piece-moving--left {
-  --trail-color: var(--piece-color, var(--ball));
-}
-
-.piece-moving--left::after {
-  width: var(--trail-length, 100%);
-  height: 30%;
-  left: 92%;
-  top: 35%;
-  background: linear-gradient(
-    270deg,
-    transparent 0%,
-    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
-    var(--trail-color) 72%,
-    transparent 100%
-  );
-}
-
-.piece-moving--down,
-.piece-moving--up {
-  --trail-color: var(--piece-color, var(--ball));
-}
-
-.piece-moving--down::after {
-  width: 30%;
-  height: var(--trail-length, 100%);
-  left: 35%;
-  bottom: 92%;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
-    var(--trail-color) 72%,
-    transparent 100%
-  );
-}
-
-.piece-moving--up::after {
-  width: 30%;
-  height: var(--trail-length, 100%);
-  left: 35%;
-  top: 92%;
-  background: linear-gradient(
-    0deg,
-    transparent 0%,
-    color-mix(in srgb, var(--trail-color) 24%, transparent) 25%,
-    var(--trail-color) 72%,
-    transparent 100%
-  );
-}
-
-@keyframes pieceTrailPulse {
+@keyframes movementTrailParticle {
   0% {
-    opacity: 0;
+    opacity: 0.9;
+    transform: scale(0.8);
   }
-  18% {
-    opacity: 0.78;
+  10% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+  72% {
+    opacity: 0.5;
   }
   100% {
     opacity: 0;
+    transform: scale(0.6);
   }
 }
 
@@ -131,11 +117,15 @@
   transform-box: fill-box;
   transform-origin: top center;
 }
+/* Le cycle de jambe se cale sur le trajet : deux foulées par déplacement,
+   quelle que soit la durée (sinon il est tronqué sur les trajets courts). */
 .piece-moving--active.is-moving .ball-character-leg-left {
-  animation: ballLegLeft 0.28s ease-in-out 2;
+  animation: ballLegLeft
+    calc(var(--move-duration, 320ms) * var(--animation-scale) / 2) ease-in-out 2;
 }
 .piece-moving--active.is-moving .ball-character-leg-right {
-  animation: ballLegRight 0.28s ease-in-out 2;
+  animation: ballLegRight
+    calc(var(--move-duration, 320ms) * var(--animation-scale) / 2) ease-in-out 2;
 }
 
 /* Star: breathe, never spin. */
@@ -151,7 +141,8 @@
   }
 }
 .sparkle {
-  animation: starBreathe 1.8s ease-in-out infinite;
+  animation: starBreathe calc(1.8s * var(--animation-scale)) ease-in-out
+    infinite;
   transform-origin: center;
 }
 

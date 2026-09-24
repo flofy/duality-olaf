@@ -110,11 +110,21 @@ function tone(
   oscillator.stop(start + duration + 0.02);
 }
 
+type NoiseShape = {
+  /** Type de filtre appliqué au bruit (défaut : `highpass`). */
+  filter?: BiquadFilterType;
+  /** Fréquence du filtre au démarrage (défaut : 900 Hz). */
+  frequency?: number;
+  /** Fréquence d'arrivée du filtre : donne un souffle ou un clic descendant. */
+  sweepTo?: number;
+};
+
 function noise(
   duration: number,
   volume = 0.06,
   delay = 0,
   destination: AudioNode | null = null,
+  shape: NoiseShape = {},
 ) {
   if (!isEnabled() || !context || !masterGain) return;
 
@@ -133,8 +143,14 @@ function noise(
   const gain = context.createGain();
   const start = context.currentTime + delay;
 
-  filter.type = "highpass";
-  filter.frequency.value = 900;
+  filter.type = shape.filter ?? "highpass";
+  filter.frequency.setValueAtTime(shape.frequency ?? 900, start);
+  if (shape.sweepTo !== undefined) {
+    filter.frequency.exponentialRampToValueAtTime(
+      Math.max(40, shape.sweepTo),
+      start + duration,
+    );
+  }
   gain.gain.setValueAtTime(volume, start);
   gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
 
@@ -145,7 +161,43 @@ function noise(
   source.start(start);
 }
 
-type SoundEffect =
+/**
+ * Note glissée : la hauteur part de `fromFrequency` et rejoint `toFrequency`.
+ * C'est la brique des « zap », « warp » et chutes d'impact.
+ */
+function glide(
+  fromFrequency: number,
+  toFrequency: number,
+  duration: number,
+  type: OscillatorType = "sine",
+  volume = 0.1,
+  delay = 0,
+  destination: AudioNode | null = null,
+) {
+  if (!isEnabled() || !context || !masterGain) return;
+
+  const start = context.currentTime + delay;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  const attack = Math.min(0.02, duration * 0.3);
+
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(Math.max(1, fromFrequency), start);
+  oscillator.frequency.exponentialRampToValueAtTime(
+    Math.max(1, toFrequency),
+    start + duration,
+  );
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(volume, start + attack);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+  oscillator.connect(gain);
+  gain.connect(destination ?? masterGain);
+  oscillator.start(start);
+  oscillator.stop(start + duration + 0.02);
+}
+
+export type SoundEffect =
   | "move"
   | "wall"
   | "switch"
@@ -155,6 +207,33 @@ type SoundEffect =
   | "complete"
   | "reset"
   | "burn";
+
+/**
+ * Effets exposés à l'oreille dans le menu (AUDIO › TESTS) : c'est le seul moyen
+ * de valider un timbre sans jouer la situation qui le déclenche.
+ */
+export const soundEffectPreviews: readonly {
+  effect: SoundEffect;
+  label: string;
+}[] = [
+  { effect: "move", label: "PAS" },
+  { effect: "wall", label: "MUR" },
+  { effect: "switch", label: "FORME" },
+  { effect: "collect", label: "ÉTOILE" },
+  { effect: "door", label: "PORTE" },
+  { effect: "teleport", label: "WARP" },
+  { effect: "complete", label: "VICTOIRE" },
+  { effect: "reset", label: "RESET" },
+  { effect: "burn", label: "FEU" },
+];
+
+/** Un accord de la nappe tient une demi-mesure, soit 4 croches. */
+const CHORD_STEPS = 4;
+
+/** Lecture cyclique : chaque couche peut avoir sa propre longueur de boucle. */
+function stepAt<T>(steps: readonly T[], index: number): T {
+  return steps[index % steps.length]!;
+}
 
 export async function startAmbient(
   levelId?: string,
@@ -176,34 +255,71 @@ export async function startAmbient(
   const track = getAmbientTrack(ambientLevelId ?? undefined, ambientSkin);
   let index = 0;
   const stepMs = 60_000 / track.bpm / 2;
+  const stepSeconds = stepMs / 1000;
 
   const playNote = () => {
     if (!isEnabled() || !isAmbientEnabled() || ambientMuted) return;
 
-    const slot = index % 8;
-    const melody = track.melody[slot]!;
-    const bass = track.bass[slot]!;
-    const arp = track.arp[slot]!;
-    const drum = track.drums[slot];
+    // Accent léger sur les temps : la boucle respire au lieu de ronronner.
+    const accent = index % CHORD_STEPS === 0 ? 1.18 : 1;
 
-    // Lead: bright arcade square wave.
-    tone(melody, (stepMs / 1000) * 0.82, "square", 0.045, 0, ambientGain);
-
-    // Bass: slower triangle layer gives the loop some weight.
-    if (slot % 2 === 0) {
-      tone(bass, (stepMs / 1000) * 1.7, "triangle", 0.045, 0, ambientGain);
+    // Lead : onde carrée arcade, une croche par pas (les silences phrasent).
+    const melody = stepAt(track.melody, index);
+    if (melody !== null) {
+      tone(
+        melody,
+        stepSeconds * 0.85,
+        "square",
+        0.046 * accent,
+        0,
+        ambientGain,
+      );
     }
 
-    // Fast arpeggio: the main shoot-'em-up flavour.
-    tone(arp, (stepMs / 1000) * 0.42, "square", 0.018, 0, ambientGain);
+    // Basse : triangle tenu plus longtemps que le pas, pour lier les notes.
+    const bass = stepAt(track.bass, index);
+    if (bass !== null) {
+      tone(bass, stepSeconds * 1.7, "triangle", 0.05 * accent, 0, ambientGain);
+    }
 
-    // Minimal chip percussion keeps the loop moving without becoming a drum track.
+    // Arpège aigu : la brillance « chip », volontairement discrète.
+    const arp = stepAt(track.arp, index);
+    if (arp !== null) {
+      tone(arp, stepSeconds * 0.4, "square", 0.012, 0, ambientGain);
+    }
+
+    // Nappe : la triade de l'accord courant, tenue sur la demi-mesure. C'est
+    // elle qui rend l'harmonie lisible sous la mélodie.
+    if (index % CHORD_STEPS === 0) {
+      const chord = stepAt(track.chords, index / CHORD_STEPS);
+      for (const note of chord) {
+        tone(
+          note,
+          stepSeconds * CHORD_STEPS * 1.08,
+          "triangle",
+          0.016,
+          0,
+          ambientGain,
+        );
+      }
+    }
+
+    // Percussion minimale : grosse caisse tombante, caisse claire et charley
+    // en bruit filtré (plus de « clic » sec).
+    const drum = stepAt(track.drums, index);
     if (drum === "kick") {
-      tone(bass / 2, 0.09, "sine", 0.028, 0, ambientGain);
+      glide(150, 48, 0.11, "sine", 0.05, 0, ambientGain);
     } else if (drum === "snare") {
-      noise(0.065, 0.018, 0, ambientGain);
+      noise(0.07, 0.02, 0, ambientGain, {
+        filter: "bandpass",
+        frequency: 1900,
+      });
+      tone(190, 0.05, "triangle", 0.012, 0, ambientGain);
     } else if (drum === "hat") {
-      noise(0.025, 0.008, 0, ambientGain);
+      noise(0.02, 0.006, 0, ambientGain, {
+        filter: "highpass",
+        frequency: 6500,
+      });
     }
 
     index += 1;
@@ -220,41 +336,81 @@ export async function playSound(effect: SoundEffect) {
 
   switch (effect) {
     case "move":
-      tone(150, 0.055, "sine", 0.035);
+      // Pas feutré : très court et discret, il est joué à chaque coup.
+      glide(360, 210, 0.09, "triangle", 0.05);
+      noise(0.03, 0.012, 0, null, { filter: "bandpass", frequency: 1800 });
       break;
     case "wall":
-      tone(85, 0.09, "triangle", 0.1);
-      noise(0.055, 0.035);
+      // Impact sourd, sans musicalité : la forme bute sur un mur.
+      glide(150, 82, 0.16, "triangle", 0.085);
+      tone(96, 0.14, "sine", 0.07, 0.01);
+      noise(0.09, 0.03, 0, null, {
+        filter: "lowpass",
+        frequency: 700,
+        sweepTo: 280,
+      });
       break;
     case "switch":
-      tone(440, 0.08, "square", 0.055);
-      tone(659.25, 0.12, "sine", 0.045, 0.055);
+      // Zap montant : on change de forme, la hauteur monte avec la bascule.
+      glide(392, 880, 0.12, "square", 0.05);
+      tone(659.25, 0.16, "sine", 0.04, 0.05);
+      tone(196, 0.09, "triangle", 0.05, 0.09);
       break;
     case "collect":
-      tone(784, 0.09, "sine", 0.06);
-      tone(1174.66, 0.16, "sine", 0.045, 0.06);
+      // Arpège majeur + étincelle : la récompense principale du jeu.
+      tone(783.99, 0.08, "triangle", 0.06);
+      tone(987.77, 0.08, "triangle", 0.055, 0.045);
+      tone(1174.66, 0.16, "triangle", 0.055, 0.09);
+      tone(1567.98, 0.1, "sine", 0.03, 0.09);
+      noise(0.05, 0.014, 0.08, null, { filter: "bandpass", frequency: 4200 });
       break;
     case "door":
-      tone(196, 0.12, "triangle", 0.06);
-      tone(293.66, 0.16, "triangle", 0.05, 0.08);
+      // Mécanique : cliquetis grave puis quinte tenue (l'ouverture).
+      noise(0.07, 0.035, 0, null, {
+        filter: "lowpass",
+        frequency: 900,
+        sweepTo: 380,
+      });
+      tone(196, 0.18, "triangle", 0.055, 0.03);
+      tone(293.66, 0.22, "sine", 0.05, 0.05);
       break;
     case "teleport":
-      tone(330, 0.12, "sine", 0.05);
-      tone(660, 0.18, "sine", 0.045, 0.06);
+      // Warp : on est aspiré vers le haut, puis on redescend à l'arrivée.
+      glide(1200, 220, 0.22, "sine", 0.06);
+      glide(300, 1400, 0.24, "triangle", 0.045, 0.06);
+      noise(0.2, 0.02, 0.02, null, {
+        filter: "bandpass",
+        frequency: 600,
+        sweepTo: 3200,
+      });
       break;
     case "complete":
-      tone(523.25, 0.13, "triangle", 0.07);
-      tone(659.25, 0.13, "triangle", 0.07, 0.09);
-      tone(783.99, 0.22, "triangle", 0.08, 0.18);
+      // Petite fanfare : arpège montant puis accord final tenu.
+      tone(523.25, 0.12, "triangle", 0.07);
+      tone(659.25, 0.12, "triangle", 0.07, 0.08);
+      tone(783.99, 0.12, "triangle", 0.07, 0.16);
+      tone(1046.5, 0.3, "triangle", 0.075, 0.24);
+      tone(659.25, 0.3, "sine", 0.03, 0.24);
+      noise(0.16, 0.016, 0.24, null, {
+        filter: "bandpass",
+        frequency: 5200,
+        sweepTo: 3000,
+      });
       break;
     case "reset":
-      tone(392, 0.08, "sine", 0.035);
-      tone(261.63, 0.1, "sine", 0.03, 0.05);
+      // Deux notes descendantes : on repart, sans punir le joueur.
+      glide(520, 392, 0.1, "sine", 0.045);
+      tone(261.63, 0.14, "sine", 0.035, 0.07);
       break;
     case "burn":
-      tone(180, 0.18, "sawtooth", 0.06);
-      tone(110, 0.28, "triangle", 0.07, 0.08);
-      noise(0.24, 0.045);
+      // Disparition : souffle grave qui s'effondre dans les enfers.
+      glide(260, 58, 0.42, "sawtooth", 0.06);
+      tone(110, 0.3, "triangle", 0.06, 0.06);
+      noise(0.34, 0.045, 0, null, {
+        filter: "lowpass",
+        frequency: 1600,
+        sweepTo: 220,
+      });
       break;
   }
 }

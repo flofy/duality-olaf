@@ -45,7 +45,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .character,
-  .piece-moving {
+  .piece-moving--active {
     animation: none !important;
   }
 }

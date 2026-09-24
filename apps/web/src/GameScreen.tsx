@@ -107,6 +107,7 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
         />
       )}
       <CompletionOverlay
+        worldId={world.id}
         worldIndex={worldIndex}
         worldLength={world.levels.length}
         hasNextWorld={Boolean(nextWorld)}

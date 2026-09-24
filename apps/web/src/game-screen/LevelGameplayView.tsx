@@ -1,4 +1,6 @@
 import type { Level } from "@duality/level-format";
+import { solveLevel } from "@duality/game";
+import { useMemo } from "react";
 import { GameBoard } from "../GameBoard";
 import { Button } from "../components/Button";
 import { ResetIcon as Reset } from "../components/Icons";
@@ -34,6 +36,10 @@ export function LevelGameplayView({
   onReset: () => void;
 }) {
   const { onPointerDown, onPointerUp } = useSwipeControls(move);
+  const optimalMoves = useMemo(() => {
+    const solution = solveLevel(level);
+    return solution.solvable ? solution.moves : null;
+  }, [level]);
 
   return (
     <>
@@ -55,6 +61,7 @@ export function LevelGameplayView({
         activeForm={state.activeForm}
         starsRemaining={state.stars.length}
         moves={state.moves}
+        optimalMoves={optimalMoves}
       />
       <GameControls
         hasSquare={Boolean(level.square)}

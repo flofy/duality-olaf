@@ -57,21 +57,25 @@ test("smoke: navigate from intro to level 1 and complete it", async ({
     /félicitations|terminé|réussi/i,
   );
 
-  // La progression est enregistrée : le niveau apparaît comme terminé (✓) en revenant.
+  // La progression est enregistrée : le niveau apparaît comme terminé (étoiles)
+  // en revenant.
   await page.keyboard.press("Escape");
   await expect(page).toHaveURL(/\/world\/1$/);
-  await expect(page.locator(".level-button").first()).toHaveText("✓");
+  const level1 = page.locator(".level-button").first();
+  await expect(level1).toContainText("01");
+  await expect(level1.locator(".level-stars")).toBeVisible();
 });
 
-test("level-lab: le catalogue /dev/levels scrolle sur desktop", async ({
-  page,
-}) => {
+test("level-lab: le catalogue /dev/levels scrolle", async ({ page }) => {
   // Régression desktop : .app est en overflow:hidden + height:100dvh et .shell
   // en max-height:100% sans overflow → le contenu long du catalogue était
   // clippé, sans aucun scroll possible. Le correctif (layout.css) ajoute
   // overflow-y:auto sur .shell pour les routes /dev/*. On vérifie ici qu'un
   // scroll vertical existe vraiment (scrollHeight > clientHeight) et que le
   // scrollTop bouge.
+  // Viewport court et explicite : l'overflow doit être garanti quel que soit le
+  // profil Playwright (desktop 1280x720 ou mobile Pixel 7, bien plus haut).
+  await page.setViewportSize({ width: 900, height: 420 });
   await page.goto("/dev/levels");
   const shell = page.locator(".shell");
   await expect(shell).toBeVisible();

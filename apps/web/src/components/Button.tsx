@@ -10,6 +10,7 @@ type ButtonProps = {
   variant?: "primary" | "secondary" | "danger";
   "aria-label"?: string;
   children?: ReactNode;
+  ref?: React.Ref<HTMLButtonElement>;
 };
 
 const buttonVariants = {
@@ -45,11 +46,13 @@ export const Button = ({
   variant = "primary",
   "aria-label": ariaLabel,
   children,
+  ref,
 }: ButtonProps) => {
   const { bg, text, hoverBg, disabledBg, disabledText } =
     buttonVariants[variant];
   return (
     <button
+      ref={ref}
       className={`modern-button ${className}`}
       onClick={onClick}
       disabled={disabled}
