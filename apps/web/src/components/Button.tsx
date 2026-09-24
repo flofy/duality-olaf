@@ -117,18 +117,21 @@ type DPadButtonProps = {
   onClick: MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   className?: string;
+  "aria-label"?: string;
 };
 export const DPadButton = ({
   icon,
   onClick,
   disabled = false,
   className = "",
+  "aria-label": ariaLabel,
 }: DPadButtonProps) => {
   return (
     <button
       className={`dpad-button ${className}`}
       onClick={onClick}
       disabled={disabled}
+      aria-label={ariaLabel}
       style={{
         display: "flex",
         alignItems: "center",
