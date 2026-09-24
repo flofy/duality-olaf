@@ -30,22 +30,28 @@ export function GameBoard({
   movement,
   children,
 }: GameBoardProps) {
-  const movementDirectionClass = movement
-    ? `piece-moving--${movement.direction.x > 0 ? "right" : movement.direction.x < 0 ? "left" : movement.direction.y > 0 ? "down" : "up"}`
-    : "";
+  const isTeleporting = Boolean(movement?.teleport);
+  const movementDirectionClass =
+    movement && !isTeleporting
+      ? `piece-moving--${movement.direction.x > 0 ? "right" : movement.direction.x < 0 ? "left" : movement.direction.y > 0 ? "down" : "up"}`
+      : "";
   const activePieceClass = movement
-    ? `piece-moving--active is-moving ${movementDirectionClass}`
+    ? isTeleporting
+      ? "teleporting-piece"
+      : `piece-moving--active is-moving ${movementDirectionClass}`
     : "";
   const movementDistance = movement?.distance ?? 0;
   const boardRef = useRef<HTMLDivElement>(null);
   const movingPieceRef = useRef<HTMLDivElement>(null);
   const trailLayerRef = useRef<HTMLDivElement>(null);
-  const moveX = movement
-    ? `calc(var(--cell-width) * ${movement.target.x - movement.from.x})`
-    : "0px";
-  const moveY = movement
-    ? `calc(var(--cell-height) * ${movement.target.y - movement.from.y})`
-    : "0px";
+  const moveX =
+    movement && !isTeleporting
+      ? `calc(var(--cell-width) * ${movement.target.x - movement.from.x})`
+      : "0px";
+  const moveY =
+    movement && !isTeleporting
+      ? `calc(var(--cell-height) * ${movement.target.y - movement.from.y})`
+      : "0px";
   // Keep travel speed consistent: long moves take proportionally longer instead of
   // compressing several cells into the same short animation. The duration is
   // shared with the movement timer so the piece is revealed exactly when the
@@ -61,7 +67,7 @@ export function GameBoard({
     const board = boardRef.current;
     const piece = movingPieceRef.current;
     const layer = trailLayerRef.current;
-    if (!movement || !board || !piece || !layer) return;
+    if (!movement || isTeleporting || !board || !piece || !layer) return;
 
     const boardRect = board.getBoundingClientRect();
     const cellWidth = boardRect.width / level.width;
@@ -114,7 +120,7 @@ export function GameBoard({
       cancelAnimationFrame(frame);
       piece.style.transform = "";
     };
-  }, [activeColor, level.height, level.width, movement]);
+  }, [activeColor, isTeleporting, level.height, level.width, movement]);
 
   return (
     <div
@@ -211,6 +217,34 @@ export function GameBoard({
           />
         </div>
       ))}
+      {movement?.teleport && (
+        <>
+          <div className="teleport-effect teleport-departure" style={{
+            gridColumn: movement.teleport.from.x + 1,
+            gridRow: movement.teleport.from.y + 1,
+          }}>
+            {movement.teleport.form === "ball" ? (
+              <BallCharacter size={36} color={hexToCss(themes[themeName].ball)}
+                expression="neutral" className="character character-ball" />
+            ) : (
+              <SquareCharacter size={36} color={hexToCss(themes[themeName].square)}
+                expression="neutral" className="character character-square" />
+            )}
+          </div>
+          <div className="teleport-effect teleport-arrival" style={{
+            gridColumn: movement.teleport.to.x + 1,
+            gridRow: movement.teleport.to.y + 1,
+          }}>
+            {movement.teleport.form === "ball" ? (
+              <BallCharacter size={36} color={hexToCss(themes[themeName].ball)}
+                expression="surprised" className="character character-ball" />
+            ) : (
+              <SquareCharacter size={36} color={hexToCss(themes[themeName].square)}
+                expression="surprised" className="character character-square" />
+            )}
+          </div>
+        </>
+      )}
       {state.stars.map((star) => (
         <div
           className="star-container"

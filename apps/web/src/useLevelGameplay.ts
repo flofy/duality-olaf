@@ -20,6 +20,12 @@ export type GameplayDirection = {
   y: -1 | 0 | 1;
 };
 
+export type TeleportFeedback = {
+  from: { x: number; y: number };
+  to: { x: number; y: number };
+  form: "ball" | "square";
+};
+
 export type MovementFeedback = {
   /** Position de la pièce avant le coup. */
   from: { x: number; y: number };
@@ -27,6 +33,7 @@ export type MovementFeedback = {
   target: { x: number; y: number };
   direction: GameplayDirection;
   distance: number;
+  teleport?: TeleportFeedback;
 } | null;
 
 const keyboardDirections: Record<string, GameplayDirection> = {
@@ -165,24 +172,41 @@ export function useLevelGameplay(
           Math.abs(activeAfter.y - activeBefore.y);
         const teleported = next.lastTeleport !== null;
 
-        // Animer le trajet seulement si la pièce avance réellement, sans
-        // téléportation ni mort. En « mouvement réduit », on ne pose aucun
-        // overlay : la pièce réelle (masquée pendant l'animation) resterait
-        // sinon invisible ou décalée d'une case.
+        const reducedMotion = prefersReducedMotion();
         const animating =
-          moved && !teleported && !next.gameOver && !prefersReducedMotion();
+          moved && !teleported && !next.gameOver && !reducedMotion;
 
-        setMovement(
-          animating
-            ? {
-                from: { ...activeBefore },
-                target: { ...activeAfter },
-                direction,
-                distance,
-              }
-            : null,
-        );
-        if (animating) pauseForAnimation(distance);
+        if (
+          teleported &&
+          next.lastTeleport &&
+          !next.gameOver &&
+          !reducedMotion
+        ) {
+          setMovement({
+            from: { ...activeBefore },
+            target: { ...activeAfter },
+            direction,
+            distance,
+            teleport: {
+              from: { ...next.lastTeleport.from },
+              to: { ...next.lastTeleport.to },
+              form: current.activeForm,
+            },
+          });
+          pauseForAnimation(440);
+        } else {
+          setMovement(
+            animating
+              ? {
+                  from: { ...activeBefore },
+                  target: { ...activeAfter },
+                  direction,
+                  distance,
+                }
+              : null,
+          );
+          if (animating) pauseForAnimation(distance);
+        }
 
         if (!moved) {
           void playSound("wall");
