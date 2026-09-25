@@ -53,6 +53,7 @@
       max(16px, env(safe-area-inset-left));
     backdrop-filter: none;
     overflow: auto;
+    overscroll-behavior: contain;
   }
 
   .controls {
@@ -80,11 +81,11 @@
   }
 
   .world-list {
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   .world-button {
-    padding: 10px;
+    padding: var(--space-3);
   }
 
   .controls {
