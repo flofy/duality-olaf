@@ -1,0 +1,258 @@
+.world-tutorial-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 370px);
+  gap: clamp(16px, 3vw, 32px);
+  padding: clamp(12px, 2.5vw, 26px);
+}
+
+.world-tutorial-board-column {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.world-tutorial-board-column .board-wrap {
+  flex: 1 1 auto;
+}
+
+/* Le tutoriel est une étape active : ses commandes restent toujours visibles,
+   même quand le mode global « automatique » masque les contrôles du jeu. */
+.world-tutorial .controls {
+  display: flex !important;
+}
+
+.world-tutorial .controls .dpad {
+  display: grid !important;
+}
+
+.world-tutorial .board-wrap {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+.world-tutorial-panel {
+  min-height: 0;
+  align-self: stretch;
+  padding: clamp(18px, 3vw, 28px);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: var(--radius-lg);
+  background: #0004;
+  box-shadow: inset 0 1px 0 #ffffff0d;
+}
+
+.world-tutorial-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.world-tutorial-panel-header .world-tutorial-eyebrow {
+  flex: 1 1 auto;
+  margin-top: 0;
+}
+
+.world-tutorial-reset {
+  flex: none;
+  width: 48px;
+  min-width: 48px !important;
+  height: 48px;
+  padding: 0 !important;
+}
+
+.world-tutorial-reset .svg-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.world-tutorial-eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font: 800 10px var(--font-mono);
+  letter-spacing: 0.12em;
+}
+
+.world-tutorial-panel h1 {
+  margin: 0;
+  color: var(--text);
+  font: 900 clamp(25px, 3vw, 36px) / 1.05 var(--font-display);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.world-tutorial-description {
+  margin: 14px 0 18px;
+  color: color-mix(in srgb, var(--text) 82%, var(--muted));
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.world-tutorial-command {
+  padding: 12px 14px 0;
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--muted);
+  font: 800 10px var(--font-mono);
+  letter-spacing: 0.08em;
+  overflow: hidden;
+}
+
+.world-tutorial-command-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 30px;
+}
+
+.world-tutorial-timer {
+  height: 5px;
+  margin: 8px -14px 0;
+  overflow: hidden;
+  background: #ffffff18;
+}
+
+.world-tutorial-timer-bar {
+  height: 100%;
+  background: var(--accent);
+  transition: width 80ms linear;
+}
+
+.world-tutorial-command kbd {
+  min-width: 48px;
+  padding: 6px 10px;
+  border: 1px solid #ffffff55;
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--background);
+  font: 900 18px var(--font-mono);
+  text-align: center;
+}
+
+.world-tutorial-stepper {
+  display: grid;
+  gap: 7px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.world-tutorial-stepper li {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  gap: 9px;
+  min-height: 34px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  color: var(--muted);
+  font: 700 11px var(--font-mono);
+}
+
+.world-tutorial-stepper li > span {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border: 1px solid #ffffff30;
+  border-radius: 50%;
+  font-size: 10px;
+}
+
+.world-tutorial-stepper li.is-active {
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.world-tutorial-stepper li.is-active > span {
+  border-color: var(--accent);
+  color: var(--background);
+  background: var(--accent);
+}
+
+.world-tutorial-stepper li.is-done {
+  color: color-mix(in srgb, var(--star) 72%, var(--text));
+}
+
+.world-tutorial-stepper li.is-done > span {
+  border-color: color-mix(in srgb, var(--star) 65%, transparent);
+}
+
+.world-tutorial-progress {
+  flex: none;
+  width: 100%;
+  height: 7px;
+  margin: 0 0 18px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ffffff22;
+}
+
+.world-tutorial-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--star));
+  transition: width 220ms ease;
+}
+
+@media (max-width: 900px) {
+  .world-tutorial-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 16px 16px;
+  }
+
+  .world-tutorial-panel {
+    order: -1;
+    flex: 0 0 auto;
+    padding: 15px;
+  }
+
+  .world-tutorial {
+    overflow-y: auto;
+  }
+
+  .world-tutorial .board-wrap {
+    min-height: 220px;
+    height: min(44dvh, 420px) !important;
+    flex: 0 0 auto;
+  }
+
+  .world-tutorial-board-column {
+    min-height: 0;
+    flex: 0 0 auto;
+  }
+
+  .world-tutorial-panel h1 {
+    font-size: 24px;
+  }
+
+  .world-tutorial-description {
+    margin: 9px 0 12px;
+    font-size: 12px;
+  }
+
+  .world-tutorial-stepper {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 12px;
+  }
+
+  .world-tutorial-stepper li {
+    grid-template-columns: 24px 1fr;
+    min-height: 28px;
+    padding: 3px;
+    font-size: 8px;
+  }
+
+  .world-tutorial-stepper li > span {
+    width: 22px;
+    height: 22px;
+  }
+}

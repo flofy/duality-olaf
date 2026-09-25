@@ -77,8 +77,8 @@ export const worlds: readonly WorldDefinition[] = [
   },
   {
     id: 4,
-    name: "Combinaisons",
-    subtitle: "Plusieurs étapes à prévoir",
+    name: "Téléporteur",
+    subtitle: "Relier deux points de la grille",
     status: "available",
     levels: world4,
   },

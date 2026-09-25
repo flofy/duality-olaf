@@ -7,7 +7,7 @@ import {
   getNextWorld,
   getLevelResult,
 } from "../progression";
-import { ArrowLeft, ArrowRight } from "./Icons";
+import { ArrowLeft, ArrowRight, Help as HelpIcon } from "./Icons";
 import { Button } from "./Button";
 
 export function WorldLevels() {
@@ -22,19 +22,39 @@ export function WorldLevels() {
 
   const completed = isWorldCompleted(world.id);
   const nextWorld = completed ? getNextWorld(world.id) : null;
-
+  const goToMenu = () => navigate("/menu");
   return (
     <section className="menu">
       <div className="topbar">
         <Button
           icon={<ArrowLeft size={18} />}
           label="MONDES"
-          onClick={() => navigate("/menu")}
+          onClick={goToMenu}
           variant="secondary"
         />
         <b>MONDE {world.id}</b>
       </div>
       <h2 className="subtitle">{world.name.toUpperCase()}</h2>
+      <Button
+        icon={<HelpIcon size={18} />}
+        label="REVOIR LE TUTORIEL"
+        onClick={() =>
+          navigate(`/world/${world.id}/level/${world.levels[0]!.id}?tutorial=1`)
+        }
+        variant="secondary"
+        className="world-tutorial-replay"
+      />
+      {world.id === 1 && isLevelCompleted(world.levels[3]!.id) && (
+        <Button
+          icon={<HelpIcon size={18} />}
+          label="REVOIR LE TUTORIEL FEU"
+          onClick={() =>
+            navigate(`/world/1/level/${world.levels[4]!.id}?tutorial=fire`)
+          }
+          variant="secondary"
+          className="world-tutorial-replay world-fire-tutorial-replay"
+        />
+      )}
       <div className="world-progress-summary">
         <span>
           {world.levels.filter((level) => isLevelCompleted(level.id)).length}/

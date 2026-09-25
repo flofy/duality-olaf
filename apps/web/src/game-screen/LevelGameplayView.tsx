@@ -2,8 +2,6 @@ import type { Level } from "@duality/level-format";
 import { solveLevel } from "@duality/game";
 import { useEffect, useMemo, useState } from "react";
 import { GameBoard } from "../GameBoard";
-import { Button } from "../components/Button";
-import { ResetIcon as Reset } from "../components/Icons";
 import { GameControls } from "./GameControls";
 import { GameHud } from "./GameHud";
 import { useSwipeControls } from "./useSwipeControls";
@@ -52,6 +50,14 @@ export function LevelGameplayView({
 
   return (
     <>
+      <GameHud
+        level={level}
+        activeForm={state.activeForm}
+        starsRemaining={state.stars.length}
+        moves={state.moves}
+        optimalMoves={optimalMoves}
+        onReset={onReset}
+      />
       <div
         className="board-wrap"
         onPointerDown={onPointerDown}
@@ -65,28 +71,12 @@ export function LevelGameplayView({
           movement={movement}
         />
       </div>
-      <GameHud
-        level={level}
-        activeForm={state.activeForm}
-        starsRemaining={state.stars.length}
-        moves={state.moves}
-        optimalMoves={optimalMoves}
-      />
       <GameControls
         hasSquare={Boolean(level.square)}
         activeForm={state.activeForm}
         onMove={move}
         onSwitch={switchForm}
       />
-      <div className="mobile-restart">
-        <Button
-          icon={<Reset size={18} />}
-          label="RECOMMENCER"
-          onClick={onReset}
-          variant="secondary"
-          className="restart-button"
-        />
-      </div>
     </>
   );
 }
