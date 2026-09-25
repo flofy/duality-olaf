@@ -27,10 +27,6 @@
   stroke: var(--teleporter, #9b59b6);
   fill: none;
 }
-.svg-icon--switch {
-  fill: var(--switch, #ffd447);
-}
-
 .svg-icon:hover {
   filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }

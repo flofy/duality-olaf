@@ -10,7 +10,7 @@ import type { MovementFeedback } from "./useLevelGameplay";
 export function switchGlyph(form: Switch["form"]): string {
   if (form === "ball") return "●";
   if (form === "square") return "■";
-  return "⌁";
+  return "●⇄■";
 }
 
 type GameBoardProps = {
@@ -88,8 +88,6 @@ export function GameBoard({
       particle.style.top = `${y}px`;
       particle.style.opacity = "1";
       particle.style.setProperty("--trail-color", activeColor);
-      particle.style.width = "34px";
-      particle.style.height = "34px";
       layer.append(particle);
       const fadeOutAt = window.setTimeout(() => {
         particle.style.opacity = "0";
@@ -197,8 +195,9 @@ export function GameBoard({
           key={item.id}
         >
           <SwitchIcon
-            size={20}
-            color={hexToCss(themes[themeName].star)}
+            size={24}
+            ballColor={hexToCss(themes[themeName].ball)}
+            squareColor={hexToCss(themes[themeName].square)}
             form={item.form}
             className="svg-icon svg-icon--switch"
           />

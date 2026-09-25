@@ -11,7 +11,14 @@ import {
 } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { worlds } from "./levels/campaign";
-import { isLevelCompleted, isWorldUnlocked } from "./progression";
+import {
+  hasSeenFireTutorial,
+  hasSeenWorldTutorial,
+  isLevelCompleted,
+  isWorldUnlocked,
+  markFireTutorialSeen,
+  markWorldTutorialSeen,
+} from "./progression";
 import { getTheme, hexToCss } from "./theme";
 import { LevelCatalogue, LevelPlayground } from "./LevelLab";
 import { LevelEditor } from "./LevelEditor";
@@ -22,6 +29,7 @@ import { BurgerMenu } from "./BurgerMenu";
 import { Intro } from "./components/Intro";
 import { Menu } from "./components/Menu";
 import { WorldLevels } from "./components/WorldLevels";
+import { WorldTutorial } from "./components/WorldTutorial";
 import { Help } from "./components/Help";
 import { UpdateBanner } from "./components/UpdateBanner";
 
@@ -106,12 +114,25 @@ function AppLayout() {
 }
 
 function ProtectedLevel() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { worldId, levelId } = useParams();
   const world = worlds.find((item) => item.id === Number(worldId));
   const levelIndex =
     world?.levels.findIndex((level) => level.id === levelId) ?? -1;
+  const level = world?.levels[levelIndex];
+  const [showFireTutorial, setShowFireTutorial] = useState(
+    () => levelId === "world-1-level-05" && !hasSeenFireTutorial(),
+  );
 
-  if (!world || levelIndex < 0) return <Navigate to="/menu" replace />;
+  useEffect(() => {
+    setShowFireTutorial(
+      levelId === "world-1-level-05" && !hasSeenFireTutorial(),
+    );
+  }, [levelId]);
+
+  if (!world || levelIndex < 0 || !level)
+    return <Navigate to="/menu" replace />;
   // Les mondes sont séquentiels : pas d'accès direct à un monde verrouillé.
   if (world.status !== "available" || !isWorldUnlocked(world.id)) {
     return <Navigate to="/menu" replace />;
@@ -120,7 +141,44 @@ function ProtectedLevel() {
     return <Navigate to={`/world/${world.id}`} replace />;
   }
 
-  return <Game level={world.levels[levelIndex]} worldId={world.id} />;
+  const replayTutorial =
+    new URLSearchParams(location.search).get("tutorial") === "1";
+  const replayFireTutorial =
+    new URLSearchParams(location.search).get("tutorial") === "fire";
+  if (levelIndex === 0 && (replayTutorial || !hasSeenWorldTutorial(world.id))) {
+    return (
+      <WorldTutorial
+        level={level}
+        worldId={world.id}
+        levelIndex={levelIndex}
+        tutorial="world"
+        onBack={() => navigate(`/world/${world.id}`)}
+        onFinish={() => {
+          markWorldTutorialSeen(world.id);
+          navigate(`/world/${world.id}/level/${level.id}`, { replace: true });
+        }}
+      />
+    );
+  }
+
+  if (showFireTutorial || replayFireTutorial) {
+    return (
+      <WorldTutorial
+        level={level}
+        worldId={world.id}
+        levelIndex={levelIndex}
+        tutorial="fire"
+        onBack={() => navigate(`/world/${world.id}`)}
+        onFinish={() => {
+          markFireTutorialSeen();
+          setShowFireTutorial(false);
+          navigate(`/world/${world.id}/level/${level.id}`, { replace: true });
+        }}
+      />
+    );
+  }
+
+  return <Game level={level} worldId={world.id} />;
 }
 
 function DevGuard() {

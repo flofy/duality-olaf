@@ -44,8 +44,8 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 34px;
-  height: 34px;
+  width: calc(var(--cell-width) * 0.88);
+  height: calc(var(--cell-height) * 0.88);
   border-radius: 50%;
   pointer-events: none;
   display: block;
@@ -58,8 +58,9 @@
     color-mix(in srgb, var(--trail-color, #4aa3ff) 76%, transparent) 70%,
     transparent 100%
   );
-  filter: blur(2px);
-  box-shadow: 0 0 10px 3px var(--trail-color, #4aa3ff);
+  filter: blur(calc(var(--cell-width) * 0.06));
+  box-shadow: 0 0 calc(var(--cell-width) * 0.28) calc(var(--cell-width) * 0.08)
+    var(--trail-color, #4aa3ff);
   opacity: 1;
   transition:
     opacity 0.46s ease-out,

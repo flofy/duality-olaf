@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 
 export type IconProps = { size?: number; color?: string; className?: string };
 
@@ -132,11 +132,29 @@ export const Teleporter = ({
 );
 export const SwitchIcon = ({
   size = 24,
-  color = "#ffd447",
   form = "either",
+  ballColor = "var(--ball, #4aa3ff)",
+  squareColor = "var(--square, #ffd447)",
   className,
-}: IconProps & { form?: "ball" | "square" | "either" }) => {
-  const glyph = form === "ball" ? "●" : form === "square" ? "■" : "⌁";
+}: Omit<IconProps, "color"> & {
+  form?: "ball" | "square" | "either";
+  ballColor?: string;
+  squareColor?: string;
+}) => {
+  const gradientId = `switch-both-gradient-${useId().replaceAll(":", "")}`;
+  const label =
+    form === "ball"
+      ? "Interrupteur actionnable par la boule"
+      : form === "square"
+        ? "Interrupteur actionnable par le carré"
+        : "Interrupteur actionnable par les deux formes";
+  const frameColor =
+    form === "ball"
+      ? ballColor
+      : form === "square"
+        ? squareColor
+        : `url(#${gradientId})`;
+
   return (
     <svg
       width={size}
@@ -145,20 +163,78 @@ export const SwitchIcon = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      role="img"
+      aria-label={label}
     >
+      <title>{label}</title>
+      <defs>
+        <linearGradient
+          id={gradientId}
+          x1="3"
+          y1="3"
+          x2="21"
+          y2="21"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor={ballColor} />
+          <stop offset="1" stopColor={squareColor} />
+        </linearGradient>
+      </defs>
       <rect
-        x="6"
-        y="6"
-        width="12"
-        height="12"
-        rx="2"
-        fill={color}
-        opacity={0.4}
+        x="2.5"
+        y="2.5"
+        width="19"
+        height="19"
+        rx="4"
+        fill="#071022"
+        stroke={frameColor}
+        strokeWidth="2"
       />
-      <circle cx="12" cy="12" r="3" fill={color} />
-      <text x="12" y="15" fontSize="10" textAnchor="middle" fill="white">
-        {glyph}
-      </text>
+      {form === "ball" && (
+        <>
+          <circle cx="12" cy="12" r="6" fill={ballColor} />
+          <circle cx="10" cy="10" r="1.8" fill="#fff" opacity=".5" />
+        </>
+      )}
+      {form === "square" && (
+        <>
+          <rect
+            x="6"
+            y="6"
+            width="12"
+            height="12"
+            rx="1.5"
+            fill={squareColor}
+          />
+          <path
+            d="M8 8h5"
+            stroke="#fff"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            opacity=".45"
+          />
+        </>
+      )}
+      {form === "either" && (
+        <>
+          <circle cx="7.5" cy="12" r="3.25" fill={ballColor} />
+          <rect
+            x="12.5"
+            y="8.75"
+            width="6.5"
+            height="6.5"
+            rx="1"
+            fill={squareColor}
+          />
+          <path
+            d="M9 12h5"
+            stroke="#fff"
+            strokeWidth="1.3"
+            strokeLinecap="round"
+            opacity=".9"
+          />
+        </>
+      )}
     </svg>
   );
 };
