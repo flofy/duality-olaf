@@ -86,7 +86,6 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
         worldId={world.id}
         worldIndex={worldIndex}
         onBack={() => navigate(`/world/${world.id}`)}
-        onReset={reset}
       />
       <LevelGameplayView
         level={level}
