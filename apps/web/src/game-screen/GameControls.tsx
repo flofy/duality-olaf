@@ -25,22 +25,22 @@ export function GameControls({
       <div className="dpad" role="group" aria-label="Contrôles directionnels">
         <DPadButton
           icon={<ArrowUp size={24} color="var(--text)" />}
-          aria-label="Haut"
+          aria-label="Déplacer en haut"
           onClick={() => onMove(gestureDirections.up)}
         />
         <DPadButton
           icon={<ArrowLeft size={24} color="var(--text)" />}
-          aria-label="Gauche"
+          aria-label="Déplacer à gauche"
           onClick={() => onMove(gestureDirections.left)}
         />
         <DPadButton
           icon={<ArrowDown size={24} color="var(--text)" />}
-          aria-label="Bas"
+          aria-label="Déplacer en bas"
           onClick={() => onMove(gestureDirections.down)}
         />
         <DPadButton
           icon={<ArrowRight size={24} color="var(--text)" />}
-          aria-label="Droite"
+          aria-label="Déplacer à droite"
           onClick={() => onMove(gestureDirections.right)}
         />
       </div>
@@ -58,6 +58,7 @@ export function GameControls({
             onSwitch();
           }}
           className={`switch-toggle switch-toggle-${activeForm}`}
+          aria-label="Changer de forme"
         />
       )}
     </div>

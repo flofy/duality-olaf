@@ -5,6 +5,13 @@
   margin-top: clamp(14px, 3vw, 22px);
 }
 
+.world-tutorial-replay {
+  display: flex !important;
+  margin: -12px auto 20px;
+  font-size: 12px !important;
+  padding: 9px 14px !important;
+}
+
 /* Bloc audio : simple contenu d'une section du menu. Le titre (« AUDIO &
    VIBRATIONS ») est celui de la section, porté par BurgerMenu. */
 .audio-setting-row {

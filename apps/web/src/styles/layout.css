@@ -8,6 +8,7 @@
 
 /* Route jeu : le shell prend toute la hauteur pour que .game (height: 100%)
    remplisse l'écran. */
+/* La progression reste dans le shell ; le jeu/tutorial occupent la hauteur disponible. */
 .shell:has(> .game) {
   height: 100%;
 }
