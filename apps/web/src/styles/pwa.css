@@ -85,8 +85,8 @@
   box-sizing: border-box;
   display: grid;
   grid-template-rows: minmax(0, 1fr);
-  gap: 12px;
-  padding: 0 0 max(1.5rem, env(safe-area-inset-bottom));
+  gap: var(--space-3);
+  padding: 0 0 max(var(--space-6), env(safe-area-inset-bottom));
   background: color-mix(in srgb, var(--background) 97%, black);
   visibility: hidden;
   opacity: 0;
@@ -125,7 +125,7 @@
 .menu-sections {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-5);
   width: min(var(--menu-w), 100%);
   margin: auto;
 }
@@ -133,7 +133,7 @@
 .menu-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
 }
 
@@ -141,9 +141,9 @@
 .menu-group-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
   margin: 0;
-  font: 700 11px monospace;
+  font: 700 11px var(--font-mono);
   letter-spacing: 2px;
   color: var(--muted);
   text-transform: uppercase;
@@ -159,30 +159,33 @@
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   width: 100%;
-  padding: 14px 16px;
-  border: 0;
-  border-radius: 12px;
-  background: #0003;
+  min-height: var(--control-md);
+  padding: 0 var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--surface-muted);
   color: var(--text);
-  font: 700 14px monospace;
+  font: 700 14px var(--font-mono);
   letter-spacing: 1px;
   cursor: pointer;
   text-align: left;
   transition:
-    background 0.15s ease,
-    transform 0.15s ease;
+    background var(--transition-standard),
+    border-color var(--transition-standard),
+    transform var(--transition-fast);
 }
 
 .menu-item:hover,
 .menu-item.active {
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  background: var(--surface-hover);
+  border-color: var(--border-subtle);
   transform: translateX(2px);
 }
 
 .menu-item:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -192,9 +195,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 20px;
-  width: 20px;
-  height: 20px;
+  flex: 0 0 var(--icon-md);
+  width: var(--icon-md);
+  height: var(--icon-md);
   font-size: 16px;
   line-height: 1;
 }
@@ -213,7 +216,7 @@
 .menu-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .dev-group .menu-item {
