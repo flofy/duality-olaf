@@ -1,42 +1,3 @@
-.title {
-  text-align: center;
-  font: 800 clamp(34px, 8vw, 58px)/1 monospace;
-  letter-spacing: 0.08em;
-  margin: 10px 0 16px;
-  text-shadow: 0 4px 20px #0008;
-}
-
-.subtitle {
-  text-align: center;
-  color: var(--accent);
-  font: 700 clamp(13px, 2.2vw, 15px) monospace;
-  margin-bottom: clamp(20px, 5vw, 34px);
-  letter-spacing: 0.08em;
-}
-
-.world-list {
-  display: grid;
-  gap: clamp(8px, 2vw, 14px);
-}
-
-.world-meta {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-.levels {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: clamp(7px, 2vw, 10px);
-}
-
-.level-button {
-  text-align: center;
-  font: 700 clamp(15px, 3vw, 18px) monospace;
-}
-
 /* Passage au monde suivant : apparaît sous la grille dès que le monde courant
    est terminé (cf. WorldLevels). */
 .world-next {
@@ -53,15 +14,6 @@
 
 /* Bloc audio : simple contenu d'une section du menu. Le titre (« AUDIO &
    VIBRATIONS ») est celui de la section, porté par BurgerMenu. */
-.audio-settings {
-  display: grid;
-  gap: 10px;
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  background: #0003;
-}
-
 .audio-setting-row {
   display: flex;
   align-items: center;
@@ -75,41 +27,6 @@
 
 .audio-toggle {
   min-width: 150px;
-}
-
-/* Boutons audio : même rendu que .menu-item (pwa.css) — sans bordure, pour
-   rester homogène avec le reste du burger menu. */
-.audio-toggle,
-.audio-test-button {
-  padding: 14px 16px;
-  border: 0;
-  border-radius: 12px;
-  background: #0003;
-  color: var(--text);
-  font: 700 14px monospace;
-  letter-spacing: 1px;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    background 0.15s ease,
-    transform 0.15s ease;
-}
-
-.audio-toggle:hover:not(:disabled),
-.audio-test-button:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  transform: translateX(2px);
-}
-
-.audio-toggle:focus-visible,
-.audio-test-button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.audio-toggle:active:not(:disabled),
-.audio-test-button:active:not(:disabled) {
-  transform: none;
 }
 
 .audio-volume {
@@ -195,15 +112,6 @@
   .audio-effect-tests {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
-
-.world-progress-summary {
-  display: flex;
-  justify-content: center;
-  gap: 18px;
-  margin: -16px 0 18px;
-  color: var(--muted);
-  font: 700 11px monospace;
 }
 
 .level-button {
