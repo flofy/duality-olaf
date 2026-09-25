@@ -20,35 +20,32 @@ export function Menu() {
       <h1 className="title">DUALITY</h1>
       <div className="subtitle">CHOISIS TON MONDE</div>
       <div className="world-list">
-        {worlds.map((world) => {
-          const done = world.levels.filter((level) =>
-            isLevelCompleted(level.id),
-          ).length;
-          // Un monde ne s'ouvre qu'une fois le précédent entièrement terminé.
-          const unlocked =
-            world.status === "available" && isWorldUnlocked(world.id);
-          const meta =
-            world.status !== "available"
-              ? `${world.subtitle} • BIENTÔT`
-              : !unlocked
-                ? `${world.subtitle} • 🔒 FINIS LE MONDE ${world.id - 1}`
-                : done === world.levels.length
-                  ? `${world.subtitle} • ✓ TERMINÉ`
-                  : `${world.subtitle} • ${done}/${world.levels.length}`;
-          return (
-            <div key={world.id} style={{ position: "relative" }}>
-              <Button
-                icon={<ArrowRight size={20} />}
-                label={`MONDE ${world.id} — ${world.name.toUpperCase()}`}
-                onClick={() => navigate(`/world/${world.id}`)}
-                disabled={!unlocked}
-                variant="primary"
-                className="world-button"
-              />
-              <div className="world-meta">{meta}</div>
-            </div>
-          );
-        })}
+        {worlds
+          .filter(
+            (world) =>
+              world.status === "available" && isWorldUnlocked(world.id),
+          )
+          .map((world) => {
+            const done = world.levels.filter((level) =>
+              isLevelCompleted(level.id),
+            ).length;
+            const meta =
+              done === world.levels.length
+                ? `${world.subtitle} • ✓ TERMINÉ`
+                : `${world.subtitle} • ${done}/${world.levels.length}`;
+            return (
+              <div key={world.id} style={{ position: "relative" }}>
+                <Button
+                  icon={<ArrowRight size={20} />}
+                  label={`MONDE ${world.id} — ${world.name.toUpperCase()}`}
+                  onClick={() => navigate(`/world/${world.id}`)}
+                  variant="primary"
+                  className="world-button"
+                />
+                <div className="world-meta">{meta}</div>
+              </div>
+            );
+          })}
       </div>
       <div className="campaign-progress">
         <div className="campaign-progress-header">
