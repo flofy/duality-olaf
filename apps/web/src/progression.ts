@@ -2,6 +2,8 @@ import type { WorldDefinition } from "@duality/level-format";
 import { worlds } from "./levels/campaign";
 
 const STORAGE_KEY = "duality.progress.v2";
+const FIRE_TUTORIAL_KEY = "duality.fire-tutorial.v2";
+const WORLD_TUTORIAL_KEY = "duality.world-tutorials.v1";
 
 export type LevelResult = {
   moves: number;
@@ -52,6 +54,55 @@ function readProgress(): Progress {
 
 function writeProgress(progress: Progress): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+}
+
+export function hasSeenFireTutorial(): boolean {
+  try {
+    return localStorage.getItem(FIRE_TUTORIAL_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+export function markFireTutorialSeen(): void {
+  try {
+    localStorage.setItem(FIRE_TUTORIAL_KEY, "true");
+  } catch {
+    // La sauvegarde est facultative : l'introduction reste rejouable dans ce cas.
+  }
+}
+export function hasSeenWorldTutorial(worldId: number): boolean {
+  try {
+    const parsed: unknown = JSON.parse(
+      localStorage.getItem(WORLD_TUTORIAL_KEY) ?? "[]",
+    );
+    return Array.isArray(parsed)
+      ? parsed
+          .filter((value): value is number => Number.isInteger(value))
+          .includes(worldId)
+      : false;
+  } catch {
+    return false;
+  }
+}
+
+export function markWorldTutorialSeen(worldId: number): void {
+  try {
+    const parsed: unknown = JSON.parse(
+      localStorage.getItem(WORLD_TUTORIAL_KEY) ?? "[]",
+    );
+    const seen = Array.isArray(parsed)
+      ? parsed.filter((value): value is number => Number.isInteger(value))
+      : [];
+    if (!seen.includes(worldId)) {
+      localStorage.setItem(
+        WORLD_TUTORIAL_KEY,
+        JSON.stringify([...seen, worldId]),
+      );
+    }
+  } catch {
+    // La sauvegarde est facultative : le tutoriel reste rejouable dans ce cas.
+  }
 }
 
 export function isLevelCompleted(levelId: string): boolean {

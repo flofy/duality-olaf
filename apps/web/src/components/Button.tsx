@@ -129,9 +129,9 @@ export const DPadButton = ({
   return (
     <button
       className={`dpad-button ${className}`}
+      aria-label={ariaLabel}
       onClick={onClick}
       disabled={disabled}
-      aria-label={ariaLabel}
       style={{
         display: "flex",
         alignItems: "center",
@@ -180,6 +180,7 @@ type CenterDPadButtonProps = {
   onPointerUp?: React.PointerEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   className?: string;
+  "aria-label"?: string;
 };
 export const CenterDPadButton = ({
   icon,
@@ -189,10 +190,12 @@ export const CenterDPadButton = ({
   className = "",
   onPointerDown,
   onPointerUp,
+  "aria-label": ariaLabel,
 }: CenterDPadButtonProps) => {
   return (
     <button
       className={`center-dpad-button ${className}`}
+      aria-label={ariaLabel}
       onClick={(event) => {
         // Pointer activation is handled directly on pointerup when supplied.
         // Keep click for keyboard/assistive activation without firing twice

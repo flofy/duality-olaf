@@ -12,6 +12,18 @@ export default defineConfig(({ mode }) => {
     define: {
       "import.meta.env.VITE_ENABLE_DEVTOOLS": JSON.stringify(devtoolsEnabled),
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            react: ["react", "react-dom", "react-router", "react-router/dom"],
+            game: ["@duality/game"],
+            "level-format": ["@duality/level-format"],
+            vendor: ["workbox-window"],
+          },
+        },
+      },
+    },
     plugins: [
       react(),
       VitePWA({

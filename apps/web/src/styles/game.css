@@ -1,6 +1,6 @@
 .topbar {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 10px;
   align-items: center;
   margin-bottom: clamp(12px, 2vw, 18px);
@@ -155,14 +155,20 @@ html[data-board-display="fill"] .game .board {
 /* Switches are colour-coded by the form(s) that can trigger them. */
 .switch-tile.form-ball {
   color: var(--ball);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--ball) 60%, transparent));
 }
 
 .switch-tile.form-square {
   color: var(--square);
+  filter: drop-shadow(
+    0 0 4px color-mix(in srgb, var(--square) 60%, transparent)
+  );
 }
 
 .switch-tile.form-either {
-  color: var(--accent);
+  color: var(--text);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--ball) 60%, transparent))
+    drop-shadow(0 0 5px color-mix(in srgb, var(--square) 60%, transparent));
 }
 
 .piece {
@@ -244,8 +250,37 @@ html[data-board-display="fill"] .game .board {
   transition: width 220ms ease;
 }
 
-.hud {
+.hud-row {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   margin-top: 12px;
+}
+
+.hud-row .hud {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-top: 0;
+  overflow: hidden;
+}
+
+.hud-restart {
+  flex: 0 0 auto;
+  width: 48px;
+  min-width: 48px !important;
+  height: 48px;
+  padding: 0 !important;
+}
+
+.hud-restart .svg-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.hud {
+  flex: none;
   font: clamp(12px, 2vw, 14px) monospace;
   line-height: 1.45;
 }
@@ -256,6 +291,7 @@ html[data-board-display="fill"] .game .board {
 
 .controls {
   display: flex;
+  flex: none;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
@@ -337,36 +373,6 @@ html[data-board-display="fill"] .game .board {
 .switch {
   min-width: clamp(110px, 24vw, 130px);
   text-align: center;
-}
-
-/* ── Barre supérieure et actions mobiles ───────────────────────────────
-   En mobile, RECOMMENCER quitte le topbar pour la rangée .mobile-restart
-   placée sous les contrôles (cf. GameScreen). */
-.mobile-restart {
-  display: none;
-}
-
-@media (max-width: 600px) {
-  .game .topbar {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  /* Le composant Button porte `display: inline-flex` en style inline : il faut
-     donc `!important` pour l'écarter du topbar en mobile. */
-  .game .topbar .topbar-restart {
-    display: none !important;
-  }
-
-  .mobile-restart {
-    /* Aligné à droite : zone d'atteinte naturelle du pouce, et équilibre
-       visuel avec le D-pad (centré/gauche) au-dessus. */
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
-  }
-
-  /* La rangée d'actions gagnée en bas réduit la hauteur du plateau : le mode
-     « carré » tient déjà compte de l'espace réel via .board-wrap (cqh). */
 }
 
 /* Seasonal skins are presentation-only: gameplay stays in LevelRunner. */

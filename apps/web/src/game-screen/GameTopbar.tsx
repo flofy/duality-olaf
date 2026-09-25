@@ -1,17 +1,15 @@
 import { levelLabel } from "../levels/campaign";
 import { Button } from "../components/Button";
-import { ArrowLeft, ResetIcon as Reset } from "../components/Icons";
+import { ArrowLeft } from "../components/Icons";
 
 export function GameTopbar({
   worldId,
   worldIndex,
   onBack,
-  onReset,
 }: {
   worldId: number;
   worldIndex: number;
   onBack: () => void;
-  onReset: () => void;
 }) {
   return (
     <div className="topbar">
@@ -26,13 +24,6 @@ export function GameTopbar({
       <b>
         {levelLabel(worldIndex)} · MONDE {worldId}
       </b>
-      <Button
-        icon={<Reset size={18} />}
-        label="RECOMMENCER"
-        onClick={onReset}
-        variant="secondary"
-        className="topbar-restart"
-      />
     </div>
   );
 }
