@@ -218,7 +218,11 @@
   border: 1px solid transparent;
   border-radius: var(--radius-lg);
   background: var(--surface-muted);
-  font-family: var(--font-mono);
+  color: var(--text);
+  font: 700 14px var(--font-mono);
+  letter-spacing: 1px;
+  text-align: left;
+  cursor: pointer;
   transition:
     background var(--transition-standard),
     border-color var(--transition-standard),
