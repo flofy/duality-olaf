@@ -17,9 +17,21 @@ type Profile = {
 
 const PROFILES: readonly Profile[] = [
   { id: "classic", label: "CLASSIQUE", mechanics: ["walls"] },
-  { id: "doors", label: "PORTES & INTERRUPTEURS", mechanics: ["walls", "doors"] },
-  { id: "teleporters", label: "TÉLÉPORTEURS", mechanics: ["walls", "teleporters"] },
-  { id: "advanced", label: "COMBINAISON", mechanics: ["walls", "doors", "teleporters"] },
+  {
+    id: "doors",
+    label: "PORTES & INTERRUPTEURS",
+    mechanics: ["walls", "doors"],
+  },
+  {
+    id: "teleporters",
+    label: "TÉLÉPORTEURS",
+    mechanics: ["walls", "teleporters"],
+  },
+  {
+    id: "advanced",
+    label: "COMBINAISON",
+    mechanics: ["walls", "doors", "teleporters"],
+  },
 ];
 
 function readSeed(search: string): number {
@@ -65,10 +77,9 @@ export function ChallengeMode() {
     setProfile(nextProfile);
     setSeed(nextChallengeSeed);
     setCompleted(false);
-    navigate(
-      `/challenge?profile=${nextProfile.id}&seed=${nextChallengeSeed}`,
-      { replace: true },
-    );
+    navigate(`/challenge?profile=${nextProfile.id}&seed=${nextChallengeSeed}`, {
+      replace: true,
+    });
   };
 
   const onReset = () => {
@@ -108,7 +119,8 @@ export function ChallengeMode() {
         <div className="modal-actions challenge-complete">
           <h2>DÉFI TERMINÉ</h2>
           <p className="muted">
-            {result?.stars ?? 0} ★ · {result?.score ?? 0} points · {state.moves} coups
+            {result?.stars ?? 0} ★ · {result?.score ?? 0} points · {state.moves}{" "}
+            coups
           </p>
           <p className="muted">SEED · {challenge.seed}</p>
           <Button
