@@ -24,6 +24,7 @@ import { LevelCatalogue, LevelPlayground } from "./LevelLab";
 import { LevelEditor } from "./LevelEditor";
 import { LevelGenerator } from "./LevelGenerator";
 import { Game } from "./GameScreen";
+import { ChallengeMode } from "./ChallengeMode";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { BurgerMenu } from "./BurgerMenu";
 import { Intro } from "./components/Intro";
@@ -210,6 +211,7 @@ const router = createBrowserRouter(
         { index: true, element: <Intro /> },
         { path: "menu", element: <Menu /> },
         { path: "help", element: <Help /> },
+        { path: "challenge", element: <ChallengeMode /> },
         { path: "world/:worldId", element: <WorldLevels /> },
         {
           path: "world/:worldId/level/:levelId",

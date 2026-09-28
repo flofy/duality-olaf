@@ -75,6 +75,12 @@ export function Menu() {
       </p>
       <div className="modal-actions">
         <Button
+          icon={<ArrowRight size={18} />}
+          label="DÉFI"
+          onClick={() => navigate("/challenge")}
+          variant="secondary"
+        />
+        <Button
           icon={<HelpIcon size={18} />}
           label="AIDE"
           onClick={() => navigate("/help")}
