@@ -314,3 +314,33 @@ test("level-lab: le catalogue /dev/levels scrolle", async ({ page }) => {
   const topAfter = await shell.evaluate((el) => el.scrollTop);
   expect(topAfter).toBeGreaterThan(topBefore);
 });
+
+test("ui regression: burger menu exposes keyboard-safe controls", async ({
+  page,
+}) => {
+  await page.goto("/menu");
+
+  const toggle = page.getByRole("button", { name: "Ouvrir le menu" });
+  await expect(toggle).toBeVisible();
+  await toggle.click();
+
+  const menu = page.getByRole("dialog", { name: "Menu" });
+  await expect(menu).toBeVisible();
+
+  const gestures = page.getByRole("button", {
+    name: /GESTES · (ACTIVÉS|DÉSACTIVÉS)/,
+  });
+  await expect(gestures).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => document.activeElement?.id))
+    .toBe("app-menu");
+
+  const initial = await page.evaluate(() =>
+    window.localStorage.getItem("duality.swipe.v1"),
+  );
+  await gestures.click();
+  const updated = await page.evaluate(() =>
+    window.localStorage.getItem("duality.swipe.v1"),
+  );
+  expect(updated).not.toBe(initial);
+});
