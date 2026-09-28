@@ -5,10 +5,10 @@
   z-index: 1000;
   width: min(720px, calc(100% - 24px));
   transform: translateX(-50%);
-  border: 1px solid #ffffff2e;
-  border-radius: 16px;
-  background: #11182ff2;
-  box-shadow: 0 14px 40px #0009;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--background) 94%, transparent);
+  box-shadow: var(--shadow-lg);
   backdrop-filter: blur(14px);
 }
 
@@ -37,7 +37,7 @@
 }
 
 .pwa-update-copy span {
-  color: #c7cce0;
+  color: var(--text-secondary);
   font-size: 12px;
 }
 
@@ -50,23 +50,24 @@
 
 .pwa-update-button,
 .pwa-update-dismiss {
-  border: 0;
-  border-radius: 10px;
-  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  min-height: var(--control-sm);
+  padding: 0 var(--space-3);
   cursor: pointer;
-  font-size: 11px;
-  font-weight: 800;
+  font: 800 11px var(--font-mono);
   letter-spacing: 0.04em;
 }
 
 .pwa-update-button {
-  color: #0b1020;
-  background: #fff000;
+  color: var(--background);
+  background: var(--accent);
 }
 
 .pwa-update-dismiss {
-  color: #c7cce0;
-  background: #ffffff12;
+  color: var(--text-secondary);
+  background: var(--surface-muted);
+  border-color: var(--border-subtle);
 }
 
 .pwa-update-button:disabled,
@@ -92,23 +93,4 @@
   }
 }
 
-/* Shared UI system: update prompt uses the same control language as the app. */
-.pwa-update-banner {
-  border-color: var(--border-subtle);
-  border-radius: var(--radius-xl);
-  background: color-mix(in srgb, var(--background) 94%, transparent);
-  box-shadow: var(--shadow-lg);
-}
-
-.pwa-update-button,
-.pwa-update-dismiss {
-  min-height: var(--control-sm);
-  border-radius: var(--radius-md);
-  padding: 0 var(--space-3);
-  font-family: var(--font-mono);
-}
-
-.pwa-update-dismiss {
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-}
+/* Shared UI system is applied directly above so this component has one source of truth. */

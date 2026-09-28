@@ -37,20 +37,7 @@
   transform-origin: center;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.app-enter {
-  animation: fadeIn calc(0.5s * var(--animation-scale)) ease forwards;
-}
+/* L'entrée de l'application est centralisée dans base.css. */
 
 /* Le déplacement des pièces vit dans movement-juice.css (`pieceMove`) : ne pas
    redéfinir ici un `@keyframes pieceMove`, deux définitions homonymes se
@@ -73,24 +60,6 @@
 
 .door-open {
   animation: doorOpen calc(0.3s * var(--animation-scale)) ease;
-}
-
-@keyframes buttonHover {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 rgba(255, 255, 255, 0);
-  }
-  100% {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-  }
-}
-
-button {
-  transition: all calc(0.2s * var(--animation-scale)) ease;
-}
-button:hover:not(:disabled) {
-  animation: buttonHover calc(0.2s * var(--animation-scale)) ease;
 }
 
 @keyframes slideIn {
