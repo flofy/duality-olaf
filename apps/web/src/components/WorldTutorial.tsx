@@ -27,7 +27,7 @@ type WorldTutorialProps = {
 };
 
 const STEP_READING_MS = 2200;
-const STEP_ACTION_MS = 5000;
+const STEP_ACTION_MS = 2000;
 const STEP_DURATION_MS = STEP_READING_MS + STEP_ACTION_MS;
 
 function describeCommand(command: SolverCommand): string {
