@@ -92,8 +92,8 @@ export function GameBoard({
       const fadeOutAt = window.setTimeout(() => {
         particle.style.opacity = "0";
         particle.style.transform = "translate(-50%, -50%) scale(0.25)";
-      }, 240);
-      window.setTimeout(() => particle.remove(), 700);
+      }, 380);
+      window.setTimeout(() => particle.remove(), 900);
       particle.addEventListener(
         "transitionend",
         () => window.clearTimeout(fadeOutAt),
