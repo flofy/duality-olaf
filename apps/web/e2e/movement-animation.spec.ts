@@ -80,6 +80,19 @@ test("le sprite principal reste continu et la trace suit tout le trajet", async 
   expect(fog.height).toBeGreaterThan(10);
   expect(fog.computedWidth).toBeCloseTo(fog.cellWidth * 0.62, 1);
   expect(fog.computedHeight).toBeCloseTo(fog.cellHeight * 0.62, 1);
+
+  // The trail must stop one cell before the destination so it cannot add
+  // particles during the final approach.
+  const trailPositions = await board
+    .locator(".movement-trail-particle")
+    .evaluateAll((elements) =>
+      elements.map((element) => ({
+        x: Number.parseFloat((element as HTMLElement).style.left),
+        y: Number.parseFloat((element as HTMLElement).style.top),
+      })),
+    );
+  expect(trailPositions.length).toBeGreaterThan(0);
+
   await expect
     .poll(() =>
       board
