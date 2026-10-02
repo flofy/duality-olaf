@@ -59,7 +59,7 @@
     transparent 100%
   );
   filter: blur(calc(var(--cell-width) * 0.045));
-  box-shadow: 0 0 calc(var(--cell-width) * 0.20) calc(var(--cell-width) * 0.05)
+  box-shadow: 0 0 calc(var(--cell-width) * 0.2) calc(var(--cell-width) * 0.05)
     var(--trail-color, #4aa3ff);
   opacity: 1;
   transition:
