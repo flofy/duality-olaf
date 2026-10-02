@@ -129,6 +129,44 @@ test("le sprite principal reste continu et la trace suit tout le trajet", async 
   await expect(board.locator(".movement-ghost")).toHaveCount(0);
 });
 
+test("les déplacements rapides gardent une trajectoire continue", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "duality.progress.v2",
+      JSON.stringify({ completed: ["world-1-level-01"], results: {} }),
+    );
+  });
+
+  await page.goto("/world/1/level/world-1-level-02");
+  const board = page.locator(".board");
+  await expect(board).toBeVisible();
+
+  // Solution en trois grands glissements : droite, bas, gauche.
+  // Les touches sont volontairement envoyées sans attendre la fin des animations.
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowLeft");
+
+  const movingPiece = board.locator(".piece.ball.is-moving");
+  await expect(movingPiece).toBeVisible();
+  await expect(movingPiece).toHaveCount(1);
+
+  const movement = await movingPiece.evaluate((element) => ({
+    from: element.getAttribute("data-movement-from"),
+    target: element.getAttribute("data-movement-target"),
+    transform: getComputedStyle(element).transform,
+  }));
+  expect(movement.from).toBe("11,8");
+  expect(movement.target).toBe("1,8");
+  expect(movement.transform).not.toBe("none");
+
+  // Les traces des mouvements précédents restent présentes pendant que
+  // le dernier mouvement est encore en cours.
+  await expect
+    .poll(() => board.locator(".movement-trail-particle").count())
+    .toBeGreaterThan(5);
+});
+
 test("le téléportateur produit un zap audio sans erreur", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
