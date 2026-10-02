@@ -78,6 +78,10 @@ export function GameBoard({
     const endY = (movement.target.y + 0.5) * cellHeight;
     const startedAt = performance.now();
     const duration = moveBaseDurationMs(movement.distance);
+    // Stop depositing trail one cell before the destination so the final
+    // approach stays lightweight and visually smooth.
+    const trailEndProgress =
+      movement.distance > 0 ? Math.max(0, 1 - 1 / movement.distance) : 0;
     let frame = 0;
     let lastTrailAt = -Infinity;
 
@@ -106,7 +110,10 @@ export function GameBoard({
       const x = startX + (endX - startX) * progress;
       const y = startY + (endY - startY) * progress;
       piece.style.transform = `translate3d(${x - startX}px, ${y - startY}px, 0)`;
-      if (now - lastTrailAt >= 16) {
+      if (
+        progress <= trailEndProgress &&
+        now - lastTrailAt >= 16
+      ) {
         leaveTrailAt(x, y);
         lastTrailAt = now;
       }
