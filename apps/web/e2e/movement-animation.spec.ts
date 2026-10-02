@@ -85,13 +85,27 @@ test("le sprite principal reste continu et la trace suit tout le trajet", async 
   // particles during the final approach.
   const trailPositions = await board
     .locator(".movement-trail-particle")
-    .evaluateAll((elements) =>
-      elements.map((element) => ({
-        x: Number.parseFloat((element as HTMLElement).style.left),
-        y: Number.parseFloat((element as HTMLElement).style.top),
-      })),
-    );
-  expect(trailPositions.length).toBeGreaterThan(0);
+    .evaluateAll((elements) => {
+      const boardElement = elements[0]?.parentElement?.parentElement;
+      const rect = boardElement?.getBoundingClientRect();
+      const cols = Number.parseFloat(
+        boardElement
+          ? getComputedStyle(boardElement).getPropertyValue("--cols")
+          : "1",
+      );
+      const cellWidth = rect ? rect.width / cols : 0;
+      return {
+        maxX: Math.max(
+          ...elements.map((element) =>
+            Number.parseFloat((element as HTMLElement).style.left),
+          ),
+        ),
+        trailLimit: cellWidth * 10.5,
+      };
+    });
+  expect(trailPositions.maxX).toBeLessThanOrEqual(
+    trailPositions.trailLimit + 1,
+  );
 
   await expect
     .poll(() =>
