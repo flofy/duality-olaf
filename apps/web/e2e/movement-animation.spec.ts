@@ -129,9 +129,7 @@ test("le sprite principal reste continu et la trace suit tout le trajet", async 
   await expect(board.locator(".movement-ghost")).toHaveCount(0);
 });
 
-test("les déplacements rapides gardent une trajectoire continue", async ({
-  page,
-}) => {
+test("les déplacements rapides restent des glissements cardinaux", async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem(
       "duality.progress.v2",
@@ -143,27 +141,22 @@ test("les déplacements rapides gardent une trajectoire continue", async ({
   const board = page.locator(".board");
   await expect(board).toBeVisible();
 
-  // Solution en trois grands glissements : droite, bas, gauche.
-  // Les touches sont volontairement envoyées sans attendre la fin des animations.
   await page.keyboard.press("ArrowRight");
-  await page.keyboard.press("ArrowDown");
-  await page.keyboard.press("ArrowLeft");
-
   const movingPiece = board.locator(".piece.ball.is-moving");
   await expect(movingPiece).toBeVisible();
-  await expect(movingPiece).toHaveCount(1);
 
   const movement = await movingPiece.evaluate((element) => ({
     from: element.getAttribute("data-movement-from"),
     target: element.getAttribute("data-movement-target"),
-    transform: getComputedStyle(element).transform,
   }));
-  expect(movement.from).toBe("11,8");
-  expect(movement.target).toBe("1,8");
-  expect(movement.transform).not.toBe("none");
+  expect(movement.from).toBe("1,1");
+  expect(movement.target).toBe("11,1");
 
-  // Les traces des mouvements précédents restent présentes pendant que
-  // le dernier mouvement est encore en cours.
+  // Une seconde direction peut être demandée immédiatement, mais elle doit
+  // rester un déplacement cardinal distinct, jamais une interpolation diagonale.
+  await page.keyboard.press("ArrowDown");
+  await expect(movingPiece).toHaveAttribute("data-movement-from", "11,1");
+  await expect(movingPiece).toHaveAttribute("data-movement-target", "11,8");
   await expect
     .poll(() => board.locator(".movement-trail-particle").count())
     .toBeGreaterThan(5);
