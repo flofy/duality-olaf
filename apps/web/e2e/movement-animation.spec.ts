@@ -78,8 +78,8 @@ test("le sprite principal reste continu et la trace suit tout le trajet", async 
   expect(fog.background).toContain("radial-gradient");
   expect(fog.width).toBeGreaterThan(10);
   expect(fog.height).toBeGreaterThan(10);
-  expect(fog.computedWidth).toBeCloseTo(fog.cellWidth * 0.88, 1);
-  expect(fog.computedHeight).toBeCloseTo(fog.cellHeight * 0.88, 1);
+  expect(fog.computedWidth).toBeCloseTo(fog.cellWidth * 0.72, 1);
+  expect(fog.computedHeight).toBeCloseTo(fog.cellHeight * 0.72, 1);
   await expect
     .poll(() =>
       board
