@@ -129,7 +129,9 @@ test("le sprite principal reste continu et la trace suit tout le trajet", async 
   await expect(board.locator(".movement-ghost")).toHaveCount(0);
 });
 
-test("les déplacements rapides gardent une trajectoire continue", async ({ page }) => {
+test("les déplacements rapides gardent une trajectoire continue", async ({
+  page,
+}) => {
   await page.addInitScript(() => {
     localStorage.setItem(
       "duality.progress.v2",
