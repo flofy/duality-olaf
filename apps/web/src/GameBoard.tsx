@@ -71,6 +71,7 @@ export function GameBoard({
     if (!board || !piece || !layer) return;
     if (!movement || isTeleporting) {
       piece.style.transform = "";
+      visualPositionRef.current = null;
       return;
     }
 
@@ -83,10 +84,6 @@ export function GameBoard({
     const endY = (movement.target.y + 0.5) * cellHeight;
     const startedAt = performance.now();
     const duration = moveBaseDurationMs(movement.distance);
-    const initialPosition = visualPositionRef.current ?? {
-      x: startX,
-      y: startY,
-    };
     // Stop depositing trail one cell before the destination so the final
     // approach stays lightweight and visually smooth.
     const trailEndProgress =
@@ -116,8 +113,8 @@ export function GameBoard({
 
     const tick = (now: number) => {
       const progress = Math.min(1, (now - startedAt) / duration);
-      const x = initialPosition.x + (endX - initialPosition.x) * progress;
-      const y = initialPosition.y + (endY - initialPosition.y) * progress;
+      const x = startX + (endX - startX) * progress;
+      const y = startY + (endY - startY) * progress;
       visualPositionRef.current = { x, y };
       piece.style.transform = `translate3d(${x - startX}px, ${y - startY}px, 0)`;
       if (progress <= trailEndProgress && now - lastTrailAt >= 16) {
