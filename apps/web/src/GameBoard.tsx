@@ -110,10 +110,7 @@ export function GameBoard({
       const x = startX + (endX - startX) * progress;
       const y = startY + (endY - startY) * progress;
       piece.style.transform = `translate3d(${x - startX}px, ${y - startY}px, 0)`;
-      if (
-        progress <= trailEndProgress &&
-        now - lastTrailAt >= 16
-      ) {
+      if (progress <= trailEndProgress && now - lastTrailAt >= 16) {
         leaveTrailAt(x, y);
         lastTrailAt = now;
       }
