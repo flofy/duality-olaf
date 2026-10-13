@@ -133,7 +133,9 @@ export function CompletionOverlay({
                 ? "SUIVANT"
                 : hasNextWorld
                   ? "MONDE SUIVANT"
-                   : worldId === 2 && worldLength > 0 ? "HALLOWEEN" : "NIVEAUX"
+                  : worldId === 2 && worldLength > 0
+                    ? "HALLOWEEN"
+                    : "NIVEAUX"
             }
             selected={activeIndex === 1}
             onClick={onNext}

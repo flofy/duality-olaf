@@ -22,9 +22,19 @@ import {
 } from "./game-screen/useDebugCommands";
 import { useDebugShortcuts } from "./game-screen/useDebugShortcuts";
 
-export function Game({ level, worldId, seasonalEvent }: { level: Level; worldId: number; seasonalEvent?: SeasonalEvent }) {
+export function Game({
+  level,
+  worldId,
+  seasonalEvent,
+}: {
+  level: Level;
+  worldId: number;
+  seasonalEvent?: SeasonalEvent;
+}) {
   const navigate = useNavigate();
-  const world = worlds.find((item) => item.id === (seasonalEvent ? 2 : worldId))!;
+  const world = worlds.find(
+    (item) => item.id === (seasonalEvent ? 2 : worldId),
+  )!;
   const worldIndex = seasonalEvent
     ? seasonalEvent.levels.findIndex((item) => item.id === level.id)
     : world.levels.findIndex((item) => item.id === level.id);
@@ -34,7 +44,9 @@ export function Game({ level, worldId, seasonalEvent }: { level: Level; worldId:
   const nextLevel = useCallback(() => {
     if (seasonalEvent) {
       if (worldIndex < seasonalEvent.levels.length - 1) {
-        navigate(`/halloween/level/${seasonalEvent.levels[worldIndex + 1]!.id}`);
+        navigate(
+          `/halloween/level/${seasonalEvent.levels[worldIndex + 1]!.id}`,
+        );
       } else {
         navigate("/halloween");
       }
@@ -93,8 +105,14 @@ export function Game({ level, worldId, seasonalEvent }: { level: Level; worldId:
       <GameTopbar
         worldId={world.id}
         worldIndex={worldIndex}
-        label={seasonalEvent ? `🎃 HALLOWEEN · NIVEAU ${String(worldIndex + 1).padStart(2, "0")}` : undefined}
-        onBack={() => navigate(seasonalEvent ? "/halloween" : `/world/${world.id}`)}
+        label={
+          seasonalEvent
+            ? `🎃 HALLOWEEN · NIVEAU ${String(worldIndex + 1).padStart(2, "0")}`
+            : undefined
+        }
+        onBack={() =>
+          navigate(seasonalEvent ? "/halloween" : `/world/${world.id}`)
+        }
       />
       <LevelGameplayView
         level={level}

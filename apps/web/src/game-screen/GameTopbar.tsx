@@ -23,9 +23,7 @@ export function GameTopbar({
         onClick={onBack}
         variant="secondary"
       />
-      <b>
-        {label ?? `${levelLabel(worldIndex)} · MONDE ${worldId}`}
-      </b>
+      <b>{label ?? `${levelLabel(worldIndex)} · MONDE ${worldId}`}</b>
     </div>
   );
 }
