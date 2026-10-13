@@ -6,10 +6,12 @@ export function GameTopbar({
   worldId,
   worldIndex,
   onBack,
+  label,
 }: {
   worldId: number;
   worldIndex: number;
   onBack: () => void;
+  label?: string;
 }) {
   return (
     <div className="topbar">
@@ -22,7 +24,7 @@ export function GameTopbar({
         variant="secondary"
       />
       <b>
-        {levelLabel(worldIndex)} · MONDE {worldId}
+        {label ?? `${levelLabel(worldIndex)} · MONDE ${worldId}`}
       </b>
     </div>
   );
