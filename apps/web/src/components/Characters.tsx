@@ -190,6 +190,7 @@ export function SquareCharacter({
   size = 48,
   color = "#ffd447",
   expression = "neutral",
+  skin = "default",
   className,
 }: CharacterProps) {
   return (
