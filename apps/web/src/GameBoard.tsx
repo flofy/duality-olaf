@@ -235,14 +235,14 @@ export function GameBoard({
                 size={36}
                 color={hexToCss(themes[themeName].ball)}
                 expression="neutral"
-                className="character character-ball"
+                skin={skin} className="character character-ball"
               />
             ) : (
               <SquareCharacter
                 size={36}
                 color={hexToCss(themes[themeName].square)}
                 expression="neutral"
-                className="character character-square"
+                skin={skin} className="character character-square"
               />
             )}
           </div>
