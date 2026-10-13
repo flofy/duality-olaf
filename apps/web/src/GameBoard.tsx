@@ -44,6 +44,7 @@ export function GameBoard({
   const boardRef = useRef<HTMLDivElement>(null);
   const movingPieceRef = useRef<HTMLDivElement>(null);
   const trailLayerRef = useRef<HTMLDivElement>(null);
+  const visualPositionRef = useRef<{ x: number; y: number } | null>(null);
   const moveX =
     movement && !isTeleporting
       ? `calc(var(--cell-width) * ${movement.target.x - movement.from.x})`
@@ -67,7 +68,12 @@ export function GameBoard({
     const board = boardRef.current;
     const piece = movingPieceRef.current;
     const layer = trailLayerRef.current;
-    if (!movement || isTeleporting || !board || !piece || !layer) return;
+    if (!board || !piece || !layer) return;
+    if (!movement || isTeleporting) {
+      piece.style.transform = "";
+      visualPositionRef.current = null;
+      return;
+    }
 
     const boardRect = board.getBoundingClientRect();
     const cellWidth = boardRect.width / level.width;
@@ -78,6 +84,10 @@ export function GameBoard({
     const endY = (movement.target.y + 0.5) * cellHeight;
     const startedAt = performance.now();
     const duration = moveBaseDurationMs(movement.distance);
+    // Stop depositing trail one cell before the destination so the final
+    // approach stays lightweight and visually smooth.
+    const trailEndProgress =
+      movement.distance > 0 ? Math.max(0, 1 - 1 / movement.distance) : 0;
     let frame = 0;
     let lastTrailAt = -Infinity;
 
@@ -92,8 +102,8 @@ export function GameBoard({
       const fadeOutAt = window.setTimeout(() => {
         particle.style.opacity = "0";
         particle.style.transform = "translate(-50%, -50%) scale(0.25)";
-      }, 240);
-      window.setTimeout(() => particle.remove(), 700);
+      }, 380);
+      window.setTimeout(() => particle.remove(), 900);
       particle.addEventListener(
         "transitionend",
         () => window.clearTimeout(fadeOutAt),
@@ -105,8 +115,9 @@ export function GameBoard({
       const progress = Math.min(1, (now - startedAt) / duration);
       const x = startX + (endX - startX) * progress;
       const y = startY + (endY - startY) * progress;
+      visualPositionRef.current = { x, y };
       piece.style.transform = `translate3d(${x - startX}px, ${y - startY}px, 0)`;
-      if (now - lastTrailAt >= 16) {
+      if (progress <= trailEndProgress && now - lastTrailAt >= 16) {
         leaveTrailAt(x, y);
         lastTrailAt = now;
       }
@@ -116,7 +127,6 @@ export function GameBoard({
     frame = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(frame);
-      piece.style.transform = "";
     };
   }, [activeColor, isTeleporting, level.height, level.width, movement]);
 

@@ -78,8 +78,35 @@ test("le sprite principal reste continu et la trace suit tout le trajet", async 
   expect(fog.background).toContain("radial-gradient");
   expect(fog.width).toBeGreaterThan(10);
   expect(fog.height).toBeGreaterThan(10);
-  expect(fog.computedWidth).toBeCloseTo(fog.cellWidth * 0.88, 1);
-  expect(fog.computedHeight).toBeCloseTo(fog.cellHeight * 0.88, 1);
+  expect(fog.computedWidth).toBeCloseTo(fog.cellWidth * 0.62, 1);
+  expect(fog.computedHeight).toBeCloseTo(fog.cellHeight * 0.62, 1);
+
+  // The trail must stop one cell before the destination so it cannot add
+  // particles during the final approach.
+  const trailPositions = await board
+    .locator(".movement-trail-particle")
+    .evaluateAll((elements) => {
+      const boardElement = elements[0]?.parentElement?.parentElement;
+      const rect = boardElement?.getBoundingClientRect();
+      const cols = Number.parseFloat(
+        boardElement
+          ? getComputedStyle(boardElement).getPropertyValue("--cols")
+          : "1",
+      );
+      const cellWidth = rect ? rect.width / cols : 0;
+      return {
+        maxX: Math.max(
+          ...elements.map((element) =>
+            Number.parseFloat((element as HTMLElement).style.left),
+          ),
+        ),
+        trailLimit: cellWidth * 10.5,
+      };
+    });
+  expect(trailPositions.maxX).toBeLessThanOrEqual(
+    trailPositions.trailLimit + 1,
+  );
+
   await expect
     .poll(() =>
       board
@@ -100,6 +127,41 @@ test("le sprite principal reste continu et la trace suit tout le trajet", async 
   expect(transform).not.toBe("none");
   await expect(movingPiece).toHaveCount(1, { timeout: 1000 });
   await expect(board.locator(".movement-ghost")).toHaveCount(0);
+});
+
+test("les déplacements rapides restent des glissements cardinaux", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "duality.progress.v2",
+      JSON.stringify({ completed: ["world-1-level-01"], results: {} }),
+    );
+  });
+
+  await page.goto("/world/1/level/world-1-level-02");
+  const board = page.locator(".board");
+  await expect(board).toBeVisible();
+
+  await page.keyboard.press("ArrowRight");
+  const movingPiece = board.locator(".piece.ball.is-moving");
+  await expect(movingPiece).toBeVisible();
+
+  const movement = await movingPiece.evaluate((element) => ({
+    from: element.getAttribute("data-movement-from"),
+    target: element.getAttribute("data-movement-target"),
+  }));
+  expect(movement.from).toBe("1,1");
+  expect(movement.target).toBe("11,1");
+
+  // Une seconde direction peut être demandée immédiatement, mais elle doit
+  // rester un déplacement cardinal distinct, jamais une interpolation diagonale.
+  await page.keyboard.press("ArrowDown");
+  await expect(movingPiece).toHaveAttribute("data-movement-from", "11,1");
+  await expect(movingPiece).toHaveAttribute("data-movement-target", "11,8");
+  await expect
+    .poll(() => board.locator(".movement-trail-particle").count())
+    .toBeGreaterThan(5);
 });
 
 test("le téléportateur produit un zap audio sans erreur", async ({ page }) => {
