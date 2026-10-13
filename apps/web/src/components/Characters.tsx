@@ -7,7 +7,7 @@ type CharacterExpression =
   | "angry"
   | "tired"
   | "defeated";
-type CharacterProps = IconProps & { expression?: CharacterExpression };
+type CharacterProps = IconProps & { expression?: CharacterExpression; skin?: string };
 
 function Face({
   expression,
@@ -108,6 +108,7 @@ export function BallCharacter({
   size = 48,
   color = "#35a9ff",
   expression = "neutral",
+  skin = "default",
   className,
 }: CharacterProps) {
   return (
@@ -123,12 +124,18 @@ export function BallCharacter({
     >
       <defs>
         <radialGradient id="ballCharacterGradient" cx="30%" cy="25%">
-          <stop offset="0" stopColor="#bff1ff" />
-          <stop offset=".22" stopColor={color} />
-          <stop offset="1" stopColor="#1769c2" />
+          <stop offset="0" stopColor={skin === "halloween" ? "#f0e8ff" : "#bff1ff"} />
+          <stop offset=".22" stopColor={skin === "halloween" ? "#6d4a9e" : color} />
+          <stop offset="1" stopColor={skin === "halloween" ? "#24152f" : "#1769c2"} />
         </radialGradient>
       </defs>
       <ellipse cx="12" cy="21" rx="6" ry="1.3" fill="#0b3b73" opacity=".28" />
+      {skin === "halloween" && (
+        <g className="halloween-bat-wings" fill="#24152f" stroke="#bca0df" strokeWidth=".55" strokeLinejoin="round">
+          <path d="M7.2 10.2 1.1 6.2 2.1 12.2 0.9 15.1 5.2 14.4 8.2 17.2 9.1 12.5Z" />
+          <path d="M16.8 10.2 22.9 6.2 21.9 12.2 23.1 15.1 18.8 14.4 15.8 17.2 14.9 12.5Z" />
+        </g>
+      )}
       <g className="ball-character-legs">
         <path
           className="ball-character-leg-left"
@@ -204,9 +211,9 @@ export function SquareCharacter({
           x2="1"
           y2="1"
         >
-          <stop stopColor="#fff09a" />
-          <stop offset=".28" stopColor={color} />
-          <stop offset="1" stopColor="#e7a916" />
+          <stop stopColor={skin === "halloween" ? "#c8f7a1" : "#fff09a"} />
+          <stop offset=".28" stopColor={skin === "halloween" ? "#5a9b55" : color} />
+          <stop offset="1" stopColor={skin === "halloween" ? "#234c35" : "#e7a916"} />
         </linearGradient>
       </defs>
       <ellipse cx="12" cy="21" rx="6.5" ry="1.3" fill="#805c0b" opacity=".25" />
@@ -240,6 +247,13 @@ export function SquareCharacter({
         strokeLinecap="round"
         opacity=".5"
       />
+      {skin === "halloween" && (
+        <g stroke="#253d2b" strokeWidth="1.1" strokeLinecap="round">
+          <path d="M2.2 8.2 4.4 8.2M19.6 8.2 21.8 8.2" />
+          <path d="M5.5 17.5 7 16.6M17 16.6 18.5 17.5" />
+          <path d="M2.5 11.5 4.1 12.8 2.7 14.2M21.5 11.5 19.9 12.8 21.3 14.2" />
+        </g>
+      )}
       <Face expression={expression} square />
       {(expression === "happy" || expression === "surprised") && (
         <>
