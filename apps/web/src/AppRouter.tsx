@@ -11,6 +11,7 @@ import {
 } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { worlds } from "./levels/campaign";
+import { halloween } from "@duality/level-format";
 import {
   hasSeenFireTutorial,
   hasSeenWorldTutorial,
@@ -30,6 +31,7 @@ import { BurgerMenu } from "./BurgerMenu";
 import { Intro } from "./components/Intro";
 import { Menu } from "./components/Menu";
 import { WorldLevels } from "./components/WorldLevels";
+import { SeasonalLevels } from "./components/SeasonalLevels";
 import { WorldTutorial } from "./components/WorldTutorial";
 import { Help } from "./components/Help";
 import { UpdateBanner } from "./components/UpdateBanner";
@@ -182,6 +184,22 @@ function ProtectedLevel() {
   return <Game level={level} worldId={world.id} />;
 }
 
+function SeasonalLevelRoute() {
+  const { levelId } = useParams();
+  const index = halloween.levels.findIndex((level) => level.id === levelId);
+  if (index < 0) return <Navigate to="/halloween" replace />;
+  if (index > 0 && !isLevelCompleted(halloween.levels[index - 1]!.id)) {
+    return <Navigate to="/halloween" replace />;
+  }
+  return (
+    <Game
+      level={halloween.levels[index]!}
+      worldId={2}
+      seasonalEvent={halloween}
+    />
+  );
+}
+
 function DevGuard() {
   if (!isLevelLabEnabled) return <Navigate to="/menu" replace />;
   return <Outlet />;
@@ -210,6 +228,8 @@ const router = createBrowserRouter(
       children: [
         { index: true, element: <Intro /> },
         { path: "menu", element: <Menu /> },
+        { path: "halloween", element: <SeasonalLevels /> },
+        { path: "halloween/level/:levelId", element: <SeasonalLevelRoute /> },
         { path: "help", element: <Help /> },
         { path: "challenge", element: <ChallengeMode /> },
         { path: "world/:worldId", element: <WorldLevels /> },
