@@ -266,6 +266,7 @@ export function GameBoard({
                 size={36}
                 color={hexToCss(themes[themeName].ball)}
                 expression="surprised"
+                skin={skin}
                 className="character character-ball"
               />
             ) : (
@@ -273,6 +274,7 @@ export function GameBoard({
                 size={36}
                 color={hexToCss(themes[themeName].square)}
                 expression="surprised"
+                skin={skin}
                 className="character character-square"
               />
             )}
@@ -337,6 +339,7 @@ export function GameBoard({
                   ? "happy"
                   : "neutral"
             }
+            skin={skin}
             className="character character-ball"
           />
         </div>
@@ -386,6 +389,7 @@ export function GameBoard({
                   ? "happy"
                   : "neutral"
             }
+            skin={skin}
             className="character character-square"
           />
         </div>
