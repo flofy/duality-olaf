@@ -425,3 +425,14 @@ html[data-board-display="fill"] .game .board {
   color: #ffd36b;
   text-shadow: 0 0 10px #ff9d2788;
 }
+
+/* Halloween character silhouettes are rendered as part of the SVG characters. */
+.board.theme-halloween .character-ball {
+  filter: drop-shadow(0 0 5px #b18ae5aa);
+}
+.board.theme-halloween .character-square {
+  filter: drop-shadow(0 0 5px #9be58b88);
+}
+.board.theme-halloween .star-container svg {
+  filter: drop-shadow(0 0 5px #ffad4aaa);
+}

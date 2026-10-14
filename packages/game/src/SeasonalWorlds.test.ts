@@ -168,10 +168,10 @@ describe("seasonal worlds", () => {
 
   it("keeps Halloween outside its event window", () => {
     expect(
-      isSeasonalEventAvailable(halloween, new Date("2026-10-19T12:00:00Z")),
+      isSeasonalEventAvailable(halloween, new Date("2026-10-12T12:00:00Z")),
     ).toBe(false);
     expect(
-      isSeasonalEventAvailable(halloween, new Date("2026-10-31T12:00:00Z")),
+      isSeasonalEventAvailable(halloween, new Date("2026-10-13T12:00:00Z")),
     ).toBe(true);
     expect(
       isSeasonalEventAvailable(halloween, new Date("2026-11-04T12:00:00Z")),

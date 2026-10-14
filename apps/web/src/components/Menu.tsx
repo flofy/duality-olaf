@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { halloween, isSeasonalEventAvailable } from "@duality/level-format";
 import { worlds, campaign } from "../levels/campaign";
 import {
   getCampaignProgress,
@@ -47,6 +48,15 @@ export function Menu() {
             );
           })}
       </div>
+      {isSeasonalEventAvailable(halloween) && (
+        <Button
+          icon={<span aria-hidden="true">🎃</span>}
+          label="ÉVÉNEMENT HALLOWEEN · NIVEAUX SPÉCIAUX"
+          onClick={() => navigate("/halloween")}
+          variant="primary"
+          className="halloween-promo"
+        />
+      )}
       <div className="campaign-progress">
         <div className="campaign-progress-header">
           <span>PROGRESSION</span>

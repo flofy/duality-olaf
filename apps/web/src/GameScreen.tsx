@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
-import type { Level } from "@duality/level-format";
+import type { Level, SeasonalEvent } from "@duality/level-format";
 import { useNavigate } from "react-router";
 import { getActiveThemeName } from "./theme";
 import { resolveLevelSkin } from "./skins";
@@ -22,29 +22,49 @@ import {
 } from "./game-screen/useDebugCommands";
 import { useDebugShortcuts } from "./game-screen/useDebugShortcuts";
 
-export function Game({ level, worldId }: { level: Level; worldId: number }) {
+export function Game({
+  level,
+  worldId,
+  seasonalEvent,
+}: {
+  level: Level;
+  worldId: number;
+  seasonalEvent?: SeasonalEvent;
+}) {
   const navigate = useNavigate();
-  const world = worlds.find((item) => item.id === worldId)!;
-  const worldIndex = world.levels.findIndex((item) => item.id === level.id);
-  const nextWorld = getNextWorld(world.id);
+  const world = worlds.find(
+    (item) => item.id === (seasonalEvent ? 2 : worldId),
+  )!;
+  const worldIndex = seasonalEvent
+    ? seasonalEvent.levels.findIndex((item) => item.id === level.id)
+    : world.levels.findIndex((item) => item.id === level.id);
+  const nextWorld = seasonalEvent ? null : getNextWorld(world.id);
   const seasonalTheme = resolveLevelSkin(level.id);
 
   const nextLevel = useCallback(() => {
-    if (worldIndex < world.levels.length - 1) {
+    if (seasonalEvent) {
+      if (worldIndex < seasonalEvent.levels.length - 1) {
+        navigate(
+          `/halloween/level/${seasonalEvent.levels[worldIndex + 1]!.id}`,
+        );
+      } else {
+        navigate("/halloween");
+      }
+    } else if (worldIndex < world.levels.length - 1) {
       navigate(`/world/${world.id}/level/${world.levels[worldIndex + 1].id}`);
     } else if (nextWorld) {
       navigate(`/world/${nextWorld.id}/level/${nextWorld.levels[0].id}`);
     } else {
       navigate(`/world/${world.id}`);
     }
-  }, [navigate, nextWorld, world, worldIndex]);
+  }, [navigate, nextWorld, seasonalEvent, world, worldIndex]);
 
   const { commands, recordMove, recordSwitch, clear } = useDebugCommands();
 
   const { state, movement, move, reset, switchForm, elapsedMs } =
     useLevelGameplay(
       level,
-      () => navigate(`/world/${world.id}`),
+      () => navigate(seasonalEvent ? "/halloween" : `/world/${world.id}`),
       recordMove,
       recordSwitch,
       clear,
@@ -85,7 +105,14 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
       <GameTopbar
         worldId={world.id}
         worldIndex={worldIndex}
-        onBack={() => navigate(`/world/${world.id}`)}
+        label={
+          seasonalEvent
+            ? `🎃 HALLOWEEN · NIVEAU ${String(worldIndex + 1).padStart(2, "0")}`
+            : undefined
+        }
+        onBack={() =>
+          navigate(seasonalEvent ? "/halloween" : `/world/${world.id}`)
+        }
       />
       <LevelGameplayView
         level={level}
@@ -108,8 +135,8 @@ export function Game({ level, worldId }: { level: Level; worldId: number }) {
       <CompletionOverlay
         worldId={world.id}
         worldIndex={worldIndex}
-        worldLength={world.levels.length}
-        hasNextWorld={Boolean(nextWorld)}
+        worldLength={seasonalEvent?.levels.length ?? world.levels.length}
+        hasNextWorld={Boolean(nextWorld) && !seasonalEvent}
         completed={state.completed}
         moves={state.moves}
         elapsedMs={elapsedMs}

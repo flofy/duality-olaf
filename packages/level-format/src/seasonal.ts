@@ -64,7 +64,7 @@ export const halloween: SeasonalEvent = {
   id: "seasonal-halloween",
   theme: "halloween",
   label: "Halloween",
-  start: { month: 10, day: 20 },
+  start: { month: 10, day: 13 },
   end: { month: 11, day: 3 },
   levels: loadSeasonalTheme("halloween"),
 };
