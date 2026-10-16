@@ -17,13 +17,18 @@ export function createDialogNavigation(initialIndex = 0) {
   let activeIndex = $state(initialIndex);
 
   function enabledButtons(dialog: HTMLElement): HTMLButtonElement[] {
-    return Array.from(dialog.querySelectorAll<HTMLButtonElement>("button")).filter(
-      (button) => !button.disabled,
-    );
+    return Array.from(
+      dialog.querySelectorAll<HTMLButtonElement>("button"),
+    ).filter((button) => !button.disabled);
   }
 
-  function currentIndex(buttons: HTMLButtonElement[], fallback: number): number {
-    const focused = buttons.indexOf(document.activeElement as HTMLButtonElement);
+  function currentIndex(
+    buttons: HTMLButtonElement[],
+    fallback: number,
+  ): number {
+    const focused = buttons.indexOf(
+      document.activeElement as HTMLButtonElement,
+    );
     return focused >= 0 ? focused : fallback;
   }
 
@@ -49,7 +54,8 @@ export function createDialogNavigation(initialIndex = 0) {
       event.stopImmediatePropagation();
 
       const current = currentIndex(buttons, activeIndex);
-      const step = event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1;
+      const step =
+        event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1;
       const next = (current + step + buttons.length) % buttons.length;
       activeIndex = next;
       buttons[next]!.focus();

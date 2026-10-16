@@ -48,7 +48,10 @@ export function buildCatalogueGroups(): CatalogueGroup[] {
   const plain = (levels: readonly Level[]): CatalogueEntry[] =>
     levels.map((level) => ({ id: level.id, label: level.id, level }));
 
-  groups.push({ label: "Doors & switches", entries: plain(doorSwitchTutorials) });
+  groups.push({
+    label: "Doors & switches",
+    entries: plain(doorSwitchTutorials),
+  });
   groups.push({ label: "Teleporters", entries: plain(teleporterTutorials) });
   groups.push({ label: "Défis & bonus", entries: plain(challengeLevels) });
   for (const event of seasonalEvents) {

@@ -51,7 +51,15 @@ describe("duality svelte smoke", () => {
       if (command.type === "switch") press(" ");
       else {
         const { x, y } = command.direction;
-        press(x < 0 ? "ArrowLeft" : x > 0 ? "ArrowRight" : y < 0 ? "ArrowUp" : "ArrowDown");
+        press(
+          x < 0
+            ? "ArrowLeft"
+            : x > 0
+              ? "ArrowRight"
+              : y < 0
+                ? "ArrowUp"
+                : "ArrowDown",
+        );
       }
       flushSync();
       await tick(400); // laisse finir l'animation (le chrono est en pause)

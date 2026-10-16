@@ -13,7 +13,10 @@ export function createDebugCommands() {
     },
     recordMove(direction: GameplayDirection, moved: boolean) {
       if (!moved || !isDevtoolsEnabled) return;
-      commands = [...commands, { type: "move", direction: toDebugDirection(direction) }];
+      commands = [
+        ...commands,
+        { type: "move", direction: toDebugDirection(direction) },
+      ];
     },
     recordSwitch() {
       if (isDevtoolsEnabled) commands = [...commands, { type: "switch" }];

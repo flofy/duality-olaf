@@ -24,7 +24,9 @@ const click = (el: Element | null | undefined) => {
   flushSync();
 };
 const byText = (selector: string, text: string) =>
-  Array.from(document.querySelectorAll(selector)).find((el) => el.textContent?.includes(text));
+  Array.from(document.querySelectorAll(selector)).find((el) =>
+    el.textContent?.includes(text),
+  );
 
 afterEach(() => {
   document.body.innerHTML = "";
@@ -36,7 +38,9 @@ describe("outils de dev", () => {
     const app = await boot("/dev/levels");
     expect(document.body.textContent).toContain("LEVEL LAB");
     click(byText(".dev-catalogue-group", "World 1"));
-    expect(document.querySelectorAll(".dev-catalogue-card").length).toBe(worlds[0]!.levels.length);
+    expect(document.querySelectorAll(".dev-catalogue-card").length).toBe(
+      worlds[0]!.levels.length,
+    );
     expect(document.querySelector(".dev-thumb-cell")).not.toBeNull();
     unmount(app);
   });
@@ -57,11 +61,17 @@ describe("outils de dev", () => {
     const before = document.querySelectorAll(".editor-cell.wall").length;
     // « empty » puis « wall » : on pose un mur sur une case vide au centre
     const target = cells()[5 * 13 + 6]!;
-    target.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, button: 0 }));
+    target.dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, button: 0 }),
+    );
     flushSync();
-    expect(document.querySelectorAll(".editor-cell.wall").length).not.toBe(before);
+    expect(document.querySelectorAll(".editor-cell.wall").length).not.toBe(
+      before,
+    );
     click(byText(".editor-action", "VALIDER"));
-    expect(document.querySelector(".editor-status")?.textContent).toMatch(/Solvable|non solvable/);
+    expect(document.querySelector(".editor-status")?.textContent).toMatch(
+      /Solvable|non solvable/,
+    );
     click(byText(".editor-action", "TESTER"));
     expect(document.querySelector(".editor-play-overlay")).not.toBeNull();
     unmount(app);
@@ -70,7 +80,9 @@ describe("outils de dev", () => {
   it("générateur : propose des candidats solvables", async () => {
     const app = await boot("/dev/generator");
     expect(document.body.textContent).toContain("GÉNÉRATEUR DE NIVEAUX");
-    expect(document.querySelectorAll(".generator-card").length).toBeGreaterThan(0);
+    expect(document.querySelectorAll(".generator-card").length).toBeGreaterThan(
+      0,
+    );
     click(document.querySelector(".generator-card"));
     expect(document.querySelector(".generator-player")).not.toBeNull();
     unmount(app);
@@ -82,7 +94,9 @@ describe("outils de dev", () => {
     expect(document.querySelector(".dev-entry")).not.toBeNull();
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
     flushSync();
-    expect(document.querySelector(".dev-entry")?.textContent).toMatch(/1 commandes|0 commandes/);
+    expect(document.querySelector(".dev-entry")?.textContent).toMatch(
+      /1 commandes|0 commandes/,
+    );
     unmount(app);
   });
 });

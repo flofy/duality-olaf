@@ -179,7 +179,11 @@ export function completeLevel(
             score: 1000,
             stars: 3,
           }
-        : calculateLevelResult(result.moves, result.optimalMoves, result.elapsedMs);
+        : calculateLevelResult(
+            result.moves,
+            result.optimalMoves,
+            result.elapsedMs,
+          );
     const previous = progress.results[levelId];
 
     // Keep the player's best result. Stars are the primary progression metric,
@@ -189,7 +193,8 @@ export function completeLevel(
       stored.stars > previous.stars ||
       (stored.stars === previous.stars &&
         (stored.score > previous.score ||
-          (stored.score === previous.score && stored.elapsedMs < previous.elapsedMs)));
+          (stored.score === previous.score &&
+            stored.elapsedMs < previous.elapsedMs)));
 
     if (isBetter) progress.results[levelId] = stored;
   }

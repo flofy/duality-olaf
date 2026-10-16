@@ -11,13 +11,13 @@ pnpm --filter @duality/web exec vitest run   # test de fumée (jsdom)
 
 ## Correspondance React → Svelte
 
-| React | Svelte |
-| --- | --- |
+| React                                       | Svelte                                                       |
+| ------------------------------------------- | ------------------------------------------------------------ |
 | hook `useLevelGameplay` (ancien code React) | `src/game/gameplay.svelte.ts` (`createLevelGameplay`, runes) |
-| `react-router` (ancien code React) | `src/lib/router.svelte.ts` (History API, ~60 lignes) |
-| `ErrorBoundary` | `<svelte:boundary>` dans `App.svelte` |
-| `useDialogButtonNavigation` | action `createDialogNavigation` |
-| tick de `AppLayout` (thème/skin) | `appearance.svelte.ts` |
+| `react-router` (ancien code React)          | `src/lib/router.svelte.ts` (History API, ~60 lignes)         |
+| `ErrorBoundary`                             | `<svelte:boundary>` dans `App.svelte`                        |
+| `useDialogButtonNavigation`                 | action `createDialogNavigation`                              |
+| tick de `AppLayout` (thème/skin)            | `appearance.svelte.ts`                                       |
 
 Copiés de l'ancien code React : `theme`, `skins`, `progression`,
 `audioFeedback`, `ambientTracks`, `movementTiming`, `boardDisplay`, `controls`,
