@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /** Doit rester aligné avec le port utilisé par le `webServer` ci-dessous. */
-const PORT = 4173;
+const PORT = 4174;
 
 export default defineConfig({
   testDir: "./e2e",
