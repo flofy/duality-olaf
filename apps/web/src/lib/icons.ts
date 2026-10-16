@@ -1,0 +1,17 @@
+export type IconName =
+  | "x"
+  | "help"
+  | "fire"
+  | "star"
+  | "door"
+  | "teleporter"
+  | "arrowUp"
+  | "arrowDown"
+  | "arrowLeft"
+  | "arrowRight"
+  | "reset"
+  | "grid"
+  | "maximize"
+  | "minimize"
+  | "theme"
+  | "skin";

@@ -1,22 +1,16 @@
 import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ".", "");
-  const devtoolsEnabled =
-    env.VITE_ENABLE_DEVTOOLS === "true" || env.VITE_ENABLE_LEVEL_LAB === "true";
 
   return {
     base: env.VITE_BASE_PATH || "./",
-    define: {
-      "import.meta.env.VITE_ENABLE_DEVTOOLS": JSON.stringify(devtoolsEnabled),
-    },
     build: {
       rollupOptions: {
         output: {
           manualChunks: {
-            react: ["react", "react-dom", "react-router", "react-router/dom"],
             game: ["@duality/game"],
             "level-format": ["@duality/level-format"],
             vendor: ["workbox-window"],
@@ -25,7 +19,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      react(),
+      svelte(),
       VitePWA({
         registerType: "prompt",
         includeAssets: ["favicon.svg"],

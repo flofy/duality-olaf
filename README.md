@@ -1,6 +1,6 @@
 # Duality Olaf
 
-Modern TypeScript/React reimplementation inspired by the classic **Olaf / Le Touti Rikiki, Maousse Costo** puzzle mechanics and the later **Maouss DS** adaptation.
+Modern TypeScript/Svelte reimplementation inspired by the classic **Olaf / Le Touti Rikiki, Maousse Costo** puzzle mechanics and the later **Maouss DS** adaptation.
 
 > **Status:** gameplay implementation / prototype
 
@@ -12,7 +12,7 @@ The implementation target is therefore an independent game using our own level d
 
 ## Current prototype
 
-- TypeScript + React + CSS Grid + Vite (the current renderer does not use Phaser).
+- TypeScript + Svelte 5 + CSS Grid + Vite (the current renderer does not use Phaser).
 - Framework-independent `LevelRunner` for movement, collision, form switching, targets and completion.
 - First campaign world with **11 playable prototype levels**.
 - Level-selection screen with the planned 5 × 11 structure visible.
@@ -34,7 +34,7 @@ The implementation target is therefore an independent game using our own level d
 
 ```text
 duality-olaf/
-├── apps/web/               # Vite + React/CSS PWA shell
+├── apps/web/               # Vite + Svelte 5/CSS PWA shell
 ├── packages/game/          # framework-independent game state + rules
 ├── packages/level-format/  # level domain model
 ├── tools/nds-research/     # optional historical research tooling
@@ -42,7 +42,7 @@ duality-olaf/
 └── docs/                   # mechanics, research and level documentation
 ```
 
-The React/CSS layer renders state from `packages/game`. The core rules remain independent from the UI.
+The Svelte/CSS layer renders state from `packages/game`. The core rules remain independent from the UI.
 
 ## Level research
 
@@ -74,7 +74,7 @@ The web app is designed as a static PWA and can be deployed to **GitHub Pages** 
 
 1. [x] Establish the independent TypeScript domain model.
 2. [x] Introduce a framework-independent `LevelRunner`.
-3. [x] Connect the prototype to a responsive React/CSS renderer.
+3. [x] Connect the prototype to a responsive Svelte/CSS renderer.
 4. [x] Add keyboard + initial touch controls.
 5. [x] Add first 11-level prototype campaign and level selection.
 6. [x] Add CI typecheck/build validation.
