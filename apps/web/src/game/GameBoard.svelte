@@ -64,6 +64,15 @@
   const activeColor = $derived(
     hexToCss(gameState.activeForm === "ball" ? theme.ball : theme.square),
   );
+  // Halloween uses a distinct spectral palette for each character without
+  // changing the normal trail colors for other skins or worlds.
+  const trailColor = $derived(
+    skin === "halloween"
+      ? gameState.activeForm === "ball"
+        ? "#B66CFF"
+        : "#62E879"
+      : activeColor,
+  );
 
   const boardStyle = $derived(
     styleString({
@@ -83,7 +92,7 @@
     const piece = gameState.activeForm === "ball" ? ballEl : squareEl;
     const board = boardEl;
     const layer = trailLayerEl;
-    const color = activeColor;
+    const color = trailColor;
     if (!current || current.teleport || !board || !piece || !layer) return;
 
     const boardRect = board.getBoundingClientRect();
@@ -244,7 +253,7 @@
       style:--move-y={active ? moveY : "0px"}
       style:--move-duration="{moveDuration}ms"
       style:--trail-cells={movementDistance}
-      style:--trail-color={activeColor}
+      style:--trail-color={trailColor}
       style:--piece-color={hexToCss(theme.ball)}
       data-movement-from={active && movement ? `${movement.from.x},${movement.from.y}` : undefined}
       data-movement-target={active && movement ? `${movement.target.x},${movement.target.y}` : undefined}
@@ -271,7 +280,7 @@
       style:--move-y={active ? moveY : "0px"}
       style:--move-duration="{moveDuration}ms"
       style:--trail-cells={movementDistance}
-      style:--trail-color={activeColor}
+      style:--trail-color={trailColor}
       style:--piece-color={hexToCss(theme.square)}
       data-movement-from={active && movement ? `${movement.from.x},${movement.from.y}` : undefined}
       data-movement-target={active && movement ? `${movement.target.x},${movement.target.y}` : undefined}
