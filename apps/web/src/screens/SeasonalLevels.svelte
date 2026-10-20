@@ -11,6 +11,7 @@
     "La maison hantée",
     "L'envol des chauves-souris",
     "Le réveil des squelettes",
+    "La sorcière et son chaudron",
   ];
 
   const completed = halloween.levels.filter((level) => isLevelCompleted(level.id)).length;
