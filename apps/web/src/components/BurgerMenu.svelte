@@ -193,7 +193,7 @@
           <span class="menu-item-label">GESTES · {swipeEnabled ? "ACTIVÉS" : "DÉSACTIVÉS"}</span>
         </button>
         <button type="button" class="menu-item" onclick={() => (gameLayout = cycleGameLayoutMode())}>
-          <span class="menu-item-icon" aria-hidden="true"><Icon name="smartphone" size={18} color="currentColor" /></span>
+          <span class="menu-item-icon" aria-hidden="true">↔</span>
           <span class="menu-item-label">DISPOSITION · {gameLayoutModeLabels[gameLayout].toUpperCase()}</span>
         </button>
         <!-- Mode d'affichage de la grille : cases carrées (ratio conservé) ou
