@@ -344,3 +344,23 @@ test("ui regression: burger menu exposes keyboard-safe controls", async ({
   );
   expect(updated).not.toBe(initial);
 });
+
+
+test("la disposition du jeu se règle depuis le burger et persiste après rechargement", async ({ page }) => {
+  await page.goto("/menu");
+  const burger = page.locator("button.burger-toggle");
+  await burger.click();
+
+  const layoutSetting = page.getByRole("button", { name: /DISPOSITION · PORTRAIT/ });
+  await expect(layoutSetting).toBeVisible();
+  await layoutSetting.click();
+
+  await expect(page.locator("html")).toHaveAttribute("data-game-layout", "landscape");
+  await expect(page.getByRole("button", { name: /DISPOSITION · PAYSAGE/ })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("duality.game-layout.v1"))).toBe("landscape");
+
+  await page.reload();
+  await burger.click();
+  await expect(page.locator("html")).toHaveAttribute("data-game-layout", "landscape");
+  await expect(page.getByRole("button", { name: /DISPOSITION · PAYSAGE/ })).toBeVisible();
+});
