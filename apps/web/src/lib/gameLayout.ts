@@ -2,7 +2,7 @@
 export type GameLayoutMode = "portrait" | "landscape" | "auto";
 
 const STORAGE_KEY = "duality.game-layout.v1";
-const DEFAULT_GAME_LAYOUT_MODE: GameLayoutMode = "auto";
+const DEFAULT_GAME_LAYOUT_MODE: GameLayoutMode = "portrait";
 const modes: GameLayoutMode[] = ["portrait", "landscape", "auto"];
 
 export const gameLayoutModeLabels: Record<GameLayoutMode, string> = {
