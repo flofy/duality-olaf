@@ -119,3 +119,51 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* In landscape, let the board use the extra width and reclaim vertical space.
+   "Portrait" opts out; "Paysage" and "Auto" share the responsive layout. This
+   only changes presentation: movement, collisions and touch handlers are intact. */
+@media (orientation: landscape) and (max-height: 700px) {
+  html:not([data-game-layout="portrait"]) .game {
+    padding: 6px clamp(8px, 2vw, 20px);
+  }
+
+  html:not([data-game-layout="portrait"]) .topbar {
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  html:not([data-game-layout="portrait"]) .topbar b {
+    font-size: 11px;
+  }
+
+  html:not([data-game-layout="portrait"]) .board {
+    --tile: min(96px, calc(100cqw / var(--cols)), calc(100cqh / var(--rows)));
+  }
+
+  html:not([data-game-layout="portrait"]) .controls {
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  html:not([data-game-layout="portrait"]) .dpad {
+    grid-template-columns: repeat(3, clamp(34px, 7vh, 46px));
+    grid-template-rows: repeat(2, clamp(32px, 6vh, 40px));
+    gap: 3px;
+  }
+
+  html:not([data-game-layout="portrait"]) .switch {
+    min-width: 88px;
+  }
+
+  html:not([data-game-layout="portrait"]) .hud {
+    font-size: 11px;
+    margin-top: 4px;
+  }
+
+  html:not([data-game-layout="portrait"]) .hud-row {
+    gap: 8px;
+    margin-top: 4px;
+  }
+}
