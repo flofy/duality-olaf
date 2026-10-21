@@ -35,7 +35,9 @@ function persistGameLayoutMode(mode: GameLayoutMode): void {
 
 export function cycleGameLayoutMode(): GameLayoutMode {
   const current = getGameLayoutMode();
-  const next = modes[(modes.indexOf(current) + 1) % modes.length] ?? DEFAULT_GAME_LAYOUT_MODE;
+  const next =
+    modes[(modes.indexOf(current) + 1) % modes.length] ??
+    DEFAULT_GAME_LAYOUT_MODE;
   persistGameLayoutMode(next);
   return next;
 }

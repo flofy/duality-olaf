@@ -120,7 +120,6 @@
   }
 }
 
-
 /* In landscape, let the board use the extra width and reclaim vertical space.
    "Portrait" opts out; "Paysage" and "Auto" share the responsive layout. This
    only changes presentation: movement, collisions and touch handlers are intact. */
