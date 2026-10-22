@@ -381,3 +381,31 @@ test("la disposition du jeu se règle depuis le burger et persiste après rechar
     page.getByRole("button", { name: /DISPOSITION · PAYSAGE/ }),
   ).toBeVisible();
 });
+
+
+test("le mode paysage met la grille en plein écran avec les commandes en surimpression", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.addInitScript(() => {
+    localStorage.setItem("duality.game-layout.v1", "landscape");
+    localStorage.setItem(
+      "duality.progress.v2",
+      JSON.stringify({ completed: ["world-1-level-01"], results: {} }),
+    );
+  });
+
+  await page.goto("/world/1/level/world-1-level-02");
+  await expect(page.locator(".board")).toBeVisible();
+
+  const boardWrap = page.locator(".board-wrap");
+  const controls = page.locator(".game .controls");
+  await expect(boardWrap).toHaveCSS("position", "fixed");
+  await expect(controls).toHaveCSS("position", "fixed");
+  await expect(page.locator("button.burger-toggle")).toBeVisible();
+
+  const boardBox = await page.locator(".board").boundingBox();
+  expect(boardBox).not.toBeNull();
+  expect(boardBox!.width).toBeCloseTo(844, 0);
+  expect(boardBox!.height).toBeCloseTo(390, 0);
+});
