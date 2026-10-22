@@ -55,7 +55,7 @@
 </script>
 
 {#if completed}
-  <div class="overlay">
+  <div class="overlay {changingWorld ? 'overlay--world-transition' : ''}">
     <div
       class="modal completion-modal"
       use:nav.action
