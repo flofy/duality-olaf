@@ -382,7 +382,6 @@ test("la disposition du jeu se règle depuis le burger et persiste après rechar
   ).toBeVisible();
 });
 
-
 test("le mode paysage met la grille en plein écran avec les commandes en surimpression", async ({
   page,
 }) => {

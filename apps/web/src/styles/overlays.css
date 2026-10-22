@@ -479,12 +479,15 @@
   border-radius: var(--radius-md);
 }
 
-
 /* Crossing into a new world is a full-screen interstitial, not a small modal. */
 .overlay--world-transition {
   padding: 0;
   background:
-    radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--accent) 28%, transparent), transparent 62%),
+    radial-gradient(
+      circle at 50% 35%,
+      color-mix(in srgb, var(--accent) 28%, transparent),
+      transparent 62%
+    ),
     linear-gradient(145deg, #070a14f5, #11162bf7);
   backdrop-filter: none;
 }
@@ -499,8 +502,9 @@
   height: 100%;
   max-height: none;
   overflow-y: auto;
-  padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
-    max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+  padding: max(20px, env(safe-area-inset-top))
+    max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom))
+    max(20px, env(safe-area-inset-left));
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -546,8 +550,10 @@
     justify-items: center;
     column-gap: clamp(16px, 4vw, 48px);
     row-gap: 8px;
-    padding: max(12px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
-      max(12px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+    padding: max(12px, env(safe-area-inset-top))
+      max(20px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom))
+      max(20px, env(safe-area-inset-left));
   }
 
   .overlay--world-transition .modal-illustration {
