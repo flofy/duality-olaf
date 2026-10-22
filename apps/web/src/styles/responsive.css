@@ -171,7 +171,7 @@
   html:not([data-game-layout="portrait"]) .game .hud-row {
     position: fixed;
     z-index: 3;
-    top: max(8px, env(safe-area-inset-top));
+    top: max(44px, calc(env(safe-area-inset-top) + 38px));
     left: max(8px, env(safe-area-inset-left));
     right: max(58px, calc(env(safe-area-inset-right) + 52px));
     margin: 0;
