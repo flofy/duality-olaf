@@ -403,8 +403,20 @@ test("le mode paysage met la grille en plein écran avec les commandes en surimp
   await expect(controls).toHaveCSS("position", "fixed");
   await expect(page.locator("button.burger-toggle")).toBeVisible();
 
-  const boardBox = await page.locator(".board").boundingBox();
-  expect(boardBox).not.toBeNull();
-  expect(boardBox!.width).toBeCloseTo(844, 0);
-  expect(boardBox!.height).toBeCloseTo(390, 0);
+  // Le conteneur de la grille doit couvrir le viewport ; le plateau interne
+  // peut avoir une légère transformation pendant son animation d'entrée.
+  const boardWrapBox = await boardWrap.boundingBox();
+  expect(boardWrapBox).not.toBeNull();
+  expect(boardWrapBox!.width).toBeCloseTo(844, 0);
+  expect(boardWrapBox!.height).toBeCloseTo(390, 0);
+
+  // Le même mode immersif doit fonctionner sur un écran desktop haut, sans
+  // dépendre de la media query mobile en paysage.
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await expect(boardWrap).toHaveCSS("position", "fixed");
+  await expect(controls).toHaveCSS("position", "fixed");
+  const desktopBoardWrapBox = await boardWrap.boundingBox();
+  expect(desktopBoardWrapBox).not.toBeNull();
+  expect(desktopBoardWrapBox!.width).toBeCloseTo(1280, 0);
+  expect(desktopBoardWrapBox!.height).toBeCloseTo(800, 0);
 });
