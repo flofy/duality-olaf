@@ -558,7 +558,9 @@
   }
 
   .overlay--world-transition .completion-modal h2,
+  .overlay--world-transition .completion-stars,
   .overlay--world-transition .completion-stats,
+  .overlay--world-transition .completion-progress,
   .overlay--world-transition .world-transition-message,
   .overlay--world-transition .modal-actions {
     grid-column: 2;
