@@ -21,6 +21,13 @@
   } from "../lib/controls";
   import { isLevelLabEnabled } from "../lib/devFlags";
   import {
+    cycleGameLayoutMode,
+    gameLayoutModeLabels,
+    getGameLayoutMode,
+    syncGameLayoutMode,
+    type GameLayoutMode,
+  } from "../lib/gameLayout";
+  import {
     getDeferredInstallPrompt,
     isStandaloneDisplay,
     setDeferredInstallPrompt,
@@ -57,6 +64,7 @@
   let controlsMode = $state<ControlsMode>(getControlsMode());
   let swipeEnabled = $state(getSwipeEnabled());
   let boardDisplay = $state<BoardDisplayMode>(getBoardDisplayMode());
+  let gameLayout = $state<GameLayoutMode>(getGameLayoutMode());
   let skin = $state<SkinPreference>(normalizeSkinPreference(getSkinPreference()));
   let themeLabel = $state(getTheme().name.toUpperCase());
   let panel: HTMLDivElement | undefined = $state();
@@ -70,9 +78,13 @@
     syncControlsMode(controlsMode);
   });
 
-  // Mode d'affichage du plateau : reflété sur <html> pour les règles CSS.
+  // Préférences de rendu : reflétées sur <html> pour les règles CSS.
   $effect(() => {
     syncBoardDisplayMode(boardDisplay);
+  });
+
+  $effect(() => {
+    syncGameLayoutMode(gameLayout);
   });
 
   // À l'ouverture, le focus entre dans le panneau ; App le rend au burger à la fermeture.
@@ -179,6 +191,10 @@
         >
           <span class="menu-item-icon" aria-hidden="true">↔</span>
           <span class="menu-item-label">GESTES · {swipeEnabled ? "ACTIVÉS" : "DÉSACTIVÉS"}</span>
+        </button>
+        <button type="button" class="menu-item" onclick={() => (gameLayout = cycleGameLayoutMode())}>
+          <span class="menu-item-icon" aria-hidden="true">↔</span>
+          <span class="menu-item-label">DISPOSITION · {gameLayoutModeLabels[gameLayout].toUpperCase()}</span>
         </button>
         <!-- Mode d'affichage de la grille : cases carrées (ratio conservé) ou
              plateau étiré pour occuper tout l'espace disponible. -->
