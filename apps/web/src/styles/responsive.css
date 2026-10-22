@@ -122,7 +122,7 @@
 
 /* Immersive landscape gameplay: the board is the full-screen surface.
    The burger stays above it, while HUD and controls float over the playfield. */
-@media (orientation: landscape) and (max-height: 700px) {
+@media (min-width: 701px), (orientation: landscape) and (max-height: 700px) {
   html:not([data-game-layout="portrait"]) .game {
     position: relative;
     padding: 0;
