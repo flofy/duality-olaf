@@ -52,6 +52,10 @@
 
   function nextLevel() {
     if (seasonalEvent) {
+      if (advent) {
+        navigate("/advent");
+        return;
+      }
       if (levelIndex < levels.length - 1) {
         navigate(`${seasonalLevelRoute}${levels[levelIndex + 1]!.id}`);
       } else {
