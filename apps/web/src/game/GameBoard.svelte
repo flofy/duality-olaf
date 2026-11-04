@@ -71,7 +71,11 @@
       ? gameState.activeForm === "ball"
         ? "#B66CFF"
         : "#62E879"
-      : activeColor,
+      : skin === "christmas"
+        ? gameState.activeForm === "ball"
+          ? "#9FEAFF"
+          : "#E8B66F"
+        : activeColor,
   );
 
   const boardStyle = $derived(

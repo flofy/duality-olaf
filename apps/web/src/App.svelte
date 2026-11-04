@@ -17,13 +17,14 @@
   import ProtectedLevel from "./screens/ProtectedLevel.svelte";
   import SeasonalLevelRoute from "./screens/SeasonalLevelRoute.svelte";
   import SeasonalLevels from "./screens/SeasonalLevels.svelte";
+  import WinterLevels from "./screens/WinterLevels.svelte";
+  import AdventCalendar from "./screens/AdventCalendar.svelte";
+  import WinterLevelRoute from "./screens/WinterLevelRoute.svelte";
   import WorldLevels from "./screens/WorldLevels.svelte";
 
   let { updateSW }: { updateSW: (reloadPage?: boolean) => Promise<void> } = $props();
 
   let menuOpen = $state(false);
-  // Le burger est l'unique contrôle ouvert/fermé du menu : on le référence pour
-  // lui rendre le focus à la fermeture (le panneau le prend à l'ouverture).
   let burger: HTMLButtonElement | undefined = $state();
   let wasMenuOpen = false;
 
@@ -33,13 +34,11 @@
     return styleString(themeVars(getTheme()));
   });
 
-  // Ferme le menu à chaque changement de route.
   $effect(() => {
     location.path;
     menuOpen = false;
   });
 
-  // Ferme le menu avec Échap.
   $effect(() => {
     if (!menuOpen) return;
     const onKey = (event: KeyboardEvent) => {
@@ -49,7 +48,6 @@
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  // Le focus revient au burger à la fermeture, pour ne jamais le laisser dans le vide.
   $effect(() => {
     if (!menuOpen && wasMenuOpen) burger?.focus();
     wasMenuOpen = menuOpen;
@@ -58,12 +56,8 @@
 
 <main class="app" style={appStyle}>
   <UpdateBanner {updateSW} />
-  <!-- inert : menu ouvert, la page derrière n'est ni cliquable ni focusable.
-       Le burger reste atteignable : il vit à côté, pas dans .shell. -->
   <div class="shell app-enter" inert={menuOpen}>
     <svelte:boundary onerror={(error) => console.error("[duality] render error:", error)}>
-      <!-- Chaque navigation remonte l'écran : l'état d'un niveau (chrono, plateau,
-           ambiance) repart toujours de zéro, comme avec une nouvelle route React. -->
       {#key location.path}
         {#if view.name === "intro"}
           <Intro />
@@ -77,6 +71,14 @@
           <SeasonalLevels />
         {:else if view.name === "halloween-level"}
           <SeasonalLevelRoute levelId={view.levelId} />
+        {:else if view.name === "winter"}
+          <WinterLevels />
+        {:else if view.name === "winter-level"}
+          <WinterLevelRoute levelId={view.levelId} />
+        {:else if view.name === "advent"}
+          <AdventCalendar />
+        {:else if view.name === "advent-level"}
+          <WinterLevelRoute levelId={view.levelId} advent />
         {:else if view.name === "world"}
           <WorldLevels worldId={view.worldId} />
         {:else if view.name === "level"}
@@ -106,9 +108,6 @@
       {/snippet}
     </svelte:boundary>
   </div>
-  <!-- Barre utilitaire hors de .shell, à côté du panneau : elle passe au-dessus de
-       lui (z-index, cf. layout.css) et le burger devient l'unique bouton
-       ouvert/fermé. -->
   <div class="utility-bar">
     <button
       bind:this={burger}

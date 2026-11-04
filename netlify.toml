@@ -1,0 +1,6 @@
+# Keep developer-only controls out of production while exposing them on previews.
+[context.deploy-preview.environment]
+VITE_ENABLE_DEVTOOLS = "true"
+
+[context.branch-deploy.environment]
+VITE_ENABLE_DEVTOOLS = "true"

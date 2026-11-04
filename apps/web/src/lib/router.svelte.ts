@@ -42,6 +42,10 @@ type View =
   | { name: "challenge" }
   | { name: "halloween" }
   | { name: "halloween-level"; levelId: string }
+  | { name: "winter" }
+  | { name: "winter-level"; levelId: string }
+  | { name: "advent" }
+  | { name: "advent-level"; levelId: string }
   | { name: "world"; worldId: string }
   | { name: "level"; worldId: string; levelId: string }
   | { name: "dev-levels" }
@@ -57,9 +61,18 @@ export function matchRoute(path: string): View {
   if (path === "/help") return { name: "help" };
   if (path === "/challenge") return { name: "challenge" };
   if (path === "/halloween") return { name: "halloween" };
+  if (path === "/winter") return { name: "winter" };
+  if (path === "/advent") return { name: "advent" };
 
-  const seasonal = /^\/halloween\/level\/([^/]+)$/.exec(path);
-  if (seasonal) return { name: "halloween-level", levelId: seasonal[1]! };
+  const seasonal = /^\/(halloween|winter)\/level\/([^/]+)$/.exec(path);
+  if (seasonal) {
+    return seasonal[1] === "winter"
+      ? { name: "winter-level", levelId: seasonal[2]! }
+      : { name: "halloween-level", levelId: seasonal[2]! };
+  }
+
+  const adventLevel = /^\/advent\/level\/([^/]+)$/.exec(path);
+  if (adventLevel) return { name: "advent-level", levelId: adventLevel[1]! };
 
   const world = /^\/world\/([^/]+)$/.exec(path);
   if (world) return { name: "world", worldId: world[1]! };
