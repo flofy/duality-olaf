@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { christmas } from "@duality/level-format";
+  import { christmas, isSeasonalEventAvailable } from "@duality/level-format";
   import Redirect from "../components/Redirect.svelte";
   import Game from "../game/Game.svelte";
   import { isAdventDayAvailable } from "../lib/advent";
@@ -17,7 +17,7 @@
 
 {#if index < 0}
   <Redirect to={advent ? "/advent" : "/winter"} />
-{:else if !unlocked}
+{:else if (!advent && !isSeasonalEventAvailable(christmas)) || !unlocked}
   <Redirect to={advent ? "/advent" : "/winter"} />
 {:else}
   <Game level={christmas.levels[index]!} worldId={2} seasonalEvent={christmas} {advent} />
