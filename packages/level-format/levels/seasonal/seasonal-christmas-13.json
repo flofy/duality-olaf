@@ -21,91 +21,16 @@
     [
       "wall",
       "empty",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
       "empty",
       "empty",
       "empty",
       "empty",
       "empty",
-      "wall",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
       "empty",
-      "wall",
-      "wall",
-      "wall",
       "empty",
-      "wall",
-      "wall",
-      "wall",
       "empty",
-      "wall",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
       "empty",
-      "wall",
-      "wall",
-      "wall",
       "empty",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "wall",
-      "wall",
-      "wall"
-    ],
-    [
-      "wall",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "wall",
-      "wall",
-      "wall",
-      "empty",
-      "wall",
-      "wall",
       "wall"
     ],
     [
@@ -115,24 +40,99 @@
       "empty",
       "empty",
       "empty",
-      "wall",
-      "wall",
-      "wall",
       "empty",
-      "wall",
-      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "wall"
     ],
     [
       "wall",
       "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
       "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
       "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
       "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
       "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
       "wall",
-      "wall",
-      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "empty",
       "empty",
       "empty",
@@ -156,28 +156,32 @@
   ],
   "ball": {
     "x": 1,
-    "y": 1
+    "y": 8
   },
   "square": {
-    "x": 1,
+    "x": 11,
     "y": 8
   },
   "stars": [
     {
-      "x": 1,
+      "x": 3,
       "y": 4
     },
     {
-      "x": 2,
-      "y": 7
-    },
-    {
-      "x": 5,
-      "y": 7
-    },
-    {
-      "x": 5,
+      "x": 4,
       "y": 3
+    },
+    {
+      "x": 5,
+      "y": 2
+    },
+    {
+      "x": 6,
+      "y": 1
+    },
+    {
+      "x": 7,
+      "y": 2
     },
     {
       "x": 8,
@@ -185,7 +189,11 @@
     },
     {
       "x": 9,
-      "y": 6
+      "y": 4
+    },
+    {
+      "x": 6,
+      "y": 7
     }
   ]
 }
