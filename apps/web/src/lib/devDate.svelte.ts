@@ -1,10 +1,10 @@
-import { isDevtoolsEnabled } from "./devFlags";
+const isDevelopment = import.meta.env.DEV;
 
 let simulatedDate = $state<Date | null>(null);
 
 /** The application date used by date-dependent seasonal features. */
 export function getAppDate(): Date {
-  return isDevtoolsEnabled && simulatedDate
+  return isDevelopment && simulatedDate
     ? new Date(simulatedDate)
     : new Date();
 }
@@ -14,7 +14,7 @@ export function getSimulatedDate(): Date | null {
 }
 
 export function setSimulatedDate(value: string): void {
-  if (!isDevtoolsEnabled) return;
+  if (!isDevelopment) return;
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (!match) return;
   const [, year, month, day] = match;
