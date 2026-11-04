@@ -22,9 +22,7 @@
     { event: christmas, route: "/winter", icon: "❄️", label: "HIVER", description: "24 NIVEAUX SOUS LA NEIGE" },
   ];
 
-  const adventAvailable = $derived(
-    getAppDate().getMonth() === 11 && getAppDate().getDate() <= 24,
-  );
+  const adventAvailable = $derived(isSeasonalEventAvailable(christmas, getAppDate()));
 
   function worldMeta(world: (typeof worlds)[number]): string {
     const done = world.levels.filter((level) => isLevelCompleted(level.id)).length;
