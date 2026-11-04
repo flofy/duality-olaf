@@ -1,12 +1,11 @@
-const isDevelopment = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEVTOOLS === "true";
+const isDevelopment =
+  import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEVTOOLS === "true";
 
 let simulatedDate = $state<Date | null>(null);
 
 /** The application date used by date-dependent seasonal features. */
 export function getAppDate(): Date {
-  return isDevelopment && simulatedDate
-    ? new Date(simulatedDate)
-    : new Date();
+  return isDevelopment && simulatedDate ? new Date(simulatedDate) : new Date();
 }
 
 export function getSimulatedDate(): Date | null {
