@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { halloween, isSeasonalEventAvailable } from "@duality/level-format";
+  import { halloween, christmas, isSeasonalEventAvailable } from "@duality/level-format";
   import Button from "../components/Button.svelte";
   import { campaign, worlds } from "../lib/levels/campaign";
   import {
@@ -15,6 +15,10 @@
   const visibleWorlds = worlds.filter(
     (world) => world.status === "available" && isWorldUnlocked(world.id),
   );
+  const seasonalAvailable = [
+    { event: halloween, route: "/halloween", icon: "🎃", label: "HALLOWEEN", description: "UNE AVENTURE QUI DONNE DES FRISSONS" },
+    { event: christmas, route: "/winter", icon: "❄️", label: "HIVER", description: "24 NIVEAUX SOUS LA NEIGE" },
+  ];
 
   function worldMeta(world: (typeof worlds)[number]): string {
     const done = world.levels.filter((level) => isLevelCompleted(level.id)).length;
@@ -24,36 +28,60 @@
   }
 </script>
 
-<section class="menu">
+<section class="menu worlds-menu">
   <h1 class="title">DUALITY</h1>
   <div class="subtitle">CHOISIS TON MONDE</div>
-  <div class="world-list">
-    {#each visibleWorlds as world (world.id)}
-      <div style="position: relative">
+
+  <section class="world-group" aria-labelledby="classic-worlds-title">
+    <div class="world-group-heading">
+      <h2 id="classic-worlds-title">MONDES CLASSIQUES</h2>
+      <span>PROGRESSION PRINCIPALE</span>
+    </div>
+    <div class="world-list">
+      {#each visibleWorlds as world (world.id)}
+        <div style="position: relative">
+          <Button
+            icon="arrowRight"
+            iconSize={20}
+            label="MONDE {world.id} — {world.name.toUpperCase()}"
+            onclick={() => navigate(`/world/${world.id}`)}
+            variant="primary"
+            class="world-button"
+          />
+          <div class="world-meta">{worldMeta(world)}</div>
+        </div>
+      {/each}
+    </div>
+  </section>
+
+  <section class="world-group seasonal-world-group" aria-labelledby="seasonal-worlds-title">
+    <div class="world-group-heading">
+      <h2 id="seasonal-worlds-title">MONDES SAISONNIERS</h2>
+      <span>COLLECTIONS ÉVÉNEMENTIELLES</span>
+    </div>
+    {#each seasonalAvailable as item (item.event.id)}
+      {#if isSeasonalEventAvailable(item.event)}
         <Button
-          icon="arrowRight"
-          iconSize={20}
-          label="MONDE {world.id} — {world.name.toUpperCase()}"
-          onclick={() => navigate(`/world/${world.id}`)}
+          iconText={item.icon}
+          label={`${item.label} · ${item.description}`}
+          onclick={() => navigate(item.route)}
           variant="primary"
-          class="world-button"
+          class={item.event.theme === "halloween" ? "halloween-promo" : "winter-promo"}
         />
-        <div class="world-meta">{worldMeta(world)}</div>
-      </div>
+      {/if}
     {/each}
-  </div>
-  {#if isSeasonalEventAvailable(halloween)}
     <Button
-      iconText="🎃"
-      label="ÉVÉNEMENT HALLOWEEN · NIVEAUX SPÉCIAUX"
-      onclick={() => navigate("/halloween")}
-      variant="primary"
-      class="halloween-promo"
+      iconText="🎁"
+      label="CALENDRIER DE L'AVENT · 24 SURPRISES"
+      onclick={() => navigate("/advent")}
+      variant="secondary"
+      class="advent-promo"
     />
-  {/if}
+  </section>
+
   <div class="campaign-progress">
     <div class="campaign-progress-header">
-      <span>PROGRESSION</span>
+      <span>PROGRESSION CLASSIQUE</span>
       <strong>{progress.percentage}%</strong>
     </div>
     <div class="campaign-progress-track" aria-label="{progress.percentage}% de complétion">
