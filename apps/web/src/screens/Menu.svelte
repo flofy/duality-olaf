@@ -22,6 +22,10 @@
     { event: christmas, route: "/winter", icon: "❄️", label: "HIVER", description: "24 NIVEAUX SOUS LA NEIGE" },
   ];
 
+  const adventAvailable = $derived(
+    getAppDate().getMonth() === 11 && getAppDate().getDate() <= 24,
+  );
+
   function worldMeta(world: (typeof worlds)[number]): string {
     const done = world.levels.filter((level) => isLevelCompleted(level.id)).length;
     return done === world.levels.length
@@ -73,13 +77,15 @@
         />
       {/if}
     {/each}
-    <Button
-      iconText="🎁"
-      label="CALENDRIER DE L'AVENT · 24 SURPRISES"
-      onclick={() => navigate("/advent")}
-      variant="secondary"
-      class="advent-promo"
-    />
+{#if adventAvailable}
+      <Button
+        iconText="🎁"
+        label="CALENDRIER DE L'AVENT · 24 SURPRISES"
+        onclick={() => navigate("/advent")}
+        variant="secondary"
+        class="advent-promo"
+      />
+    {/if}
   </section>
 
   <div class="campaign-progress">
