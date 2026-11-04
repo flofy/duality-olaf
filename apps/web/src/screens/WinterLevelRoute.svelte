@@ -9,10 +9,9 @@
 
   const index = $derived(christmas.levels.findIndex((level) => level.id === levelId));
   const unlocked = $derived(
-    index === 0 ||
-    (advent
-      ? isAdventDayAvailable(index + 1)
-      : index > 0 && isLevelCompleted(christmas.levels[index - 1]!.id)),
+    advent
+      ? index >= 0 && isAdventDayAvailable(index + 1)
+      : index === 0 || (index > 0 && isLevelCompleted(christmas.levels[index - 1]!.id)),
   );
 </script>
 
