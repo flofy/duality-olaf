@@ -87,7 +87,7 @@ Historical CPC and NDS research informs the mechanics and level model, but rever
 
 ## Level research
 
-The current working hypothesis is **55 levels, arranged as 5 worlds × 11 levels**, with a candidate DS map representation of **13 × 10 cells** per level. The visual study is documented in [`docs/assets/levels-overview.svg`](docs/assets/levels-overview.svg).
+The canonical campaign contains **55 levels, arranged as 5 worlds × 11 levels**. The candidate DS map representation is **13 × 10 cells** per level. The visual study is documented in [`docs/assets/levels-overview.svg`](docs/assets/levels-overview.svg).
 
 The historical CPC format is documented separately and can be used as a reference or conversion source. Original binaries remain outside the runtime and are not redistributed.
 
