@@ -1,6 +1,8 @@
 <script lang="ts">
   import { christmas, isSeasonalEventAvailable } from "@duality/level-format";
   import Button from "../components/Button.svelte";
+  import DevDateSimulator from "../components/DevDateSimulator.svelte";
+  import { getAppDate } from "../lib/devDate.svelte";
   import Character from "../components/Character.svelte";
   import { getLevelResult, isLevelCompleted } from "../lib/progression";
   import { navigate } from "../lib/router.svelte";
@@ -22,7 +24,7 @@
   );
 </script>
 
-{#if !isSeasonalEventAvailable(christmas)}
+{#if !isSeasonalEventAvailable(christmas, getAppDate())}
   <Redirect to="/advent" />
 {:else}
 <section class="menu winter-levels-page">
@@ -30,6 +32,7 @@
     <Button icon="arrowLeft" label="MENU" onclick={() => navigate("/menu")} variant="secondary" />
     <b>MONDE SAISONNIER</b>
   </div>
+  <DevDateSimulator />
   <div class="winter-hero" role="img" aria-label="Monde hivernal avec neige et étoiles">
     <span class="winter-hero-snow" aria-hidden="true">❄</span>
     <span class="winter-hero-star winter-hero-star-one" aria-hidden="true">✦</span>
