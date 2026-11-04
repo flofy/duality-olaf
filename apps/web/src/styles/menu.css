@@ -472,3 +472,17 @@
   .advent-grid { gap: 7px; }
   .advent-door { min-height: 66px; }
 }
+
+
+/* The main menu adopts the winter atmosphere only during the winter event. */
+.winter-menu {
+  background-image:
+    radial-gradient(circle at 12% 8%, #e8faffaa 0 1px, transparent 2px),
+    radial-gradient(circle at 84% 19%, #e8faff88 0 1px, transparent 2px),
+    radial-gradient(circle at 35% 72%, #e8faff77 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 88%, #e8faff88 0 1px, transparent 2px);
+  background-size: 91px 87px, 137px 119px, 113px 103px, 163px 151px;
+}
+.app:has(.winter-menu) {
+  background: radial-gradient(circle at 50% 0%, #285b7b 0, #142b49 36%, #081321 82%);
+}
