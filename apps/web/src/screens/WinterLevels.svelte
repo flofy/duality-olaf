@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { christmas } from "@duality/level-format";
+  import { christmas, isSeasonalEventAvailable } from "@duality/level-format";
   import Button from "../components/Button.svelte";
   import Character from "../components/Character.svelte";
   import { getLevelResult, isLevelCompleted } from "../lib/progression";
   import { navigate } from "../lib/router.svelte";
+  import Redirect from "../components/Redirect.svelte";
 
   const titles = [
     "Premiers flocons", "Le sentier gelé", "La forêt de sapins", "Le lac miroir",
@@ -21,6 +22,9 @@
   );
 </script>
 
+{#if !isSeasonalEventAvailable(christmas)}
+  <Redirect to="/advent" />
+{:else}
 <section class="menu winter-levels-page">
   <div class="topbar">
     <Button icon="arrowLeft" label="MENU" onclick={() => navigate("/menu")} variant="secondary" />
@@ -68,3 +72,4 @@
   </div>
   <Button iconText="🎁" label="OUVRIR LE CALENDRIER DE L'AVENT" onclick={() => navigate("/advent")} variant="secondary" class="advent-promo" />
 </section>
+{/if}
