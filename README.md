@@ -1,94 +1,157 @@
 # Duality Olaf
 
-Modern TypeScript/Svelte reimplementation inspired by the classic **Olaf / Le Touti Rikiki, Maousse Costo** puzzle mechanics and the later **Maouss DS** adaptation.
+[![CI](https://github.com/flofy/duality-olaf/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/flofy/duality-olaf/actions/workflows/ci.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Svelte 5](https://img.shields.io/badge/Svelte-5-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
+[![pnpm](https://img.shields.io/badge/pnpm-workspaces-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/workspaces)
 
-> **Status:** gameplay implementation / prototype
+**[▶ Play Duality Olaf](https://flofy.github.io/duality-olaf/)** · [Source code](https://github.com/flofy/duality-olaf)
 
-## Current direction
+A modern, independent TypeScript reimplementation of the two-form puzzle mechanics inspired by **Olaf / Le Touti Rikiki, Maousse Costo** and the later **Maouss DS** adaptation.
 
-The project now has enough historical information to move forward **without making the NDS reverse-engineering a blocker**. The magazine scans gave us the original CPC level model, while the DS analysis and 55-level visual study remain useful as reference material.
+> **Project status:** playable puzzle game · 55-level campaign · seasonal events · active development
 
-The implementation target is therefore an independent game using our own level data and engine. Historical binaries stay outside the repository.
+## Overview
 
-## Current prototype
+Duality Olaf explores how a classic grid-based puzzle can be rebuilt with a modern, maintainable architecture.
 
-- TypeScript + Svelte 5 + CSS Grid + Vite (the current renderer does not use Phaser).
-- Framework-independent `LevelRunner` for movement, collision, form switching, targets and completion.
-- First campaign world with **11 playable prototype levels**.
-- Level-selection screen with the planned 5 × 11 structure visible.
-- Keyboard and touch controls.
-- Restart, level completion and next-level flow.
-- **Themable design**: the full palette (boards, forms, walls, UI) is centralised in a CSS-independent theme system with three presets (Rétro, Crépuscule, Océan), switchable with `T` from the level menu and persisted locally.
-- Portable static build suitable for GitHub Pages or Cloudflare Pages.
+The player switches between two forms — a ball and a square — to navigate compact levels, interact with obstacles and collect targets. The project combines a framework-independent game engine, a responsive Svelte interface and a data-driven level format.
 
-## Goals
+The goal is to build an original game inspired by the historical mechanics, not to redistribute original binaries or assets.
 
-- Build an independent modern game in TypeScript with a framework-independent rules engine.
-- Recreate the two-form puzzle loop: ball / square switching, grid movement and collectible targets.
-- Ship the game as a responsive PWA, installable on mobile.
-- Keep the domain/game engine independent from the UI framework.
-- Eventually provide all 55 levels in a normalized format, then a level editor.
-- Keep the NDS reverse-engineering work optional and non-blocking.
+## Current game
+
+- **55 campaign levels across 5 worlds**, with sequential world unlocking and a deliberate introduction of mechanics.
+- A framework-independent **TypeScript game engine** built around `LevelRunner`, with movement, collisions, form switching, targets, doors, switches and teleporters.
+- **LevelValidator and LevelSolver** to validate level structure and solvability.
+- **Svelte 5 + Vite** web application with responsive CSS Grid gameplay, keyboard and touch controls.
+- Guided tutorials integrated into real campaign levels.
+- **Challenge Mode** with deterministic, replayable challenges across several mechanic profiles.
+- Seasonal Halloween content, with dedicated levels and character forms.
+- **Level Lab / Level Builder** for authoring and validating custom levels.
+- Theme system, audio ambience, movement feedback and a PWA-oriented static build.
+- GitHub Pages deployment workflow, with live availability still to be verified.
+
+A 24-level winter world and Advent calendar are currently proposed in [PR #185](https://github.com/flofy/duality-olaf/pull/185); they are not counted as shipped content until that PR is merged.
 
 ## Architecture
 
-```text
-duality-olaf/
-├── apps/web/               # Vite + Svelte 5/CSS PWA shell
-├── packages/game/          # framework-independent game state + rules
-├── packages/level-format/  # level domain model
-├── tools/nds-research/     # optional historical research tooling
-├── data/                   # local/generated data
-└── docs/                   # mechanics, research and level documentation
+The repository is organised as a pnpm workspace. The game rules and level domain are kept separate from the Svelte application so they can evolve and be tested independently.
+
+```mermaid
+flowchart TD
+    subgraph Web["apps/web · Svelte 5 / Vite"]
+        UI["Responsive UI<br/>CSS Grid renderer"]
+        Controls["Keyboard & touch input"]
+        Themes["Theme system"]
+        Editor["Development level editor"]
+        Controls --> UI
+        Themes --> UI
+    end
+
+    subgraph Core["Reusable domain packages"]
+        Game["packages/game<br/>LevelRunner · state · rules"]
+        Levels["packages/level-format<br/>Level model · validation · level data"]
+    end
+
+    subgraph Support["Project support"]
+        Research["tools/nds-research<br/>Optional historical research"]
+        Docs["docs<br/>Mechanics · research · level documentation"]
+    end
+
+    Levels --> Game
+    Game -->|"game state"| UI
+    Editor -->|"validated level data"| Levels
+    Research -.->|"reference only"| Docs
 ```
 
-The Svelte/CSS layer renders state from `packages/game`. The core rules remain independent from the UI.
+## Key decisions
+
+### A framework-independent game engine
+
+The rules engine is deliberately independent from Svelte and from rendering libraries such as Phaser. Movement, collision, form switching and completion rules belong to the game domain — not to the UI.
+
+This keeps the core easier to test, makes the renderer replaceable and avoids coupling gameplay to a particular game framework. The current Svelte application is a presentation layer that consumes game state.
+
+### pnpm workspaces for clear boundaries
+
+The monorepo uses pnpm workspaces to separate the web application from reusable domain packages. This gives each package a clear responsibility while keeping local development, dependency management and cross-package changes straightforward.
+
+The level tooling and optional historical research remain outside the runtime application, keeping content authoring and reverse-engineering concerns independent from the player experience.
+
+### Data-driven levels and optional historical research
+
+Levels are represented through a dedicated domain format rather than being embedded in rendering code. This makes them easier to validate, edit and eventually import in batches.
+
+Historical CPC and NDS research informs the mechanics and level model, but reverse-engineering remains optional: the game can progress using original, normalized level data without depending on historical binaries.
 
 ## Level research
 
-The current working hypothesis is **55 levels, arranged as 5 worlds × 11 levels**, with a candidate DS map representation of **13 × 10 cells** per level. This is documented visually in `docs/assets/levels-overview.svg`.
+The canonical campaign contains **55 levels, arranged as 5 worlds × 11 levels**. The candidate DS map representation is **13 × 10 cells** per level. The visual study is documented in [`docs/assets/levels-overview.svg`](docs/assets/levels-overview.svg).
 
-The historical CPC format remains documented separately. We can use it as a reference/conversion source without making the original binaries part of the runtime.
+The historical CPC format is documented separately and can be used as a reference or conversion source. Original binaries remain outside the runtime and are not redistributed.
 
 ## Level editing workflow
 
-The dev-only editor is available at `/dev/editor` (devtools flag enabled). To save levels straight into `packages/level-format/levels/world-0N/` from the browser without browsing the filesystem, run the local write server in a second terminal:
+The Level Lab / Builder is available from the development tools. It uses the same data-driven level model and validation rules as the game runtime. Custom-level persistence, import/export and sharing are tracked separately in [issue #71](https://github.com/flofy/duality-olaf/issues/71).
+
+To save levels directly into `packages/level-format/levels/world-0N/`, start the local write server in a second terminal:
 
 ```sh
 pnpm level:serve   # http://localhost:34761 — POST /api/save-level
 ```
 
-Then use **⬇ ÉCRIRE SUR LE DISQUE** in the editor. Levels are validated (same rules as `level-intake.mjs`) before being written: an existing id is updated in place, a new id is appended after the last level of the target world. The target URL can be overridden with `VITE_LEVEL_SERVER_URL`.
+Then use **⬇ ÉCRIRE SUR LE DISQUE** in the editor. Levels are validated with the same rules as `level-intake.mjs` before being written. Existing IDs are updated in place; new IDs are appended after the last level of the target world. The target URL can be overridden with `VITE_LEVEL_SERVER_URL`.
 
 ## Play online
 
-The production build is intended for GitHub Pages. When Pages is enabled for this repository, the game is available from the repository Pages deployment.
+The production build is configured for GitHub Pages:
 
-Repository: https://github.com/flofy/duality-olaf
+**[▶ Play Duality Olaf](https://flofy.github.io/duality-olaf/)**
 
-## Deployment
+The deployment is handled by [`.github/workflows/pages.yml`](.github/workflows/pages.yml). The Pages URL is included here as the intended public demo entry point; its live availability should be confirmed after the next successful deployment.
 
-The web app is designed as a static PWA and can be deployed to **GitHub Pages** or **Cloudflare Pages**. A GitHub Pages workflow is included in `.github/workflows/pages.yml`; the build itself stays provider-agnostic.
+## Development
 
-## Development roadmap
+Requirements: Node.js 24 and pnpm 10.
 
-1. [x] Establish the independent TypeScript domain model.
-2. [x] Introduce a framework-independent `LevelRunner`.
-3. [x] Connect the prototype to a responsive Svelte/CSS renderer.
-4. [x] Add keyboard + initial touch controls.
-5. [x] Add first 11-level prototype campaign and level selection.
-6. [x] Add CI typecheck/build validation.
-7. [ ] Stabilize movement/collision rules against the historical gameplay.
-8. [ ] Define and import the normalized 55-level catalogue.
-9. [ ] Add progression/save state.
-10. [ ] Add PWA install/offline support.
-11. [ ] Deploy and verify on GitHub Pages / Cloudflare Pages.
-12. [ ] Add a level editor and original visual identity.
+```sh
+pnpm install
+pnpm dev
+```
 
-## Reference / rights
+Useful quality checks:
 
-The project is inspired by historical releases. Original assets, binaries and copyrighted material are treated as reference material only and should not be redistributed in this repository without confirming the applicable rights.
+```sh
+pnpm knip
+pnpm test:coverage
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+The CI workflow runs these checks on pull requests and pushes to `main`.
+
+## Roadmap
+
+### Shipped
+
+- [x] Independent TypeScript game domain and framework-independent runtime.
+- [x] Complete 55-level campaign across five worlds.
+- [x] Gameplay mechanics including form switching, obstacles, doors, switches and teleporters.
+- [x] Level validation and solver-backed solvability checks.
+- [x] Sequential world progression and guided campaign tutorials.
+- [x] Challenge Mode with seeded, replayable challenges.
+- [x] Level Lab / Builder for internal content creation.
+- [x] Seasonal Halloween levels and character themes.
+- [x] Svelte 5 application, responsive controls, shared UI system and PWA build pipeline.
+
+## Reference and rights
+
+This project is inspired by historical releases. Original assets, binaries and copyrighted material are treated as reference material only and are not redistributed in this repository. The implementation uses its own code and level data.
 
 ## License
 
-License for the new code and original assets will be selected before the first public release.
+Original project code and materials are released under the [MIT License](LICENSE). The copyright and permission notice must be preserved in copies and substantial portions, including forks.
+
+Third-party names, trademarks, artwork, scans, screenshots, binaries, music and other copyrighted materials are excluded from this license and remain subject to their respective owners' rights. See [NOTICE.md](NOTICE.md) for the scope of the license.
