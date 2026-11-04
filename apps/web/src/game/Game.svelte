@@ -70,7 +70,7 @@
     }
   }
 
-  const nextWorld = seasonalEvent ? null : getNextWorld(world.id);
+  const nextWorld = $derived(seasonalEvent ? null : getNextWorld(world.id));
   const debug = createDebugCommands();
 
   /* svelte-ignore state_referenced_locally */
