@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { christmas } from "@duality/level-format";
+  import { christmas, isSeasonalEventAvailable } from "@duality/level-format";
   import Button from "../components/Button.svelte";
   import { getAdventDay, isAdventDayAvailable } from "../lib/advent";
   import { isLevelCompleted } from "../lib/progression";
@@ -45,5 +45,9 @@
     Chaque case se débloque à sa date. Une fois découverte, elle reste accessible
     pour pouvoir jouer à ton rythme.
   </p>
-  <Button icon="snowflake" label="DÉCOUVRIR LE MONDE HIVER" onclick={() => navigate("/winter")} variant="secondary" class="advent-winter-link" />
+  {#if isSeasonalEventAvailable(christmas)}
+    <Button icon="snowflake" label="DÉCOUVRIR LE MONDE HIVER" onclick={() => navigate("/winter")} variant="secondary" class="advent-winter-link" />
+  {:else}
+    <p class="advent-note">Le monde Hiver ouvrira le 1er décembre.</p>
+  {/if}
 </section>
