@@ -9,7 +9,7 @@
 
 A modern, independent TypeScript reimplementation of the two-form puzzle mechanics inspired by **Olaf / Le Touti Rikiki, Maousse Costo** and the later **Maouss DS** adaptation.
 
-> **Project status:** playable prototype · 11 levels · active development
+> **Project status:** playable puzzle game · 55-level campaign · seasonal events · active development
 
 ## Overview
 
@@ -19,15 +19,20 @@ The player switches between two forms — a ball and a square — to navigate co
 
 The goal is to build an original game inspired by the historical mechanics, not to redistribute original binaries or assets.
 
-## Current prototype
+## Current game
 
-- **TypeScript game engine** with a framework-independent `LevelRunner` for movement, collisions, form switching, targets and level completion.
-- **Svelte 5 + Vite** web application with a responsive CSS Grid renderer.
-- **11 playable prototype levels** in the first campaign world, with the planned 5 × 11 world/level structure visible in the level selector.
-- Keyboard and touch controls, restart, level completion and next-level flow.
-- **Theme system independent from CSS**, with three presets (Rétro, Crépuscule and Océan), switchable from the level menu and persisted locally.
-- Development level editor and validation workflow.
-- Static production build designed for GitHub Pages and Cloudflare Pages.
+- **55 campaign levels across 5 worlds**, with sequential world unlocking and a deliberate introduction of mechanics.
+- A framework-independent **TypeScript game engine** built around `LevelRunner`, with movement, collisions, form switching, targets, doors, switches and teleporters.
+- **LevelValidator and LevelSolver** to validate level structure and solvability.
+- **Svelte 5 + Vite** web application with responsive CSS Grid gameplay, keyboard and touch controls.
+- Guided tutorials integrated into real campaign levels.
+- **Challenge Mode** with deterministic, replayable challenges across several mechanic profiles.
+- Seasonal Halloween content, with dedicated levels and character forms.
+- **Level Lab / Level Builder** for authoring and validating custom levels.
+- Theme system, audio ambience, movement feedback and a PWA-oriented static build.
+- GitHub Pages deployment workflow, with live availability still to be verified.
+
+A 24-level winter world and Advent calendar are currently proposed in [PR #185](https://github.com/flofy/duality-olaf/pull/185); they are not counted as shipped content until that PR is merged.
 
 ## Architecture
 
@@ -72,7 +77,7 @@ This keeps the core easier to test, makes the renderer replaceable and avoids co
 
 The monorepo uses pnpm workspaces to separate the web application from reusable domain packages. This gives each package a clear responsibility while keeping local development, dependency management and cross-package changes straightforward.
 
-It also leaves room for future tools — such as level conversion, validation or a standalone editor — without placing them inside the runtime application.
+The level tooling and optional historical research remain outside the runtime application, keeping content authoring and reverse-engineering concerns independent from the player experience.
 
 ### Data-driven levels and optional historical research
 
@@ -88,7 +93,7 @@ The historical CPC format is documented separately and can be used as a referenc
 
 ## Level editing workflow
 
-The development-only editor is available at `/dev/editor` (with the devtools flag enabled).
+The Level Lab / Builder is available from the development tools. It uses the same data-driven level model and validation rules as the game runtime. Custom-level persistence, import/export and sharing are tracked separately in [issue #71](https://github.com/flofy/duality-olaf/issues/71).
 
 To save levels directly into `packages/level-format/levels/world-0N/`, start the local write server in a second terminal:
 
@@ -129,18 +134,32 @@ The CI workflow runs these checks on pull requests and pushes to `main`.
 
 ## Roadmap
 
-- [x] Establish the independent TypeScript domain model.
-- [x] Introduce a framework-independent `LevelRunner`.
-- [x] Connect the prototype to a responsive Svelte/CSS renderer.
-- [x] Add keyboard and initial touch controls.
-- [x] Add the first 11-level prototype campaign and level selection.
-- [x] Add CI typecheck/build validation.
-- [ ] Stabilize movement and collision rules against historical gameplay.
-- [ ] Define and import the normalized 55-level catalogue.
-- [ ] Add progression and save state.
-- [ ] Add PWA install/offline support.
-- [ ] Verify the public GitHub Pages deployment.
-- [ ] Develop the original visual identity and expand the level editor.
+### Shipped
+
+- [x] Independent TypeScript game domain and framework-independent runtime.
+- [x] Complete 55-level campaign across five worlds.
+- [x] Gameplay mechanics including form switching, obstacles, doors, switches and teleporters.
+- [x] Level validation and solver-backed solvability checks.
+- [x] Sequential world progression and guided campaign tutorials.
+- [x] Challenge Mode with seeded, replayable challenges.
+- [x] Level Lab / Builder for internal content creation.
+- [x] Seasonal Halloween levels and character themes.
+- [x] Svelte 5 application, responsive controls, shared UI system and PWA build pipeline.
+
+### In progress
+
+- [ ] Immersive full-screen gameplay and world transitions ([PR #182](https://github.com/flofy/duality-olaf/pull/182)).
+- [ ] Winter seasonal world and Advent calendar ([PR #185](https://github.com/flofy/duality-olaf/pull/185)).
+
+### Next
+
+- [ ] Add local persistence, import/export and sharing for custom levels ([issue #71](https://github.com/flofy/duality-olaf/issues/71)).
+- [ ] Verify the production GitHub Pages deployment and end-to-end player journey.
+- [ ] Complete a focused accessibility, responsive-layout and performance review.
+- [ ] Finalise release documentation and the v1.0 quality gate ([issue #74](https://github.com/flofy/duality-olaf/issues/74)).
+- [ ] Revisit product and monetization decisions only after real player-retention signals ([issue #73](https://github.com/flofy/duality-olaf/issues/73)).
+
+The checklist in [issue #74](https://github.com/flofy/duality-olaf/issues/74) is the release gate; this README roadmap is a high-level overview, not a duplicate task tracker.
 
 ## Reference and rights
 
@@ -148,4 +167,6 @@ This project is inspired by historical releases. Original assets, binaries and c
 
 ## License
 
-A license for the new code and original assets has not been selected yet. The repository's licensing terms should be clarified before presenting the project as an openly reusable release.
+Original project code and materials are released under the [MIT License](LICENSE). The copyright and permission notice must be preserved in copies and substantial portions, including forks.
+
+Third-party names, trademarks, artwork, scans, screenshots, binaries, music and other copyrighted materials are excluded from this license and remain subject to their respective owners' rights. See [NOTICE.md](NOTICE.md) for the scope of the license.
