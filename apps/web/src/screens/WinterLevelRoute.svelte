@@ -20,5 +20,5 @@
 {:else if !unlocked}
   <Redirect to={advent ? "/advent" : "/winter"} />
 {:else}
-  <Game level={christmas.levels[index]!} worldId={2} seasonalEvent={christmas} />
+  <Game level={christmas.levels[index]!} worldId={2} seasonalEvent={christmas} {advent} />
 {/if}
