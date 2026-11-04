@@ -12,28 +12,14 @@ export type SeasonalEvent = {
   levels: readonly Level[];
 };
 
-/**
- * One JSON file per level, grouped by directory. Seasonal events and challenge
- * levels follow the same authoring flow as the campaign: drop a file, no code
- * change required. Files are named `<id>.json` so lexicographic order matches
- * the intended play order.
- */
 const seasonalModules = import.meta.glob<Level>("../levels/seasonal/*.json", {
   eager: true,
 });
-
 const challengeModules = import.meta.glob<Level>(
   "../levels/challenges/*.json",
-  {
-    eager: true,
-  },
+  { eager: true },
 );
 
-/**
- * Load every seasonal level for a theme and assert the id order matches the
- * play order (`seasonal-halloween-01`, `-02`, …) so a rename cannot silently
- * reshuffle an event.
- */
 function loadSeasonalTheme(theme: SeasonalTheme): Level[] {
   const prefix = `seasonal-${theme}-`;
   const levels = Object.entries(seasonalModules)
@@ -55,40 +41,30 @@ function loadSeasonalTheme(theme: SeasonalTheme): Level[] {
       );
     }
   });
-
   return levels;
 }
 
-/** Seasonal worlds reuse the core movement rules and keep stable IDs across years. */
 export const halloween: SeasonalEvent = {
   id: "seasonal-halloween",
   theme: "halloween",
   label: "Halloween",
   start: { month: 10, day: 13 },
   end: { month: 11, day: 3 },
-  levels: loadSeasonalTheme("halloween"),
 };
 
 export const christmas: SeasonalEvent = {
   id: "seasonal-christmas",
   theme: "christmas",
-  label: "Christmas",
+  label: "Hiver",
   start: { month: 12, day: 1 },
-  end: { month: 1, day: 7 },
+  end: { month: 3, day: 20 },
   levels: loadSeasonalTheme("christmas"),
 };
+halloween.levels = loadSeasonalTheme("halloween");
 
 export const seasonalEvents: readonly SeasonalEvent[] = [halloween, christmas];
 
-/**
- * Bonus / challenge levels that are playable (via the Level Lab catalogue) but
- * deliberately kept out of the linear campaign array so they are not part of
- * the solver validation gate in CI.  Move problematic or experimental levels
- * here while they are being tuned.
- */
-export const challengeLevels: readonly Level[] = Object.entries(
-  challengeModules,
-)
+export const challengeLevels: readonly Level[] = Object.entries(challengeModules)
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([, level]) => {
     validateLevel(level);
