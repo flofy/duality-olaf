@@ -16,9 +16,10 @@
 
 {#if isDevelopment}
   <aside class="dev-date-tool" aria-label="Simulation de date développeur">
-    <span class="dev-date-label">🧪 DATE DEV</span>
+    <label class="dev-date-label" for="dev-simulated-date">🧪 SIMULER LA DATE DU JEU</label>
     <input
-      aria-label="Date simulée"
+      id="dev-simulated-date"
+      aria-label="Choisir la date simulée"
       type="date"
       value={inputValue}
       onchange={(event) => setSimulatedDate(event.currentTarget.value)}
@@ -27,8 +28,9 @@
       <span class="dev-date-active">SIMULATION ACTIVE</span>
       <button type="button" onclick={resetSimulatedDate}>DATE RÉELLE</button>
     {:else}
-      <span class="dev-date-hint">Date réelle</span>
+      <span class="dev-date-hint">La date réelle est utilisée</span>
     {/if}
+  <small class="dev-date-description">Teste les dates d’ouverture d’Halloween, du monde Hiver et des 24 jours de l’Avent.</small>
   </aside>
 
   <style>
@@ -71,5 +73,6 @@
     }
     .dev-date-active { color: #8de0bd; font-weight: 800; }
     .dev-date-hint { color: #8295ae; }
+    .dev-date-description { flex-basis: 100%; text-align: center; color: #8295ae; letter-spacing: normal; }
   </style>
 {/if}
