@@ -35,23 +35,8 @@
     ],
     [
       "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
       "empty",
-      "wall"
-    ],
-    [
-      "wall",
-      "wall",
-      "wall",
+      "empty",
       "empty",
       "empty",
       "empty",
@@ -65,76 +50,91 @@
     ],
     [
       "wall",
-      "wall",
-      "wall",
       "empty",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "wall"
     ],
     [
       "wall",
-      "wall",
-      "wall",
       "empty",
       "empty",
       "empty",
       "empty",
       "empty",
       "empty",
-      "wall",
-      "wall",
-      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "wall"
     ],
     [
       "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
       "empty",
-      "wall",
-      "wall",
-      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "wall"
     ],
     [
       "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
       "empty",
-      "wall",
-      "wall",
-      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "wall"
     ],
     [
       "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
-      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
       "wall",
       "empty",
-      "wall",
-      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
       "empty",
       "wall"
     ],
@@ -156,7 +156,7 @@
   ],
   "ball": {
     "x": 1,
-    "y": 1
+    "y": 8
   },
   "square": {
     "x": 11,
@@ -168,20 +168,32 @@
       "y": 1
     },
     {
-      "x": 11,
-      "y": 1
+      "x": 4,
+      "y": 2
     },
     {
       "x": 8,
-      "y": 3
+      "y": 2
     },
     {
       "x": 3,
-      "y": 3
+      "y": 4
+    },
+    {
+      "x": 9,
+      "y": 4
+    },
+    {
+      "x": 4,
+      "y": 6
+    },
+    {
+      "x": 8,
+      "y": 6
     },
     {
       "x": 6,
-      "y": 5
+      "y": 8
     }
   ]
 }
