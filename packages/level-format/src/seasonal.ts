@@ -11,8 +11,13 @@ export type SeasonalEvent = {
   levels: readonly Level[];
 };
 
-const seasonalModules = import.meta.glob<Level>("../levels/seasonal/*.json", { eager: true });
-const challengeModules = import.meta.glob<Level>("../levels/challenges/*.json", { eager: true });
+const seasonalModules = import.meta.glob<Level>("../levels/seasonal/*.json", {
+  eager: true,
+});
+const challengeModules = import.meta.glob<Level>(
+  "../levels/challenges/*.json",
+  { eager: true },
+);
 
 function loadSeasonalTheme(theme: SeasonalTheme): Level[] {
   const prefix = `seasonal-${theme}-`;
@@ -20,12 +25,15 @@ function loadSeasonalTheme(theme: SeasonalTheme): Level[] {
     .filter(([, level]) => level.id.startsWith(prefix))
     .sort(([, a], [, b]) => a.id.localeCompare(b.id))
     .map(([, level]) => level);
-  if (levels.length === 0) throw new Error(`No seasonal levels found for theme '${theme}'`);
+  if (levels.length === 0)
+    throw new Error(`No seasonal levels found for theme '${theme}'`);
   levels.forEach((level, index) => {
     validateLevel(level);
     const expected = `${prefix}${String(index + 1).padStart(2, "0")}`;
     if (level.id !== expected) {
-      throw new Error(`${level.id}: id must match its file position (expected ${expected})`);
+      throw new Error(
+        `${level.id}: id must match its file position (expected ${expected})`,
+      );
     }
   });
   return levels;
@@ -51,7 +59,9 @@ export const christmas: SeasonalEvent = {
 
 export const seasonalEvents: readonly SeasonalEvent[] = [halloween, christmas];
 
-export const challengeLevels: readonly Level[] = Object.entries(challengeModules)
+export const challengeLevels: readonly Level[] = Object.entries(
+  challengeModules,
+)
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([, level]) => {
     validateLevel(level);
@@ -60,14 +70,21 @@ export const challengeLevels: readonly Level[] = Object.entries(challengeModules
 
 function dayOfYear(date: Date): number {
   const yearStart = Date.UTC(date.getUTCFullYear(), 0, 1);
-  return Math.floor(
-    (Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) - yearStart) / 86_400_000,
-  ) + 1;
+  return (
+    Math.floor(
+      (Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) -
+        yearStart) /
+        86_400_000,
+    ) + 1
+  );
 }
 function calendarDay(month: number, day: number, year: number): number {
   return dayOfYear(new Date(Date.UTC(year, month - 1, day)));
 }
-export function isSeasonalEventAvailable(event: SeasonalEvent, date = new Date()): boolean {
+export function isSeasonalEventAvailable(
+  event: SeasonalEvent,
+  date = new Date(),
+): boolean {
   const year = date.getUTCFullYear();
   const start = calendarDay(event.start.month, event.start.day, year);
   const endYear = event.end.month < event.start.month ? year + 1 : year;

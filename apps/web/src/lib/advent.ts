@@ -6,5 +6,7 @@ export function getAdventDay(date = new Date()): number {
 }
 
 export function isAdventDayAvailable(day: number, date = new Date()): boolean {
-  return Number.isInteger(day) && day >= 1 && day <= 24 && day <= getAdventDay(date);
+  return (
+    Number.isInteger(day) && day >= 1 && day <= 24 && day <= getAdventDay(date)
+  );
 }

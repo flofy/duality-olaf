@@ -15,14 +15,27 @@ const seasonalLevels = seasonalEvents.flatMap((event) => event.levels);
 type PlannerAction =
   | { type: "move"; direction: Direction }
   | { type: "switch" };
-type PlannerNode = { parent: PlannerNode | null; action: PlannerAction | null; state: GameState };
+type PlannerNode = {
+  parent: PlannerNode | null;
+  action: PlannerAction | null;
+  state: GameState;
+};
 const DIRECTIONS: readonly Direction[] = [
-  { x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 },
+  { x: 1, y: 0 },
+  { x: -1, y: 0 },
+  { x: 0, y: 1 },
+  { x: 0, y: -1 },
 ];
 function jointKey(state: GameState): string {
-  return [state.activeForm, `${state.ball.x},${state.ball.y}`, `${state.square.x},${state.square.y}`].join("|");
+  return [
+    state.activeForm,
+    `${state.ball.x},${state.ball.y}`,
+    `${state.square.x},${state.square.y}`,
+  ].join("|");
 }
-function collectNextStar(start: GameState): { actions: PlannerAction[]; state: GameState } | null {
+function collectNextStar(
+  start: GameState,
+): { actions: PlannerAction[]; state: GameState } | null {
   const root: PlannerNode = { parent: null, action: null, state: start };
   const nodes = [root];
   const visited = new Set([jointKey(start)]);
@@ -36,7 +49,10 @@ function collectNextStar(start: GameState): { actions: PlannerAction[]; state: G
     for (const action of candidates) {
       const runner = LevelRunner.fromState(node.state);
       const before = runner.getState();
-      const after = action.type === "move" ? runner.move(action.direction) : runner.switchForm();
+      const after =
+        action.type === "move"
+          ? runner.move(action.direction)
+          : runner.switchForm();
       if (jointKey(before) === jointKey(after)) continue;
       const key = jointKey(after);
       if (visited.has(key)) continue;
@@ -46,7 +62,10 @@ function collectNextStar(start: GameState): { actions: PlannerAction[]; state: G
       if (after.stars.length < before.stars.length) {
         const actions: PlannerAction[] = [];
         let step: PlannerNode | null = child;
-        while (step?.action) { actions.push(step.action); step = step.parent; }
+        while (step?.action) {
+          actions.push(step.action);
+          step = step.parent;
+        }
         actions.reverse();
         return { actions, state: after };
       }
@@ -59,7 +78,10 @@ function planFullCollection(level: Level): PlannerAction[] {
   let state = new LevelRunner(level).getState();
   while (state.stars.length > 0) {
     const segment = collectNextStar(state);
-    if (!segment) throw new Error(`${level.id}: ${state.stars.length} star(s) unreachable by the ball`);
+    if (!segment)
+      throw new Error(
+        `${level.id}: ${state.stars.length} star(s) unreachable by the ball`,
+      );
     actions.push(...segment.actions);
     state = segment.state;
   }
@@ -68,7 +90,11 @@ function planFullCollection(level: Level): PlannerAction[] {
 function replay(level: Level, actions: readonly PlannerAction[]): GameState {
   const runner = new LevelRunner(level);
   let state = runner.getState();
-  for (const action of actions) state = action.type === "move" ? runner.move(action.direction) : runner.switchForm();
+  for (const action of actions)
+    state =
+      action.type === "move"
+        ? runner.move(action.direction)
+        : runner.switchForm();
   return state;
 }
 
@@ -78,8 +104,12 @@ describe("seasonal worlds", () => {
     expect(christmas.id).toBe("seasonal-christmas");
     expect(christmas.label).toBe("Hiver");
     expect(christmas.levels).toHaveLength(24);
-    expect(new Set(halloween.levels.map((level) => level.id)).size).toBe(halloween.levels.length);
-    expect(new Set(christmas.levels.map((level) => level.id)).size).toBe(christmas.levels.length);
+    expect(new Set(halloween.levels.map((level) => level.id)).size).toBe(
+      halloween.levels.length,
+    );
+    expect(new Set(christmas.levels.map((level) => level.id)).size).toBe(
+      christmas.levels.length,
+    );
   });
   it.each(seasonalLevels)("$id is structurally valid", (level) => {
     expect(() => validateLevelStructure(level)).not.toThrow();
@@ -91,21 +121,37 @@ describe("seasonal worlds", () => {
     expect(state.completed).toBe(true);
     expect(state.gameOver).toBe(false);
   });
-  const solverLevels = seasonalLevels.filter((level) => level.stars.length <= 8);
+  const solverLevels = seasonalLevels.filter(
+    (level) => level.stars.length <= 8,
+  );
   it.each(solverLevels)("$id stays solver-valid", (level) => {
     const validation = validateLevel(level);
     expect(validation.result.solvable).toBe(true);
     expect(estimateDifficulty(validation.result)).not.toBeNull();
   });
   it("supports recurring cross-year winter availability", () => {
-    expect(isSeasonalEventAvailable(christmas, new Date("2026-12-24T12:00:00Z"))).toBe(true);
-    expect(isSeasonalEventAvailable(christmas, new Date("2027-01-05T12:00:00Z"))).toBe(true);
-    expect(isSeasonalEventAvailable(christmas, new Date("2027-02-01T12:00:00Z"))).toBe(true);
-    expect(isSeasonalEventAvailable(christmas, new Date("2027-03-21T12:00:00Z"))).toBe(false);
+    expect(
+      isSeasonalEventAvailable(christmas, new Date("2026-12-24T12:00:00Z")),
+    ).toBe(true);
+    expect(
+      isSeasonalEventAvailable(christmas, new Date("2027-01-05T12:00:00Z")),
+    ).toBe(true);
+    expect(
+      isSeasonalEventAvailable(christmas, new Date("2027-02-01T12:00:00Z")),
+    ).toBe(true);
+    expect(
+      isSeasonalEventAvailable(christmas, new Date("2027-03-21T12:00:00Z")),
+    ).toBe(false);
   });
   it("keeps Halloween outside its event window", () => {
-    expect(isSeasonalEventAvailable(halloween, new Date("2026-10-12T12:00:00Z"))).toBe(false);
-    expect(isSeasonalEventAvailable(halloween, new Date("2026-10-13T12:00:00Z"))).toBe(true);
-    expect(isSeasonalEventAvailable(halloween, new Date("2026-11-04T12:00:00Z"))).toBe(false);
+    expect(
+      isSeasonalEventAvailable(halloween, new Date("2026-10-12T12:00:00Z")),
+    ).toBe(false);
+    expect(
+      isSeasonalEventAvailable(halloween, new Date("2026-10-13T12:00:00Z")),
+    ).toBe(true);
+    expect(
+      isSeasonalEventAvailable(halloween, new Date("2026-11-04T12:00:00Z")),
+    ).toBe(false);
   });
 });

@@ -417,62 +417,324 @@
   font: 700 10px monospace;
 }
 
-
 /* Seasonal navigation keeps campaign and event collections visually distinct. */
-.worlds-menu { overflow-y: auto; max-height: 100%; }
-.world-group { display: grid; gap: 12px; margin: 0 0 22px; }
-.world-group-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
-.world-group-heading h2 { margin: 0; color: var(--text); font: 800 12px var(--font-mono); letter-spacing: .12em; }
-.world-group-heading span { color: var(--text-secondary); font: 600 9px var(--font-mono); letter-spacing: .06em; }
-.seasonal-world-group { padding: 14px; border: 1px solid #8fcdf333; border-radius: 14px; background: linear-gradient(145deg, #10283b88, #101a2b88); }
-.winter-promo { width: 100%; border: 1px solid #9bdcf0 !important; background: linear-gradient(110deg, #174d70, #152c48 60%, #28647a) !important; color: #effaff !important; box-shadow: 0 0 22px #73d8ff20, inset 0 1px #ffffff20; }
-.winter-promo:hover, .advent-promo:hover { filter: brightness(1.12); transform: translateY(-1px); }
-.advent-promo { width: 100%; border-color: #d9b66c !important; color: #ffedc2 !important; background: linear-gradient(110deg, #49351c, #2b2330 65%, #57401e) !important; }
-.winter-levels-page, .advent-page { overflow-y: auto; max-height: 100%; }
-.winter-hero, .advent-hero { position: relative; display: grid; place-items: center; gap: 8px; min-height: 190px; margin: 0 0 16px; padding: 24px 14px; overflow: hidden; border: 1px solid #a8e4ff55; border-radius: 16px; background: radial-gradient(circle at 50% 0%, #a9e9ff35, transparent 58%), linear-gradient(145deg, #163b5b, #0d1b32 68%, #1b4560); box-shadow: inset 0 0 34px #0007, 0 12px 30px #0004; text-align: center; }
-.winter-hero-title, .advent-hero h1 { margin: 0; color: #f0fbff; font: 900 clamp(26px, 7vw, 38px)/1 var(--font-mono); letter-spacing: .14em; text-shadow: 0 0 20px #8cddff66; }
-.winter-hero-subtitle, .advent-hero-kicker { color: #bfeaff; font: 800 10px/1.5 var(--font-mono); letter-spacing: .1em; }
-.winter-hero-snow { position: absolute; top: -28px; right: 16px; color: #e7f8ff; font-size: 120px; opacity: .17; }
-.winter-hero-star { position: absolute; color: #fff2b0; text-shadow: 0 0 16px #fff; }
-.winter-hero-star-one { left: 14%; top: 22%; font-size: 24px; }
-.winter-hero-star-two { right: 18%; bottom: 18%; font-size: 30px; }
-.winter-characters { display: flex; align-items: end; justify-content: center; gap: 18px; height: 70px; }
-.winter-character-ball, .winter-character-square { position: relative; width: 66px; height: 66px; }
-.winter-progress { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid #a8e4ff44; border-radius: 9px; background: #10263a; color: #d9f4ff; font: 800 12px var(--font-mono); }
-.winter-intro { margin: 12px 2px 18px; font-size: 12px; line-height: 1.6; }
-.winter-level-list { display: grid; gap: 9px; }
-.winter-level-card { display: grid; grid-template-columns: 42px minmax(0, 1fr) 24px; align-items: center; gap: 12px; width: 100%; min-height: 68px; padding: 11px 13px; border: 1px solid #8fcdf344; border-radius: 10px; background: linear-gradient(110deg, #17354d, #111f32); color: #f0faff; text-align: left; cursor: pointer; transition: transform 120ms ease, border-color 120ms ease, opacity 120ms ease; }
-.winter-level-card:hover:not(:disabled) { transform: translateX(2px); border-color: #a8e4ff; }
-.winter-level-card:focus-visible, .advent-door:focus-visible { outline: 2px solid #b9edff; outline-offset: 3px; }
-.winter-level-card:disabled { opacity: .45; cursor: not-allowed; }
-.winter-level-number { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 8px; background: #8fdcff18; color: #bfeaff; font: 900 15px var(--font-mono); }
-.winter-level-copy { display: grid; gap: 5px; min-width: 0; }
-.winter-level-copy strong { font-size: 13px; }
-.winter-level-copy small { color: #b8d6e8; font: 700 9px var(--font-mono); letter-spacing: .03em; }
-.winter-level-status { display: grid; place-items: center; color: #ffedaa; }
-.advent-hero { min-height: 160px; }
-.advent-hero h1 { font-size: clamp(20px, 5vw, 30px); letter-spacing: .08em; }
-.advent-hero p { margin: 0; color: #d7edfa; font-size: 12px; }
-.advent-hero-flake { position: absolute; color: #dff7ff; opacity: .25; }
-.advent-hero-flake-left { left: 18px; top: 18px; font-size: 44px; }
-.advent-hero-flake-right { right: 22px; bottom: 12px; font-size: 42px; }
-.advent-countdown { margin-top: 4px; color: #ffe8ad; font: 800 10px var(--font-mono); letter-spacing: .1em; }
-.advent-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.advent-door { position: relative; display: grid; place-items: center; gap: 4px; min-height: 76px; padding: 8px; border: 1px solid #d4b36a77; border-radius: 11px; background: linear-gradient(145deg, #6b4728, #332638 72%); color: #fff0c8; box-shadow: inset 0 1px #fff3, 0 5px 12px #0003; cursor: pointer; transition: transform 140ms ease, filter 140ms ease; }
-.advent-door.is-available { background: linear-gradient(145deg, #24614e, #183b42 72%); border-color: #a8e4c5aa; }
-.advent-door.is-complete { background: linear-gradient(145deg, #98712d, #584323 72%); border-color: #ffe39b; }
-.advent-door.is-locked { opacity: .55; cursor: not-allowed; }
-.advent-door:hover:not(:disabled) { transform: translateY(-3px); filter: brightness(1.12); }
-.advent-door-number { font: 900 19px var(--font-mono); }
-.advent-door-symbol { color: #ffe8a5; font-size: 15px; }
-.advent-note { margin: 16px 2px; color: var(--text-secondary); font-size: 11px; line-height: 1.6; text-align: center; }
-.advent-winter-link { width: 100%; }
-.app:has(.winter-levels-page), .app:has(.advent-page) { background: radial-gradient(circle at 50% 0%, #285b7b 0, #142b49 36%, #081321 82%); }
-@media (max-width: 420px) {
-  .advent-grid { gap: 7px; }
-  .advent-door { min-height: 66px; }
+.worlds-menu {
+  overflow-y: auto;
+  max-height: 100%;
 }
-
+.world-group {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 22px;
+}
+.world-group-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.world-group-heading h2 {
+  margin: 0;
+  color: var(--text);
+  font: 800 12px var(--font-mono);
+  letter-spacing: 0.12em;
+}
+.world-group-heading span {
+  color: var(--text-secondary);
+  font: 600 9px var(--font-mono);
+  letter-spacing: 0.06em;
+}
+.seasonal-world-group {
+  padding: 14px;
+  border: 1px solid #8fcdf333;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #10283b88, #101a2b88);
+}
+.winter-promo {
+  width: 100%;
+  border: 1px solid #9bdcf0 !important;
+  background: linear-gradient(110deg, #174d70, #152c48 60%, #28647a) !important;
+  color: #effaff !important;
+  box-shadow:
+    0 0 22px #73d8ff20,
+    inset 0 1px #ffffff20;
+}
+.winter-promo:hover,
+.advent-promo:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+.advent-promo {
+  width: 100%;
+  border-color: #d9b66c !important;
+  color: #ffedc2 !important;
+  background: linear-gradient(110deg, #49351c, #2b2330 65%, #57401e) !important;
+}
+.winter-levels-page,
+.advent-page {
+  overflow-y: auto;
+  max-height: 100%;
+}
+.winter-hero,
+.advent-hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 190px;
+  margin: 0 0 16px;
+  padding: 24px 14px;
+  overflow: hidden;
+  border: 1px solid #a8e4ff55;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 50% 0%, #a9e9ff35, transparent 58%),
+    linear-gradient(145deg, #163b5b, #0d1b32 68%, #1b4560);
+  box-shadow:
+    inset 0 0 34px #0007,
+    0 12px 30px #0004;
+  text-align: center;
+}
+.winter-hero-title,
+.advent-hero h1 {
+  margin: 0;
+  color: #f0fbff;
+  font: 900 clamp(26px, 7vw, 38px)/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-shadow: 0 0 20px #8cddff66;
+}
+.winter-hero-subtitle,
+.advent-hero-kicker {
+  color: #bfeaff;
+  font: 800 10px/1.5 var(--font-mono);
+  letter-spacing: 0.1em;
+}
+.winter-hero-snow {
+  position: absolute;
+  top: -28px;
+  right: 16px;
+  color: #e7f8ff;
+  font-size: 120px;
+  opacity: 0.17;
+}
+.winter-hero-star {
+  position: absolute;
+  color: #fff2b0;
+  text-shadow: 0 0 16px #fff;
+}
+.winter-hero-star-one {
+  left: 14%;
+  top: 22%;
+  font-size: 24px;
+}
+.winter-hero-star-two {
+  right: 18%;
+  bottom: 18%;
+  font-size: 30px;
+}
+.winter-characters {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 18px;
+  height: 70px;
+}
+.winter-character-ball,
+.winter-character-square {
+  position: relative;
+  width: 66px;
+  height: 66px;
+}
+.winter-progress {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #a8e4ff44;
+  border-radius: 9px;
+  background: #10263a;
+  color: #d9f4ff;
+  font: 800 12px var(--font-mono);
+}
+.winter-intro {
+  margin: 12px 2px 18px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.winter-level-list {
+  display: grid;
+  gap: 9px;
+}
+.winter-level-card {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 68px;
+  padding: 11px 13px;
+  border: 1px solid #8fcdf344;
+  border-radius: 10px;
+  background: linear-gradient(110deg, #17354d, #111f32);
+  color: #f0faff;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    opacity 120ms ease;
+}
+.winter-level-card:hover:not(:disabled) {
+  transform: translateX(2px);
+  border-color: #a8e4ff;
+}
+.winter-level-card:focus-visible,
+.advent-door:focus-visible {
+  outline: 2px solid #b9edff;
+  outline-offset: 3px;
+}
+.winter-level-card:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.winter-level-number {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #8fdcff18;
+  color: #bfeaff;
+  font: 900 15px var(--font-mono);
+}
+.winter-level-copy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+.winter-level-copy strong {
+  font-size: 13px;
+}
+.winter-level-copy small {
+  color: #b8d6e8;
+  font: 700 9px var(--font-mono);
+  letter-spacing: 0.03em;
+}
+.winter-level-status {
+  display: grid;
+  place-items: center;
+  color: #ffedaa;
+}
+.advent-hero {
+  min-height: 160px;
+}
+.advent-hero h1 {
+  font-size: clamp(20px, 5vw, 30px);
+  letter-spacing: 0.08em;
+}
+.advent-hero p {
+  margin: 0;
+  color: #d7edfa;
+  font-size: 12px;
+}
+.advent-hero-flake {
+  position: absolute;
+  color: #dff7ff;
+  opacity: 0.25;
+}
+.advent-hero-flake-left {
+  left: 18px;
+  top: 18px;
+  font-size: 44px;
+}
+.advent-hero-flake-right {
+  right: 22px;
+  bottom: 12px;
+  font-size: 42px;
+}
+.advent-countdown {
+  margin-top: 4px;
+  color: #ffe8ad;
+  font: 800 10px var(--font-mono);
+  letter-spacing: 0.1em;
+}
+.advent-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.advent-door {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  min-height: 76px;
+  padding: 8px;
+  border: 1px solid #d4b36a77;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #6b4728, #332638 72%);
+  color: #fff0c8;
+  box-shadow:
+    inset 0 1px #fff3,
+    0 5px 12px #0003;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    filter 140ms ease;
+}
+.advent-door.is-available {
+  background: linear-gradient(145deg, #24614e, #183b42 72%);
+  border-color: #a8e4c5aa;
+}
+.advent-door.is-complete {
+  background: linear-gradient(145deg, #98712d, #584323 72%);
+  border-color: #ffe39b;
+}
+.advent-door.is-locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.advent-door:hover:not(:disabled) {
+  transform: translateY(-3px);
+  filter: brightness(1.12);
+}
+.advent-door-number {
+  font: 900 19px var(--font-mono);
+}
+.advent-door-symbol {
+  color: #ffe8a5;
+  font-size: 15px;
+}
+.advent-note {
+  margin: 16px 2px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+.advent-winter-link {
+  width: 100%;
+}
+.app:has(.winter-levels-page),
+.app:has(.advent-page) {
+  background: radial-gradient(
+    circle at 50% 0%,
+    #285b7b 0,
+    #142b49 36%,
+    #081321 82%
+  );
+}
+@media (max-width: 420px) {
+  .advent-grid {
+    gap: 7px;
+  }
+  .advent-door {
+    min-height: 66px;
+  }
+}
 
 /* The main menu adopts the winter atmosphere only during the winter event. */
 .winter-menu {
@@ -481,8 +743,17 @@
     radial-gradient(circle at 84% 19%, #e8faff88 0 1px, transparent 2px),
     radial-gradient(circle at 35% 72%, #e8faff77 0 1px, transparent 2px),
     radial-gradient(circle at 72% 88%, #e8faff88 0 1px, transparent 2px);
-  background-size: 91px 87px, 137px 119px, 113px 103px, 163px 151px;
+  background-size:
+    91px 87px,
+    137px 119px,
+    113px 103px,
+    163px 151px;
 }
 .app:has(.winter-menu) {
-  background: radial-gradient(circle at 50% 0%, #285b7b 0, #142b49 36%, #081321 82%);
+  background: radial-gradient(
+    circle at 50% 0%,
+    #285b7b 0,
+    #142b49 36%,
+    #081321 82%
+  );
 }
