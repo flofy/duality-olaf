@@ -1,6 +1,7 @@
 <script lang="ts">
   import { halloween, christmas, isSeasonalEventAvailable } from "@duality/level-format";
   import Button from "../components/Button.svelte";
+  import DevDateSimulator from "../components/DevDateSimulator.svelte";
   import { campaign, worlds } from "../lib/levels/campaign";
   import {
     getCampaignProgress,
@@ -9,6 +10,7 @@
     isWorldUnlocked,
   } from "../lib/progression";
   import { isLevelLabEnabled } from "../lib/devFlags";
+  import { getAppDate } from "../lib/devDate.svelte";
   import { navigate } from "../lib/router.svelte";
 
   const progress = getCampaignProgress();
@@ -28,9 +30,10 @@
   }
 </script>
 
-<section class="menu worlds-menu {isSeasonalEventAvailable(christmas) ? 'winter-menu' : ''}">
+<section class="menu worlds-menu {isSeasonalEventAvailable(christmas, getAppDate()) ? 'winter-menu' : ''}">
   <h1 class="title">DUALITY</h1>
   <div class="subtitle">CHOISIS TON MONDE</div>
+  <DevDateSimulator />
 
   <section class="world-group" aria-labelledby="classic-worlds-title">
     <div class="world-group-heading">
@@ -60,7 +63,7 @@
       <span>COLLECTIONS ÉVÉNEMENTIELLES</span>
     </div>
     {#each seasonalAvailable as item (item.event.id)}
-      {#if isSeasonalEventAvailable(item.event)}
+      {#if isSeasonalEventAvailable(item.event, getAppDate())}
         <Button
           iconText={item.icon}
           label={`${item.label} · ${item.description}`}
