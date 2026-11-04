@@ -48,7 +48,7 @@
     Chaque case se débloque à sa date. Une fois découverte, elle reste accessible
     pour pouvoir jouer à ton rythme.
   </p>
-  {#if isSeasonalEventAvailable(christmas)}
+  {#if isSeasonalEventAvailable(christmas, getAppDate())}
     <Button iconText="❄️" label="DÉCOUVRIR LE MONDE HIVER" onclick={() => navigate("/winter")} variant="secondary" class="advent-winter-link" />
   {:else}
     <p class="advent-note">Le monde Hiver ouvrira le 1er décembre.</p>
