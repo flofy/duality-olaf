@@ -146,21 +146,6 @@ The CI workflow runs these checks on pull requests and pushes to `main`.
 - [x] Seasonal Halloween levels and character themes.
 - [x] Svelte 5 application, responsive controls, shared UI system and PWA build pipeline.
 
-### In progress
-
-- [ ] Immersive full-screen gameplay and world transitions ([PR #182](https://github.com/flofy/duality-olaf/pull/182)).
-- [ ] Winter seasonal world and Advent calendar ([PR #185](https://github.com/flofy/duality-olaf/pull/185)).
-
-### Next
-
-- [ ] Add local persistence, import/export and sharing for custom levels ([issue #71](https://github.com/flofy/duality-olaf/issues/71)).
-- [ ] Verify the production GitHub Pages deployment and end-to-end player journey.
-- [ ] Complete a focused accessibility, responsive-layout and performance review.
-- [ ] Finalise release documentation and the v1.0 quality gate ([issue #74](https://github.com/flofy/duality-olaf/issues/74)).
-- [ ] Revisit product and monetization decisions only after real player-retention signals ([issue #73](https://github.com/flofy/duality-olaf/issues/73)).
-
-The checklist in [issue #74](https://github.com/flofy/duality-olaf/issues/74) is the release gate; this README roadmap is a high-level overview, not a duplicate task tracker.
-
 ## Reference and rights
 
 This project is inspired by historical releases. Original assets, binaries and copyrighted material are treated as reference material only and are not redistributed in this repository. The implementation uses its own code and level data.
