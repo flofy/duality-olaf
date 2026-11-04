@@ -1,4 +1,4 @@
-const isDevelopment = import.meta.env.DEV;
+const isDevelopment = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEVTOOLS === "true";
 
 let simulatedDate = $state<Date | null>(null);
 
