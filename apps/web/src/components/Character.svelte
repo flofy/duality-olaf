@@ -82,11 +82,13 @@
     <path d="M10 3.4c.4-1.2 1.5-1.8 2.5-.9-.2 1.1-.7 1.9-1.7 2.4" fill="#4fc3ff" stroke="#12529a" stroke-width=".45" />
     <circle cx="12" cy="12" r="9" fill="url(#ballCharacterGradient)" stroke={winter ? "#8bb9d1" : "#12529a"} stroke-width=".6" />
     <ellipse cx="8.2" cy="6.6" rx="2.5" ry="1.35" fill="#fff" opacity=".55" transform="rotate(-25 8.2 6.6)" />
+    {@render face(false)}
     {#if winter}
-      <path d="M8.1 13.5 10.3 14.3 11.7 13.7 13.5 14.4 15.8 13.5" stroke="#e98b8b" stroke-width=".65" stroke-linecap="round"/>
       <path d="M10.7 12.2 12 13.3 13.3 12.2" fill="#f08a35" stroke="#c86c28" stroke-width=".35"/>
-    {:else}
-      {@render face(false)}
+      <path d="M5.1 14.5c2.1 1.2 4.5 1.7 6.9 1.7 2.5 0 4.9-.5 6.9-1.7l-.8 3.2c-1.7 1.1-3.8 1.7-6.1 1.7s-4.4-.6-6.1-1.7Z" fill="#c83d4b" stroke="#8f2534" stroke-width=".45"/>
+      <path d="M16.1 15.7 18.2 19.4 16.1 20.2 14.5 16.2Z" fill="#e74b58" stroke="#8f2534" stroke-width=".35"/>
+      <circle cx="12" cy="16.1" r=".55" fill="#26384b"/>
+      <circle cx="12" cy="18.1" r=".55" fill="#26384b"/>
     {/if}
     {#if expression === "happy" || expression === "surprised"}
       <circle cx="5.9" cy="13.9" r="1" fill="#ff8ba7" opacity=".65" />
