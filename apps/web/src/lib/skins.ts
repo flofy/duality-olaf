@@ -99,5 +99,5 @@ export const skinLabels: Record<SkinPreference, string> = {
   auto: "AUTO",
   default: "NORMAL",
   halloween: "🎃 HALLOWEEN",
-  christmas: "🎄 NOËL",
+  christmas: "❄️ HIVER",
 };
