@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { halloween } from "@duality/level-format";
+  import { halloween, isSeasonalEventAvailable } from "@duality/level-format";
+  import Redirect from "../components/Redirect.svelte";
+  import { getAppDate } from "../lib/devDate.svelte";
   import Button from "../components/Button.svelte";
   import Icon from "../components/Icon.svelte";
   import { getLevelResult, isLevelCompleted } from "../lib/progression";
@@ -21,6 +23,9 @@
   );
 </script>
 
+{#if !isSeasonalEventAvailable(halloween, getAppDate())}
+  <Redirect to="/menu" />
+{:else}
 <section class="menu halloween-levels-page">
   <div class="topbar">
     <Button icon="arrowLeft" label="MENU" onclick={() => navigate("/menu")} variant="secondary" />
@@ -73,3 +78,4 @@
   </div>
   <p class="halloween-footnote">Disponible du 13 octobre au 3 novembre.</p>
 </section>
+{/if}
