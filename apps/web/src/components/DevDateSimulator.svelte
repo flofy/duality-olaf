@@ -5,7 +5,7 @@
     setSimulatedDate,
   } from "../lib/devDate.svelte";
 
-  const isDevelopment = import.meta.env.DEV;
+  const isDevelopment = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEVTOOLS === "true";
   const simulatedDate = $derived(getSimulatedDate());
   const inputValue = $derived(
     simulatedDate
