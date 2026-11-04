@@ -1,0 +1,191 @@
+{
+  "id": "seasonal-christmas-09",
+  "width": 13,
+  "height": 10,
+  "tiles": [
+    [
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "empty",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "empty",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "empty",
+      "empty",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ],
+    [
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall",
+      "wall"
+    ]
+  ],
+  "ball": {
+    "x": 11,
+    "y": 1
+  },
+  "square": {
+    "x": 1,
+    "y": 8
+  },
+  "stars": [
+    {
+      "x": 7,
+      "y": 1
+    },
+    {
+      "x": 2,
+      "y": 1
+    },
+    {
+      "x": 4,
+      "y": 3
+    },
+    {
+      "x": 9,
+      "y": 3
+    },
+    {
+      "x": 9,
+      "y": 5
+    },
+    {
+      "x": 4,
+      "y": 5
+    }
+  ]
+}
