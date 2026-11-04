@@ -1,11 +1,13 @@
 <script lang="ts">
   import { christmas, isSeasonalEventAvailable } from "@duality/level-format";
   import Button from "../components/Button.svelte";
+  import DevDateSimulator from "../components/DevDateSimulator.svelte";
+  import { getAppDate } from "../lib/devDate.svelte";
   import { getAdventDay, isAdventDayAvailable } from "../lib/advent";
   import { isLevelCompleted } from "../lib/progression";
   import { navigate } from "../lib/router.svelte";
 
-  const today = getAdventDay();
+  const today = $derived(getAdventDay(getAppDate()));
   const levels = christmas.levels;
   const days = Array.from({ length: 24 }, (_, index) => index + 1);
   const levelForDay = (day: number) => levels[day - 1];
@@ -16,6 +18,7 @@
     <Button icon="arrowLeft" label="MENU" onclick={() => navigate("/menu")} variant="secondary" />
     <b>ÉVÉNEMENT SPÉCIAL</b>
   </div>
+  <DevDateSimulator />
   <div class="advent-hero">
     <span class="advent-hero-flake advent-hero-flake-left" aria-hidden="true">❄</span>
     <span class="advent-hero-flake advent-hero-flake-right" aria-hidden="true">✦</span>
@@ -27,7 +30,7 @@
   <div class="advent-grid" aria-label="Les 24 jours du calendrier de l'Avent">
     {#each days as day (day)}
       {@const level = levelForDay(day)}
-      {@const available = isAdventDayAvailable(day)}
+      {@const available = isAdventDayAvailable(day, getAppDate())}
       {@const done = level ? isLevelCompleted(level.id) : false}
       <button
         type="button"
