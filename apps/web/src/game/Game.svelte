@@ -27,19 +27,18 @@
     seasonalEvent?: SeasonalEvent;
   } = $props();
 
-  // Le composant est remonté à chaque changement de niveau (cf. App.svelte) :
-  // ces valeurs sont donc fixes pour sa durée de vie.
   /* svelte-ignore state_referenced_locally */
   const world = worlds.find((item) => item.id === (seasonalEvent ? 2 : worldId))!;
   /* svelte-ignore state_referenced_locally */
   const levels = seasonalEvent ? seasonalEvent.levels : world.levels;
   const levelIndex = levels.findIndex((item) => item.id === level.id);
   /* svelte-ignore state_referenced_locally */
-  const nextWorld = seasonalEvent ? null : getNextWorld(world.id);
+  const seasonalRoute = seasonalEvent?.theme === "christmas" ? "/winter" : "/halloween";
   /* svelte-ignore state_referenced_locally */
-  const backTo = seasonalEvent ? "/halloween" : `/world/${world.id}`;
+  const backTo = seasonalEvent ? seasonalRoute : `/world/${world.id}`;
+  /* svelte-ignore state_referenced_locally */
+  const seasonalLevelRoute = seasonalEvent?.theme === "christmas" ? "/winter/level/" : "/halloween/level/";
 
-  // Thème / skin : relus quand le menu les change.
   const skin = $derived.by(() => {
     appearance.tick;
     return resolveLevelSkin(level.id) ?? "default";
@@ -52,9 +51,9 @@
   function nextLevel() {
     if (seasonalEvent) {
       if (levelIndex < levels.length - 1) {
-        navigate(`/halloween/level/${levels[levelIndex + 1]!.id}`);
+        navigate(`${seasonalLevelRoute}${levels[levelIndex + 1]!.id}`);
       } else {
-        navigate("/halloween");
+        navigate(seasonalRoute);
       }
     } else if (levelIndex < levels.length - 1) {
       navigate(`/world/${world.id}/level/${levels[levelIndex + 1]!.id}`);
@@ -65,6 +64,7 @@
     }
   }
 
+  const nextWorld = seasonalEvent ? null : getNextWorld(world.id);
   const debug = createDebugCommands();
 
   /* svelte-ignore state_referenced_locally */
@@ -78,9 +78,6 @@
 
   const completionResult = $derived.by(() => {
     if (!game.state.completed) return null;
-    // L'optimal est volontairement masqué pour l'instant : le solveur synchrone
-    // fige la page sur les grands niveaux ouverts (ex. Halloween 01). On note
-    // les coups du joueur comme référence : 3 étoiles à la complétion.
     return calculateLevelResult(game.state.moves, null, game.elapsedMs);
   });
 
@@ -88,15 +85,12 @@
     if (completionResult) completeLevel(level.id, completionResult);
   });
 
-  // Le menu burger demande un redémarrage via cet évènement (RECOMMENCER).
   onMount(() => {
     const onGameReset = () => game.reset();
     window.addEventListener("duality:game-reset", onGameReset);
     return () => window.removeEventListener("duality:game-reset", onGameReset);
   });
 
-  // Raccourcis : Entrée passe au niveau suivant une fois terminé ; D copie la
-  // trace de commandes et C l'efface (outils de dev uniquement).
   onMount(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && game.state.completed) {
@@ -125,7 +119,7 @@
     worldId={world.id}
     worldIndex={levelIndex}
     label={seasonalEvent
-      ? `🎃 HALLOWEEN · NIVEAU ${String(levelIndex + 1).padStart(2, "0")}`
+      ? `${seasonalEvent.theme === "christmas" ? "❄️ HIVER" : "🎃 HALLOWEEN"} · NIVEAU ${String(levelIndex + 1).padStart(2, "0")}`
       : undefined}
     onBack={() => navigate(backTo)}
   />
