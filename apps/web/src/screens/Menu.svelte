@@ -28,7 +28,7 @@
   }
 </script>
 
-<section class="menu worlds-menu">
+<section class="menu worlds-menu {isSeasonalEventAvailable(christmas) ? 'winter-menu' : ''}">
   <h1 class="title">DUALITY</h1>
   <div class="subtitle">CHOISIS TON MONDE</div>
 
