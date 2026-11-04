@@ -46,7 +46,7 @@
     pour pouvoir jouer à ton rythme.
   </p>
   {#if isSeasonalEventAvailable(christmas)}
-    <Button icon="snowflake" label="DÉCOUVRIR LE MONDE HIVER" onclick={() => navigate("/winter")} variant="secondary" class="advent-winter-link" />
+    <Button iconText="❄️" label="DÉCOUVRIR LE MONDE HIVER" onclick={() => navigate("/winter")} variant="secondary" class="advent-winter-link" />
   {:else}
     <p class="advent-note">Le monde Hiver ouvrira le 1er décembre.</p>
   {/if}
