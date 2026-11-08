@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ".", "");
 
   return {
-    base: env.VITE_BASE_PATH || "./",
+    // Netlify serves the SPA from the domain root. A relative base breaks assets\n    // when a nested route (for example /dev/levels) is loaded directly.\n    // Subpath deployments can still override this with VITE_BASE_PATH.\n    base: env.VITE_BASE_PATH || "/",
     build: {
       rollupOptions: {
         output: {

@@ -436,3 +436,42 @@ html[data-board-display="fill"] .game .board {
 .board.theme-halloween .star-container svg {
   filter: drop-shadow(0 0 5px #ffad4aaa);
 }
+
+/* Winter world: an icy board, snow-lit walls and crisp star glows. */
+.board.theme-christmas {
+  background-color: #102b42;
+  background-image:
+    radial-gradient(circle at 18% 22%, #c9f2ff18 0 1px, transparent 2px),
+    radial-gradient(circle at 76% 68%, #d8f6ff18 0 1px, transparent 2px),
+    linear-gradient(145deg, #143a55, #0c2037 72%);
+  background-size:
+    37px 41px,
+    53px 47px,
+    auto;
+  box-shadow:
+    0 12px 35px #0009,
+    0 0 28px #8edfff18;
+}
+.board.theme-christmas .wall {
+  background-color: #46728d;
+  background-image:
+    linear-gradient(
+      135deg,
+      #e8fbff35 0 8%,
+      transparent 8% 50%,
+      #09283d35 50% 58%,
+      transparent 58% 100%
+    ),
+    linear-gradient(145deg, #6b9ab3, #315b78);
+  border-color: #9fc9dc;
+  box-shadow:
+    inset 0 2px #effbff55,
+    inset 0 -3px #08243a66,
+    0 1px 0 #0005;
+}
+.board.theme-christmas .star {
+  filter: drop-shadow(0 0 5px #c9f4ff) drop-shadow(0 0 10px #8bdfff88);
+}
+.board.theme-christmas .piece.inactive {
+  opacity: 0.5;
+}
