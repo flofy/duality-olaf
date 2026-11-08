@@ -1,6 +1,15 @@
 # Keep developer-only controls out of production while exposing them on previews.
 [context.deploy-preview.environment]
 VITE_ENABLE_DEVTOOLS = "true"
+VITE_ENABLE_LEVEL_LAB = "true"
 
 [context.branch-deploy.environment]
 VITE_ENABLE_DEVTOOLS = "true"
+VITE_ENABLE_LEVEL_LAB = "true"
+
+# The app uses client-side routing (History API): serve the SPA entry point
+# for direct navigation and browser reloads on nested routes.
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
