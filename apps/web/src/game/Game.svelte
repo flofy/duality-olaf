@@ -37,11 +37,11 @@
   const levels = levelsOverride ?? (seasonalEvent ? seasonalEvent.levels : world.levels);
   const levelIndex = levels.findIndex((item) => item.id === level.id);
   /* svelte-ignore state_referenced_locally */
-  const seasonalRoute = seasonalEvent?.theme === "christmas" ? (advent ? "/advent" : "/winter") : "/halloween";
+  const seasonalRoute = seasonalEvent?.theme === "christmas" ? "/advent" : "/halloween";
   /* svelte-ignore state_referenced_locally */
   const backTo = seasonalEvent ? seasonalRoute : `/world/${world.id}`;
   /* svelte-ignore state_referenced_locally */
-  const seasonalLevelRoute = advent ? "/advent/level/" : seasonalEvent?.theme === "christmas" ? "/winter/level/" : "/halloween/level/";
+  const seasonalLevelRoute = advent ? "/advent/level/" : "/halloween/level/";
 
   const skin = $derived.by(() => {
     appearance.tick;
