@@ -73,7 +73,7 @@
         {:else if view.name === "advent"}
           <AdventCalendar />
         {:else if view.name === "advent-level"}
-          <WinterLevelRoute levelId={view.levelId} />
+          <AdventLevelRoute levelId={view.levelId} />
         {:else if view.name === "new-year"}
           <NewYearLevelRoute />
         {:else if view.name === "world"}
