@@ -50,7 +50,7 @@ export function matchRoute(path: string): View {
 
   const halloweenLevel = /^\/halloween\/level\/([^/]+)$/.exec(path);
   if (halloweenLevel) return { name: "halloween-level", levelId: halloweenLevel[1]! };
-  const legacyWinterLevel = /^\\/winter\\/level\\/([^/]+)$/.exec(path);
+  const legacyWinterLevel = /^\/winter\/level\/([^/]+)$/.exec(path);
   if (legacyWinterLevel) return { name: "redirect", to: "/advent/level/" + legacyWinterLevel[1]! };
   const adventLevel = /^\/advent\/level\/([^/]+)$/.exec(path);
   if (adventLevel) return { name: "advent-level", levelId: adventLevel[1]! };
