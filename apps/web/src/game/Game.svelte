@@ -22,17 +22,19 @@
     worldId,
     seasonalEvent,
     advent = false,
+    levelsOverride,
   }: {
     level: Level;
     worldId: number;
     seasonalEvent?: SeasonalEvent;
     advent?: boolean;
+    levelsOverride?: readonly Level[];
   } = $props();
 
   /* svelte-ignore state_referenced_locally */
   const world = worlds.find((item) => item.id === (seasonalEvent ? 2 : worldId))!;
   /* svelte-ignore state_referenced_locally */
-  const levels = seasonalEvent ? seasonalEvent.levels : world.levels;
+  const levels = levelsOverride ?? (seasonalEvent ? seasonalEvent.levels : world.levels);
   const levelIndex = levels.findIndex((item) => item.id === level.id);
   /* svelte-ignore state_referenced_locally */
   const seasonalRoute = seasonalEvent?.theme === "christmas" ? (advent ? "/advent" : "/winter") : "/halloween";
@@ -125,7 +127,7 @@
     worldId={world.id}
     worldIndex={levelIndex}
     label={seasonalEvent
-      ? `${seasonalEvent.theme === "christmas" ? "❄️ HIVER" : "🎃 HALLOWEEN"} · NIVEAU ${String(levelIndex + 1).padStart(2, "0")}`
+      ? `${seasonalEvent.theme === "christmas" ? (level.id === "seasonal-new-year-surprise" ? "🎆 NOUVEL AN" : "🎁 AVENT") : "🎃 HALLOWEEN"} · NIVEAU ${String(levelIndex + 1).padStart(2, "0")}`
       : undefined}
     onBack={() => navigate(backTo)}
   />
