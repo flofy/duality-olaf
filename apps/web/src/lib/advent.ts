@@ -10,3 +10,8 @@ export function isAdventDayAvailable(day: number, date = new Date()): boolean {
     Number.isInteger(day) && day >= 1 && day <= 24 && day <= getAdventDay(date)
   );
 }
+
+/** The New Year bonus opens on January 1 and remains available through January 7. */
+export function isNewYearSurpriseAvailable(date = new Date()): boolean {
+  return date.getMonth() === 0 && date.getDate() >= 1 && date.getDate() <= 7;
+}
