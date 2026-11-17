@@ -45,6 +45,7 @@ export function matchRoute(path: string): View {
   if (path === "/challenge") return { name: "challenge" };
   if (path === "/halloween") return { name: "halloween" };
   if (path === "/advent") return { name: "advent" };
+  if (path === "/winter") return { name: "redirect", to: "/advent" };
   if (path === "/advent/new-year") return { name: "new-year" };
 
   const halloweenLevel = /^\/halloween\/level\/([^/]+)$/.exec(path);
