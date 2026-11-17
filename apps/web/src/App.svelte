@@ -17,9 +17,8 @@
   import ProtectedLevel from "./screens/ProtectedLevel.svelte";
   import SeasonalLevelRoute from "./screens/SeasonalLevelRoute.svelte";
   import SeasonalLevels from "./screens/SeasonalLevels.svelte";
-  import WinterLevels from "./screens/WinterLevels.svelte";
   import AdventCalendar from "./screens/AdventCalendar.svelte";
-  import WinterLevelRoute from "./screens/WinterLevelRoute.svelte";
+  import NewYearLevelRoute from "./screens/NewYearLevelRoute.svelte";
   import WorldLevels from "./screens/WorldLevels.svelte";
 
   let { updateSW }: { updateSW: (reloadPage?: boolean) => Promise<void> } = $props();
@@ -71,14 +70,12 @@
           <SeasonalLevels />
         {:else if view.name === "halloween-level"}
           <SeasonalLevelRoute levelId={view.levelId} />
-        {:else if view.name === "winter"}
-          <WinterLevels />
-        {:else if view.name === "winter-level"}
-          <WinterLevelRoute levelId={view.levelId} />
         {:else if view.name === "advent"}
           <AdventCalendar />
         {:else if view.name === "advent-level"}
-          <WinterLevelRoute levelId={view.levelId} advent />
+          <WinterLevelRoute levelId={view.levelId} />
+        {:else if view.name === "new-year"}
+          <NewYearLevelRoute />
         {:else if view.name === "world"}
           <WorldLevels worldId={view.worldId} />
         {:else if view.name === "level"}
