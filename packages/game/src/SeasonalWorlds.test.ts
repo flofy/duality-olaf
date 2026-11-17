@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   christmas,
   halloween,
+  newYearSurprise,
   isSeasonalEventAvailable,
   validateLevel as validateLevelStructure,
   type Level,
@@ -10,7 +11,7 @@ import { estimateDifficulty, validateLevel } from "./LevelValidator";
 import { LevelRunner, type Direction, type GameState } from "./LevelRunner";
 
 const seasonalEvents = [halloween, christmas];
-const seasonalLevels = seasonalEvents.flatMap((event) => event.levels);
+const seasonalLevels = [...seasonalEvents.flatMap((event) => event.levels), newYearSurprise];
 
 type PlannerAction =
   | { type: "move"; direction: Direction }
@@ -102,8 +103,9 @@ describe("seasonal worlds", () => {
   it("exposes stable event and level identifiers", () => {
     expect(halloween.id).toBe("seasonal-halloween");
     expect(christmas.id).toBe("seasonal-christmas");
-    expect(christmas.label).toBe("Hiver");
+    expect(christmas.label).toContain("magie de l");
     expect(christmas.levels).toHaveLength(24);
+    expect(newYearSurprise.id).toBe("seasonal-new-year-surprise");
     expect(new Set(halloween.levels.map((level) => level.id)).size).toBe(
       halloween.levels.length,
     );
@@ -137,10 +139,10 @@ describe("seasonal worlds", () => {
       isSeasonalEventAvailable(christmas, new Date("2027-01-05T12:00:00Z")),
     ).toBe(true);
     expect(
-      isSeasonalEventAvailable(christmas, new Date("2027-02-01T12:00:00Z")),
+      isSeasonalEventAvailable(christmas, new Date("2027-01-07T12:00:00Z")),
     ).toBe(true);
     expect(
-      isSeasonalEventAvailable(christmas, new Date("2027-03-21T12:00:00Z")),
+      isSeasonalEventAvailable(christmas, new Date("2027-01-08T12:00:00Z")),
     ).toBe(false);
   });
   it("keeps Halloween outside its event window", () => {
