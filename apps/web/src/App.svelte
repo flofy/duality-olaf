@@ -18,6 +18,7 @@
   import SeasonalLevelRoute from "./screens/SeasonalLevelRoute.svelte";
   import SeasonalLevels from "./screens/SeasonalLevels.svelte";
   import AdventCalendar from "./screens/AdventCalendar.svelte";
+  import AdventLevelRoute from "./screens/AdventLevelRoute.svelte";
   import NewYearLevelRoute from "./screens/NewYearLevelRoute.svelte";
   import WorldLevels from "./screens/WorldLevels.svelte";
 
