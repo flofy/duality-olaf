@@ -11,7 +11,10 @@ import { estimateDifficulty, validateLevel } from "./LevelValidator";
 import { LevelRunner, type Direction, type GameState } from "./LevelRunner";
 
 const seasonalEvents = [halloween, christmas];
-const seasonalLevels = [...seasonalEvents.flatMap((event) => event.levels), newYearSurprise];
+const seasonalLevels = [
+  ...seasonalEvents.flatMap((event) => event.levels),
+  newYearSurprise,
+];
 
 type PlannerAction =
   | { type: "move"; direction: Direction }

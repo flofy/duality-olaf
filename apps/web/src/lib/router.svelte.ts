@@ -9,11 +9,17 @@ const rawBase = import.meta.env.BASE_URL;
 const basename = rawBase === "./" ? "" : rawBase.replace(/\/$/, "");
 
 function stripBase(pathname: string): string {
-  const path = basename && pathname.startsWith(basename) ? pathname.slice(basename.length) : pathname;
+  const path =
+    basename && pathname.startsWith(basename)
+      ? pathname.slice(basename.length)
+      : pathname;
   return path === "" ? "/" : path.length > 1 ? path.replace(/\/$/, "") : path;
 }
 
-export const location = $state({ path: stripBase(window.location.pathname), search: window.location.search });
+export const location = $state({
+  path: stripBase(window.location.pathname),
+  search: window.location.search,
+});
 
 function sync() {
   location.path = stripBase(window.location.pathname);
@@ -30,12 +36,21 @@ export function navigate(to: string, options: { replace?: boolean } = {}) {
 window.addEventListener("popstate", sync);
 
 type View =
-  | { name: "intro" } | { name: "menu" } | { name: "help" } | { name: "challenge" }
-  | { name: "halloween" } | { name: "halloween-level"; levelId: string }
-  | { name: "advent" } | { name: "advent-level"; levelId: string } | { name: "new-year" }
-  | { name: "world"; worldId: string } | { name: "level"; worldId: string; levelId: string }
-  | { name: "dev-levels" } | { name: "dev-playground"; levelId: string }
-  | { name: "dev-generator" } | { name: "dev-editor"; levelId: string | null }
+  | { name: "intro" }
+  | { name: "menu" }
+  | { name: "help" }
+  | { name: "challenge" }
+  | { name: "halloween" }
+  | { name: "halloween-level"; levelId: string }
+  | { name: "advent" }
+  | { name: "advent-level"; levelId: string }
+  | { name: "new-year" }
+  | { name: "world"; worldId: string }
+  | { name: "level"; worldId: string; levelId: string }
+  | { name: "dev-levels" }
+  | { name: "dev-playground"; levelId: string }
+  | { name: "dev-generator" }
+  | { name: "dev-editor"; levelId: string | null }
   | { name: "redirect"; to: string };
 
 export function matchRoute(path: string): View {
@@ -49,9 +64,11 @@ export function matchRoute(path: string): View {
   if (path === "/advent/new-year") return { name: "new-year" };
 
   const halloweenLevel = /^\/halloween\/level\/([^/]+)$/.exec(path);
-  if (halloweenLevel) return { name: "halloween-level", levelId: halloweenLevel[1]! };
+  if (halloweenLevel)
+    return { name: "halloween-level", levelId: halloweenLevel[1]! };
   const legacyWinterLevel = /^\/winter\/level\/([^/]+)$/.exec(path);
-  if (legacyWinterLevel) return { name: "redirect", to: "/advent/level/" + legacyWinterLevel[1]! };
+  if (legacyWinterLevel)
+    return { name: "redirect", to: "/advent/level/" + legacyWinterLevel[1]! };
   const adventLevel = /^\/advent\/level\/([^/]+)$/.exec(path);
   if (adventLevel) return { name: "advent-level", levelId: adventLevel[1]! };
 

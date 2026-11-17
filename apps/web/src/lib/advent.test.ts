@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getAdventDay, isAdventDayAvailable, isNewYearSurpriseAvailable } from "./advent";
+import {
+  getAdventDay,
+  isAdventDayAvailable,
+  isNewYearSurpriseAvailable,
+} from "./advent";
 
 describe("Advent calendar availability", () => {
   it("reveals one door per day from December 1 to 24", () => {
