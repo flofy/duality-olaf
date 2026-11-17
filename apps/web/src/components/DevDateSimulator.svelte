@@ -30,7 +30,7 @@
     {:else}
       <span class="dev-date-hint">La date réelle est utilisée</span>
     {/if}
-  <small class="dev-date-description">Teste les dates d’ouverture d’Halloween, du monde Hiver et des 24 jours de l’Avent.</small>
+  <small class="dev-date-description">Teste Halloween, les 24 jours de l’Avent et la surprise du Nouvel An.</small>
   </aside>
 
   <style>
