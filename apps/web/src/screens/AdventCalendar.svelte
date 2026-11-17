@@ -31,7 +31,7 @@
     <span class="advent-hero-kicker">DU 1ER DÉCEMBRE AU 7 JANVIER</span>
     <h1>LA MAGIE DE L'HIVER</h1>
     <p>24 cases, 24 défis à découvrir jusqu'à Noël.</p>
-    <div class="advent-countdown">{today === 0 ? "BIENTÔT…" : today >= 24 ? "JOYEUX NOËL !" : today + " / 24 JOURS DÉCOUVERTS"}</div>
+    <div class="advent-countdown">{newYearAvailable ? "BONNE ANNÉE !" : today === 0 ? "BIENTÔT…" : today >= 24 ? "24 / 24 DÉFIS DÉBLOQUÉS" : today + " / 24 JOURS DÉCOUVERTS"}</div>
   </div>
   <div class="advent-grid" aria-label="Les 24 jours du calendrier de l'Avent">
     {#each days as day (day)}
@@ -68,3 +68,24 @@
   {/if}
 </section>
 {/if}
+
+<style>
+  .new-year-surprise {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 20px 0 8px;
+    padding: 16px 18px;
+    border: 1px solid rgba(255, 204, 102, .35);
+    border-radius: 14px;
+    background: linear-gradient(115deg, rgba(36, 42, 83, .88), rgba(93, 53, 91, .76));
+  }
+  .new-year-surprise-icon { font-size: 2rem; }
+  .new-year-surprise strong { display: block; letter-spacing: .06em; }
+  .new-year-surprise p { margin: 4px 0 0; }
+  .new-year-surprise :global(button) { margin-left: auto; flex-shrink: 0; }
+  @media (max-width: 520px) {
+    .new-year-surprise { flex-wrap: wrap; }
+    .new-year-surprise :global(button) { width: 100%; margin-left: 0; }
+  }
+</style>
