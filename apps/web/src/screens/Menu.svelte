@@ -74,15 +74,7 @@
         />
       {/if}
     {/each}
-{#if adventAvailable}
-      <Button
-        iconText="🎁"
-        label="CALENDRIER DE L'AVENT · 24 SURPRISES"
-        onclick={() => navigate("/advent")}
-        variant="secondary"
-        class="advent-promo"
-      />
-    {/if}
+
     {#if winterEventAvailable}
       <Button iconText="🎄" label="LA MAGIE DE L'HIVER · CALENDRIER DE L'AVENT" onclick={() => navigate("/advent")} variant="primary" class="winter-promo" />
     {/if}
