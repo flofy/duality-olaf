@@ -19,10 +19,9 @@
   );
   const seasonalAvailable = [
     { event: halloween, route: "/halloween", icon: "🎃", label: "HALLOWEEN", description: "UNE AVENTURE QUI DONNE DES FRISSONS" },
-    { event: christmas, route: "/winter", icon: "❄️", label: "HIVER", description: "24 NIVEAUX SOUS LA NEIGE" },
   ];
 
-  const adventAvailable = $derived(isSeasonalEventAvailable(christmas, getAppDate()));
+  const winterEventAvailable = $derived(isSeasonalEventAvailable(christmas, getAppDate()));
 
   function worldMeta(world: (typeof worlds)[number]): string {
     const done = world.levels.filter((level) => isLevelCompleted(level.id)).length;
@@ -61,8 +60,8 @@
 
   <section class="world-group seasonal-world-group" aria-labelledby="seasonal-worlds-title">
     <div class="world-group-heading">
-      <h2 id="seasonal-worlds-title">MONDES SAISONNIERS</h2>
-      <span>COLLECTIONS ÉVÉNEMENTIELLES</span>
+      <h2 id="seasonal-worlds-title">ÉVÉNEMENTS SAISONNIERS</h2>
+      <span>ÉVÉNEMENTS LIMITÉS</span>
     </div>
     {#each seasonalAvailable as item (item.event.id)}
       {#if isSeasonalEventAvailable(item.event, getAppDate())}
@@ -75,14 +74,9 @@
         />
       {/if}
     {/each}
-{#if adventAvailable}
-      <Button
-        iconText="🎁"
-        label="CALENDRIER DE L'AVENT · 24 SURPRISES"
-        onclick={() => navigate("/advent")}
-        variant="secondary"
-        class="advent-promo"
-      />
+
+    {#if winterEventAvailable}
+      <Button iconText="🎄" label="LA MAGIE DE L'HIVER · CALENDRIER DE L'AVENT" onclick={() => navigate("/advent")} variant="primary" class="winter-promo" />
     {/if}
   </section>
 

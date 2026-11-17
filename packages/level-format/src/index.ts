@@ -171,6 +171,7 @@ export { world3Refined } from "./world3-refined";
 export {
   christmas,
   halloween,
+  newYearSurprise,
   seasonalEvents,
   isSeasonalEventAvailable,
   challengeLevels,

@@ -51,11 +51,18 @@ export const halloween: SeasonalEvent = {
 export const christmas: SeasonalEvent = {
   id: "seasonal-christmas",
   theme: "christmas",
-  label: "Hiver",
+  label: "La magie de l'hiver",
   start: { month: 12, day: 1 },
-  end: { month: 3, day: 20 },
+  end: { month: 1, day: 7 },
   levels: loadSeasonalTheme("christmas"),
 };
+
+const newYear = Object.values(seasonalModules).find(
+  (level) => level.id === "seasonal-new-year-surprise",
+);
+if (!newYear) throw new Error("Missing seasonal-new-year-surprise level");
+validateLevel(newYear);
+export const newYearSurprise: Level = newYear;
 
 export const seasonalEvents: readonly SeasonalEvent[] = [halloween, christmas];
 
