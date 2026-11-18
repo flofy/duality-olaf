@@ -38,10 +38,10 @@
   <div class="subtitle">CHOISIS TON MONDE</div>
   <DevDateSimulator />
 
-  <section class="world-group" aria-labelledby="classic-worlds-title">
+  <section class="world-group" aria-labelledby="campaign-worlds-title">
     <div class="world-group-heading">
-      <h2 id="classic-worlds-title">MONDES CLASSIQUES</h2>
-      <span>PROGRESSION PRINCIPALE</span>
+      <h2 id="campaign-worlds-title">CAMPAGNE</h2>
+      <span>5 MONDES · PROGRESSION PERMANENTE</span>
     </div>
     <div class="world-list">
       {#each visibleWorlds as world (world.id)}
@@ -62,8 +62,8 @@
 
   <section class="world-group seasonal-world-group" aria-labelledby="seasonal-worlds-title">
     <div class="world-group-heading">
-      <h2 id="seasonal-worlds-title">MONDES SAISONNIERS</h2>
-      <span>COLLECTIONS ÉVÉNEMENTIELLES</span>
+      <h2 id="seasonal-worlds-title">ÉVÉNEMENTS</h2>
+      <span>COLLECTIONS SAISONNIÈRES</span>
     </div>
     {#each seasonalAvailable as item (item.event.id)}
       {@const stats = getCollectionProgress(item.event.levels)}
@@ -107,8 +107,20 @@
     </div>
   </div>
   <p class="muted">{progress.completed}/{campaign.length} niveaux de campagne terminés</p>
+  <section class="world-group challenge-world-group" aria-labelledby="challenges-title">
+    <div class="world-group-heading">
+      <h2 id="challenges-title">DÉFIS</h2>
+      <span>NIVEAUX INDÉPENDANTS ET REJOUABLES</span>
+    </div>
+    <Button
+      icon="arrowRight"
+      label="DÉCOUVRIR LES DÉFIS"
+      onclick={() => navigate("/challenge")}
+      variant="secondary"
+    />
+  </section>
+
   <div class="modal-actions">
-    <Button icon="arrowRight" label="DÉFI" onclick={() => navigate("/challenge")} variant="secondary" />
     <Button icon="help" label="AIDE" onclick={() => navigate("/help")} variant="secondary" />
     {#if isLevelLabEnabled}
       <button class="action dev-entry" onclick={() => navigate("/dev/levels")}>🧪 LEVEL LAB</button>
