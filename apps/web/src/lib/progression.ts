@@ -32,9 +32,7 @@ function readProgress(): Progress {
             )
           : [],
         started: Array.isArray(parsed.started)
-          ? parsed.started.filter(
-              (id): id is string => typeof id === "string",
-            )
+          ? parsed.started.filter((id): id is string => typeof id === "string")
           : [],
         results:
           parsed.results && typeof parsed.results === "object"
@@ -114,16 +112,23 @@ export function markWorldTutorialSeen(worldId: number): void {
 
 export function startLevel(levelId: string): void {
   const progress = readProgress();
-  if (progress.completed.includes(levelId) || progress.started.includes(levelId)) return;
+  if (
+    progress.completed.includes(levelId) ||
+    progress.started.includes(levelId)
+  )
+    return;
   progress.started.push(levelId);
   writeProgress(progress);
 }
 
-export function isCollectionStarted(levels: readonly { id: string }[]): boolean {
+export function isCollectionStarted(
+  levels: readonly { id: string }[],
+): boolean {
   const progress = readProgress();
   return levels.some(
     (level) =>
-      progress.started.includes(level.id) || progress.completed.includes(level.id),
+      progress.started.includes(level.id) ||
+      progress.completed.includes(level.id),
   );
 }
 

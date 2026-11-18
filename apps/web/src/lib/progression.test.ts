@@ -10,8 +10,12 @@ import {
 
 class MemoryStorage implements Storage {
   private values = new Map<string, string>();
-  get length(): number { return this.values.size; }
-  clear(): void { this.values.clear(); }
+  get length(): number {
+    return this.values.size;
+  }
+  clear(): void {
+    this.values.clear();
+  }
   getItem(key: string): string | null {
     return this.values.get(key) ?? null;
   }
