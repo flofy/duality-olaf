@@ -2,12 +2,11 @@
   import { halloween, christmas, isSeasonalEventAvailable } from "@duality/level-format";
   import Button from "../components/Button.svelte";
   import DevDateSimulator from "../components/DevDateSimulator.svelte";
-  import { campaign, worlds } from "../lib/levels/campaign";
+  import { worlds } from "../lib/levels/campaign";
   import {
     getCampaignProgress,
     getCollectionProgress,
     isCollectionStarted,
-    isLevelCompleted,
     isWorldUnlocked,
   } from "../lib/progression";
   import { isLevelLabEnabled } from "../lib/devFlags";
@@ -26,10 +25,15 @@
   const adventAvailable = $derived(isSeasonalEventAvailable(christmas, getAppDate()));
 
   function worldMeta(world: (typeof worlds)[number]): string {
-    const done = world.levels.filter((level) => isLevelCompleted(level.id)).length;
-    return done === world.levels.length
-      ? `${world.subtitle} • ✓ TERMINÉ`
-      : `${world.subtitle} • ${done}/${world.levels.length}`;
+    const stats = getCollectionProgress(world.levels);
+    return `${world.subtitle} · ${stats.completed}/${stats.total} niveaux · ${stats.stars}/${stats.totalStars} ★`;
+  }
+
+  function isEventVisible(item: (typeof seasonalAvailable)[number]): boolean {
+    return (
+      isSeasonalEventAvailable(item.event, getAppDate()) ||
+      isCollectionStarted(item.event.levels)
+    );
   }
 </script>
 
@@ -42,6 +46,19 @@
     <div class="world-group-heading">
       <h2 id="campaign-worlds-title">CAMPAGNE</h2>
       <span>5 MONDES · PROGRESSION PERMANENTE</span>
+    </div>
+    <div class="campaign-progress">
+      <div class="campaign-progress-header">
+        <span>PROGRESSION DE LA CAMPAGNE</span>
+        <strong>{progress.percentage}%</strong>
+      </div>
+      <div class="campaign-progress-track" aria-label="{progress.percentage}% de complétion">
+        <div class="campaign-progress-fill" style="width: {progress.percentage}%"></div>
+      </div>
+      <div class="campaign-progress-meta">
+        <span>{progress.completed}/{progress.total} niveaux</span>
+        <span>{progress.stars}/{progress.totalStars} ★</span>
+      </div>
     </div>
     <div class="world-list">
       {#each visibleWorlds as world (world.id)}
@@ -60,53 +77,41 @@
     </div>
   </section>
 
-  <section class="world-group seasonal-world-group" aria-labelledby="seasonal-worlds-title">
-    <div class="world-group-heading">
-      <h2 id="seasonal-worlds-title">ÉVÉNEMENTS</h2>
-      <span>COLLECTIONS SAISONNIÈRES</span>
-    </div>
-    {#each seasonalAvailable as item (item.event.id)}
-      {@const stats = getCollectionProgress(item.event.levels)}
-      {#if isSeasonalEventAvailable(item.event, getAppDate()) || isCollectionStarted(item.event.levels)}
-        <div class="seasonal-world-entry">
-          <Button
-            iconText={item.icon}
-            label={`${item.label} · ${item.description}`}
-            onclick={() => navigate(item.route)}
-            variant="primary"
-            class={item.event.theme === "halloween" ? "halloween-promo" : "winter-promo"}
-          />
-          <div class="world-meta">
-            {stats.completed}/{stats.total} niveaux terminés · {stats.stars}/{stats.totalStars} ★
+  {#if seasonalAvailable.some(isEventVisible)}
+    <section class="world-group seasonal-world-group" aria-labelledby="seasonal-worlds-title">
+      <div class="world-group-heading">
+        <h2 id="seasonal-worlds-title">ÉVÉNEMENTS</h2>
+        <span>COLLECTIONS SAISONNIÈRES</span>
+      </div>
+      {#each seasonalAvailable as item (item.event.id)}
+        {@const stats = getCollectionProgress(item.event.levels)}
+        {#if isEventVisible(item)}
+          <div class="seasonal-world-entry">
+            <Button
+              iconText={item.icon}
+              label={`${item.label} · ${item.description}`}
+              onclick={() => navigate(item.route)}
+              variant="primary"
+              class={item.event.theme === "halloween" ? "halloween-promo" : "winter-promo"}
+            />
+            <div class="world-meta">
+              {stats.completed}/{stats.total} niveaux terminés · {stats.stars}/{stats.totalStars} ★
+            </div>
           </div>
-        </div>
+        {/if}
+      {/each}
+      {#if adventAvailable}
+        <Button
+          iconText="🎁"
+          label="CALENDRIER DE L'AVENT · 24 SURPRISES"
+          onclick={() => navigate("/advent")}
+          variant="secondary"
+          class="advent-promo"
+        />
       {/if}
-    {/each}
-{#if adventAvailable}
-      <Button
-        iconText="🎁"
-        label="CALENDRIER DE L'AVENT · 24 SURPRISES"
-        onclick={() => navigate("/advent")}
-        variant="secondary"
-        class="advent-promo"
-      />
-    {/if}
-  </section>
+    </section>
+  {/if}
 
-  <div class="campaign-progress">
-    <div class="campaign-progress-header">
-      <span>PROGRESSION CLASSIQUE</span>
-      <strong>{progress.percentage}%</strong>
-    </div>
-    <div class="campaign-progress-track" aria-label="{progress.percentage}% de complétion">
-      <div class="campaign-progress-fill" style="width: {progress.percentage}%"></div>
-    </div>
-    <div class="campaign-progress-meta">
-      <span>{progress.completed}/{progress.total} niveaux</span>
-      <span>{progress.stars}/{progress.totalStars} ★</span>
-    </div>
-  </div>
-  <p class="muted">{progress.completed}/{campaign.length} niveaux de campagne terminés</p>
   <section class="world-group challenge-world-group" aria-labelledby="challenges-title">
     <div class="world-group-heading">
       <h2 id="challenges-title">DÉFIS</h2>
