@@ -4,7 +4,11 @@
   import { getAppDate } from "../lib/devDate.svelte";
   import Button from "../components/Button.svelte";
   import Icon from "../components/Icon.svelte";
-  import { getCollectionProgress, isCollectionStarted, isLevelCompleted } from "../lib/progression";
+  import {
+    getCollectionProgress,
+    isCollectionStarted,
+    isLevelCompleted,
+  } from "../lib/progression";
   import { navigate } from "../lib/router.svelte";
 
   const titles = [

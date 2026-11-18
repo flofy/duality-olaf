@@ -119,11 +119,6 @@ export function startLevel(levelId: string): void {
   writeProgress(progress);
 }
 
-export function isLevelStarted(levelId: string): boolean {
-  const progress = readProgress();
-  return progress.started.includes(levelId) || progress.completed.includes(levelId);
-}
-
 export function isCollectionStarted(levels: readonly { id: string }[]): boolean {
   const progress = readProgress();
   return levels.some(
@@ -264,10 +259,6 @@ export function completeLevel(
 
   writeProgress(progress);
   return progress.results[levelId] ?? null;
-}
-
-export function getCompletedCount(): number {
-  return getCollectionProgress(worlds.flatMap((world) => world.levels)).completed;
 }
 
 export function getCampaignProgress(): {

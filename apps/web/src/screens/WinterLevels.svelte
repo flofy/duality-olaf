@@ -4,7 +4,11 @@
   import DevDateSimulator from "../components/DevDateSimulator.svelte";
   import { getAppDate } from "../lib/devDate.svelte";
   import Character from "../components/Character.svelte";
-  import { getCollectionProgress, isCollectionStarted, isLevelCompleted } from "../lib/progression";
+  import {
+    getCollectionProgress,
+    isCollectionStarted,
+    isLevelCompleted,
+  } from "../lib/progression";
   import { navigate } from "../lib/router.svelte";
   import Redirect from "../components/Redirect.svelte";
 
