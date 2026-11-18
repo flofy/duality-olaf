@@ -3,7 +3,12 @@
   import type { Level, SeasonalEvent } from "@duality/level-format";
   import { appearance } from "../lib/appearance.svelte";
   import { worlds } from "../lib/levels/campaign";
-  import { calculateLevelResult, completeLevel, getNextWorld } from "../lib/progression";
+  import {
+    calculateLevelResult,
+    completeLevel,
+    getNextWorld,
+    startLevel,
+  } from "../lib/progression";
   import { navigate } from "../lib/router.svelte";
   import { resolveLevelSkin } from "../lib/skins";
   import { getActiveThemeName } from "../lib/theme";
@@ -89,6 +94,10 @@
 
   $effect(() => {
     if (completionResult) completeLevel(level.id, completionResult);
+  });
+
+  onMount(() => {
+    startLevel(level.id);
   });
 
   onMount(() => {

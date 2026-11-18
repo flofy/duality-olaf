@@ -4,7 +4,11 @@
   import { getAppDate } from "../lib/devDate.svelte";
   import Button from "../components/Button.svelte";
   import Icon from "../components/Icon.svelte";
-  import { getLevelResult, isLevelCompleted } from "../lib/progression";
+  import {
+    getCollectionProgress,
+    isCollectionStarted,
+    isLevelCompleted,
+  } from "../lib/progression";
   import { navigate } from "../lib/router.svelte";
 
   const titles = [
@@ -16,14 +20,10 @@
     "La sorcière et son chaudron",
   ];
 
-  const completed = halloween.levels.filter((level) => isLevelCompleted(level.id)).length;
-  const stars = halloween.levels.reduce(
-    (total, level) => total + (getLevelResult(level.id)?.stars ?? 0),
-    0,
-  );
+  const progress = $derived(getCollectionProgress(halloween.levels));
 </script>
 
-{#if !isSeasonalEventAvailable(halloween, getAppDate())}
+{#if !isSeasonalEventAvailable(halloween, getAppDate()) && !isCollectionStarted(halloween.levels)}
   <Redirect to="/menu" />
 {:else}
 <section class="menu halloween-levels-page">
@@ -39,8 +39,8 @@
     <span class="halloween-hero-subtitle">UNE AVENTURE QUI DONNE DES FRISSONS</span>
   </div>
   <div class="halloween-progress">
-    <span>{completed}/{halloween.levels.length} NIVEAUX</span>
-    <span>{stars}/{halloween.levels.length * 3} ★</span>
+    <span>{progress.completed}/{progress.total} NIVEAUX</span>
+    <span>{progress.stars}/{progress.totalStars} ★</span>
   </div>
   <p class="muted halloween-intro">
     Récupère toutes les étoiles dans des niveaux hantés. La boule chauve-souris

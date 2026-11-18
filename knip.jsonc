@@ -30,7 +30,7 @@
   },
   "workspaces": {
     "apps/web": {
-      "entry": ["index.html"],
+      "entry": ["index.html", "src/**/*.test.ts"],
       "project": ["src/**/*.{ts,svelte}"],
     },
   },

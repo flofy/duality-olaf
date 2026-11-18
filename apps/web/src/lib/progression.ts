@@ -16,6 +16,7 @@ type LevelResult = {
 
 type Progress = {
   completed: string[];
+  started: string[];
   results: Record<string, LevelResult>;
 };
 
@@ -29,6 +30,9 @@ function readProgress(): Progress {
           ? parsed.completed.filter(
               (id): id is string => typeof id === "string",
             )
+          : [],
+        started: Array.isArray(parsed.started)
+          ? parsed.started.filter((id): id is string => typeof id === "string")
           : [],
         results:
           parsed.results && typeof parsed.results === "object"
@@ -44,13 +48,13 @@ function readProgress(): Progress {
       const completed = Array.isArray(parsed.completed)
         ? parsed.completed.filter((id): id is string => typeof id === "string")
         : [];
-      return { completed, results: {} };
+      return { completed, started: [], results: {} };
     }
   } catch {
     // Fall through to a clean save state.
   }
 
-  return { completed: [], results: {} };
+  return { completed: [], started: [], results: {} };
 }
 
 function writeProgress(progress: Progress): void {
@@ -104,6 +108,61 @@ export function markWorldTutorialSeen(worldId: number): void {
   } catch {
     // La sauvegarde est facultative : le tutoriel reste rejouable dans ce cas.
   }
+}
+
+export function startLevel(levelId: string): void {
+  const progress = readProgress();
+  if (
+    progress.completed.includes(levelId) ||
+    progress.started.includes(levelId)
+  )
+    return;
+  progress.started.push(levelId);
+  writeProgress(progress);
+}
+
+export function isCollectionStarted(
+  levels: readonly { id: string }[],
+): boolean {
+  const progress = readProgress();
+  return levels.some(
+    (level) =>
+      progress.started.includes(level.id) ||
+      progress.completed.includes(level.id),
+  );
+}
+
+export function getCollectionProgress(levels: readonly { id: string }[]): {
+  started: boolean;
+  unlocked: number;
+  completed: number;
+  total: number;
+  stars: number;
+  totalStars: number;
+} {
+  const progress = readProgress();
+  const completed = levels.filter((level) =>
+    progress.completed.includes(level.id),
+  ).length;
+  const unlocked = levels.findIndex(
+    (level, index) =>
+      index > 0 && !progress.completed.includes(levels[index - 1]!.id),
+  );
+  return {
+    started: levels.some(
+      (level) =>
+        progress.started.includes(level.id) ||
+        progress.completed.includes(level.id),
+    ),
+    unlocked: unlocked < 0 ? levels.length : unlocked,
+    completed,
+    total: levels.length,
+    stars: levels.reduce(
+      (total, level) => total + (progress.results[level.id]?.stars ?? 0),
+      0,
+    ),
+    totalStars: levels.length * 3,
+  };
 }
 
 export function isLevelCompleted(levelId: string): boolean {
@@ -207,21 +266,6 @@ export function completeLevel(
   return progress.results[levelId] ?? null;
 }
 
-export function getCompletedCount(): number {
-  return readProgress().completed.length;
-}
-
-function getCompletedStars(): number {
-  return Object.values(readProgress().results).reduce(
-    (total, result) => total + result.stars,
-    0,
-  );
-}
-
-function getTotalStars(): number {
-  return worlds.reduce((total, world) => total + world.levels.length * 3, 0);
-}
-
 export function getCampaignProgress(): {
   completed: number;
   total: number;
@@ -229,10 +273,10 @@ export function getCampaignProgress(): {
   totalStars: number;
   percentage: number;
 } {
-  const completed = getCompletedCount();
-  const total = worlds.reduce((count, world) => count + world.levels.length, 0);
-  const stars = getCompletedStars();
-  const totalStars = getTotalStars();
+  const collection = getCollectionProgress(
+    worlds.flatMap((world) => world.levels),
+  );
+  const { completed, total, stars, totalStars } = collection;
 
   return {
     completed,

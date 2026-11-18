@@ -2,11 +2,11 @@
   import { halloween, christmas, isSeasonalEventAvailable } from "@duality/level-format";
   import Button from "../components/Button.svelte";
   import DevDateSimulator from "../components/DevDateSimulator.svelte";
-  import { campaign, worlds } from "../lib/levels/campaign";
+  import { worlds } from "../lib/levels/campaign";
   import {
     getCampaignProgress,
-    getCompletedCount,
-    isLevelCompleted,
+    getCollectionProgress,
+    isCollectionStarted,
     isWorldUnlocked,
   } from "../lib/progression";
   import { isLevelLabEnabled } from "../lib/devFlags";
@@ -25,10 +25,15 @@
   const adventAvailable = $derived(isSeasonalEventAvailable(christmas, getAppDate()));
 
   function worldMeta(world: (typeof worlds)[number]): string {
-    const done = world.levels.filter((level) => isLevelCompleted(level.id)).length;
-    return done === world.levels.length
-      ? `${world.subtitle} • ✓ TERMINÉ`
-      : `${world.subtitle} • ${done}/${world.levels.length}`;
+    const stats = getCollectionProgress(world.levels);
+    return `${world.subtitle} · ${stats.completed}/${stats.total} niveaux · ${stats.stars}/${stats.totalStars} ★`;
+  }
+
+  function isEventVisible(item: (typeof seasonalAvailable)[number]): boolean {
+    return (
+      isSeasonalEventAvailable(item.event, getAppDate()) ||
+      isCollectionStarted(item.event.levels)
+    );
   }
 </script>
 
@@ -37,10 +42,23 @@
   <div class="subtitle">CHOISIS TON MONDE</div>
   <DevDateSimulator />
 
-  <section class="world-group" aria-labelledby="classic-worlds-title">
+  <section class="world-group" aria-labelledby="campaign-worlds-title">
     <div class="world-group-heading">
-      <h2 id="classic-worlds-title">MONDES CLASSIQUES</h2>
-      <span>PROGRESSION PRINCIPALE</span>
+      <h2 id="campaign-worlds-title">CAMPAGNE</h2>
+      <span>5 MONDES · PROGRESSION PERMANENTE</span>
+    </div>
+    <div class="campaign-progress">
+      <div class="campaign-progress-header">
+        <span>PROGRESSION DE LA CAMPAGNE</span>
+        <strong>{progress.percentage}%</strong>
+      </div>
+      <div class="campaign-progress-track" aria-label="{progress.percentage}% de complétion">
+        <div class="campaign-progress-fill" style="width: {progress.percentage}%"></div>
+      </div>
+      <div class="campaign-progress-meta">
+        <span>{progress.completed}/{progress.total} niveaux</span>
+        <span>{progress.stars}/{progress.totalStars} ★</span>
+      </div>
     </div>
     <div class="world-list">
       {#each visibleWorlds as world (world.id)}
@@ -59,49 +77,55 @@
     </div>
   </section>
 
-  <section class="world-group seasonal-world-group" aria-labelledby="seasonal-worlds-title">
-    <div class="world-group-heading">
-      <h2 id="seasonal-worlds-title">MONDES SAISONNIERS</h2>
-      <span>COLLECTIONS ÉVÉNEMENTIELLES</span>
-    </div>
-    {#each seasonalAvailable as item (item.event.id)}
-      {#if isSeasonalEventAvailable(item.event, getAppDate())}
+  {#if seasonalAvailable.some(isEventVisible)}
+    <section class="world-group seasonal-world-group" aria-labelledby="seasonal-worlds-title">
+      <div class="world-group-heading">
+        <h2 id="seasonal-worlds-title">ÉVÉNEMENTS</h2>
+        <span>COLLECTIONS SAISONNIÈRES</span>
+      </div>
+      {#each seasonalAvailable as item (item.event.id)}
+        {@const stats = getCollectionProgress(item.event.levels)}
+        {#if isEventVisible(item)}
+          <div class="seasonal-world-entry">
+            <Button
+              iconText={item.icon}
+              label={`${item.label} · ${item.description}`}
+              onclick={() => navigate(item.route)}
+              variant="primary"
+              class={item.event.theme === "halloween" ? "halloween-promo" : "winter-promo"}
+            />
+            <div class="world-meta">
+              {stats.completed}/{stats.total} niveaux terminés · {stats.stars}/{stats.totalStars} ★
+            </div>
+          </div>
+        {/if}
+      {/each}
+      {#if adventAvailable}
         <Button
-          iconText={item.icon}
-          label={`${item.label} · ${item.description}`}
-          onclick={() => navigate(item.route)}
-          variant="primary"
-          class={item.event.theme === "halloween" ? "halloween-promo" : "winter-promo"}
+          iconText="🎁"
+          label="CALENDRIER DE L'AVENT · 24 SURPRISES"
+          onclick={() => navigate("/advent")}
+          variant="secondary"
+          class="advent-promo"
         />
       {/if}
-    {/each}
-{#if adventAvailable}
-      <Button
-        iconText="🎁"
-        label="CALENDRIER DE L'AVENT · 24 SURPRISES"
-        onclick={() => navigate("/advent")}
-        variant="secondary"
-        class="advent-promo"
-      />
-    {/if}
+    </section>
+  {/if}
+
+  <section class="world-group challenge-world-group" aria-labelledby="challenges-title">
+    <div class="world-group-heading">
+      <h2 id="challenges-title">DÉFIS</h2>
+      <span>NIVEAUX INDÉPENDANTS ET REJOUABLES</span>
+    </div>
+    <Button
+      icon="arrowRight"
+      label="DÉCOUVRIR LES DÉFIS"
+      onclick={() => navigate("/challenge")}
+      variant="secondary"
+    />
   </section>
 
-  <div class="campaign-progress">
-    <div class="campaign-progress-header">
-      <span>PROGRESSION CLASSIQUE</span>
-      <strong>{progress.percentage}%</strong>
-    </div>
-    <div class="campaign-progress-track" aria-label="{progress.percentage}% de complétion">
-      <div class="campaign-progress-fill" style="width: {progress.percentage}%"></div>
-    </div>
-    <div class="campaign-progress-meta">
-      <span>{progress.completed}/{progress.total} niveaux</span>
-      <span>{progress.stars}/{progress.totalStars} ★</span>
-    </div>
-  </div>
-  <p class="muted">{getCompletedCount()} terminé(s) · {campaign.length} jouables</p>
   <div class="modal-actions">
-    <Button icon="arrowRight" label="DÉFI" onclick={() => navigate("/challenge")} variant="secondary" />
     <Button icon="help" label="AIDE" onclick={() => navigate("/help")} variant="secondary" />
     {#if isLevelLabEnabled}
       <button class="action dev-entry" onclick={() => navigate("/dev/levels")}>🧪 LEVEL LAB</button>
