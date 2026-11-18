@@ -154,7 +154,7 @@ export function getCollectionProgress(levels: readonly { id: string }[]): {
         progress.started.includes(level.id) ||
         progress.completed.includes(level.id),
     ),
-    unlocked: unlocked < 0 ? levels.length : unlocked + 1,
+    unlocked: unlocked < 0 ? levels.length : unlocked,
     completed,
     total: levels.length,
     stars: levels.reduce(
