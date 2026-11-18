@@ -5,7 +5,8 @@
   import { campaign, worlds } from "../lib/levels/campaign";
   import {
     getCampaignProgress,
-    getCompletedCount,
+    getCollectionProgress,
+    isCollectionStarted,
     isLevelCompleted,
     isWorldUnlocked,
   } from "../lib/progression";
@@ -65,14 +66,20 @@
       <span>COLLECTIONS ÉVÉNEMENTIELLES</span>
     </div>
     {#each seasonalAvailable as item (item.event.id)}
-      {#if isSeasonalEventAvailable(item.event, getAppDate())}
-        <Button
-          iconText={item.icon}
-          label={`${item.label} · ${item.description}`}
-          onclick={() => navigate(item.route)}
-          variant="primary"
-          class={item.event.theme === "halloween" ? "halloween-promo" : "winter-promo"}
-        />
+      {@const stats = getCollectionProgress(item.event.levels)}
+      {#if isSeasonalEventAvailable(item.event, getAppDate()) || isCollectionStarted(item.event.levels)}
+        <div class="seasonal-world-entry">
+          <Button
+            iconText={item.icon}
+            label={`${item.label} · ${item.description}`}
+            onclick={() => navigate(item.route)}
+            variant="primary"
+            class={item.event.theme === "halloween" ? "halloween-promo" : "winter-promo"}
+          />
+          <div class="world-meta">
+            {stats.completed}/{stats.total} niveaux terminés · {stats.stars}/{stats.totalStars} ★
+          </div>
+        </div>
       {/if}
     {/each}
 {#if adventAvailable}
@@ -99,7 +106,7 @@
       <span>{progress.stars}/{progress.totalStars} ★</span>
     </div>
   </div>
-  <p class="muted">{getCompletedCount()} terminé(s) · {campaign.length} jouables</p>
+  <p class="muted">{progress.completed}/{campaign.length} niveaux de campagne terminés</p>
   <div class="modal-actions">
     <Button icon="arrowRight" label="DÉFI" onclick={() => navigate("/challenge")} variant="secondary" />
     <Button icon="help" label="AIDE" onclick={() => navigate("/help")} variant="secondary" />

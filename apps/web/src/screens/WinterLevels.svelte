@@ -4,7 +4,7 @@
   import DevDateSimulator from "../components/DevDateSimulator.svelte";
   import { getAppDate } from "../lib/devDate.svelte";
   import Character from "../components/Character.svelte";
-  import { getLevelResult, isLevelCompleted } from "../lib/progression";
+  import { getCollectionProgress, isCollectionStarted, isLevelCompleted } from "../lib/progression";
   import { navigate } from "../lib/router.svelte";
   import Redirect from "../components/Redirect.svelte";
 
@@ -17,14 +17,10 @@
     "La veille de Noël", "Le ciel scintillant", "La magie de l'hiver", "Le matin de Noël",
   ];
 
-  const completed = christmas.levels.filter((level) => isLevelCompleted(level.id)).length;
-  const stars = christmas.levels.reduce(
-    (total, level) => total + (getLevelResult(level.id)?.stars ?? 0),
-    0,
-  );
+  const progress = $derived(getCollectionProgress(christmas.levels));
 </script>
 
-{#if !isSeasonalEventAvailable(christmas, getAppDate())}
+{#if !isSeasonalEventAvailable(christmas, getAppDate()) && !isCollectionStarted(christmas.levels)}
   <Redirect to="/advent" />
 {:else}
 <section class="menu winter-levels-page">
@@ -45,8 +41,8 @@
     <span class="winter-hero-subtitle">24 NIVEAUX SOUS LA NEIGE</span>
   </div>
   <div class="winter-progress">
-    <span>{completed}/{christmas.levels.length} NIVEAUX</span>
-    <span>{stars}/{christmas.levels.length * 3} ★</span>
+    <span>{progress.completed}/{progress.total} NIVEAUX</span>
+    <span>{progress.stars}/{progress.totalStars} ★</span>
   </div>
   <p class="muted winter-intro">
     La boule devient un bonhomme de neige et le carré se transforme en renne.
