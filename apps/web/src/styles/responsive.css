@@ -119,3 +119,118 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Immersive landscape gameplay: the board is the full-screen surface.
+   The burger stays above it, while HUD and controls float over the playfield. */
+@media (min-width: 701px), (orientation: landscape) and (max-height: 700px) {
+  html:not([data-game-layout="portrait"]) .game {
+    position: relative;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+  }
+
+  html:not([data-game-layout="portrait"]) .game > .topbar {
+    position: fixed;
+    z-index: 4;
+    top: max(6px, env(safe-area-inset-top));
+    left: max(6px, env(safe-area-inset-left));
+    width: min(42vw, 300px);
+    gap: 6px;
+    margin: 0;
+  }
+
+  html:not([data-game-layout="portrait"]) .topbar b {
+    font-size: 10px;
+    text-align: left;
+    text-shadow: 0 1px 4px #000;
+  }
+
+  html:not([data-game-layout="portrait"]) .game .board-wrap {
+    position: fixed;
+    z-index: 0;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    min-height: 0;
+    background: var(--background);
+  }
+
+  html:not([data-game-layout="portrait"]) .game .board {
+    --tile: min(calc(100cqw / var(--cols)), calc(100cqh / var(--rows)));
+    width: 100%;
+    height: 100%;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+    --cell-width: calc(100cqw / var(--cols));
+    --cell-height: calc(100cqh / var(--rows));
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  html:not([data-game-layout="portrait"]) .game .hud-row {
+    position: fixed;
+    z-index: 3;
+    top: max(44px, calc(env(safe-area-inset-top) + 38px));
+    left: max(8px, env(safe-area-inset-left));
+    right: max(58px, calc(env(safe-area-inset-right) + 52px));
+    margin: 0;
+    pointer-events: none;
+  }
+
+  html:not([data-game-layout="portrait"]) .game .hud {
+    width: fit-content;
+    max-width: 100%;
+    padding: 5px 8px;
+    border-radius: 6px;
+    background: #080b14a8;
+    font-size: 10px;
+    line-height: 1.2;
+    text-shadow: 0 1px 3px #000;
+    backdrop-filter: blur(4px);
+  }
+
+  html:not([data-game-layout="portrait"]) .game .hud-progress {
+    display: none;
+  }
+
+  html:not([data-game-layout="portrait"]) .game .hud-restart {
+    display: none;
+  }
+
+  html:not([data-game-layout="portrait"]) .game .controls {
+    position: fixed;
+    z-index: 4;
+    left: max(10px, env(safe-area-inset-left));
+    right: max(10px, env(safe-area-inset-right));
+    bottom: max(8px, env(safe-area-inset-bottom));
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  html:not([data-game-layout="portrait"]) .game .controls > * {
+    pointer-events: auto;
+  }
+
+  html:not([data-game-layout="portrait"]) .game .dpad {
+    grid-template-columns: repeat(3, clamp(30px, 7vh, 44px));
+    grid-template-rows: repeat(2, clamp(28px, 6vh, 38px));
+    gap: 3px;
+    opacity: 0.88;
+  }
+
+  html:not([data-game-layout="portrait"]) .game .switch {
+    min-width: 76px;
+  }
+
+  html:not([data-game-layout="portrait"]) .game .switch-toggle {
+    min-width: 76px;
+    min-height: 76px;
+    margin-left: auto;
+    opacity: 0.92;
+    box-shadow: 0 2px 14px #0008;
+  }
+}

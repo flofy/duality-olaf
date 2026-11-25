@@ -66,6 +66,11 @@ test("le popin de passage du monde 1 annonce le carré", async ({ page }) => {
     modal.locator(".modal-illustration__character--square"),
   ).toHaveCount(1);
   await expect(modal).toContainText("deuxième héros");
+  await expect(page.locator(".overlay")).toHaveClass(
+    /overlay--world-transition/,
+  );
+  await expect(page.locator(".overlay")).toHaveCSS("padding", "0px");
+  await expect(modal).toHaveCSS("border-radius", "0px");
 });
 
 /** Débloque le niveau demandé du monde 1 en marquant les précédents terminés. */

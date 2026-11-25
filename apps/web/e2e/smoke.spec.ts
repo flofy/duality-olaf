@@ -344,3 +344,79 @@ test("ui regression: burger menu exposes keyboard-safe controls", async ({
   );
   expect(updated).not.toBe(initial);
 });
+
+test("la disposition du jeu se règle depuis le burger et persiste après rechargement", async ({
+  page,
+}) => {
+  await page.goto("/menu");
+  const burger = page.locator("button.burger-toggle");
+  await burger.click();
+
+  const layoutSetting = page.getByRole("button", {
+    name: /DISPOSITION · PORTRAIT/,
+  });
+  await expect(layoutSetting).toBeVisible();
+  await layoutSetting.click();
+
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-game-layout",
+    "landscape",
+  );
+  await expect(
+    page.getByRole("button", { name: /DISPOSITION · PAYSAGE/ }),
+  ).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(() => localStorage.getItem("duality.game-layout.v1")),
+    )
+    .toBe("landscape");
+
+  await page.reload();
+  await burger.click();
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-game-layout",
+    "landscape",
+  );
+  await expect(
+    page.getByRole("button", { name: /DISPOSITION · PAYSAGE/ }),
+  ).toBeVisible();
+});
+
+test("le mode paysage met la grille en plein écran avec les commandes en surimpression", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.addInitScript(() => {
+    localStorage.setItem("duality.game-layout.v1", "landscape");
+    localStorage.setItem(
+      "duality.progress.v2",
+      JSON.stringify({ completed: ["world-1-level-01"], results: {} }),
+    );
+  });
+
+  await page.goto("/world/1/level/world-1-level-02");
+  await expect(page.locator(".board")).toBeVisible();
+
+  const boardWrap = page.locator(".board-wrap");
+  const controls = page.locator(".game .controls");
+  await expect(boardWrap).toHaveCSS("position", "fixed");
+  await expect(controls).toHaveCSS("position", "fixed");
+  await expect(page.locator("button.burger-toggle")).toBeVisible();
+
+  // Le conteneur de la grille doit couvrir le viewport ; le plateau interne
+  // peut avoir une légère transformation pendant son animation d'entrée.
+  const boardWrapBox = await boardWrap.boundingBox();
+  expect(boardWrapBox).not.toBeNull();
+  expect(boardWrapBox!.width).toBeCloseTo(844, 0);
+  expect(boardWrapBox!.height).toBeCloseTo(390, 0);
+
+  // Le même mode immersif doit fonctionner sur un écran desktop haut, sans
+  // dépendre de la media query mobile en paysage.
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await expect(boardWrap).toHaveCSS("position", "fixed");
+  await expect(controls).toHaveCSS("position", "fixed");
+  const desktopBoardWrapBox = await boardWrap.boundingBox();
+  expect(desktopBoardWrapBox).not.toBeNull();
+  expect(desktopBoardWrapBox!.width).toBeCloseTo(1280, 0);
+  expect(desktopBoardWrapBox!.height).toBeCloseTo(800, 0);
+});
