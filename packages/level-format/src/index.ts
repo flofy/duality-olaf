@@ -173,6 +173,7 @@ export {
   halloween,
   seasonalEvents,
   isSeasonalEventAvailable,
+  isSeasonalEventPublished,
   challengeLevels,
 } from "./seasonal";
 export type { SeasonalEvent, SeasonalTheme } from "./seasonal";
