@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { halloween, christmas, isSeasonalEventAvailable } from "@duality/level-format";
+  import { halloween, christmas, isSeasonalEventAvailable, isSeasonalEventPublished } from "@duality/level-format";
   import Button from "../components/Button.svelte";
   import DevDateSimulator from "../components/DevDateSimulator.svelte";
   import { worlds } from "../lib/levels/campaign";
   import {
     getCampaignProgress,
     getCollectionProgress,
-    isCollectionStarted,
     isWorldUnlocked,
   } from "../lib/progression";
   import { isLevelLabEnabled } from "../lib/devFlags";
@@ -30,10 +29,7 @@
   }
 
   function isEventVisible(item: (typeof seasonalAvailable)[number]): boolean {
-    return (
-      isSeasonalEventAvailable(item.event, getAppDate()) ||
-      isCollectionStarted(item.event.levels)
-    );
+    return isSeasonalEventPublished(item.event, getAppDate());
   }
 </script>
 

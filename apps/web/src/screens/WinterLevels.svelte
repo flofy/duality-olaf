@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { christmas, isSeasonalEventAvailable } from "@duality/level-format";
+  import { christmas, isSeasonalEventPublished } from "@duality/level-format";
   import Button from "../components/Button.svelte";
   import DevDateSimulator from "../components/DevDateSimulator.svelte";
   import { getAppDate } from "../lib/devDate.svelte";
   import Character from "../components/Character.svelte";
   import {
     getCollectionProgress,
-    isCollectionStarted,
     isLevelCompleted,
   } from "../lib/progression";
   import { navigate } from "../lib/router.svelte";
@@ -24,7 +23,7 @@
   const progress = $derived(getCollectionProgress(christmas.levels));
 </script>
 
-{#if !isSeasonalEventAvailable(christmas, getAppDate()) && !isCollectionStarted(christmas.levels)}
+{#if !isSeasonalEventPublished(christmas, getAppDate())}
   <Redirect to="/advent" />
 {:else}
 <section class="menu winter-levels-page">

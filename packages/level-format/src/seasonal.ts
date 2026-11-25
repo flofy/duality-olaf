@@ -8,6 +8,8 @@ export type SeasonalEvent = {
   label: string;
   start: { month: number; day: number };
   end: { month: number; day: number };
+  /** First public release date; the collection stays accessible afterwards. */
+  publishedAt: { year: number; month: number; day: number };
   levels: readonly Level[];
 };
 
@@ -45,6 +47,7 @@ export const halloween: SeasonalEvent = {
   label: "Halloween",
   start: { month: 10, day: 13 },
   end: { month: 11, day: 3 },
+  publishedAt: { year: 2026, month: 10, day: 13 },
   levels: loadSeasonalTheme("halloween"),
 };
 
@@ -54,6 +57,7 @@ export const christmas: SeasonalEvent = {
   label: "Hiver",
   start: { month: 12, day: 1 },
   end: { month: 3, day: 20 },
+  publishedAt: { year: 2026, month: 12, day: 1 },
   levels: loadSeasonalTheme("christmas"),
 };
 
@@ -81,6 +85,23 @@ function dayOfYear(date: Date): number {
 function calendarDay(month: number, day: number, year: number): number {
   return dayOfYear(new Date(Date.UTC(year, month - 1, day)));
 }
+export function isSeasonalEventPublished(
+  event: SeasonalEvent,
+  date = new Date(),
+): boolean {
+  const published = Date.UTC(
+    event.publishedAt.year,
+    event.publishedAt.month - 1,
+    event.publishedAt.day,
+  );
+  const current = Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+  );
+  return current >= published;
+}
+
 export function isSeasonalEventAvailable(
   event: SeasonalEvent,
   date = new Date(),

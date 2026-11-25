@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { halloween, isSeasonalEventAvailable } from "@duality/level-format";
+  import { halloween, isSeasonalEventPublished } from "@duality/level-format";
   import Redirect from "../components/Redirect.svelte";
   import { getAppDate } from "../lib/devDate.svelte";
   import Button from "../components/Button.svelte";
   import Icon from "../components/Icon.svelte";
   import {
     getCollectionProgress,
-    isCollectionStarted,
     isLevelCompleted,
   } from "../lib/progression";
   import { navigate } from "../lib/router.svelte";
@@ -23,7 +22,7 @@
   const progress = $derived(getCollectionProgress(halloween.levels));
 </script>
 
-{#if !isSeasonalEventAvailable(halloween, getAppDate()) && !isCollectionStarted(halloween.levels)}
+{#if !isSeasonalEventPublished(halloween, getAppDate())}
   <Redirect to="/menu" />
 {:else}
 <section class="menu halloween-levels-page">
@@ -76,6 +75,6 @@
       </button>
     {/each}
   </div>
-  <p class="halloween-footnote">Disponible du 13 octobre au 3 novembre.</p>
+  <p class="halloween-footnote">Publié le 13 octobre 2026 · accessible toute l’année.</p>
 </section>
 {/if}
