@@ -3,6 +3,7 @@ import {
   christmas,
   halloween,
   isSeasonalEventAvailable,
+  isSeasonalEventPublished,
   validateLevel as validateLevelStructure,
   type Level,
 } from "@duality/level-format";
@@ -128,6 +129,23 @@ describe("seasonal worlds", () => {
     const validation = validateLevel(level);
     expect(validation.result.solvable).toBe(true);
     expect(estimateDifficulty(validation.result)).not.toBeNull();
+  });
+  it("keeps published seasonal collections accessible after their event window", () => {
+    expect(
+      isSeasonalEventPublished(halloween, new Date("2026-10-12T12:00:00Z")),
+    ).toBe(false);
+    expect(
+      isSeasonalEventPublished(halloween, new Date("2026-11-25T12:00:00Z")),
+    ).toBe(true);
+    expect(
+      isSeasonalEventPublished(christmas, new Date("2026-11-30T12:00:00Z")),
+    ).toBe(false);
+    expect(
+      isSeasonalEventPublished(christmas, new Date("2026-12-01T12:00:00Z")),
+    ).toBe(true);
+    expect(
+      isSeasonalEventPublished(christmas, new Date("2027-04-01T12:00:00Z")),
+    ).toBe(true);
   });
   it("supports recurring cross-year winter availability", () => {
     expect(
